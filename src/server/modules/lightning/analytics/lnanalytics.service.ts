@@ -133,54 +133,29 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	}
 
 	/**
-	 * Sums outgoing payments for a specific group_key (null = BTC only)
+	 * Sums payments by status for a specific group_key (null = BTC only)
+	 * @param {LightningPayment[]} payments - All payments in the bucket
+	 * @param {string} status - Payment status to filter by ('succeeded', 'failed', 'pending')
+	 * @param {string | null} group_key - null for BTC, string for asset group
+	 * @param {Map<string, string>} asset_to_group - Asset ID to group key mapping
+	 * @param {boolean} include_fees - Whether to include fee_msat in BTC sum (only for succeeded)
 	 */
-	private sumPaymentsOut(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
-		const succeeded = payments.filter((p) => p.status === 'succeeded');
+	private sumPaymentsByStatus(
+		payments: LightningPayment[],
+		status: string,
+		group_key: string | null,
+		asset_to_group: Map<string, string>,
+		include_fees: boolean = false,
+	): bigint {
+		const filtered = payments.filter((p) => p.status === status);
 
 		if (group_key === null) {
-			return succeeded
+			return filtered
 				.filter((p) => p.asset_balances.length === 0)
-				.reduce((sum, p) => sum + BigInt(p.value_msat) + BigInt(p.fee_msat), BigInt(0));
+				.reduce((sum, p) => sum + BigInt(p.value_msat) + (include_fees ? BigInt(p.fee_msat) : BigInt(0)), BigInt(0));
 		}
 
-		return succeeded
-			.flatMap((p) => p.asset_balances)
-			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
-			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
-	}
-
-	/**
-	 * Sums failed payments for a specific group_key (null = BTC only)
-	 */
-	private sumPaymentsFailed(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
-		const failed = payments.filter((p) => p.status === 'failed');
-
-		if (group_key === null) {
-			return failed
-				.filter((p) => p.asset_balances.length === 0)
-				.reduce((sum, p) => sum + BigInt(p.value_msat), BigInt(0));
-		}
-
-		return failed
-			.flatMap((p) => p.asset_balances)
-			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
-			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
-	}
-
-	/**
-	 * Sums pending (in-flight) payments for a specific group_key (null = BTC only)
-	 */
-	private sumPaymentsPending(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
-		const pending = payments.filter((p) => p.status === 'pending');
-
-		if (group_key === null) {
-			return pending
-				.filter((p) => p.asset_balances.length === 0)
-				.reduce((sum, p) => sum + BigInt(p.value_msat), BigInt(0));
-		}
-
-		return pending
+		return filtered
 			.flatMap((p) => p.asset_balances)
 			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
 			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
@@ -663,9 +638,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 		// BTC metrics
 		const btc_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
-			{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsOut(payments, null, asset_to_group)},
-			{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsFailed(payments, null, asset_to_group)},
-			{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsPending(payments, null, asset_to_group)},
+			{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsByStatus(payments, 'succeeded', null, asset_to_group, true)},
+			{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsByStatus(payments, 'failed', null, asset_to_group)},
+			{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsByStatus(payments, 'pending', null, asset_to_group)},
 		];
 		for (const {metric, amount} of btc_metrics) {
 			await this.upsertMetric(repo, {node_pubkey, group_key: '', unit: 'msat', metric, hour, amount});
@@ -674,9 +649,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		// Asset metrics per group
 		for (const group_key of Array.from(this.collectGroupKeys(payments, asset_to_group))) {
 			const asset_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
-				{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsOut(payments, group_key, asset_to_group)},
-				{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsFailed(payments, group_key, asset_to_group)},
-				{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsPending(payments, group_key, asset_to_group)},
+				{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsByStatus(payments, 'succeeded', group_key, asset_to_group, true)},
+				{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsByStatus(payments, 'failed', group_key, asset_to_group)},
+				{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsByStatus(payments, 'pending', group_key, asset_to_group)},
 			];
 			for (const {metric, amount} of asset_metrics) {
 				await this.upsertMetric(repo, {

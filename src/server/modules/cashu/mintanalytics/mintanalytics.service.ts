@@ -110,6 +110,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		this.logger.log('Starting cashu mint analytics backfill');
 
 		try {
+			await this.getMintPubkey();
 			const current_hour = DateTime.utc().startOf('hour').toSeconds();
 
 			await this.streamAndBucket<CashuMintMintQuote>(
@@ -215,7 +216,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 	/** Inserts mint quote metrics for a specific hour */
 	private async insertMintQuoteMetrics(hour: number, quotes: CashuMintMintQuote[]): Promise<void> {
-		const mint_pubkey = await this.getMintPubkey();
+		const mint_pubkey = this.mint_pubkey!;
 		const by_unit = this.groupByUnit(quotes, (q) => q.unit);
 
 		for (const [unit, unit_quotes] of by_unit) {
@@ -257,7 +258,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 	/** Inserts melt quote metrics for a specific hour */
 	private async insertMeltQuoteMetrics(hour: number, quotes: CashuMintMeltQuote[]): Promise<void> {
-		const mint_pubkey = await this.getMintPubkey();
+		const mint_pubkey = this.mint_pubkey!;
 		const by_unit = this.groupByUnit(quotes, (q) => q.unit);
 
 		for (const [unit, unit_quotes] of by_unit) {
@@ -299,7 +300,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 	/** Inserts swap metrics for a specific hour */
 	private async insertSwapMetrics(hour: number, swaps: CashuMintSwap[]): Promise<void> {
-		const mint_pubkey = await this.getMintPubkey();
+		const mint_pubkey = this.mint_pubkey!;
 		const by_unit = this.groupByUnit(swaps, (s) => s.unit);
 
 		for (const [unit, unit_swaps] of by_unit) {
@@ -339,7 +340,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 	/** Inserts proof metrics (redeemed) for a specific hour */
 	private async insertProofMetrics(hour: number, proofs: CashuMintProof[]): Promise<void> {
-		const mint_pubkey = await this.getMintPubkey();
+		const mint_pubkey = this.mint_pubkey!;
 
 		const by_unit = this.groupByUnit(proofs, (p) => p.unit);
 		for (const [unit, unit_proofs] of by_unit) {
@@ -377,7 +378,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 	/** Inserts promise metrics (issued) for a specific hour */
 	private async insertPromiseMetrics(hour: number, promises: CashuMintPromise[]): Promise<void> {
-		const mint_pubkey = await this.getMintPubkey();
+		const mint_pubkey = this.mint_pubkey!;
 
 		const by_unit = this.groupByUnit(promises, (p) => p.unit);
 		for (const [unit, unit_promises] of by_unit) {

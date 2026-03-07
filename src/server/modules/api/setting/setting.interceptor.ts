@@ -66,17 +66,17 @@ export class SettingInterceptor implements NestInterceptor {
 	 * @returns {Promise<(string | null)[]>} The previous values
 	 */
 	private async fetchOldValues(keys: SettingKey[]): Promise<(string | null)[]> {
-		const results: (string | null)[] = [];
-		for (const key of keys) {
-			try {
-				const setting = await this.settingService.getSetting(key);
-				results.push(setting?.value ?? null);
-			} catch (_error) {
-				this.logger.warn(`Failed to fetch old value for setting [${key}]`);
-				results.push(null);
-			}
-		}
-		return results;
+		return Promise.all(
+			keys.map(async (key) => {
+				try {
+					const setting = await this.settingService.getSetting(key);
+					return setting?.value ?? null;
+				} catch (_error) {
+					this.logger.warn(`Failed to fetch old value for setting [${key}]`);
+					return null;
+				}
+			}),
+		);
 	}
 
 	/**

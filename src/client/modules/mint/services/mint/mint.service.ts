@@ -472,99 +472,100 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsBalances(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_BALANCES_QUERY,
-			'mint_analytics_balances',
-			this.mint_analytics_balances_subject,
-			this.mint_analytics_pre_balances_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_BALANCES,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
-		);
+			query_string: MINT_ANALYTICS_BALANCES_QUERY,
+			response_field: 'mint_analytics_balances',
+			subject: this.mint_analytics_balances_subject,
+			pre_subject: this.mint_analytics_pre_balances_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_BALANCES,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
+		});
 	}
 
 	public loadMintAnalyticsMints(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_MINTS_QUERY,
-			'mint_analytics_mints',
-			this.mint_analytics_mints_subject,
-			this.mint_analytics_pre_mints_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_MINTS,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS,
-		);
+			query_string: MINT_ANALYTICS_MINTS_QUERY,
+			response_field: 'mint_analytics_mints',
+			subject: this.mint_analytics_mints_subject,
+			pre_subject: this.mint_analytics_pre_mints_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_MINTS,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS,
+		});
 	}
 
 	public loadMintAnalyticsMelts(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_MELTS_QUERY,
-			'mint_analytics_melts',
-			this.mint_analytics_melts_subject,
-			this.mint_analytics_pre_melts_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_MELTS,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS,
-		);
+			query_string: MINT_ANALYTICS_MELTS_QUERY,
+			response_field: 'mint_analytics_melts',
+			subject: this.mint_analytics_melts_subject,
+			pre_subject: this.mint_analytics_pre_melts_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_MELTS,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS,
+		});
 	}
 
 	public loadMintAnalyticsSwaps(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_SWAPS_QUERY,
-			'mint_analytics_swaps',
-			this.mint_analytics_swaps_subject,
-			this.mint_analytics_pre_swaps_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_SWAPS,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_SWAPS,
-		);
+			query_string: MINT_ANALYTICS_SWAPS_QUERY,
+			response_field: 'mint_analytics_swaps',
+			subject: this.mint_analytics_swaps_subject,
+			pre_subject: this.mint_analytics_pre_swaps_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_SWAPS,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_SWAPS,
+		});
 	}
 
 	public loadMintAnalyticsFees(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_FEES_QUERY,
-			'mint_analytics_fees',
-			this.mint_analytics_fees_subject,
-			this.mint_analytics_pre_fees_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_FEES,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES,
-		);
+			query_string: MINT_ANALYTICS_FEES_QUERY,
+			response_field: 'mint_analytics_fees',
+			subject: this.mint_analytics_fees_subject,
+			pre_subject: this.mint_analytics_pre_fees_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_FEES,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES,
+		});
 	}
 
 	public loadMintAnalyticsProofs(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_PROOFS_QUERY,
-			'mint_analytics_proofs',
-			this.mint_analytics_proofs_subject,
-			this.mint_analytics_pre_proofs_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_PROOFS,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROOFS,
-		);
+			query_string: MINT_ANALYTICS_PROOFS_QUERY,
+			response_field: 'mint_analytics_proofs',
+			subject: this.mint_analytics_proofs_subject,
+			pre_subject: this.mint_analytics_pre_proofs_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PROOFS,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROOFS,
+		});
 	}
 
 	public loadMintAnalyticsPromises(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		return this.loadMintAnalyticsGeneric(
+		return this.loadMintAnalyticsGeneric({
 			args,
-			MINT_ANALYTICS_PROMISES_QUERY,
-			'mint_analytics_promises',
-			this.mint_analytics_promises_subject,
-			this.mint_analytics_pre_promises_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_PROMISES,
-			this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROMISES,
-		);
+			query_string: MINT_ANALYTICS_PROMISES_QUERY,
+			response_field: 'mint_analytics_promises',
+			subject: this.mint_analytics_promises_subject,
+			pre_subject: this.mint_analytics_pre_promises_subject,
+			cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PROMISES,
+			pre_cache_key: this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROMISES,
+		});
 	}
 
 	/** Generic loader for all mint analytics data types */
-	private loadMintAnalyticsGeneric(
-		args: MintAnalyticsArgs,
-		query_string: string,
-		response_field: string,
-		subject: BehaviorSubject<MintAnalytic[] | null>,
-		pre_subject: BehaviorSubject<MintAnalytic[] | null>,
-		cache_key: string,
-		pre_cache_key: string,
-	): Observable<MintAnalytic[]> {
+	private loadMintAnalyticsGeneric(opts: {
+		args: MintAnalyticsArgs;
+		query_string: string;
+		response_field: string;
+		subject: BehaviorSubject<MintAnalytic[] | null>;
+		pre_subject: BehaviorSubject<MintAnalytic[] | null>;
+		cache_key: string;
+		pre_cache_key: string;
+	}): Observable<MintAnalytic[]> {
+		const {args, query_string, response_field, subject, pre_subject, cache_key, pre_cache_key} = opts;
 		const is_pre = args.interval === AnalyticsInterval.Custom;
 		const subject_value = is_pre ? pre_subject.value : subject.value;
 		const active_cache_key = is_pre ? pre_cache_key : cache_key;

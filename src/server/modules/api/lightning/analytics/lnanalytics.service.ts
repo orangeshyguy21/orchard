@@ -11,6 +11,7 @@ import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lna
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
 import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
 import {LightningAnalyticsArgs} from '@server/modules/lightning/analytics/lnanalytics.interfaces';
 /* Local Dependencies */
 import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
@@ -81,7 +82,7 @@ export class ApiLightningAnalyticsService {
 		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number};
 
 		const buckets = data.reduce((acc, d) => {
-			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
 			const key = interval === AnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
 			const existing = acc.get(key);
 
@@ -100,28 +101,4 @@ export class ApiLightningAnalyticsService {
 			});
 	}
 
-	private getBucketDate(
-		date: number,
-		interval: AnalyticsInterval,
-		timezone: string,
-		date_start?: number,
-		data?: LightningAnalytics[],
-	): number {
-		if (interval === AnalyticsInterval.custom) {
-			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
-		}
-
-		const dt = DateTime.fromSeconds(date, {zone: timezone});
-
-		switch (interval) {
-			case AnalyticsInterval.day:
-				return dt.startOf('day').toSeconds();
-			case AnalyticsInterval.week:
-				return dt.startOf('week').toSeconds();
-			case AnalyticsInterval.month:
-				return dt.startOf('month').toSeconds();
-			default:
-				return dt.startOf('hour').toSeconds();
-		}
-	}
 }

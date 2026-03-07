@@ -7,6 +7,7 @@ import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/min
 import {MintAnalytics} from '@server/modules/cashu/mintanalytics/mintanalytics.entity';
 import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
@@ -173,7 +174,7 @@ export class MintAnalyticsService {
 		type Bucket = {unit: string; amount: bigint; date: number; count: number};
 
 		const buckets = data.reduce((acc, d) => {
-			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
 			const key = interval === AnalyticsInterval.custom ? d.unit : `${d.unit}:${bucket_date}`;
 			const existing = acc.get(key);
 
@@ -206,7 +207,7 @@ export class MintAnalyticsService {
 		type Bucket = {keyset_id: string; amount: bigint; date: number};
 
 		const buckets = data.reduce((acc, d) => {
-			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
 			const key = interval === AnalyticsInterval.custom ? `${d.keyset_id}:${d.metric}` : `${d.keyset_id}:${d.metric}:${bucket_date}`;
 			const existing = acc.get(key);
 
@@ -221,32 +222,6 @@ export class MintAnalyticsService {
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
 			.map((b) => new OrchardMintKeysetsAnalytics(b.keyset_id, b.amount.toString(), b.date));
-	}
-
-	/** Computes the interval bucket start date */
-	private getBucketDate(
-		date: number,
-		interval: AnalyticsInterval,
-		timezone: string,
-		date_start?: number,
-		data?: MintAnalytics[],
-	): number {
-		if (interval === AnalyticsInterval.custom) {
-			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
-		}
-
-		const dt = DateTime.fromSeconds(date, {zone: timezone});
-
-		switch (interval) {
-			case AnalyticsInterval.day:
-				return dt.startOf('day').toSeconds();
-			case AnalyticsInterval.week:
-				return dt.startOf('week').toSeconds();
-			case AnalyticsInterval.month:
-				return dt.startOf('month').toSeconds();
-			default:
-				return dt.startOf('hour').toSeconds();
-		}
 	}
 
 	/** Wraps errors in OrchardApiError */
