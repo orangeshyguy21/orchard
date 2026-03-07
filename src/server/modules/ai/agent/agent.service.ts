@@ -51,7 +51,7 @@ export class AgentService implements OnModuleInit {
 				system_message: null,
 				tools: '[]',
 				model: null,
-				schedules: '[]',
+				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
 				created_at: now,
@@ -101,12 +101,12 @@ export class AgentService implements OnModuleInit {
 	private removeCronJobsForAgent(agent_id: string): void {
 		const all_jobs = this.schedulerRegistry.getCronJobs();
 		const prefix = `agent:${agent_id}:`;
-		for (const [name] of all_jobs) {
+		all_jobs.forEach((_job, name) => {
 			if (name.startsWith(prefix)) {
 				this.schedulerRegistry.deleteCronJob(name);
 				this.logger.log(`Removed cron: ${name}`);
 			}
-		}
+		});
 	}
 
 	/**

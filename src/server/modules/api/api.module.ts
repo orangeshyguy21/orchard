@@ -43,6 +43,7 @@ import {AiModelModule} from './ai/model/aimodel.module';
 import {AiAssistantModule} from './ai/assistant/aiassistant.module';
 import {AiChatModule} from './ai/chat/aichat.module';
 import {AiHealthModule} from './ai/health/aihealth.module';
+import {AiAgentModule} from './ai/agent/aiagent.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
@@ -92,6 +93,7 @@ import {ApiEventLogModule} from './event/event.module';
 		AiAssistantModule,
 		AiChatModule,
 		AiHealthModule,
+		AiAgentModule,
 		PublicImageModule,
 		PublicUrlModule,
 		PublicPortModule,

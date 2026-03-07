@@ -11,5 +11,6 @@ export const AGENTS = {
 			'Focus on channel opens and closes, failed Lightning payments, unusual traffic patterns, and any anomalies in system metrics. ' +
 			'Be concise and actionable in your reports.',
 		tools: [],
+		schedules: ['10 * * * *'],
 	},
 };
