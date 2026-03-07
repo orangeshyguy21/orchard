@@ -33,35 +33,34 @@ describe('AiChatService', () => {
 	});
 
 	it('streams chat and emits parsed chunks', async () => {
-		// Arrange a ReadableStream-like body that yields two JSON lines
-		const encoder = new TextEncoder();
-		const chunks = [
-			encoder.encode('{"model":"m","created_at":1,"message":{"role":"assistant","content":"hi"},"done":false}\n'),
-			encoder.encode('{"model":"m","created_at":2,"message":{"role":"assistant","content":"bye"},"done":true}\n'),
+		const stream_chunks = [
+			{model: 'm', created_at: '2024-01-01T00:00:00Z', message: {role: 'assistant', content: 'hi'}, done: false},
+			{model: 'm', created_at: '2024-01-01T00:00:01Z', message: {role: 'assistant', content: 'bye'}, done: true},
 		];
-		const reader = {
-			read: jest
-				.fn()
-				.mockResolvedValueOnce({done: false, value: chunks[0]})
-				.mockResolvedValueOnce({done: false, value: chunks[1]})
-				.mockResolvedValueOnce({done: true, value: undefined}),
-		};
-		const body = {getReader: () => reader} as any;
-		aiService.streamChat.mockResolvedValue(body);
+
+		async function* mockGenerator() {
+			for (const chunk of stream_chunks) {
+				yield chunk;
+			}
+		}
+
+		(aiService.streamChat as jest.Mock).mockReturnValue(mockGenerator());
 
 		const received: any[] = [];
 		aiChatService.onChatUpdate((chunk) => received.push(chunk));
 
-		// Act
 		const ok = await aiChatService.streamChat('TAG', {id: '1', model: 'm', agent: null, messages: []} as any);
 
-		// Assert
 		expect(ok).toBe(true);
 		expect(received.length).toBe(2);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError for stream errors', async () => {
-		aiService.streamChat.mockRejectedValue(new Error('boom'));
+		async function* mockErrorGenerator() {
+			throw new Error('boom');
+		}
+
+		(aiService.streamChat as jest.Mock).mockReturnValue(mockErrorGenerator());
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
 		await expect(aiChatService.streamChat('MY_TAG', {id: '1', model: 'm', agent: null, messages: []} as any)).rejects.toBeInstanceOf(
 			OrchardApiError,

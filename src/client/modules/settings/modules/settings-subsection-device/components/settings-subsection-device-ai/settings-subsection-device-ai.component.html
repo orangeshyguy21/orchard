@@ -19,7 +19,7 @@
 									@for (option of filtered_options | async; track option.model) {
 										<mat-option [value]="option.model">
 											<div class="flex flex-items-center flex-gap-1">
-												<div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
+												<div class="orc-outline-color w-min-3">{{ option.ollama?.parameter_size || option.openrouter?.family }}</div>
 												<div>{{ option.name }}</div>
 											</div>
 										</mat-option>
@@ -66,17 +66,31 @@
 									class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light text-nowrap"
 								>
 									<div>model:</div>
-									<div>parameter size:</div>
-									<div>model size:</div>
-									<div>quantization level:</div>
-									<div>last modified:</div>
+									<div>context length:</div>
+									@if (ai_model.ollama) {
+										<div>parameter size:</div>
+										<div>model size:</div>
+										<div>quantization level:</div>
+										<div>last modified:</div>
+									}
+									@if (ai_model.openrouter) {
+										<div>family:</div>
+										<div>modality:</div>
+									}
 								</div>
 								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color text-nowrap">
 									<div>{{ ai_model.model }}</div>
-									<div>{{ ai_model.details.parameter_size }}</div>
-									<div>{{ ai_model.size | dataBytes }}</div>
-									<div>{{ ai_model.details.quantization_level }}</div>
-									<div>{{ ai_model.modified_at | localTime: 'medium' }}</div>
+									<div>{{ ai_model.context_length | number }}</div>
+									@if (ai_model.ollama) {
+										<div>{{ ai_model.ollama.parameter_size }}</div>
+										<div>{{ ai_model.ollama.size | dataBytes }}</div>
+										<div>{{ ai_model.ollama.quantization_level }}</div>
+										<div>{{ ai_model.ollama.modified_at | localTime: 'medium' }}</div>
+									}
+									@if (ai_model.openrouter) {
+										<div>{{ ai_model.openrouter.family }}</div>
+										<div>{{ ai_model.openrouter.modality }}</div>
+									}
 								</div>
 							</div>
 						} @else {

@@ -16,12 +16,12 @@ export const AI_CHAT_SUBSCRIPTION = `
             created_at
             done
             done_reason
-            total_duration
-            load_duration
-            prompt_eval_count
-            prompt_eval_duration
-            eval_count
-            eval_duration
+            usage {
+                prompt_tokens
+                completion_tokens
+                total_duration
+                eval_duration
+            }
         }
     }
 `;
@@ -30,17 +30,26 @@ export const AI_MODELS_QUERY = `
     query AiModels {
         ai_models{
             model
-            modified_at
             name
-            size
-            digest
-            details{
+            context_length
+            ollama {
+                modified_at
+                size
+                digest
+                parent_model
+                format
                 family
                 families
-                format
                 parameter_size
-                parent_model
                 quantization_level
+            }
+            openrouter {
+                pricing_prompt
+                pricing_completion
+                modality
+                tokenizer
+                max_completion_tokens
+                family
             }
         }
     }

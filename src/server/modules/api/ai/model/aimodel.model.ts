@@ -1,14 +1,22 @@
 /* Core Dependencies */
-import {Field, Float, ObjectType} from '@nestjs/graphql';
+import {Field, Float, Int, ObjectType} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-/* Native Dependencies */
-import {AiModel, AiModelDetails} from '@server/modules/ai/ai.types';
+import {AiModel, AiModelOllama, AiModelOpenRouter} from '@server/modules/ai/ai.types';
 
 @ObjectType()
-export class OrchardAiModelDetails {
+export class OrchardAiModelOllama {
+	@Field(() => UnixTimestamp)
+	modified_at: number;
+
+	@Field(() => Float)
+	size: number;
+
+	@Field()
+	digest: string;
+
 	@Field()
 	parent_model: string;
 
@@ -27,42 +35,71 @@ export class OrchardAiModelDetails {
 	@Field()
 	quantization_level: string;
 
-	constructor(ai_model_details: AiModelDetails) {
-		this.parent_model = ai_model_details.parent_model;
-		this.format = ai_model_details.format;
-		this.family = ai_model_details.family;
-		this.families = ai_model_details.families;
-		this.parameter_size = ai_model_details.parameter_size;
-		this.quantization_level = ai_model_details.quantization_level;
+	constructor(details: AiModelOllama) {
+		this.modified_at = DateTime.fromISO(details.modified_at).toUnixInteger();
+		this.size = details.size;
+		this.digest = details.digest;
+		this.parent_model = details.parent_model;
+		this.format = details.format;
+		this.family = details.family;
+		this.families = details.families;
+		this.parameter_size = details.parameter_size;
+		this.quantization_level = details.quantization_level;
+	}
+}
+
+@ObjectType()
+export class OrchardAiModelOpenRouter {
+	@Field()
+	pricing_prompt: string;
+
+	@Field()
+	pricing_completion: string;
+
+	@Field()
+	modality: string;
+
+	@Field()
+	tokenizer: string;
+
+	@Field(() => Int)
+	max_completion_tokens: number;
+
+	@Field()
+	family: string;
+
+	constructor(details: AiModelOpenRouter) {
+		this.pricing_prompt = details.pricing_prompt;
+		this.pricing_completion = details.pricing_completion;
+		this.modality = details.modality;
+		this.tokenizer = details.tokenizer;
+		this.max_completion_tokens = details.max_completion_tokens;
+		this.family = details.family;
 	}
 }
 
 @ObjectType()
 export class OrchardAiModel {
 	@Field()
-	name: string;
-
-	@Field()
 	model: string;
 
-	@Field(() => UnixTimestamp)
-	modified_at: number;
-
-	@Field(() => Float)
-	size: number;
-
 	@Field()
-	digest: string;
+	name: string;
 
-	@Field(() => OrchardAiModelDetails)
-	details: OrchardAiModelDetails;
+	@Field(() => Int)
+	context_length: number;
+
+	@Field(() => OrchardAiModelOllama, {nullable: true})
+	ollama?: OrchardAiModelOllama;
+
+	@Field(() => OrchardAiModelOpenRouter, {nullable: true})
+	openrouter?: OrchardAiModelOpenRouter;
 
 	constructor(ai_model: AiModel) {
-		this.name = ai_model.name;
 		this.model = ai_model.model;
-		this.modified_at = DateTime.fromISO(ai_model.modified_at).toUnixInteger();
-		this.size = ai_model.size;
-		this.digest = ai_model.digest;
-		this.details = ai_model.details;
+		this.name = ai_model.name;
+		this.context_length = ai_model.context_length;
+		this.ollama = ai_model.ollama ? new OrchardAiModelOllama(ai_model.ollama) : undefined;
+		this.openrouter = ai_model.openrouter ? new OrchardAiModelOpenRouter(ai_model.openrouter) : undefined;
 	}
 }

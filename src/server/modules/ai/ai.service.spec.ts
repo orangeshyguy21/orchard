@@ -1,12 +1,10 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
-import {ConfigService} from '@nestjs/config';
-/* Application Dependencies */
-import {FetchService} from '@server/modules/fetch/fetch.service';
 /* Local Dependencies */
 import {SettingService} from '@server/modules/setting/setting.service';
-/* Local Dependencies */
 import {AiService} from './ai.service';
+import {OllamaService} from './ollama/ollama.service';
+import {OpenRouterService} from './openrouter/openrouter.service';
 
 describe('AiService', () => {
 	let aiService: AiService;
@@ -15,9 +13,9 @@ describe('AiService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				AiService,
-				{provide: ConfigService, useValue: {get: jest.fn()}},
-				{provide: FetchService, useValue: {fetchWithProxy: jest.fn()}},
 				{provide: SettingService, useValue: {getSetting: jest.fn()}},
+				{provide: OllamaService, useValue: {getModels: jest.fn(), streamChat: jest.fn()}},
+				{provide: OpenRouterService, useValue: {getModels: jest.fn(), streamChat: jest.fn()}},
 			],
 		}).compile();
 

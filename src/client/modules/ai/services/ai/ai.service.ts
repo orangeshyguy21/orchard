@@ -70,11 +70,9 @@ export class AiService {
 		const set_model = this.settingDeviceService.getModel();
 		return this.getAiModels().pipe(
 			map((models) => {
-				if (models.find((model) => model.model === set_model)) {
-					return models.find((model) => model.model === set_model) || null;
-				}
-				const model = this.getSmallestFunctionModel(models);
-				return model;
+				const set = models.find((model) => model.model === set_model);
+				if (set) return set;
+				return this.getSmallestFunctionModel(models);
 			}),
 		);
 	}
@@ -228,9 +226,10 @@ export class AiService {
 
 	private getSmallestFunctionModel(models: AiModel[]): AiModel | null {
 		if (models.length === 0) return null;
+		const getSize = (m: AiModel) => m.ollama?.size ?? 0;
 		const llama_models = models.filter((model) => model.model.includes('llama'));
-		if (llama_models.length > 0) return llama_models.sort((a, b) => a.size - b.size)[0];
-		return models.sort((a, b) => a.size - b.size)[0];
+		if (llama_models.length > 0) return llama_models.sort((a, b) => getSize(a) - getSize(b))[0];
+		return [...models].sort((a, b) => getSize(a) - getSize(b))[0];
 	}
 
 	private createConversation(id: string, assistant: AiAssistant, content: string | null, context: string | undefined): AiChatConversation {

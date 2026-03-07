@@ -1,16 +1,22 @@
 /* Local Dependencies */
 import {AiMessageRole, AiFunctionName} from './ai.enums';
 
+/* *******************************************************
+	Models
+******************************************************** */
+
 export type AiModel = {
-	name: string;
 	model: string;
+	name: string;
+	context_length: number;
+	ollama?: AiModelOllama;
+	openrouter?: AiModelOpenRouter;
+};
+
+export type AiModelOllama = {
 	modified_at: string;
 	size: number;
 	digest: string;
-	details: AiModelDetails;
-};
-
-export type AiModelDetails = {
 	parent_model: string;
 	format: string;
 	family: string;
@@ -19,6 +25,19 @@ export type AiModelDetails = {
 	quantization_level: string;
 };
 
+export type AiModelOpenRouter = {
+	pricing_prompt: string;
+	pricing_completion: string;
+	modality: string;
+	tokenizer: string;
+	max_completion_tokens: number;
+	family: string;
+};
+
+/* *******************************************************
+	Messages
+******************************************************** */
+
 export type AiMessage = {
 	role: AiMessageRole;
 	content: string;
@@ -26,10 +45,14 @@ export type AiMessage = {
 	tool_calls?: AiToolCall[];
 };
 
+/* *******************************************************
+	Tools
+******************************************************** */
+
 export type AiToolParameters = {
 	type: string;
 	properties: Record<string, unknown>;
-	required: string[];
+	required?: string[];
 };
 
 export type AiTool = {
@@ -46,6 +69,27 @@ export type AiToolFunction = {
 export type AiToolCall = {
 	function: {
 		name: AiFunctionName;
-		arguments: AiToolParameters;
+		arguments: Record<string, unknown>;
 	};
+};
+
+/* *******************************************************
+	Streaming
+******************************************************** */
+
+export type AiStreamChunk = {
+	model: string;
+	created_at: string;
+	message: AiMessage;
+	done: boolean;
+	done_reason?: string;
+	usage?: AiStreamUsage;
+	error?: string;
+};
+
+export type AiStreamUsage = {
+	prompt_tokens?: number;
+	completion_tokens?: number;
+	total_duration?: number;
+	eval_duration?: number;
 };

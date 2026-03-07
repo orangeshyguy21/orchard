@@ -12,7 +12,7 @@
 	@for (option of model_options(); track option.model) {
 		<button mat-menu-item [class.active-model-option]="option.model === model()" (click)="modelChange.emit(option.model)">
 			<div class="flex flex-items-center flex-gap-1 font-weight-light">
-				<div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
+				<div class="orc-outline-color w-min-3">{{ option.ollama?.parameter_size || option.openrouter?.family }}</div>
 				<div class="flex-grow text-nowrap">{{ option.name }}</div>
 				<mat-icon>{{ option.model === model() ? 'check' : '' }}</mat-icon>
 			</div>

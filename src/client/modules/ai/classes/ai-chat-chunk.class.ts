@@ -1,7 +1,7 @@
 /* Application Dependencies */
 import {AiFunction} from '@client/modules/ai/types/ai.types';
 /* Shared Dependencies */
-import {OrchardAiChatChunk, OrchardAiChatMessage, OrchardAiChatToolCall, AiMessageRole} from '@shared/generated.types';
+import {OrchardAiChatChunk, OrchardAiChatMessage, OrchardAiChatToolCall, OrchardAiChatUsage, AiMessageRole} from '@shared/generated.types';
 
 interface ParsedOrchardAiChatChunk extends Omit<OrchardAiChatChunk, 'message'> {
 	message: {
@@ -28,31 +28,21 @@ export class AiChatChunk implements ParsedOrchardAiChatChunk {
 	public created_at: number;
 	public done: boolean;
 	public done_reason: string | null;
-	public eval_count: number | null;
-	public eval_duration: number | null;
 	public id: string;
 	public id_conversation: string;
-	public load_duration: number | null;
 	public message: AiChatMessage;
 	public model: string;
-	public prompt_eval_count: number | null;
-	public prompt_eval_duration: number | null;
-	public total_duration: number | null;
+	public usage: AiChatUsage | null;
 
 	constructor(chunk: OrchardAiChatChunk, id_conversation: string) {
 		this.created_at = chunk.created_at;
 		this.done = chunk.done;
 		this.done_reason = chunk.done_reason ?? null;
-		this.eval_count = chunk.eval_count ?? null;
-		this.eval_duration = chunk.eval_duration ?? null;
 		this.id = chunk.id;
 		this.id_conversation = id_conversation;
-		this.load_duration = chunk.load_duration ?? null;
 		this.message = new AiChatMessage(chunk.message);
 		this.model = chunk.model;
-		this.prompt_eval_count = chunk.prompt_eval_count ?? null;
-		this.prompt_eval_duration = chunk.prompt_eval_duration ?? null;
-		this.total_duration = chunk.total_duration ?? null;
+		this.usage = chunk.usage ? new AiChatUsage(chunk.usage) : null;
 	}
 }
 
@@ -78,5 +68,19 @@ export class AiChatToolCall implements ParsedOrchardAiChatToolCall {
 			name: tool_call.function.name,
 			arguments: JSON.parse(tool_call.function.arguments),
 		} as AiFunction;
+	}
+}
+
+export class AiChatUsage {
+	public prompt_tokens: number | null;
+	public completion_tokens: number | null;
+	public total_duration: number | null;
+	public eval_duration: number | null;
+
+	constructor(usage: OrchardAiChatUsage) {
+		this.prompt_tokens = usage.prompt_tokens ?? null;
+		this.completion_tokens = usage.completion_tokens ?? null;
+		this.total_duration = usage.total_duration ?? null;
+		this.eval_duration = usage.eval_duration ?? null;
 	}
 }
