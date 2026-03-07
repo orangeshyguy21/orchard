@@ -36,6 +36,7 @@ import {AiThoughtPipe} from './pipes/ai-thought/ai-thought.pipe';
 import {AiAssistantDefinitionComponent} from './components/ai-assistant-definition/ai-assistant-definition.component';
 import {AiAssistantDefinitionToolComponent} from './components/ai-assistant-definition-tool/ai-assistant-definition-tool.component';
 import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai-chat-message-error.component';
+import {AiVendorIconComponent} from './components/ai-vendor-icon/ai-vendor-icon.component';
 
 @NgModule({
 	declarations: [
@@ -55,6 +56,7 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 		AiAssistantDefinitionComponent,
 		AiAssistantDefinitionToolComponent,
 		AiChatMessageErrorComponent,
+		AiVendorIconComponent,
 	],
 	imports: [
 		CommonModule,
@@ -75,6 +77,6 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 		OrcFormModule,
 		OrcCrewModule,
 	],
-	exports: [AiNavComponent, AiChatLogComponent],
+	exports: [AiNavComponent, AiChatLogComponent, AiVendorIconComponent],
 })
 export class OrcAiModule {}

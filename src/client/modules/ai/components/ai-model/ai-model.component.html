@@ -18,9 +18,10 @@
 			@for (option of displayed_models(); track option.model) {
 				<button mat-menu-item [class.active-model-option]="option.model === model()" (click)="selectModel(option.model)">
 					<div class="flex flex-items-center flex-gap-1 font-weight-light">
-                        <div class="ai-vendor-logo">
-                            <img src="ollama.png" alt="Ollama" />
-                        </div>
+                            <!-- <div class="ai-vendor-logo">
+                                <img src="ollama.png" alt="Ollama" />
+                            </div> -->
+                        <orc-ai-vendor-icon [vendor]="option.openrouter?.family || 'ollama'" [size]="'2rem'"></orc-ai-vendor-icon>
 						<div class="flex-grow">{{ option.name }}</div>
 						<mat-icon [class.ai-favorite]="favorite_ids().has(option.model) && option.model !== model()">{{ option.model === model() ? 'check' : favorite_ids().has(option.model) ? 'star' : '' }}</mat-icon>
 					</div>
