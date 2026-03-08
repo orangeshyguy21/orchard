@@ -64,7 +64,7 @@ export class AiModelComponent implements OnDestroy {
 				if (a_provider !== b_provider) return a_provider.localeCompare(b_provider);
 				return a.name.localeCompare(b.name);
 			})
-			.map((m) => ({ ...m, name: m.name.replace(/^[^:]+:\s*/, '') }));
+			.map((m) => (m.openrouter ? { ...m, name: m.name.replace(/^[^:]+:\s*/, '') } : m));
 	});
 
 	public readonly displayed_models = computed(() => {

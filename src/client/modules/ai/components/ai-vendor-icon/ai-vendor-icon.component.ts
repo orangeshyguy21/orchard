@@ -18,4 +18,12 @@ export class AiVendorIconComponent {
 
 	/* ── Public computed signals ── */
 	public readonly src = computed(() => `vendor/${this.vendor()}.png`);
+
+	/** Falls back to the OpenRouter logo when the vendor image is missing */
+	public onImageError(event: Event): void {
+		const img = event.target as HTMLImageElement;
+		if (!img.src.endsWith('vendor/openrouter.png')) {
+			img.src = 'vendor/openrouter.png';
+		}
+	}
 }

@@ -322,16 +322,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event.set(event_data);
-			if (this.active_section() === 'settings') {
-                const vendor = this.settingAppService.getSetting('ai_vendor');
-                const model = this.settingDeviceService.getModel();
-                const new_vendor = this.settingAppService.getSetting('ai_vendor');
-                const new_model = this.settingDeviceService.getModel();
-                if( model !== new_model) this.ai_model.set(new_model);
-                if( vendor !== new_vendor){
-                    this.ai_vendor.set(new_vendor);
-                    this.getModels();
-                }
+			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
+                this.ai_model.set(this.settingDeviceService.getModel());
+                this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+                this.getModels();
 			}
 		});
 	}
@@ -390,9 +384,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getModels(): void {
 		this.aiService.getAiModels().subscribe((models: AiModel[]) => {
-            // const vendors = [...new Set(models.map(m => m.model.split('/')[0]))];
-            // console.log('vendors', vendors, vendors.length);
-            console.log('models', models, models.length);
 			this.ai_models.set(models);
 		});
 	}

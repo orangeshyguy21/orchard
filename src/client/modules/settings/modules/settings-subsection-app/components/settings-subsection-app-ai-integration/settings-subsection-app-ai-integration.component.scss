@@ -51,23 +51,6 @@
 	@extend %orc-outline-color;
 }
 
-.ai-vendor-logo {
-	@extend %flex;
-	@extend %flex-items-center;
-	@extend %flex-justify-center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 50%;
-	background: white;
-	flex-shrink: 0;
-
-	img {
-		width: 1.5rem;
-		height: 1.5rem;
-		object-fit: contain;
-	}
-}
-
 .agent-card {
     @extend %flex-grow;
     @extend %p-2;

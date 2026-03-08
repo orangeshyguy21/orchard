@@ -18,6 +18,7 @@ import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcPublicModule} from '@client/modules/public/public.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcAiModule} from '@client/modules/ai/ai.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
@@ -60,6 +61,7 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		OrcPublicModule,
 		OrcGraphicModule,
 		OrcNavModule,
+		OrcAiModule,
 		OrcProgressModule,
 	],
 })
