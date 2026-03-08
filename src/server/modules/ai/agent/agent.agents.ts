@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentKey} from './agent.enums';
+import {AgentKey, AgentFunctionName} from './agent.enums';
 
 export const AGENTS = {
 	[AgentKey.ACTIVITY_MONITOR]: {
@@ -10,7 +10,7 @@ export const AGENTS = {
 			'Your job is to analyze recent activity and surface important events that the operator should know about. ' +
 			'Focus on channel opens and closes, failed Lightning payments, unusual traffic patterns, and any anomalies in system metrics. ' +
 			'Be concise and actionable in your reports.',
-		tools: [],
+		tools: [AgentFunctionName.GET_LIGHTNING_ANALYTICS],
 		schedules: ['10 * * * *'],
 	},
 };

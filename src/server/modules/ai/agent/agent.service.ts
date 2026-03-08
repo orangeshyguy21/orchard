@@ -6,15 +6,24 @@ import {Repository} from 'typeorm';
 import {SchedulerRegistry} from '@nestjs/schedule';
 import {CronJob} from 'cron';
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {AiService} from '@server/modules/ai/ai.service';
+import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/ai.types';
+import {AiMessageRole} from '@server/modules/ai/ai.enums';
+import {SettingService} from '@server/modules/setting/setting.service';
+import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
 import {AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
+import {ToolService} from '@server/modules/ai/tools/tool.service';
 
 @Injectable()
 export class AgentService implements OnModuleInit {
 	private readonly logger = new Logger(AgentService.name);
+
+	private static readonly MAX_TOOL_ITERATIONS = 10;
 
 	constructor(
 		@InjectRepository(Agent)
@@ -22,6 +31,9 @@ export class AgentService implements OnModuleInit {
 		@InjectRepository(AgentRun)
 		private runRepository: Repository<AgentRun>,
 		private schedulerRegistry: SchedulerRegistry,
+		private aiService: AiService,
+		private settingService: SettingService,
+		private toolExecutor: ToolService,
 	) {}
 
 	async onModuleInit(): Promise<void> {
@@ -49,7 +61,7 @@ export class AgentService implements OnModuleInit {
 				description: definition.description,
 				active: false,
 				system_message: null,
-				tools: '[]',
+				tools: JSON.stringify(definition.tools ?? []),
 				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
@@ -125,8 +137,7 @@ export class AgentService implements OnModuleInit {
 	******************************************************** */
 
 	/**
-	 * Creates a run record, executes the agent, and updates run status.
-	 * AI invocation is stubbed for now — establishes the run lifecycle.
+	 * Creates a run record, executes the agent via LLM with tool calling, and updates run status.
 	 */
 	public async executeAgent(agent_id: string, schedule_trigger: string | null = null): Promise<AgentRun> {
 		const now = DateTime.utc().toUnixInteger();
@@ -152,19 +163,20 @@ export class AgentService implements OnModuleInit {
 		});
 
 		try {
-			// TODO: integrate actual AI execution
+			const {result, tokens_used} = await this.runAgentLoop(agent);
 			const completed_at = DateTime.utc().toUnixInteger();
 			await this.runRepository.update(saved_run.id, {
 				status: AgentRunStatus.SUCCESS,
 				completed_at,
-				result: 'Agent executed (stub)',
+				result,
+				tokens_used,
 			});
 			await this.agentRepository.update(agent_id, {
 				last_run_status: AgentRunStatus.SUCCESS,
 				updated_at: completed_at,
 			});
 			this.logger.log(`Agent ${agent.name} completed successfully`);
-			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result: 'Agent executed (stub)'};
+			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used};
 		} catch (error) {
 			const completed_at = DateTime.utc().toUnixInteger();
 			await this.runRepository.update(saved_run.id, {
@@ -179,6 +191,86 @@ export class AgentService implements OnModuleInit {
 			this.logger.error(`Agent ${agent.name} failed: ${error.message}`);
 			throw error;
 		}
+	}
+
+	/**
+	 * Runs the LLM tool-call loop for an agent.
+	 * Sends the system message and tools to the LLM, processes tool calls,
+	 * and iterates until the LLM returns content or the iteration cap is hit.
+	 */
+	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number}> {
+		const model_setting = await this.settingService.getSetting(SettingKey.AI_SERVER_MODEL);
+		const model = model_setting?.value;
+		if (!model) throw new Error('No AI model configured (ai.server.model)');
+
+		const tool_names: string[] = JSON.parse(agent.tools);
+		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
+
+		const system_message: AiMessage = {
+			role: AiMessageRole.SYSTEM,
+			content:
+				agent.system_message ??
+				'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.',
+		};
+
+		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
+
+		let total_tokens = 0;
+
+		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
+			const response = await this.collectStreamResponse(model, messages, tool_schemas);
+			total_tokens += (response.usage?.prompt_tokens ?? 0) + (response.usage?.completion_tokens ?? 0);
+
+			if (response.message.tool_calls?.length) {
+				messages.push(response.message);
+				for (const tool_call of response.message.tool_calls) {
+					const tool_result = await this.toolExecutor.executeTool(
+						tool_call.function.name,
+						tool_call.function.arguments,
+					);
+					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result)});
+				}
+			} else {
+				return {result: response.message.content, tokens_used: total_tokens};
+			}
+		}
+
+		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens};
+	}
+
+	/**
+	 * Collects a full streamed response into a single chunk with accumulated content and tool calls.
+	 * Accumulates content and tool_calls from intermediate chunks so the result is vendor-agnostic.
+	 */
+	private async collectStreamResponse(model: string, messages: AiMessage[], tools: AiTool[]): Promise<AiStreamChunk> {
+		let final_chunk: AiStreamChunk | null = null;
+		let accumulated_content = '';
+		const accumulated_tool_calls: AiToolCall[] = [];
+
+		for await (const chunk of this.aiService.streamRaw(model, messages, tools)) {
+			if (chunk.done) {
+				final_chunk = chunk;
+			} else {
+				accumulated_content += chunk.message.content ?? '';
+				if (chunk.message.tool_calls?.length) {
+					accumulated_tool_calls.push(...chunk.message.tool_calls);
+				}
+			}
+		}
+
+		if (!final_chunk) {
+			throw new Error('Stream ended without a done chunk');
+		}
+
+		/* Prefer accumulated stream content over the done chunk's content */
+		final_chunk.message.content = accumulated_content || final_chunk.message.content;
+
+		/* Merge tool calls: use accumulated if present, fall back to done chunk's */
+		if (accumulated_tool_calls.length) {
+			final_chunk.message.tool_calls = accumulated_tool_calls;
+		}
+
+		return final_chunk;
 	}
 
 	/* *******************************************************

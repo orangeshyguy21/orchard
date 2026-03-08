@@ -7,3 +7,7 @@ export enum AgentRunStatus {
 	SUCCESS = 'success',
 	ERROR = 'error',
 }
+
+export enum AgentFunctionName {
+	GET_LIGHTNING_ANALYTICS = 'GET_LIGHTNING_ANALYTICS',
+}

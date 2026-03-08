@@ -4,7 +4,7 @@ import {Injectable} from '@nestjs/common';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
-import {AiModel, AiMessage, AiStreamChunk} from './ai.types';
+import {AiModel, AiMessage, AiTool, AiStreamChunk} from './ai.types';
 import {AiVendor} from './ai.vendor';
 import {OllamaService} from './ollama/ollama.service';
 import {OpenRouterService} from './openrouter/openrouter.service';
@@ -42,7 +42,30 @@ export class AiService {
 	}
 
 	/**
-	 * Stream a chat completion from the configured vendor
+	 * Core streaming method — resolves vendor, applies timeout, and yields chunks.
+	 * Used by both assistant chat and agent execution.
+	 * @param {string} model - The model identifier to use
+	 * @param {AiMessage[]} messages - Full message array (including system message)
+	 * @param {AiTool[]} tools - Tool definitions for function calling
+	 * @param {AbortSignal} [signal] - Optional abort signal
+	 * @returns {AsyncGenerator<AiStreamChunk>} Typed stream chunks
+	 */
+	async *streamRaw(
+		model: string,
+		messages: AiMessage[],
+		tools: AiTool[],
+		signal?: AbortSignal,
+	): AsyncGenerator<AiStreamChunk> {
+		const vendor = await this.getVendor();
+		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
+		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
+
+		yield* vendor.streamChat(model, messages, tools, combined_signal);
+	}
+
+	/**
+	 * Stream a chat completion using an assistant preset.
+	 * Resolves tools and system message from the assistant registry.
 	 * @param {string} model - The model identifier to use
 	 * @param {AiAssistant | null} assistant - The assistant preset (defaults to DEFAULT)
 	 * @param {AiMessage[]} messages - The conversation messages
@@ -55,13 +78,10 @@ export class AiService {
 		messages: AiMessage[],
 		signal?: AbortSignal,
 	): AsyncGenerator<AiStreamChunk> {
-		const vendor = await this.getVendor();
 		if (!assistant) assistant = AiAssistant.DEFAULT;
 		const tools = AI_ASSISTANTS[assistant].tools;
 		const system_message = AI_ASSISTANTS[assistant].system_message;
-		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
-		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
 
-		yield* vendor.streamChat(model, [system_message as AiMessage, ...messages], tools, combined_signal);
+		yield* this.streamRaw(model, [system_message as AiMessage, ...messages], tools, signal);
 	}
 }
