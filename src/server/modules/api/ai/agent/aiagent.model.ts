@@ -30,9 +30,6 @@ export class OrchardAgent {
 	@Field(() => [String])
 	tools: string[];
 
-	@Field({nullable: true})
-	model: string | null;
-
 	@Field(() => [String])
 	schedules: string[];
 
@@ -56,7 +53,6 @@ export class OrchardAgent {
 		this.active = agent.active;
 		this.system_message = agent.system_message;
 		this.tools = JSON.parse(agent.tools);
-		this.model = agent.model;
 		this.schedules = JSON.parse(agent.schedules);
 		this.last_run_at = agent.last_run_at;
 		this.last_run_status = agent.last_run_status as AgentRunStatus | null;

@@ -17,7 +17,6 @@ const mock_agent = {
 	active: false,
 	system_message: null,
 	tools: '[]',
-	model: null,
 	schedules: '["10 * * * *"]',
 	last_run_at: null,
 	last_run_status: null,

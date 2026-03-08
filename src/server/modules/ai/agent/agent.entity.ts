@@ -27,9 +27,6 @@ export class Agent {
 	@Column({type: 'text', default: '[]'})
 	tools: string;
 
-	@Column({type: 'text', nullable: true})
-	model: string | null;
-
 	@Column({type: 'text', default: '[]'})
 	schedules: string;
 

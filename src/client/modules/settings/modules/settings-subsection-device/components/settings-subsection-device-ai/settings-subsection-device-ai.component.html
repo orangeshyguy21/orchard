@@ -74,6 +74,9 @@
 									@if (ai_model.openrouter) {
 										<div>family:</div>
 										<div>modality:</div>
+										<div>prompt price:</div>
+										<div>completion price:</div>
+										<div>max completion:</div>
 									}
 								</div>
 								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color text-nowrap">
@@ -88,6 +91,9 @@
 									@if (ai_model.openrouter) {
 										<div>{{ ai_model.openrouter.family }}</div>
 										<div>{{ ai_model.openrouter.modality }}</div>
+										<div>${{ ai_model.openrouter.pricing_prompt }}/tok</div>
+										<div>${{ ai_model.openrouter.pricing_completion }}/tok</div>
+										<div>{{ ai_model.openrouter.max_completion_tokens | number }}</div>
 									}
 								</div>
 							</div>

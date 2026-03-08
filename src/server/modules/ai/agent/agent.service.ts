@@ -50,7 +50,6 @@ export class AgentService implements OnModuleInit {
 				active: false,
 				system_message: null,
 				tools: '[]',
-				model: null,
 				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
@@ -208,7 +207,7 @@ export class AgentService implements OnModuleInit {
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,
-		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'system_message' | 'tools' | 'model' | 'schedules'>>,
+		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'system_message' | 'tools' | 'schedules'>>,
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);

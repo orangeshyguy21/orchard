@@ -51,13 +51,12 @@ export class AiAgentResolver {
 		@Args('description', {nullable: true}) description: string,
 		@Args('active', {nullable: true}) active: boolean,
 		@Args('system_message', {nullable: true}) system_message: string,
-		@Args('model', {nullable: true}) model: string,
 		@Args('tools', {type: () => [String], nullable: true}) tools: string[],
 		@Args('schedules', {type: () => [String], nullable: true}) schedules: string[],
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_update }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, system_message, model, tools, schedules});
+		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, system_message, tools, schedules});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
