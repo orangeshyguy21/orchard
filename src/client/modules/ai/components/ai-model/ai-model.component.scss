@@ -14,7 +14,7 @@
 	@extend %overflow-hidden;
 	@extend %p-0-5;
 	width: 420px;
-    height: 24rem;
+	height: 24rem;
 
 	&.mobile {
 		width: 100vw;
@@ -30,7 +30,6 @@
 	@extend %flex-grow;
 	@extend %overflow-y-auto;
 }
-
 
 .ai-vendor-logo {
 	@extend %flex;

@@ -100,5 +100,4 @@ export class ApiLightningAnalyticsService {
 				return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date);
 			});
 	}
-
 }

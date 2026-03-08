@@ -14,7 +14,13 @@ import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import {AiChatResponse, AiHealthResponse, AiModelResponse, AiAssistantResponse, AiChatAbortResponse} from '@client/modules/ai/types/ai.types';
+import {
+	AiChatResponse,
+	AiHealthResponse,
+	AiModelResponse,
+	AiAssistantResponse,
+	AiChatAbortResponse,
+} from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
@@ -232,7 +238,12 @@ export class AiService {
 		return [...models].sort((a, b) => getSize(a) - getSize(b))[0];
 	}
 
-	private createConversation(id: string, assistant: AiAssistant, content: string | null, context: string | undefined): AiChatConversation {
+	private createConversation(
+		id: string,
+		assistant: AiAssistant,
+		content: string | null,
+		context: string | undefined,
+	): AiChatConversation {
 		const messages = [];
 		if (context)
 			messages.push({
@@ -247,7 +258,12 @@ export class AiService {
 		return new AiChatConversation(id, messages_obj, assistant);
 	}
 
-	private continueConversation(id: string, assistant: AiAssistant, content: string | null, context: string | undefined): AiChatConversation {
+	private continueConversation(
+		id: string,
+		assistant: AiAssistant,
+		content: string | null,
+		context: string | undefined,
+	): AiChatConversation {
 		if (!this.conversation_cache) throw new Error('Conversation cache not found');
 		if (context) {
 			const last_message = this.conversation_cache.messages[this.conversation_cache.messages.length - 1];

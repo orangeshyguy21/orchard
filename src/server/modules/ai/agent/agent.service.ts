@@ -209,8 +209,7 @@ export class AgentService implements OnModuleInit {
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 
 		const base_message =
-			agent.system_message ??
-			'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.';
+			agent.system_message ?? 'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.';
 		const system_message: AiMessage = {
 			role: AiMessageRole.SYSTEM,
 			content: `${base_message}\n\n${this.buildRuntimeContext(agent)}`,
@@ -227,10 +226,7 @@ export class AgentService implements OnModuleInit {
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
-					const tool_result = await this.toolExecutor.executeTool(
-						tool_call.function.name,
-						tool_call.function.arguments,
-					);
+					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments);
 					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result)});
 				}
 			} else {

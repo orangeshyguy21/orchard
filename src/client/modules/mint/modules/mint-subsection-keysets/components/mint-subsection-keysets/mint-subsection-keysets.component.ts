@@ -169,7 +169,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	private getAssistantSubscription(): Subscription {
 		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
-			this.keysets_rotation ? this.hireRotationAssistant(AiAssistant.MintKeysetRotation, content) : this.hireAnalyticsAssistant(assistant, content);
+			this.keysets_rotation
+				? this.hireRotationAssistant(AiAssistant.MintKeysetRotation, content)
+				: this.hireAnalyticsAssistant(assistant, content);
 		});
 	}
 

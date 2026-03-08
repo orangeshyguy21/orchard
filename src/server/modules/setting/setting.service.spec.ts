@@ -205,18 +205,13 @@ describe('SettingService', () => {
 				value_type: SettingValue.BOOLEAN,
 				description: 'Whether AI is enabled',
 			};
-			mock_repository.findOne
-				.mockResolvedValueOnce(mock_setting)
-				.mockResolvedValueOnce(mock_ai_setting);
+			mock_repository.findOne.mockResolvedValueOnce(mock_setting).mockResolvedValueOnce(mock_ai_setting);
 			mock_repository.save
 				.mockResolvedValueOnce({...mock_setting, value: 'false'})
 				.mockResolvedValueOnce({...mock_ai_setting, value: 'true'});
 
 			// act
-			const result = await service.updateSettings(
-				[SettingKey.BITCOIN_ORACLE, SettingKey.AI_ENABLED],
-				['false', 'true'],
-			);
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE, SettingKey.AI_ENABLED], ['false', 'true']);
 
 			// assert
 			expect(result).toHaveLength(2);

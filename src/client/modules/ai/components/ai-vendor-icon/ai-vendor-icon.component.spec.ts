@@ -25,6 +25,6 @@ describe('AiVendorIconComponent', () => {
 	});
 
 	it('should default size to 2rem', () => {
-		expect(component.dimensions()).toBe('2rem');
+		expect(component.size()).toBe('2rem');
 	});
 });

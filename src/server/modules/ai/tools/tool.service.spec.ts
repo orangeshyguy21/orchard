@@ -49,10 +49,7 @@ describe('ToolService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [
-				ToolService,
-				{provide: GraphQLSchemaHost, useValue: {schema: mock_schema}},
-			],
+			providers: [ToolService, {provide: GraphQLSchemaHost, useValue: {schema: mock_schema}}],
 		}).compile();
 		service = module.get<ToolService>(ToolService);
 	});
@@ -64,18 +61,18 @@ describe('ToolService', () => {
 	describe('getToolSchemas', () => {
 		it('returns schemas for registered tools', () => {
 			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS]);
-			expect(schemas).toHaveLength(1);
+			expect(schemas.length).toEqual(1);
 			expect(schemas[0].function.name).toBe(AgentFunctionName.GET_LIGHTNING_ANALYTICS);
 		});
 
 		it('returns empty array for unknown tool names', () => {
 			const schemas = service.getToolSchemas(['UNKNOWN_TOOL']);
-			expect(schemas).toHaveLength(0);
+			expect(schemas.length).toEqual(0);
 		});
 
 		it('filters out unknown names from mixed input', () => {
 			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS, 'UNKNOWN']);
-			expect(schemas).toHaveLength(1);
+			expect(schemas.length).toEqual(1);
 		});
 	});
 

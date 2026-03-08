@@ -133,9 +133,9 @@ describe('ApiSettingService', () => {
 			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.SettingError});
 
 			// act & assert
-			await expect(
-				apiSettingService.updateSettings('ERROR_TAG', [SettingKey.BITCOIN_ORACLE], ['invalid']),
-			).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(apiSettingService.updateSettings('ERROR_TAG', [SettingKey.BITCOIN_ORACLE], ['invalid'])).rejects.toBeInstanceOf(
+				OrchardApiError,
+			);
 			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.SettingError,
 			});

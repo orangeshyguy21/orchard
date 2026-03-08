@@ -1,17 +1,18 @@
 <div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
-		<orc-settings-subsection-app-ai-integration 
-            [ai_enabled]="ai_enabled()"
-            [ai_health]="ai_health()"
-            [form_group]="form_group()"
-            [selected_vendor]="form_group().get('vendor')?.value"
-            [device_type]="device_type()"
-            [invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
-            [dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
-            (update)="update.emit()"
-            (submit)="submit.emit('ollama_api')"
-            (cancel)="cancel.emit('ollama_api')">
-        </orc-settings-subsection-app-ai-integration>
+		<orc-settings-subsection-app-ai-integration
+			[ai_enabled]="ai_enabled()"
+			[ai_health]="ai_health()"
+			[form_group]="form_group()"
+			[selected_vendor]="form_group().get('vendor')?.value"
+			[device_type]="device_type()"
+			[invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
+			[dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
+			(update)="update.emit()"
+			(submit)="submit.emit('ollama_api')"
+			(cancel)="cancel.emit('ollama_api')"
+		>
+		</orc-settings-subsection-app-ai-integration>
 	</mat-card-content>
 </mat-card>

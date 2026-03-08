@@ -12,7 +12,15 @@ import {AgentModule} from '@server/modules/ai/agent/agent.module';
 import {TaskService} from './task.service';
 
 @Module({
-	imports: [AuthModule, SettingModule, BitcoinUTXOracleModule, BitcoinRpcModule, LightningAnalyticsModule, CashuMintAnalyticsModule, AgentModule],
+	imports: [
+		AuthModule,
+		SettingModule,
+		BitcoinUTXOracleModule,
+		BitcoinRpcModule,
+		LightningAnalyticsModule,
+		CashuMintAnalyticsModule,
+		AgentModule,
+	],
 	providers: [TaskService],
 })
 export class TaskModule {}

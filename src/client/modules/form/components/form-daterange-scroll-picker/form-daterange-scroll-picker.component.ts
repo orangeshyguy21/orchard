@@ -146,7 +146,7 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		}
 	}
 
-    ngOnDestroy(): void {
+	ngOnDestroy(): void {
 		this.destroyOverlay();
 	}
 }

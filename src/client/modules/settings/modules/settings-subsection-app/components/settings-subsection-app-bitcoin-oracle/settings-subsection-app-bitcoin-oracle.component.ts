@@ -36,10 +36,10 @@ export class SettingsSubsectionAppBitcoinOracleComponent {
 
 	public help_status = signal<boolean>(false);
 
-    public derived_status = computed(() => {
-        if( !this.oracle_running() ) return null;
-        return this.oracle_status();
-    });
+	public derived_status = computed(() => {
+		if (!this.oracle_running()) return null;
+		return this.oracle_status();
+	});
 
 	/** Toggles the oracle form control and emits an update */
 	public toggleOracle(status: boolean): void {

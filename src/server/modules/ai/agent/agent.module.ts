@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {Module} from '@nestjs/common';
 /* Vendor Dependencies */
+import {GraphQLSchemaHost} from '@nestjs/graphql';
 import {TypeOrmModule} from '@nestjs/typeorm';
 /* Application Dependencies */
 import {AiModule} from '@server/modules/ai/ai.module';
@@ -13,7 +14,7 @@ import {ToolService} from '@server/modules/ai/tools/tool.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Agent, AgentRun]), AiModule, SettingModule],
-	providers: [AgentService, ToolService],
+	providers: [AgentService, ToolService, GraphQLSchemaHost],
 	exports: [AgentService],
 })
 export class AgentModule {}

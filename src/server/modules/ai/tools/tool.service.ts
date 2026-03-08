@@ -7,7 +7,15 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AiTool} from '@server/modules/ai/ai.types';
 import {AgentFunctionName} from '@server/modules/ai/agent/agent.enums';
-import {GetBitcoinBlockchainInfoTool, GetBitcoinNetworkInfoTool, GetHealthTool, GetLightningAnalyticsTool, GetLightningInfoTool, GetMintAnalyticsTool, GetMintInfoTool} from '@server/modules/ai/agent/tools';
+import {
+	GetBitcoinBlockchainInfoTool,
+	GetBitcoinNetworkInfoTool,
+	GetHealthTool,
+	GetLightningAnalyticsTool,
+	GetLightningInfoTool,
+	GetMintAnalyticsTool,
+	GetMintInfoTool,
+} from '@server/modules/ai/agent/tools';
 /* Local Dependencies */
 import {AiToolResult, AiToolEntry} from './tool.types';
 
@@ -47,9 +55,7 @@ export class ToolService {
 
 	/** Get LLM-compatible tool schemas for a list of tool names */
 	public getToolSchemas(tool_names: string[]): AiTool[] {
-		return tool_names
-			.map((name) => this.registry.get(name)?.tool)
-			.filter((t): t is AiTool => t !== undefined);
+		return tool_names.map((name) => this.registry.get(name)?.tool).filter((t): t is AiTool => t !== undefined);
 	}
 
 	/** Get all registered tool names */

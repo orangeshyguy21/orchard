@@ -1,4 +1,5 @@
 /* Vendor Dependencies */
+import {ConfigService} from '@nestjs/config';
 import {Test, TestingModule} from '@nestjs/testing';
 import {getRepositoryToken} from '@nestjs/typeorm';
 import {SchedulerRegistry} from '@nestjs/schedule';
@@ -54,6 +55,10 @@ describe('AgentService', () => {
 		executeTool: jest.fn().mockResolvedValue({success: true, data: {}}),
 	};
 
+	const mock_config_service = {
+		get: jest.fn().mockReturnValue(null),
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -62,6 +67,7 @@ describe('AgentService', () => {
 				{provide: getRepositoryToken(AgentRun), useValue: mock_run_repo},
 				{provide: SchedulerRegistry, useValue: mock_scheduler_registry},
 				{provide: AiService, useValue: mock_ai_service},
+				{provide: ConfigService, useValue: mock_config_service},
 				{provide: SettingService, useValue: mock_setting_service},
 				{provide: ToolService, useValue: mock_tool_executor},
 			],

@@ -7,14 +7,14 @@
 	@extend %flex-justify-center;
 	width: var(--icon-size, 2rem);
 	height: var(--icon-size, 2rem);
-    @extend %orc-corner-full;
-    @extend %orc-surface-container-bg;
+	@extend %orc-corner-full;
+	@extend %orc-surface-container-bg;
 	flex-shrink: 0;
-    @extend %overflow-hidden;
+	@extend %overflow-hidden;
 
 	img {
 		object-fit: contain;
-        width: var(--icon-size, 2rem);
-        height: var(--icon-size, 2rem);
+		width: var(--icon-size, 2rem);
+		height: var(--icon-size, 2rem);
 	}
 }

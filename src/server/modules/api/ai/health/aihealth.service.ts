@@ -29,7 +29,7 @@ export class AiHealthService {
 		try {
 			const vendor_setting = await this.settingService.getSetting(SettingKey.AI_VENDOR);
 			const vendor = vendor_setting?.value ?? '';
-            if (!vendor) return new OrchardAiHealth({status: false, message: 'AI vendor is not configured', vendor});
+			if (!vendor) return new OrchardAiHealth({status: false, message: 'AI vendor is not configured', vendor});
 			if (vendor === 'openrouter') return await this.checkOpenRouter(vendor);
 			return await this.checkOllama(vendor);
 		} catch (error) {
@@ -49,7 +49,7 @@ export class AiHealthService {
 		const api_setting = await this.settingService.getSetting(SettingKey.AI_OLLAMA_API);
 		const base_url = api_setting?.value ?? '';
 
-        if (!base_url) {
+		if (!base_url) {
 			return new OrchardAiHealth({
 				status: false,
 				message: 'Ollama API endpoint is not configured',

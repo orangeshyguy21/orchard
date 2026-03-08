@@ -14,30 +14,30 @@ import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppAiComponent {
-    private readonly aiService = inject(AiService);
+	private readonly aiService = inject(AiService);
 
 	public ai_enabled = input.required<boolean>();
 	public form_group = input.required<FormGroup>();
-    public device_type = input.required<DeviceType>();
+	public device_type = input.required<DeviceType>();
 
-    public update = output<void>();
-    public submit = output<string>();
-    public cancel = output<string>();
+	public update = output<void>();
+	public submit = output<string>();
+	public cancel = output<string>();
 
-    public ai_health = signal<AiHealth | null>(null);
+	public ai_health = signal<AiHealth | null>(null);
 
-    constructor() {
-        effect(() => {
-            const ai_enabled = this.ai_enabled();
-            if (ai_enabled) this.getAiHealth();
-        });
-    }
+	constructor() {
+		effect(() => {
+			const ai_enabled = this.ai_enabled();
+			if (ai_enabled) this.getAiHealth();
+		});
+	}
 
-    private getAiHealth(): void {
-        this.aiService.getAiHealth().subscribe({
-            next: (health: AiHealth) => {
-                this.ai_health.set(health);
-            },
-        });
-    }
+	private getAiHealth(): void {
+		this.aiService.getAiHealth().subscribe({
+			next: (health: AiHealth) => {
+				this.ai_health.set(health);
+			},
+		});
+	}
 }

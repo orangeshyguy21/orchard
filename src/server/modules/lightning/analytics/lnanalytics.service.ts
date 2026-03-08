@@ -638,9 +638,15 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 		// BTC metrics
 		const btc_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
-			{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsByStatus(payments, 'succeeded', null, asset_to_group, true)},
+			{
+				metric: LightningAnalyticsMetric.payments_out,
+				amount: this.sumPaymentsByStatus(payments, 'succeeded', null, asset_to_group, true),
+			},
 			{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsByStatus(payments, 'failed', null, asset_to_group)},
-			{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsByStatus(payments, 'pending', null, asset_to_group)},
+			{
+				metric: LightningAnalyticsMetric.payments_pending,
+				amount: this.sumPaymentsByStatus(payments, 'pending', null, asset_to_group),
+			},
 		];
 		for (const {metric, amount} of btc_metrics) {
 			await this.upsertMetric(repo, {node_pubkey, group_key: '', unit: 'msat', metric, hour, amount});
@@ -649,9 +655,18 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		// Asset metrics per group
 		for (const group_key of Array.from(this.collectGroupKeys(payments, asset_to_group))) {
 			const asset_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
-				{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsByStatus(payments, 'succeeded', group_key, asset_to_group, true)},
-				{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsByStatus(payments, 'failed', group_key, asset_to_group)},
-				{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsByStatus(payments, 'pending', group_key, asset_to_group)},
+				{
+					metric: LightningAnalyticsMetric.payments_out,
+					amount: this.sumPaymentsByStatus(payments, 'succeeded', group_key, asset_to_group, true),
+				},
+				{
+					metric: LightningAnalyticsMetric.payments_failed,
+					amount: this.sumPaymentsByStatus(payments, 'failed', group_key, asset_to_group),
+				},
+				{
+					metric: LightningAnalyticsMetric.payments_pending,
+					amount: this.sumPaymentsByStatus(payments, 'pending', group_key, asset_to_group),
+				},
 			];
 			for (const {metric, amount} of asset_metrics) {
 				await this.upsertMetric(repo, {

@@ -25,7 +25,7 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 						redirectTo: 'app',
 						pathMatch: 'full',
 					},
-                    {
+					{
 						path: 'app',
 						loadChildren: () =>
 							import('@client/modules/settings/modules/settings-subsection-app/settings-subsection-app.module').then(

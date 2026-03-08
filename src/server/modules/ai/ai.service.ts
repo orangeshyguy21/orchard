@@ -50,12 +50,7 @@ export class AiService {
 	 * @param {AbortSignal} [signal] - Optional abort signal
 	 * @returns {AsyncGenerator<AiStreamChunk>} Typed stream chunks
 	 */
-	async *streamRaw(
-		model: string,
-		messages: AiMessage[],
-		tools: AiTool[],
-		signal?: AbortSignal,
-	): AsyncGenerator<AiStreamChunk> {
+	async *streamRaw(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): AsyncGenerator<AiStreamChunk> {
 		const vendor = await this.getVendor();
 		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
 		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;

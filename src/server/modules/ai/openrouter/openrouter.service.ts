@@ -41,7 +41,7 @@ export class OpenRouterService implements AiVendor {
 		const api_key = await this.getApiKey();
 		return {
 			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${api_key}`,
+			Authorization: `Bearer ${api_key}`,
 		};
 	}
 

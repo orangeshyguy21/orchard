@@ -115,7 +115,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-        this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
+		this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
 		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
 		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
 		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
@@ -323,9 +323,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event.set(event_data);
 			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
-                this.ai_model.set(this.settingDeviceService.getModel());
-                this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
-                this.getModels();
+				this.ai_model.set(this.settingDeviceService.getModel());
+				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+				this.getModels();
 			}
 		});
 	}

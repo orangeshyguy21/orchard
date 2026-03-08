@@ -1,5 +1,17 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, ElementRef, input, output, signal, computed, viewChild, ViewContainerRef, TemplateRef, OnDestroy} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	ElementRef,
+	input,
+	output,
+	signal,
+	computed,
+	viewChild,
+	ViewContainerRef,
+	TemplateRef,
+	OnDestroy,
+} from '@angular/core';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
@@ -64,7 +76,7 @@ export class AiModelComponent implements OnDestroy {
 				if (a_provider !== b_provider) return a_provider.localeCompare(b_provider);
 				return a.name.localeCompare(b.name);
 			})
-			.map((m) => (m.openrouter ? { ...m, name: m.name.replace(/^[^:]+:\s*/, '') } : m));
+			.map((m) => (m.openrouter ? {...m, name: m.name.replace(/^[^:]+:\s*/, '')} : m));
 	});
 
 	public readonly displayed_models = computed(() => {
