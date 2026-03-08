@@ -6,6 +6,29 @@ import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 	GraphQL Queries
 ******************************************************** */
 
+const GET_LIGHTNING_INFO_QUERY = `
+	query GetLightningInfo {
+		lightning_info {
+			version
+			identity_pubkey
+			alias
+			color
+			num_pending_channels
+			num_active_channels
+			num_inactive_channels
+			num_peers
+			block_height
+			synced_to_chain
+			synced_to_graph
+			chains {
+				chain
+				network
+			}
+			uris
+		}
+	}
+`;
+
 const GET_LIGHTNING_ANALYTICS_QUERY = `
 	query GetLightningAnalytics(
 		$date_start: UnixTimestamp,
@@ -82,5 +105,26 @@ export const GetLightningAnalyticsTool: AiToolEntry = {
 	},
 	query: GET_LIGHTNING_ANALYTICS_QUERY,
 	throttle_max_calls: 15,
+	throttle_window_seconds: 60,
+};
+
+/** Fetches lightning node identity and status information */
+export const GetLightningInfoTool: AiToolEntry = {
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentFunctionName.GET_LIGHTNING_INFO,
+			description:
+				'Retrieve information about the connected lightning node. ' +
+				'Returns the node pubkey, alias, version, channel counts, ' +
+				'sync status, network, and public URIs.',
+			parameters: {
+				type: 'object',
+				properties: {},
+			},
+		},
+	},
+	query: GET_LIGHTNING_INFO_QUERY,
+	throttle_max_calls: 10,
 	throttle_window_seconds: 60,
 };

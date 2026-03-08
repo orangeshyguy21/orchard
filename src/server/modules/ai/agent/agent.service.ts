@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
@@ -32,6 +33,7 @@ export class AgentService implements OnModuleInit {
 		private runRepository: Repository<AgentRun>,
 		private schedulerRegistry: SchedulerRegistry,
 		private aiService: AiService,
+		private configService: ConfigService,
 		private settingService: SettingService,
 		private toolExecutor: ToolService,
 	) {}
@@ -206,11 +208,12 @@ export class AgentService implements OnModuleInit {
 		const tool_names: string[] = JSON.parse(agent.tools);
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 
+		const base_message =
+			agent.system_message ??
+			'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.';
 		const system_message: AiMessage = {
 			role: AiMessageRole.SYSTEM,
-			content:
-				agent.system_message ??
-				'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.',
+			content: `${base_message}\n\n${this.buildRuntimeContext(agent)}`,
 		};
 
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
@@ -271,6 +274,78 @@ export class AgentService implements OnModuleInit {
 		}
 
 		return final_chunk;
+	}
+
+	/* *******************************************************
+		Runtime Context
+	******************************************************** */
+
+	/** Builds a runtime context string to append to agent system messages */
+	private buildRuntimeContext(agent: Agent): string {
+		const now = DateTime.utc();
+		const version = this.configService.get<string>('mode.version');
+
+		const services: string[] = [];
+		const bitcoin = this.configService.get<string>('bitcoin.type');
+		const lightning = this.configService.get<string>('lightning.type');
+		const mint = this.configService.get<string>('cashu.type');
+		if (bitcoin) services.push(`bitcoin (${bitcoin})`);
+		if (lightning) services.push(`lightning (${lightning})`);
+		if (mint) services.push(`mint (${mint})`);
+		const schedules: string[] = JSON.parse(agent.schedules);
+		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s)).join('; ') : 'on-demand only';
+
+		return [
+			'[Runtime Context]',
+			`Current time: ${now.toISO()} (unix: ${now.toUnixInteger()})`,
+			`App version: ${version}`,
+			`Configured services: ${services.length ? services.join(', ') : 'none'}`,
+			`Schedule: ${cadence}`,
+		].join('\n');
+	}
+
+	/**
+	 * Converts a cron expression into a cadence description the agent can reason about.
+	 * Focuses on the interval between runs so the agent knows what time window to analyze.
+	 */
+	private describeCadence(cron: string): string {
+		const parts = cron.trim().split(/\s+/);
+		if (parts.length !== 5) return `custom (${cron})`;
+		const [minute, hour, day_of_month, _month, day_of_week] = parts;
+
+		/* Sub-hourly */
+		if (hour === '*' && minute.startsWith('*/')) {
+			const mins = parseInt(minute.slice(2), 10);
+			return `every ${mins} minutes — focus on the last ${mins} minutes of activity`;
+		}
+
+		/* Hourly */
+		if (hour === '*') {
+			return 'every hour — focus on the last hour of activity';
+		}
+
+		/* Every N hours */
+		if (hour.startsWith('*/')) {
+			const hrs = parseInt(hour.slice(2), 10);
+			return `every ${hrs} hours — focus on the last ${hrs} hours of activity`;
+		}
+
+		/* Monthly */
+		if (day_of_month !== '*' && day_of_week === '*') {
+			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 30 days of activity`;
+		}
+
+		/* Weekly */
+		if (day_of_month === '*' && day_of_week !== '*') {
+			return 'weekly — focus on the last 7 days of activity';
+		}
+
+		/* Daily */
+		if (day_of_month === '*' && day_of_week === '*') {
+			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 24 hours of activity`;
+		}
+
+		return `custom (${cron})`;
 	}
 
 	/* *******************************************************

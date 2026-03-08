@@ -7,7 +7,7 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AiTool} from '@server/modules/ai/ai.types';
 import {AgentFunctionName} from '@server/modules/ai/agent/agent.enums';
-import {GetLightningAnalyticsTool} from '@server/modules/ai/agent/tools';
+import {GetBitcoinBlockchainInfoTool, GetBitcoinNetworkInfoTool, GetHealthTool, GetLightningAnalyticsTool, GetLightningInfoTool, GetMintAnalyticsTool, GetMintInfoTool} from '@server/modules/ai/agent/tools';
 /* Local Dependencies */
 import {AiToolResult, AiToolEntry} from './tool.types';
 
@@ -19,7 +19,13 @@ export class ToolService {
 	private readonly parsed_queries = new Map<string, DocumentNode>();
 
 	constructor(private readonly schemaHost: GraphQLSchemaHost) {
+		this.register(AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
+		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
+		this.register(AgentFunctionName.GET_HEALTH, GetHealthTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS, GetLightningAnalyticsTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_INFO, GetLightningInfoTool);
+		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
+		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
 	}
 
 	/* *******************************************************
