@@ -3,33 +3,31 @@
 		<div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
 			<div class="flex flex-items-start flex-gap-2 flex-wrap">
 				<div class="flex-1 flex flex-items-start flex-justify-between flex-column">
-					<form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="flex flex-row flex-gap-0-5">
-						<div class="orc-small-form-field-wrapper">
-							<mat-form-field hideRequiredMarker="true" class="w-full">
-								<mat-label>Agent model</mat-label>
-								<input
-									type="text"
-									placeholder="Select model"
-									aria-label="Model"
-									matInput
-									[formControl]="model_control"
-									[matAutocomplete]="auto"
-								/>
-								<mat-autocomplete #auto="matAutocomplete">
-									@for (option of filtered_options | async; track option.model) {
-										<mat-option [value]="option.model">
-											<div class="flex flex-items-center flex-gap-1">
-												<div class="orc-outline-color w-min-3">{{ option.ollama?.parameter_size || option.openrouter?.family }}</div>
-												<div>{{ option.name }}</div>
-											</div>
-										</mat-option>
-									}
-								</mat-autocomplete>
-								<mat-error>
-									<orc-form-error [errors]="model_control.errors">Invalid model</orc-form-error>
-								</mat-error>
-							</mat-form-field>
-						</div>
+					<form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="w-full flex flex-row flex-gap-0-5">
+                        <mat-form-field hideRequiredMarker="true" class="w-full">
+                            <mat-label>Agent model</mat-label>
+                            <input
+                                type="text"
+                                placeholder="Select model"
+                                aria-label="Model"
+                                matInput
+                                [formControl]="model_control"
+                                [matAutocomplete]="auto"
+                            />
+                            <mat-autocomplete #auto="matAutocomplete">
+                                @for (option of filtered_options | async; track option.model) {
+                                    <mat-option [value]="option.model">
+                                        <div class="flex flex-items-center flex-gap-1">
+                                            <orc-ai-vendor-icon [vendor]="option.openrouter?.family || 'ollama'" [size]="'2rem'"></orc-ai-vendor-icon>
+                                            <div>{{ option.name }}</div>
+                                        </div>
+                                    </mat-option>
+                                }
+                            </mat-autocomplete>
+                            <mat-error>
+                                <orc-form-error [errors]="model_control.errors">Invalid model</orc-form-error>
+                            </mat-error>
+                        </mat-form-field>
 						<div class="p-t-0-5">
 							<button
 								type="button"
