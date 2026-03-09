@@ -177,11 +177,11 @@ export class ApiLightningAnalyticsService {
 		date_start?: number,
 	): OrchardLightningAnalyticsMetric[] {
 		if (interval === AnalyticsInterval.hour) {
-			return data.map((d) => new OrchardLightningAnalyticsMetric(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date));
+			return data.map((d) => new OrchardLightningAnalyticsMetric(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, d.count));
 		}
 
 		const tz = timezone ?? 'UTC';
-		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number};
+		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number; count: number};
 
 		const buckets = data.reduce((acc, d) => {
 			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
@@ -190,15 +190,16 @@ export class ApiLightningAnalyticsService {
 
 			if (existing) {
 				existing.amount += BigInt(d.amount);
+				existing.count += d.count;
 			} else {
-				acc.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date});
+				acc.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date, count: d.count});
 			}
 			return acc;
 		}, new Map<string, Bucket>());
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
-			.map((b) => new OrchardLightningAnalyticsMetric(b.unit, b.metric, b.amount.toString(), b.date));
+			.map((b) => new OrchardLightningAnalyticsMetric(b.unit, b.metric, b.amount.toString(), b.date, b.count));
 	}
 
 	/** Wraps errors in OrchardApiError */

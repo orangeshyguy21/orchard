@@ -324,6 +324,7 @@ export class AgentService implements OnModuleInit {
 
 		return [
 			'[Runtime Context]',
+			`Agent ID: ${agent.id}`,
 			`Current time: ${now.toISO()} (unix: ${now.toUnixInteger()})`,
 			`App version: ${version}`,
 			`Configured services: ${services.length ? services.join(', ') : 'none'}`,
@@ -389,12 +390,13 @@ export class AgentService implements OnModuleInit {
 		return this.agentRepository.findOne({where: {id}});
 	}
 
-	/** Get runs for an agent, most recent first, capped at 100 */
-	public async getAgentRuns(agent_id: string): Promise<AgentRun[]> {
+	/** Get runs for an agent, most recent first, with pagination */
+	public async getAgentRuns(agent_id: string, page = 0, page_size = 20): Promise<AgentRun[]> {
 		return this.runRepository.find({
 			where: {agent: {id: agent_id}},
 			order: {started_at: 'DESC'},
-			take: 100,
+			skip: page * page_size,
+			take: page_size,
 		});
 	}
 

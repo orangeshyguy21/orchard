@@ -27,8 +27,8 @@ export class OrchardAgent {
 	@Field({nullable: true})
 	system_message: string | null;
 
-	@Field(() => [String])
-	tools: string[];
+	@Field(() => [String], {nullable: true})
+	tools: string[] | null;
 
 	@Field(() => [String])
 	schedules: string[];

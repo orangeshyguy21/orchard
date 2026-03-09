@@ -111,6 +111,8 @@ const ACTIVITY_MONITOR_OPEN = [
 	'',
 	'## Rules',
 	'',
+	'- **Start every run** by calling `GET_PAST_RUNS` with your agent ID to review your previous findings.',
+	'- **Do not re-notify** about issues you already reported in a recent run — only notify if the situation has changed, escalated, or resolved.',
 	'- Your **system context** tells you which services are configured — only use tools relevant to those services.',
 	'- **Skip** unconfigured services entirely — do not mention them.',
 	'- Be **concise and actionable**. Focus on what matters — skip noise.',
@@ -152,6 +154,7 @@ export const AGENTS = {
 			'Surfaces issues and anomalies the operator should know about.',
 		system_message: ACTIVITY_MONITOR_OPEN,
 		tools: [
+			AgentFunctionName.GET_PAST_RUNS,
 			AgentFunctionName.GET_URL_HEALTH,
 			AgentFunctionName.GET_PORT_HEALTH,
 			AgentFunctionName.GET_LIGHTNING_INFO,

@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
+import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
@@ -33,10 +33,14 @@ export class AiAgentResolver {
 	}
 
 	@Query(() => [OrchardAgentRun])
-	async ai_agent_runs(@Args('agent_id') agent_id: string): Promise<OrchardAgentRun[]> {
+	async ai_agent_runs(
+		@Args('agent_id') agent_id: string,
+		@Args('page', {type: () => Int, nullable: true, defaultValue: 0}) page: number,
+		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 20}) page_size: number,
+	): Promise<OrchardAgentRun[]> {
 		const tag = 'GET { ai_agent_runs }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.getAgentRuns(tag, agent_id);
+		return await this.aiAgentService.getAgentRuns(tag, agent_id, page, page_size);
 	}
 
 	/* *******************************************************
