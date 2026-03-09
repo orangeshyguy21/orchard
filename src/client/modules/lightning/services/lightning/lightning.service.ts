@@ -24,7 +24,7 @@ import {
 	LightningChannelsResponse,
 	LightningClosedChannelsResponse,
 	LightningRequestResponse,
-	LightningAnalyticsResponse,
+	LightningAnalyticsLocalBalanceResponse,
 	LightningAnalyticsBackfillStatusResponse,
 	LightningAnalyticsArgs,
 } from '@client/modules/lightning/types/lightning.types';
@@ -38,7 +38,7 @@ import {
 	LIGHTNING_REQUEST_QUERY,
 	LIGHTNING_CHANNELS_QUERY,
 	LIGHTNING_CLOSED_CHANNELS_QUERY,
-	LIGHTNING_ANALYTICS_QUERY,
+	LIGHTNING_ANALYTICS_LOCAL_BALANCE_QUERY,
 	LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY,
 } from './lightning.queries';
 
@@ -263,11 +263,11 @@ export class LightningService {
 		);
 	}
 
-	public loadLightningAnalytics(args: LightningAnalyticsArgs): Observable<LightningAnalytic[]> {
+	public loadLightningAnalyticsLocalBalance(args: LightningAnalyticsArgs): Observable<LightningAnalytic[]> {
 		if (args.interval === AnalyticsInterval.Custom) {
-			return this.loadGenericLightningAnalytics(args, this.lightning_analytics_pre_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
+			return this.loadGenericLocalBalance(args, this.lightning_analytics_pre_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
 		}
-		return this.loadGenericLightningAnalytics(args, this.lightning_analytics_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
+		return this.loadGenericLocalBalance(args, this.lightning_analytics_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
 	}
 
 	public loadLightningAnalyticsBackfillStatus(): Observable<LightningAnalyticsBackfillStatus> {
@@ -286,7 +286,7 @@ export class LightningService {
 		);
 	}
 
-	private loadGenericLightningAnalytics(
+	private loadGenericLocalBalance(
 		args: LightningAnalyticsArgs,
 		subject: BehaviorSubject<LightningAnalytic[] | null>,
 		cache_key: string,
@@ -295,12 +295,12 @@ export class LightningService {
 			return of(subject.value);
 		}
 
-		const query = getApiQuery(LIGHTNING_ANALYTICS_QUERY, args);
+		const query = getApiQuery(LIGHTNING_ANALYTICS_LOCAL_BALANCE_QUERY, args);
 
-		return this.http.post<OrchardRes<LightningAnalyticsResponse>>(this.apiService.api, query).pipe(
+		return this.http.post<OrchardRes<LightningAnalyticsLocalBalanceResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.lightning_analytics;
+				return response.data.lightning_analytics_local_balance;
 			}),
 			map((lightning_analytics) => lightning_analytics.map((la) => new LightningAnalytic(la))),
 			tap((lightning_analytics) => {
@@ -308,7 +308,7 @@ export class LightningService {
 				subject.next(lightning_analytics);
 			}),
 			catchError((error) => {
-				console.error('Error loading lightning analytics:', error);
+				console.error('Error loading lightning analytics local balance:', error);
 				return throwError(() => error);
 			}),
 		);

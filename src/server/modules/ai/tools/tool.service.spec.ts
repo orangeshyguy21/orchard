@@ -19,27 +19,107 @@ const mock_schema = makeExecutableSchema({
 			channel_opens channel_closes
 			channel_opens_remote channel_closes_remote
 		}
+		enum MintUnit { sat msat usd eur btc }
+		enum MintAnalyticsMetric {
+			mints_amount mints_created mints_completion_time
+			melts_amount melts_created melts_completion_time
+			swaps_amount swaps_fee
+			issued_amount redeemed_amount fees_amount
+			keyset_issued keyset_redeemed
+		}
 
 		type Query {
-			lightning_analytics(
+			lightning_analytics_local_balance(
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval,
+				timezone: Timezone
+			): [LightningAnalytics!]!
+			lightning_analytics_remote_balance(
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval,
+				timezone: Timezone
+			): [LightningAnalytics!]!
+			lightning_analytics_metrics(
 				date_start: UnixTimestamp,
 				date_end: UnixTimestamp,
 				interval: AnalyticsInterval,
 				timezone: Timezone,
 				metrics: [LightningAnalyticsMetric!]
-			): [LightningAnalytic!]!
+			): [LightningAnalyticsMetric_Type!]!
+			mint_analytics_balances(
+				units: [MintUnit!],
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval
+			): [MintAnalytics!]!
+			mint_analytics_mints(
+				units: [MintUnit!],
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval
+			): [MintAnalytics!]!
+			mint_analytics_melts(
+				units: [MintUnit!],
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval
+			): [MintAnalytics!]!
+			mint_analytics_fees(
+				units: [MintUnit!],
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval
+			): [MintAnalytics!]!
+			mint_analytics_metrics(
+				units: [MintUnit!],
+				date_start: UnixTimestamp,
+				date_end: UnixTimestamp,
+				interval: AnalyticsInterval,
+				metrics: [MintAnalyticsMetric!]
+			): [MintAnalyticsMetric_Type!]!
 		}
 
-		type LightningAnalytic {
+		type LightningAnalytics {
+			unit: String!
+			amount: String!
+			date: Int!
+		}
+
+		type LightningAnalyticsMetric_Type {
 			unit: String!
 			metric: String!
 			amount: String!
 			date: Int!
+			count: Int
+		}
+
+		type MintAnalytics {
+			unit: String!
+			amount: String!
+			date: Int!
+			count: Int
+		}
+
+		type MintAnalyticsMetric_Type {
+			unit: String!
+			metric: String!
+			amount: String!
+			date: Int!
+			count: Int
 		}
 	`,
 	resolvers: {
 		Query: {
-			lightning_analytics: () => [{unit: 'msat', metric: 'invoices_in', amount: '1000', date: 1700000000}],
+			lightning_analytics_local_balance: () => [{unit: 'msat', amount: '1000', date: 1700000000}],
+			lightning_analytics_remote_balance: () => [{unit: 'msat', amount: '500', date: 1700000000}],
+			lightning_analytics_metrics: () => [{unit: 'msat', metric: 'invoices_in', amount: '1000', date: 1700000000, count: 1}],
+			mint_analytics_balances: () => [{unit: 'sat', amount: '5000', date: 1700000000, count: 10}],
+			mint_analytics_mints: () => [{unit: 'sat', amount: '3000', date: 1700000000, count: 5}],
+			mint_analytics_melts: () => [{unit: 'sat', amount: '2000', date: 1700000000, count: 3}],
+			mint_analytics_fees: () => [{unit: 'sat', amount: '100', date: 1700000000, count: 8}],
+			mint_analytics_metrics: () => [{unit: 'sat', metric: 'mints_amount', amount: '3000', date: 1700000000, count: 5}],
 		},
 	},
 });
@@ -60,9 +140,9 @@ describe('ToolService', () => {
 
 	describe('getToolSchemas', () => {
 		it('returns schemas for registered tools', () => {
-			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS]);
+			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES]);
 			expect(schemas.length).toEqual(1);
-			expect(schemas[0].function.name).toBe(AgentFunctionName.GET_LIGHTNING_ANALYTICS);
+			expect(schemas[0].function.name).toBe(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES);
 		});
 
 		it('returns empty array for unknown tool names', () => {
@@ -71,7 +151,7 @@ describe('ToolService', () => {
 		});
 
 		it('filters out unknown names from mixed input', () => {
-			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS, 'UNKNOWN']);
+			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, 'UNKNOWN']);
 			expect(schemas.length).toEqual(1);
 		});
 	});
@@ -79,7 +159,10 @@ describe('ToolService', () => {
 	describe('getRegisteredTools', () => {
 		it('returns all registered tool names', () => {
 			const tools = service.getRegisteredTools();
-			expect(tools).toContain(AgentFunctionName.GET_LIGHTNING_ANALYTICS);
+			expect(tools).toContain(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES);
+			expect(tools).toContain(AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS);
+			expect(tools).toContain(AgentFunctionName.GET_MINT_ANALYTICS);
+			expect(tools).toContain(AgentFunctionName.GET_MINT_ANALYTICS_METRICS);
 		});
 	});
 
@@ -91,7 +174,13 @@ describe('ToolService', () => {
 		});
 
 		it('executes a GraphQL-backed tool', async () => {
-			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS, {});
+			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
+			expect(result.success).toBe(true);
+			expect(result.data).toBeDefined();
+		});
+
+		it('executes the mint analytics metrics tool', async () => {
+			const result = await service.executeTool(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, {});
 			expect(result.success).toBe(true);
 			expect(result.data).toBeDefined();
 		});
@@ -100,7 +189,7 @@ describe('ToolService', () => {
 	describe('throttling', () => {
 		it('allows calls within the bucket limit', async () => {
 			for (let i = 0; i < 5; i++) {
-				const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS, {});
+				const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 				expect(result.success).toBe(true);
 			}
 		});
@@ -108,9 +197,9 @@ describe('ToolService', () => {
 		it('throttles when bucket limit is exceeded', async () => {
 			/* Lightning analytics allows 15 calls per 60s — fill the bucket */
 			for (let i = 0; i < 15; i++) {
-				await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS, {});
+				await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 			}
-			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS, {});
+			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 			expect(result.success).toBe(false);
 			expect(result.error).toContain('throttled');
 		});

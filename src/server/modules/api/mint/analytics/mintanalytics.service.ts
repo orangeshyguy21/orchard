@@ -12,8 +12,13 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics, OrchardMintAnalyticsBackfillStatus} from './mintanalytics.model';
-import {MintAnalyticsApiArgs} from './mintanalytics.interfaces';
+import {
+	OrchardMintAnalytics,
+	OrchardMintAnalyticsMetric,
+	OrchardMintKeysetsAnalytics,
+	OrchardMintAnalyticsBackfillStatus,
+} from './mintanalytics.model';
+import {MintAnalyticsApiArgs, MintAnalyticsMetricsArgs} from './mintanalytics.interfaces';
 
 @Injectable()
 export class MintAnalyticsService {
@@ -38,23 +43,32 @@ export class MintAnalyticsService {
 				metrics: [MintAnalyticsMetric.issued_amount, MintAnalyticsMetric.redeemed_amount],
 				units: args.units?.map((u) => String(u)),
 			});
-			const issued = cached.filter((d) => d.metric === MintAnalyticsMetric.issued_amount);
-			const redeemed = cached.filter((d) => d.metric === MintAnalyticsMetric.redeemed_amount);
+			const non_zero = cached.filter((d) => d.amount !== '0');
+			const issued = non_zero.filter((d) => d.metric === MintAnalyticsMetric.issued_amount);
+			const redeemed = non_zero.filter((d) => d.metric === MintAnalyticsMetric.redeemed_amount);
 			const agg_issued = this.aggregateByInterval(issued, interval, args.timezone, date_start);
 			const agg_redeemed = this.aggregateByInterval(redeemed, interval, args.timezone, date_start);
 
+			const issued_map = new Map<string, bigint>();
+			for (const i of agg_issued) {
+				issued_map.set(`${i.unit}:${i.date}`, BigInt(i.amount));
+			}
 			const redeemed_map = new Map<string, bigint>();
 			for (const r of agg_redeemed) {
 				redeemed_map.set(`${r.unit}:${r.date}`, BigInt(r.amount));
 			}
 
-			return agg_issued
-				.map((i) => {
-					const redeemed_amount = redeemed_map.get(`${i.unit}:${i.date}`) ?? BigInt(0);
-					const balance = BigInt(i.amount) - redeemed_amount;
-					return new OrchardMintAnalytics(i.unit, balance.toString(), i.date);
+			const all_keys = new Set([...Array.from(issued_map.keys()), ...Array.from(redeemed_map.keys())]);
+			return Array.from(all_keys)
+				.map((key) => {
+					const iss = issued_map.get(key) ?? BigInt(0);
+					const red = redeemed_map.get(key) ?? BigInt(0);
+					const balance = iss - red;
+					const [unit, date_str] = key.split(':');
+					return new OrchardMintAnalytics(unit, balance.toString(), Number(date_str));
 				})
-				.filter((d) => d.amount !== '0');
+				.filter((d) => d.amount !== '0')
+				.sort((a, b) => a.date - b.date);
 		} catch (error) {
 			throw this.handleError(tag, error);
 		}
@@ -88,6 +102,27 @@ export class MintAnalyticsService {
 	/** Gets promise (issued) count analytics */
 	async getMintAnalyticsPromises(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
 		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.issued_amount], true);
+	}
+
+	/** Gets per-metric analytics with optional metric filtering */
+	async getAnalyticsMetrics(tag: string, args: MintAnalyticsMetricsArgs): Promise<OrchardMintAnalyticsMetric[]> {
+		try {
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const default_metrics = Object.values(MintAnalyticsMetric).filter(
+				(m) => m !== MintAnalyticsMetric.keyset_issued && m !== MintAnalyticsMetric.keyset_redeemed,
+			);
+			const metrics = args.metrics ?? default_metrics;
+			const cached = await this.cashuMintAnalyticsService.getCachedAnalytics({
+				date_start,
+				date_end: cached_end,
+				metrics,
+				units: args.units?.map((u) => String(u)),
+			});
+			const filtered = cached.filter((d) => d.amount !== '0');
+			return this.aggregateByIntervalWithMetric(filtered, interval, args.timezone, date_start);
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
 	}
 
 	/** Gets keyset-level analytics */
@@ -153,7 +188,6 @@ export class MintAnalyticsService {
 		return {
 			interval: args.interval ?? AnalyticsInterval.hour,
 			date_start: args.date_start ?? 0,
-			date_end: args.date_end ?? now,
 			cached_end: Math.min(args.date_end ?? now, current_hour_start - 1),
 		};
 	}
@@ -190,6 +224,45 @@ export class MintAnalyticsService {
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
 			.map((b) => new OrchardMintAnalytics(b.unit, b.amount.toString(), b.date, include_count ? b.count : undefined));
+	}
+
+	/** Aggregates hourly data by interval, preserving metric dimension */
+	private aggregateByIntervalWithMetric(
+		data: MintAnalytics[],
+		interval: AnalyticsInterval,
+		timezone?: string,
+		date_start?: number,
+	): OrchardMintAnalyticsMetric[] {
+		if (interval === AnalyticsInterval.hour) {
+			return data.map((d) => new OrchardMintAnalyticsMetric(d.unit, d.metric as MintAnalyticsMetric, d.amount, d.date, d.count));
+		}
+
+		const tz = timezone ?? 'UTC';
+		type Bucket = {unit: string; metric: MintAnalyticsMetric; amount: bigint; date: number; count: number};
+
+		const buckets = data.reduce((acc, d) => {
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === AnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
+			const existing = acc.get(key);
+
+			if (existing) {
+				existing.amount += BigInt(d.amount);
+				existing.count += d.count;
+			} else {
+				acc.set(key, {
+					unit: d.unit,
+					metric: d.metric as MintAnalyticsMetric,
+					amount: BigInt(d.amount),
+					date: bucket_date,
+					count: d.count,
+				});
+			}
+			return acc;
+		}, new Map<string, Bucket>());
+
+		return Array.from(buckets.values())
+			.sort((a, b) => a.date - b.date)
+			.map((b) => new OrchardMintAnalyticsMetric(b.unit, b.metric, b.amount.toString(), b.date, b.count));
 	}
 
 	/** Aggregates keyset-level data by interval */

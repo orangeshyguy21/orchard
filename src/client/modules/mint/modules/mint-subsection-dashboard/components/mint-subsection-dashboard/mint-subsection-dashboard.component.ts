@@ -393,8 +393,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		};
 		const [analytics, analytics_pre, backfill_status] = await lastValueFrom(
 			forkJoin([
-				this.lightningService.loadLightningAnalytics(args),
-				this.lightningService.loadLightningAnalytics({
+				this.lightningService.loadLightningAnalyticsLocalBalance(args),
+				this.lightningService.loadLightningAnalyticsLocalBalance({
 					...args,
 					date_start: this.configService.config.constants.epoch_start,
 					date_end: this.page_settings().date_start - 1,

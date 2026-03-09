@@ -50,10 +50,24 @@ describe('ApiLightningAnalyticsService', () => {
 		expect(() => service.getBackfillStatus('TAG')).toThrow(OrchardApiError);
 	});
 
-	it('wraps getAnalytics errors via resolveError and throws OrchardApiError', async () => {
+	it('wraps getAnalyticsLocalBalance errors via resolveError and throws OrchardApiError', async () => {
 		lightningAnalyticsService.getCachedAnalytics.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
 
-		await expect(service.getAnalytics('TAG', {})).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(service.getAnalyticsLocalBalance('TAG', {})).rejects.toBeInstanceOf(OrchardApiError);
+	});
+
+	it('wraps getAnalyticsRemoteBalance errors via resolveError and throws OrchardApiError', async () => {
+		lightningAnalyticsService.getCachedAnalytics.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
+
+		await expect(service.getAnalyticsRemoteBalance('TAG', {})).rejects.toBeInstanceOf(OrchardApiError);
+	});
+
+	it('wraps getAnalyticsMetrics errors via resolveError and throws OrchardApiError', async () => {
+		lightningAnalyticsService.getCachedAnalytics.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
+
+		await expect(service.getAnalyticsMetrics('TAG', {})).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

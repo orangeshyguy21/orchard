@@ -2,6 +2,7 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
+import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
 @ObjectType()
@@ -41,6 +42,32 @@ export class OrchardMintKeysetsAnalytics {
 		this.keyset_id = keyset_id;
 		this.amount = amount;
 		this.date = date;
+	}
+}
+
+@ObjectType()
+export class OrchardMintAnalyticsMetric {
+	@Field(() => MintUnit)
+	unit: string;
+
+	@Field(() => MintAnalyticsMetric)
+	metric: MintAnalyticsMetric;
+
+	@Field(() => String)
+	amount: string;
+
+	@Field(() => UnixTimestamp)
+	date: number;
+
+	@Field(() => Int, {nullable: true})
+	count?: number;
+
+	constructor(unit: string, metric: MintAnalyticsMetric, amount: string, date: number, count?: number) {
+		this.unit = unit;
+		this.metric = metric;
+		this.amount = amount;
+		this.date = date;
+		this.count = count;
 	}
 }
 

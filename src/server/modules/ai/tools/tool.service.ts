@@ -13,8 +13,10 @@ import {
 	GetBitcoinNetworkInfoTool,
 	GetPortHealthTool,
 	GetUrlHealthTool,
-	GetLightningAnalyticsTool,
+	GetLightningAnalyticsBalancesTool,
+	GetLightningAnalyticsMetricsTool,
 	GetLightningInfoTool,
+	GetMintAnalyticsMetricsTool,
 	GetMintAnalyticsTool,
 	GetMintInfoTool,
 } from '@server/modules/ai/agent/tools';
@@ -34,9 +36,11 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
 		this.register(AgentFunctionName.GET_PORT_HEALTH, GetPortHealthTool);
 		this.register(AgentFunctionName.GET_URL_HEALTH, GetUrlHealthTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS, GetLightningAnalyticsTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, GetLightningAnalyticsBalancesTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS, GetLightningAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_INFO, GetLightningInfoTool);
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
+		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
 	}
 

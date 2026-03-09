@@ -8,6 +8,7 @@ import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
 import {
+	type AnalyticsGroup,
 	groupAnalyticsByUnit,
 	prependData,
 	getDataKeyedByTimestamp,
@@ -183,8 +184,8 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 	/** Builds chart datasets for both proofs and promises grouped by unit */
 	private buildDatasets(
 		timestamp_range: number[],
-		proofs_by_unit: Record<string, MintAnalytic[]>,
-		promises_by_unit: Record<string, MintAnalytic[]>,
+		proofs_by_unit: AnalyticsGroup,
+		promises_by_unit: AnalyticsGroup,
 		cumulative: boolean,
 	): any[] {
 		const datasets: any[] = [];

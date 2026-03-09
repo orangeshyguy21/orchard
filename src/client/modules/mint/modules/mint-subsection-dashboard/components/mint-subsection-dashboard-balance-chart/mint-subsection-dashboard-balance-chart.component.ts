@@ -20,11 +20,6 @@ import {
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
 import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
 import {
-	getOutboundLiquidityData,
-	getOutboundLiquidityVolumeData,
-	getInitialOutboundMsat,
-} from '@client/modules/chart/helpers/lightning-chart-data.helpers';
-import {
 	getXAxisConfig,
 	getYAxis,
 	getBtcYAxisConfig,
@@ -231,13 +226,20 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			});
 		});
 
-		// Asset dataset (lightning outbound capacity)
+		// Asset dataset (lightning local balance)
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
-			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
-			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
+			const ln_groups = groupAnalyticsByUnit(this.lightning_analytics().map((a) => ({...a})));
+			const ln_prepended = prependData(
+				ln_groups,
+				this.lightning_analytics_pre().map((a) => ({...a})),
+				timestamp_first,
+			);
+			const ln_data = ln_prepended['msat'] || [];
+			const ln_keyed = getDataKeyedByTimestamp(ln_data, 'amount');
+			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', true);
 			const live_balance_sat = LocalAmountPipe.getConvertedAmount('sat', this.lightning_balance()?.open.local_balance ?? 0);
 			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, this.page_settings().interval);
-			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'sat', oracle_map, can_use_oracle);
+			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'msat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
 
@@ -304,10 +306,13 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			});
 		});
 
-		// Asset dataset (lightning outbound - non cumulative) - outline style
+		// Asset dataset (lightning local balance - non cumulative) - outline style
 		if (this.lightning_enabled() && this.lightning_analytics().length > 0) {
-			const raw_asset_data = getOutboundLiquidityVolumeData(timestamp_range, this.lightning_analytics());
-			const asset_data = convertChartDataWithOracle(raw_asset_data, 'sat', oracle_map, can_use_oracle);
+			const ln_groups = groupAnalyticsByUnit(this.lightning_analytics().map((a) => ({...a})));
+			const ln_data = ln_groups['msat'] || [];
+			const ln_keyed = getDataKeyedByTimestamp(ln_data, 'amount');
+			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', false);
+			const asset_data = convertChartDataWithOracle(raw_asset_data, 'msat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 
 			datasets.push({

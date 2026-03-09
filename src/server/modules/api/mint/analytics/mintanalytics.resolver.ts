@@ -6,8 +6,14 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
+import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
 /* Local Dependencies */
-import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics, OrchardMintAnalyticsBackfillStatus} from './mintanalytics.model';
+import {
+	OrchardMintAnalytics,
+	OrchardMintAnalyticsMetric,
+	OrchardMintKeysetsAnalytics,
+	OrchardMintAnalyticsBackfillStatus,
+} from './mintanalytics.model';
 import {MintAnalyticsService} from './mintanalytics.service';
 
 @Resolver()
@@ -105,6 +111,20 @@ export class MintAnalyticsResolver {
 		const tag = 'GET { mint_analytics_promises }';
 		this.logger.debug(tag);
 		return await this.mintAnalyticsService.getMintAnalyticsPromises(tag, {units, date_start, date_end, interval, timezone});
+	}
+
+	@Query(() => [OrchardMintAnalyticsMetric])
+	async mint_analytics_metrics(
+		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('metrics', {type: () => [MintAnalyticsMetric], nullable: true}) metrics?: MintAnalyticsMetric[],
+	): Promise<OrchardMintAnalyticsMetric[]> {
+		const tag = 'GET { mint_analytics_metrics }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getAnalyticsMetrics(tag, {units, date_start, date_end, interval, timezone, metrics});
 	}
 
 	@Query(() => [OrchardMintKeysetsAnalytics])

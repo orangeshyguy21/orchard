@@ -10,6 +10,28 @@ export class OrchardLightningAnalytics {
 	@Field(() => String)
 	unit: string;
 
+	@Field(() => String)
+	amount: string;
+
+	@Field(() => UnixTimestamp)
+	date: number;
+
+	@Field(() => Int, {nullable: true})
+	count?: number;
+
+	constructor(unit: string, amount: string, date: number, count?: number) {
+		this.unit = unit;
+		this.amount = amount;
+		this.date = date;
+		this.count = count;
+	}
+}
+
+@ObjectType()
+export class OrchardLightningAnalyticsMetric {
+	@Field(() => String)
+	unit: string;
+
 	@Field(() => LightningAnalyticsMetric)
 	metric: LightningAnalyticsMetric;
 
@@ -19,11 +41,15 @@ export class OrchardLightningAnalytics {
 	@Field(() => UnixTimestamp)
 	date: number;
 
-	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number) {
+	@Field(() => Int, {nullable: true})
+	count?: number;
+
+	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number, count?: number) {
 		this.unit = unit;
 		this.metric = metric;
 		this.amount = amount;
 		this.date = date;
+		this.count = count;
 	}
 }
 
