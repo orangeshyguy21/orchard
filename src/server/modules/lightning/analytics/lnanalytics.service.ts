@@ -182,6 +182,37 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	}
 
 	/**
+	 * Counts payments by status for a specific group_key (null = BTC only)
+	 */
+	private countPaymentsByStatus(
+		payments: LightningPayment[],
+		status: string,
+		group_key: string | null,
+		asset_to_group: Map<string, string>,
+	): number {
+		const filtered = payments.filter((p) => p.status === status);
+
+		if (group_key === null) {
+			return filtered.filter((p) => p.asset_balances.length === 0).length;
+		}
+
+		return filtered.flatMap((p) => p.asset_balances).filter((ab) => asset_to_group.get(ab.asset_id) === group_key).length;
+	}
+
+	/**
+	 * Counts settled invoices for a specific group_key (null = BTC only)
+	 */
+	private countInvoicesIn(invoices: LightningInvoice[], group_key: string | null, asset_to_group: Map<string, string>): number {
+		const settled = invoices.filter((i) => i.state === 'settled');
+
+		if (group_key === null) {
+			return settled.filter((i) => i.asset_balances.length === 0).length;
+		}
+
+		return settled.flatMap((i) => i.asset_balances).filter((ab) => asset_to_group.get(ab.asset_id) === group_key).length;
+	}
+
+	/**
 	 * Converts satoshis to millisatoshis
 	 */
 	private satToMsat(sats: number | string): bigint {
@@ -246,7 +277,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	}
 
 	/**
-	 * Upserts an analytics metric if amount > 0
+	 * Upserts an analytics metric if amount > 0 or count > 0
 	 */
 	private async upsertMetric(
 		repo: Repository<LightningAnalytics>,
@@ -257,9 +288,10 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			metric: LightningAnalyticsMetric;
 			hour: number;
 			amount: bigint;
+			count: number;
 		},
 	): Promise<void> {
-		if (params.amount <= BigInt(0)) return;
+		if (params.amount <= BigInt(0) && params.count <= 0) return;
 
 		await repo.upsert(
 			{
@@ -269,6 +301,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				metric: params.metric,
 				date: params.hour,
 				amount: params.amount.toString(),
+				count: params.count,
 				updated_at: Math.floor(DateTime.utc().toSeconds()),
 			},
 			{conflictPaths: ['node_pubkey', 'group_key', 'unit', 'metric', 'date']},
@@ -637,38 +670,47 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
 
 		// BTC metrics
-		const btc_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
+		const btc_metrics: {metric: LightningAnalyticsMetric; amount: bigint; count: number}[] = [
 			{
 				metric: LightningAnalyticsMetric.payments_out,
 				amount: this.sumPaymentsByStatus(payments, 'succeeded', null, asset_to_group, true),
+				count: this.countPaymentsByStatus(payments, 'succeeded', null, asset_to_group),
 			},
-			{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsByStatus(payments, 'failed', null, asset_to_group)},
+			{
+				metric: LightningAnalyticsMetric.payments_failed,
+				amount: this.sumPaymentsByStatus(payments, 'failed', null, asset_to_group),
+				count: this.countPaymentsByStatus(payments, 'failed', null, asset_to_group),
+			},
 			{
 				metric: LightningAnalyticsMetric.payments_pending,
 				amount: this.sumPaymentsByStatus(payments, 'pending', null, asset_to_group),
+				count: this.countPaymentsByStatus(payments, 'pending', null, asset_to_group),
 			},
 		];
-		for (const {metric, amount} of btc_metrics) {
-			await this.upsertMetric(repo, {node_pubkey, group_key: '', unit: 'msat', metric, hour, amount});
+		for (const {metric, amount, count} of btc_metrics) {
+			await this.upsertMetric(repo, {node_pubkey, group_key: '', unit: 'msat', metric, hour, amount, count});
 		}
 
 		// Asset metrics per group
 		for (const group_key of Array.from(this.collectGroupKeys(payments, asset_to_group))) {
-			const asset_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
+			const asset_metrics: {metric: LightningAnalyticsMetric; amount: bigint; count: number}[] = [
 				{
 					metric: LightningAnalyticsMetric.payments_out,
 					amount: this.sumPaymentsByStatus(payments, 'succeeded', group_key, asset_to_group, true),
+					count: this.countPaymentsByStatus(payments, 'succeeded', group_key, asset_to_group),
 				},
 				{
 					metric: LightningAnalyticsMetric.payments_failed,
 					amount: this.sumPaymentsByStatus(payments, 'failed', group_key, asset_to_group),
+					count: this.countPaymentsByStatus(payments, 'failed', group_key, asset_to_group),
 				},
 				{
 					metric: LightningAnalyticsMetric.payments_pending,
 					amount: this.sumPaymentsByStatus(payments, 'pending', group_key, asset_to_group),
+					count: this.countPaymentsByStatus(payments, 'pending', group_key, asset_to_group),
 				},
 			];
-			for (const {metric, amount} of asset_metrics) {
+			for (const {metric, amount, count} of asset_metrics) {
 				await this.upsertMetric(repo, {
 					node_pubkey,
 					group_key,
@@ -676,6 +718,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 					metric,
 					hour,
 					amount,
+					count,
 				});
 			}
 		}
@@ -702,6 +745,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			metric: LightningAnalyticsMetric.invoices_in,
 			hour,
 			amount: this.sumInvoicesIn(invoices, null, asset_to_group),
+			count: this.countInvoicesIn(invoices, null, asset_to_group),
 		});
 
 		// Asset metrics per group
@@ -713,6 +757,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				metric: LightningAnalyticsMetric.invoices_in,
 				hour,
 				amount: this.sumInvoicesIn(invoices, group_key, asset_to_group),
+				count: this.countInvoicesIn(invoices, group_key, asset_to_group),
 			});
 		}
 	}
@@ -731,6 +776,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			metric: LightningAnalyticsMetric.forward_fees,
 			hour,
 			amount: this.sumForwardFees(forwards),
+			count: forwards.length,
 		});
 	}
 
@@ -770,17 +816,22 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const node_pubkey = await this.getNodePubkey();
 		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
 
-		// Aggregate metrics: Map<hour, Map<group_key, amount>>
-		const opens_by_hour: Map<number, Map<string, bigint>> = new Map();
-		const closes_by_hour: Map<number, Map<string, bigint>> = new Map();
-		const opens_remote_by_hour: Map<number, Map<string, bigint>> = new Map();
-		const closes_remote_by_hour: Map<number, Map<string, bigint>> = new Map();
+		// Aggregate metrics: Map<hour, Map<group_key, {amount, count}>>
+		type Bucket = {amount: bigint; count: number};
+		const opens_by_hour: Map<number, Map<string, Bucket>> = new Map();
+		const closes_by_hour: Map<number, Map<string, Bucket>> = new Map();
+		const opens_remote_by_hour: Map<number, Map<string, Bucket>> = new Map();
+		const closes_remote_by_hour: Map<number, Map<string, Bucket>> = new Map();
 
 		// Helper to accumulate into nested map
-		const accumulate = (map: Map<number, Map<string, bigint>>, hour: number, group_key: string, amount: bigint) => {
+		const accumulate = (map: Map<number, Map<string, Bucket>>, hour: number, group_key: string, amount: bigint) => {
 			if (!map.has(hour)) map.set(hour, new Map());
 			const group_map = map.get(hour)!;
-			group_map.set(group_key, (group_map.get(group_key) ?? BigInt(0)) + amount);
+			const existing = group_map.get(group_key);
+			group_map.set(group_key, {
+				amount: (existing?.amount ?? BigInt(0)) + amount,
+				count: (existing?.count ?? 0) + 1,
+			});
 		};
 
 		// Process channel opens (both open and closed channels had an open event)
@@ -826,9 +877,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		}
 
 		// Insert all metrics
-		const insert_metrics = async (metrics_map: Map<number, Map<string, bigint>>, metric: LightningAnalyticsMetric) => {
+		const insert_metrics = async (metrics_map: Map<number, Map<string, Bucket>>, metric: LightningAnalyticsMetric) => {
 			for (const [hour, group_map] of Array.from(metrics_map.entries())) {
-				for (const [group_key, amount] of Array.from(group_map.entries())) {
+				for (const [group_key, {amount, count}] of Array.from(group_map.entries())) {
 					await this.upsertMetric(this.lightningAnalyticsRepository, {
 						node_pubkey,
 						group_key,
@@ -836,6 +887,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 						metric,
 						hour,
 						amount,
+						count,
 					});
 				}
 			}

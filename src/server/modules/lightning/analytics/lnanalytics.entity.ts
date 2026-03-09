@@ -42,6 +42,10 @@ export class LightningAnalytics {
 	@Column({type: 'bigint'})
 	amount: string;
 
+	// Count of items in this bucket (payments, invoices, forwards, channels)
+	@Column({type: 'integer', default: 0})
+	count: number;
+
 	// Last time this record was updated (unix timestamp)
 	@Column({type: 'integer'})
 	updated_at: number;
