@@ -8,6 +8,7 @@ export interface CashuMintMintQuotesArgs {
 	states?: MintQuoteState[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintMeltQuotesArgs {
@@ -17,6 +18,7 @@ export interface CashuMintMeltQuotesArgs {
 	states?: MeltQuoteState[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintSwapsArgs {
@@ -26,6 +28,7 @@ export interface CashuMintSwapsArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintPromiseArgs {
@@ -35,6 +38,7 @@ export interface CashuMintPromiseArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintProofsArgs {
@@ -45,4 +49,5 @@ export interface CashuMintProofsArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }

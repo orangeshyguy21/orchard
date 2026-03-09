@@ -116,27 +116,29 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await this.streamAndBucket<CashuMintMintQuote>(
 				current_hour,
 				'mint_quotes',
-				(opts) => this.cashuMintDatabaseService.listMintQuotes(client, opts),
+				({page, page_size, sort_order}) => this.cashuMintDatabaseService.listMintQuotes(client, {page, page_size, sort_order}),
 				(h, records) => this.insertMintQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintMeltQuote>(
 				current_hour,
 				'melt_quotes',
-				(opts) => this.cashuMintDatabaseService.listMeltQuotes(client, opts),
+				({page, page_size, sort_order}) => this.cashuMintDatabaseService.listMeltQuotes(client, {page, page_size, sort_order}),
 				(h, records) => this.insertMeltQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintSwap>(
 				current_hour,
 				'swaps',
-				(opts) => this.cashuMintDatabaseService.listSwaps(client, opts),
+				({page, page_size, sort_order}) => this.cashuMintDatabaseService.listSwaps(client, {page, page_size, sort_order}),
 				(h, records) => this.insertSwapMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintProof>(
 				current_hour,
 				'proofs',
-				(opts) =>
+				({page, page_size, sort_order}) =>
 					this.cashuMintDatabaseService.listProofs(client, {
-						...opts,
+						page,
+						page_size,
+						sort_order,
 						states: [MintProofState.SPENT],
 					}),
 				(h, records) => this.insertProofMetrics(h, records),
@@ -144,7 +146,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await this.streamAndBucket<CashuMintPromise>(
 				current_hour,
 				'promises',
-				(opts) => this.cashuMintDatabaseService.listPromises(client, opts),
+				({page, page_size, sort_order}) => this.cashuMintDatabaseService.listPromises(client, {page, page_size, sort_order}),
 				(h, records) => this.insertPromiseMetrics(h, records),
 			);
 
@@ -183,7 +185,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	private async streamAndBucket<T extends {created_time: number}>(
 		current_hour: number,
 		data_type: CheckpointDataType,
-		fetcher: (opts: {page: number; page_size: number}) => Promise<T[]>,
+		fetcher: (opts: {page: number; page_size: number; sort_order: 'ASC' | 'DESC'}) => Promise<T[]>,
 		inserter: (hour: number, records: T[]) => Promise<void>,
 	): Promise<void> {
 		let page = await this.getCheckpoint(data_type);
@@ -191,8 +193,16 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		const pending_bucket: Map<number, T[]> = new Map();
 
 		while (true) {
-			const batch = await fetcher({page, page_size: BATCH_SIZE});
-			if (batch.length === 0) break;
+			const batch = await fetcher({page, page_size: BATCH_SIZE, sort_order: 'ASC'});
+			if (batch.length === 0) {
+				if (page > 1) {
+					this.logger.warn(`Stale checkpoint detected for ${data_type} at page ${page}, resetting to page 1`);
+					page = 1;
+					await this.saveCheckpoint(data_type, page);
+					continue;
+				}
+				break;
+			}
 
 			for (const record of batch) {
 				const hour = DateTime.fromSeconds(record.created_time, {zone: 'UTC'}).startOf('hour').toSeconds();

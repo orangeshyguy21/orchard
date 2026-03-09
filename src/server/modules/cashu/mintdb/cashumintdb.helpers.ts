@@ -35,7 +35,8 @@ export function buildDynamicQuery(options: BuildQueryOptions): {sql: string; par
 
 	if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
 	if (group_by) sql += ` GROUP BY ${group_by}`;
-	sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;
+	const sort_order = args?.sort_order === 'ASC' ? 'ASC' : 'DESC';
+	sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} ${sort_order}`;
 	sql += ` LIMIT ${page_size}`;
 	if (offset > 0) sql += ` OFFSET ${offset}`;
 	return {sql: sql + ';', params};
