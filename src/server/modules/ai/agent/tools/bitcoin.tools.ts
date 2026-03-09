@@ -56,10 +56,21 @@ export const GetBitcoinNetworkInfoTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_BITCOIN_NETWORK_INFO,
-			description:
-				'Retrieve bitcoin network information from the connected node. ' +
-				'Returns version, peer connections, reachable networks, ' +
-				'local addresses, and any warnings.',
+			description: [
+				'Retrieve Bitcoin node network and peer connectivity information.',
+				'',
+				'**Returns:**',
+				'- `connections` / `connections_in` / `connections_out` — total, inbound, and outbound peer count',
+				'- `networkactive` — whether networking is enabled',
+				'- `networks` — list of network types (ipv4, ipv6, onion) and their reachability',
+				'- `localaddresses` — addresses the node advertises to peers',
+				'- `warnings` — any active warnings from the node',
+				'',
+				'**Interpretation:**',
+				'- Zero connections or `networkactive: false` is critical — the node is isolated',
+				'- Very low outbound connections (< 4) may indicate network issues',
+				'- Non-empty `warnings` should always be surfaced to the operator',
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {},
@@ -77,10 +88,24 @@ export const GetBitcoinBlockchainInfoTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO,
-			description:
-				'Retrieve bitcoin blockchain information from the connected node. ' +
-				'Returns the chain name, block height, headers, difficulty, ' +
-				'sync progress, disk usage, pruning status, and any warnings.',
+			description: [
+				'Retrieve Bitcoin blockchain sync status and chain state.',
+				'',
+				'**Returns:**',
+				'- `chain` — network name (e.g. "main", "test", "regtest")',
+				'- `blocks` / `headers` — synced block height vs. known header height',
+				'- `verificationprogress` — sync progress from 0.0 to 1.0 (1.0 = fully synced)',
+				'- `initialblockdownload` — `true` if still performing initial sync (IBD)',
+				'- `size_on_disk` — blockchain data size in bytes',
+				'- `pruned` — whether the node is pruning old blocks',
+				'- `warnings` — any active warnings',
+				'',
+				'**Interpretation:**',
+				'- `blocks` significantly behind `headers` means the node is still syncing',
+				'- `initialblockdownload: true` means the node is not yet operational',
+				'- `verificationprogress` below 0.9999 during normal operation is a concern',
+				'- Non-empty `warnings` should always be surfaced',
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {},

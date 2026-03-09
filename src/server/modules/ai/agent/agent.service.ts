@@ -3,6 +3,8 @@ import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
+import {mkdirSync, writeFileSync} from 'fs';
+import {join} from 'path';
 import {Repository} from 'typeorm';
 import {SchedulerRegistry} from '@nestjs/schedule';
 import {CronJob} from 'cron';
@@ -24,7 +26,7 @@ import {ToolService} from '@server/modules/ai/tools/tool.service';
 export class AgentService implements OnModuleInit {
 	private readonly logger = new Logger(AgentService.name);
 
-	private static readonly MAX_TOOL_ITERATIONS = 10;
+	private static readonly MAX_TOOL_ITERATIONS = 25;
 
 	constructor(
 		@InjectRepository(Agent)
@@ -230,11 +232,39 @@ export class AgentService implements OnModuleInit {
 					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result)});
 				}
 			} else {
+				this.dumpAgentTrace(agent, messages, total_tokens, response.message.content, tool_names);
 				return {result: response.message.content, tokens_used: total_tokens};
 			}
 		}
 
-		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens};
+		const capped_result = 'Agent reached maximum tool iterations without producing a final response.';
+		this.dumpAgentTrace(agent, messages, total_tokens, capped_result, tool_names);
+		return {result: capped_result, tokens_used: total_tokens};
+	}
+
+	/**
+	 * Writes the full agent conversation trace to a tmp file for dev inspection.
+	 */
+	private dumpAgentTrace(agent: Agent, messages: AiMessage[], tokens_used: number, result: string, tool_names: string[] = []): void {
+		try {
+			const timestamp = DateTime.utc().toFormat('yyyyMMdd-HHmmss');
+			const safe_name = agent.name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+			const dir = join(process.cwd(), 'data', 'tmp');
+			mkdirSync(dir, {recursive: true});
+			const file_path = join(dir, `agent-${safe_name}-${timestamp}.json`);
+			const trace = {
+				agent: {id: agent.id, name: agent.name, agent_key: agent.agent_key},
+				timestamp: DateTime.utc().toISO(),
+				tokens_used,
+				tool_names,
+				result,
+				messages,
+			};
+			writeFileSync(file_path, JSON.stringify(trace, null, 2));
+			this.logger.log(`Agent trace dumped: ${file_path}`);
+		} catch (err) {
+			this.logger.warn(`Failed to dump agent trace: ${err.message}`);
+		}
 	}
 
 	/**

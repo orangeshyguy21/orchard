@@ -68,10 +68,19 @@ export const GetMintInfoTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_MINT_INFO,
-			description:
-				'Retrieve information about the connected cashu mint. ' +
-				'Returns the mint name, pubkey, version, description, ' +
-				'contact info, and public URLs.',
+			description: [
+				'Retrieve Cashu mint identity and configuration.',
+				'',
+				'**Returns:**',
+				'- `name` / `description` / `description_long` — mint branding and info',
+				"- `pubkey` — the mint's public key",
+				'- `version` — mint software version',
+				'- `contact` — operator contact methods (e.g. email, nostr)',
+				'- `icon_url` — mint icon URL',
+				'- `urls` — public endpoint URLs (can be passed to GET_URL_HEALTH for liveness checks)',
+				'',
+				"**Usage:** Call this first to discover the mint's public URLs, then verify them with GET_URL_HEALTH.",
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {},
@@ -89,10 +98,23 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_MINT_ANALYTICS,
-			description:
-				'Retrieve mint analytics for a given time range. ' +
-				'Returns balances, mints (tokens issued), melts (tokens redeemed), and fees. ' +
-				'Each metric includes unit, amount, date, and count. Dates are unix timestamps in seconds.',
+			description: [
+				'Retrieve Cashu mint operational metrics for a time range.',
+				'',
+				'**Returns** four metric categories, each with `unit`, `amount`, `date`, `count`:',
+				'- `balances` — outstanding token supply (ecash in circulation)',
+				'- `mints` — tokens issued (Lightning → ecash conversions)',
+				'- `melts` — tokens redeemed (ecash → Lightning conversions)',
+				'- `fees` — fees collected from mint/melt operations',
+				'',
+				'**Interpretation:**',
+				'- A large balance increase without corresponding mints may indicate an accounting anomaly',
+				'- Unusually large individual mints or melts (high amount, low count) should be flagged',
+				'- Fee revenue dropping while volume stays steady could signal a configuration change',
+				'- Compare `mints` vs `melts` to assess net flow direction',
+				'',
+				'**Defaults:** `date_start` = all time (epoch 0), `date_end` = now, `units` = all. Always provide a `date_start` to scope results.',
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {
@@ -106,7 +128,8 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 					},
 					date_start: {
 						type: 'number',
-						description: 'Start of the time range as a unix timestamp in seconds. Defaults to 24 hours ago.',
+						description:
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
 					},
 					date_end: {
 						type: 'number',

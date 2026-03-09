@@ -60,17 +60,38 @@ export const GetLightningAnalyticsTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_LIGHTNING_ANALYTICS,
-			description:
-				'Retrieve lightning network analytics for a given time range. ' +
-				'Returns metrics like payments sent, invoices received, forward fees, ' +
-				'channel opens/closes, and failed/pending payments. ' +
-				'Amounts are in millisatoshis. Dates are unix timestamps in seconds.',
+			description: [
+				'Retrieve Lightning network activity metrics for a time range.',
+				'',
+				'**Returns** (per metric per interval bucket):',
+				'- `metric` — the metric name',
+				'- `amount` — value in **millisatoshis** (1 sat = 1,000 msat)',
+				'- `date` — bucket timestamp (unix seconds)',
+				'- `unit` — currency unit',
+				'',
+				'**Available metrics:**',
+				'- `payments_out` — outgoing payments sent',
+				'- `invoices_in` — incoming payments received',
+				'- `forward_fees` — fees earned from routing',
+				'- `payments_failed` / `payments_pending` — unsuccessful or in-flight payments',
+				'- `channel_opens` / `channel_closes` — locally-initiated channel events',
+				'- `channel_opens_remote` / `channel_closes_remote` — remotely-initiated channel events',
+				'',
+				'**Interpretation:**',
+				'- High `payments_failed` relative to `payments_out` indicates routing or liquidity problems',
+				'- `channel_closes_remote` spikes may indicate force-closes by peers — always flag these',
+				'- Sudden drops in `forward_fees` may signal loss of routing position',
+				"- Use `interval: 'hour'` for recent activity, `'day'` or `'week'` for trends",
+				'',
+				'**Defaults:** `date_start` = all time (epoch 0), `date_end` = now, `metrics` = all. Always provide a `date_start` to scope results.',
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {
 					date_start: {
 						type: 'number',
-						description: 'Start of the time range as a unix timestamp in seconds. Defaults to 24 hours ago.',
+						description:
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
 					},
 					date_end: {
 						type: 'number',
@@ -114,10 +135,24 @@ export const GetLightningInfoTool: AiToolEntry = {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_LIGHTNING_INFO,
-			description:
-				'Retrieve information about the connected lightning node. ' +
-				'Returns the node pubkey, alias, version, channel counts, ' +
-				'sync status, network, and public URIs.',
+			description: [
+				'Retrieve Lightning node identity and operational status.',
+				'',
+				'**Returns:**',
+				'- `identity_pubkey` / `alias` / `color` — node identity',
+				'- `version` — LN implementation version',
+				'- `num_active_channels` / `num_inactive_channels` / `num_pending_channels` — channel counts by state',
+				'- `num_peers` — connected peer count',
+				'- `synced_to_chain` / `synced_to_graph` — whether the node is caught up',
+				'- `block_height` — latest block the LN node is aware of',
+				'- `uris` — public connection URIs',
+				'',
+				'**Interpretation:**',
+				'- `synced_to_chain: false` or `synced_to_graph: false` means the node is not fully operational',
+				'- Inactive channels > 0 may indicate peers are offline or channels are stuck',
+				'- Pending channels > 0 means channels are waiting for on-chain confirmation',
+				'- Zero active channels means the node cannot route or send payments',
+			].join('\n'),
 			parameters: {
 				type: 'object',
 				properties: {},
