@@ -239,7 +239,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', true);
 			const live_balance_sat = LocalAmountPipe.getConvertedAmount('sat', this.lightning_balance()?.open.local_balance ?? 0);
 			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, this.page_settings().interval);
-			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'msat', oracle_map, can_use_oracle);
+			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
 
@@ -312,7 +312,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			const ln_data = ln_groups['msat'] || [];
 			const ln_keyed = getDataKeyedByTimestamp(ln_data, 'amount');
 			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', false);
-			const asset_data = convertChartDataWithOracle(raw_asset_data, 'msat', oracle_map, can_use_oracle);
+			const asset_data = convertChartDataWithOracle(raw_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 
 			datasets.push({
