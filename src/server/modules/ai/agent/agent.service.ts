@@ -18,7 +18,7 @@ import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
-import {AgentKey, AgentRunStatus} from './agent.enums';
+import {AgentFunctionName, AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
 import {ToolService} from '@server/modules/ai/tools/tool.service';
 
@@ -167,20 +167,21 @@ export class AgentService implements OnModuleInit {
 		});
 
 		try {
-			const {result, tokens_used} = await this.runAgentLoop(agent);
+			const {result, tokens_used, notified} = await this.runAgentLoop(agent);
 			const completed_at = DateTime.utc().toUnixInteger();
 			await this.runRepository.update(saved_run.id, {
 				status: AgentRunStatus.SUCCESS,
 				completed_at,
 				result,
 				tokens_used,
+				notified,
 			});
 			await this.agentRepository.update(agent_id, {
 				last_run_status: AgentRunStatus.SUCCESS,
 				updated_at: completed_at,
 			});
 			this.logger.log(`Agent ${agent.name} completed successfully`);
-			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used};
+			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used, notified};
 		} catch (error) {
 			const completed_at = DateTime.utc().toUnixInteger();
 			await this.runRepository.update(saved_run.id, {
@@ -202,7 +203,7 @@ export class AgentService implements OnModuleInit {
 	 * Sends the system message and tools to the LLM, processes tool calls,
 	 * and iterates until the LLM returns content or the iteration cap is hit.
 	 */
-	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number}> {
+	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
 		const model_setting = await this.settingService.getSetting(SettingKey.AI_SERVER_MODEL);
 		const model = model_setting?.value;
 		if (!model) throw new Error('No AI model configured (ai.server.model)');
@@ -221,6 +222,7 @@ export class AgentService implements OnModuleInit {
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
 
 		let total_tokens = 0;
+		let notified = false;
 
 		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
 			const response = await this.collectStreamResponse(model, messages, tool_schemas);
@@ -229,18 +231,21 @@ export class AgentService implements OnModuleInit {
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
+					if ((tool_call.function.name as string) === AgentFunctionName.SEND_NOTIFICATION) {
+						notified = true;
+					}
 					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments);
 					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
 				this.dumpAgentTrace(agent, messages, total_tokens, response.message.content, tool_names);
-				return {result: response.message.content, tokens_used: total_tokens};
+				return {result: response.message.content, tokens_used: total_tokens, notified};
 			}
 		}
 
 		const capped_result = 'Agent reached maximum tool iterations without producing a final response.';
 		this.dumpAgentTrace(agent, messages, total_tokens, capped_result, tool_names);
-		return {result: capped_result, tokens_used: total_tokens};
+		return {result: capped_result, tokens_used: total_tokens, notified};
 	}
 
 	/**
@@ -390,10 +395,13 @@ export class AgentService implements OnModuleInit {
 		return this.agentRepository.findOne({where: {id}});
 	}
 
-	/** Get runs for an agent, most recent first, with pagination */
-	public async getAgentRuns(agent_id: string, page = 0, page_size = 20): Promise<AgentRun[]> {
+	/** Get runs for an agent, most recent first, with pagination and optional notified filter */
+	public async getAgentRuns(options: {agent_id: string; page?: number; page_size?: number; notified?: boolean}): Promise<AgentRun[]> {
+		const {agent_id, page = 0, page_size = 20, notified} = options;
+		const where: Record<string, any> = {agent: {id: agent_id}};
+		if (notified !== undefined) where.notified = notified;
 		return this.runRepository.find({
-			where: {agent: {id: agent_id}},
+			where,
 			order: {started_at: 'DESC'},
 			skip: page * page_size,
 			take: page_size,

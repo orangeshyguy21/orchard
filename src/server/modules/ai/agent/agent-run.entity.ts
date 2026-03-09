@@ -33,4 +33,7 @@ export class AgentRun {
 
 	@Column({type: 'integer', nullable: true})
 	tokens_used: number | null;
+
+	@Column({type: 'boolean', default: false})
+	notified: boolean;
 }

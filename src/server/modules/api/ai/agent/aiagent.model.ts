@@ -87,6 +87,9 @@ export class OrchardAgentRun {
 	@Field(() => Int, {nullable: true})
 	tokens_used: number | null;
 
+	@Field()
+	notified: boolean;
+
 	constructor(run: AgentRun) {
 		this.id = run.id;
 		this.status = run.status as AgentRunStatus;
@@ -96,5 +99,6 @@ export class OrchardAgentRun {
 		this.result = run.result;
 		this.error = run.error;
 		this.tokens_used = run.tokens_used;
+		this.notified = run.notified;
 	}
 }

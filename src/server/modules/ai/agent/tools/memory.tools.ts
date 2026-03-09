@@ -8,7 +8,7 @@ import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 const GET_PAST_RUNS_QUERY = `
 	query GetPastRuns($agent_id: String!, $page: Int, $page_size: Int) {
-		ai_agent_runs(agent_id: $agent_id, page: $page, page_size: $page_size) {
+		ai_agent_runs(agent_id: $agent_id, page: $page, page_size: $page_size, notified: true) {
 			status
 			started_at
 			completed_at
@@ -28,15 +28,16 @@ export const GetPastRunsTool: AiToolEntry = {
 		function: {
 			name: AgentFunctionName.GET_PAST_RUNS,
 			description: [
-				'Retrieve your own past run results as a memory log.',
+				'Retrieve past runs where you sent notifications.',
 				'',
-				'Call this **first** at the start of every run to review what you previously reported.',
+				'Call this **first** at the start of every run to review what you previously notified about.',
 				'Use the `agent_id` from your runtime context.',
+				'Only runs that triggered at least one notification are returned.',
 				'',
 				'**Returns** (most recent first):',
 				'- `status` — run outcome (`success` or `error`)',
 				'- `started_at` / `completed_at` — unix timestamps',
-				'- `result` — your previous internal notes (what you checked, found, and whether you notified)',
+				'- `result` — your previous internal notes (what you checked, found, and notified)',
 				'',
 				'Cross-reference these notes before sending notifications to avoid repeating the same findings.',
 			].join('\n'),

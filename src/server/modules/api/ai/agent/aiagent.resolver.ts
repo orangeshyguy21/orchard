@@ -37,10 +37,11 @@ export class AiAgentResolver {
 		@Args('agent_id') agent_id: string,
 		@Args('page', {type: () => Int, nullable: true, defaultValue: 0}) page: number,
 		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 20}) page_size: number,
+		@Args('notified', {nullable: true}) notified?: boolean,
 	): Promise<OrchardAgentRun[]> {
 		const tag = 'GET { ai_agent_runs }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.getAgentRuns(tag, agent_id, page, page_size);
+		return await this.aiAgentService.getAgentRuns(tag, {agent_id, page, page_size, notified});
 	}
 
 	/* *******************************************************

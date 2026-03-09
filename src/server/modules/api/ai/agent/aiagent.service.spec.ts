@@ -86,7 +86,7 @@ describe('AiAgentService', () => {
 	});
 
 	it('returns agent runs', async () => {
-		const runs = await aiAgentService.getAgentRuns('TAG', 'test-uuid');
+		const runs = await aiAgentService.getAgentRuns('TAG', {agent_id: 'test-uuid'});
 		expect(runs).toHaveLength(1);
 		expect(runs[0].result).toBe('Agent executed (stub)');
 	});
