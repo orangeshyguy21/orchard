@@ -17,7 +17,7 @@ describe('AiChatService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				AiChatService,
-				{provide: AiService, useValue: {streamChat: jest.fn()}},
+				{provide: AiService, useValue: {streamAssistant: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();
@@ -43,7 +43,7 @@ describe('AiChatService', () => {
 			}
 		}
 
-		(aiService.streamChat as jest.Mock).mockReturnValue(mockGenerator());
+		(aiService.streamAssistant as jest.Mock).mockReturnValue(mockGenerator());
 
 		const received: any[] = [];
 		aiChatService.onChatUpdate((chunk) => received.push(chunk));
@@ -59,7 +59,7 @@ describe('AiChatService', () => {
 			throw new Error('boom');
 		}
 
-		(aiService.streamChat as jest.Mock).mockReturnValue(mockErrorGenerator());
+		(aiService.streamAssistant as jest.Mock).mockReturnValue(mockErrorGenerator());
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
 
 		const received: any[] = [];

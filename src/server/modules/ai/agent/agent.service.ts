@@ -282,7 +282,7 @@ export class AgentService implements OnModuleInit {
 		let accumulated_content = '';
 		const accumulated_tool_calls: AiToolCall[] = [];
 
-		for await (const chunk of this.aiService.streamRaw(model, messages, tools)) {
+		for await (const chunk of this.aiService.streamAgent(model, messages, tools)) {
 			if (chunk.done) {
 				final_chunk = chunk;
 			} else {

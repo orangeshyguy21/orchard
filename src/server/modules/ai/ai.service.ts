@@ -13,7 +13,8 @@ import {AiAssistant} from './assistant/ai.assistant.enums';
 
 @Injectable()
 export class AiService {
-	private chat_timeout: number = 60000;
+	private assistant_timeout: number = 60000;
+	private agent_timeout: number = 300000;
 
 	constructor(
 		private settingService: SettingService,
@@ -42,24 +43,24 @@ export class AiService {
 	}
 
 	/**
-	 * Core streaming method — resolves vendor, applies timeout, and yields chunks.
-	 * Used by both assistant chat and agent execution.
+	 * Stream a chat completion for agent execution.
+	 * Uses a longer timeout suitable for multi-step tool-calling loops.
 	 * @param {string} model - The model identifier to use
 	 * @param {AiMessage[]} messages - Full message array (including system message)
 	 * @param {AiTool[]} tools - Tool definitions for function calling
 	 * @param {AbortSignal} [signal] - Optional abort signal
 	 * @returns {AsyncGenerator<AiStreamChunk>} Typed stream chunks
 	 */
-	async *streamRaw(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): AsyncGenerator<AiStreamChunk> {
+	async *streamAgent(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): AsyncGenerator<AiStreamChunk> {
 		const vendor = await this.getVendor();
-		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
+		const timeout_signal = AbortSignal.timeout(this.agent_timeout);
 		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
 
 		yield* vendor.streamChat(model, messages, tools, combined_signal);
 	}
 
 	/**
-	 * Stream a chat completion using an assistant preset.
+	 * Stream a chat completion for assistant chat.
 	 * Resolves tools and system message from the assistant registry.
 	 * @param {string} model - The model identifier to use
 	 * @param {AiAssistant | null} assistant - The assistant preset (defaults to DEFAULT)
@@ -67,7 +68,7 @@ export class AiService {
 	 * @param {AbortSignal} [signal] - Optional abort signal
 	 * @returns {AsyncGenerator<AiStreamChunk>} Typed stream chunks
 	 */
-	async *streamChat(
+	async *streamAssistant(
 		model: string,
 		assistant: AiAssistant | null,
 		messages: AiMessage[],
@@ -77,6 +78,10 @@ export class AiService {
 		const tools = AI_ASSISTANTS[assistant].tools;
 		const system_message = AI_ASSISTANTS[assistant].system_message;
 
-		yield* this.streamRaw(model, [system_message as AiMessage, ...messages], tools, signal);
+		const vendor = await this.getVendor();
+		const timeout_signal = AbortSignal.timeout(this.assistant_timeout);
+		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
+
+		yield* vendor.streamChat(model, [system_message as AiMessage, ...messages], tools, combined_signal);
 	}
 }

@@ -30,7 +30,7 @@ export class AiChatService {
 			const controller = new AbortController();
 			this.active_streams.set(ai_chat.id, controller);
 			const signal = controller.signal;
-			const chunks = this.aiService.streamChat(ai_chat.model, ai_chat.assistant, ai_chat.messages, signal);
+			const chunks = this.aiService.streamAssistant(ai_chat.model, ai_chat.assistant, ai_chat.messages, signal);
 
 			for await (const chunk of chunks) {
 				const chunk_data = chunk.error ? this.getChunkErrorJSON(chunk.error) : chunk;

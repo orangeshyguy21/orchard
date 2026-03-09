@@ -43,7 +43,7 @@ describe('AgentService', () => {
 	};
 
 	const mock_ai_service = {
-		streamRaw: jest.fn(),
+		streamAgent: jest.fn(),
 	};
 
 	const mock_setting_service = {
