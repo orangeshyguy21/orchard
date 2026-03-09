@@ -1,8 +1,9 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
+import {ModuleRef} from '@nestjs/core';
 /* Vendor Dependencies */
 import {GraphQLSchemaHost} from '@nestjs/graphql';
-import {DocumentNode, execute, parse} from 'graphql';
+import {DocumentNode, GraphQLSchema, execute, parse} from 'graphql';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AiTool} from '@server/modules/ai/ai.types';
@@ -10,7 +11,8 @@ import {AgentFunctionName} from '@server/modules/ai/agent/agent.enums';
 import {
 	GetBitcoinBlockchainInfoTool,
 	GetBitcoinNetworkInfoTool,
-	GetHealthTool,
+	GetPortHealthTool,
+	GetUrlHealthTool,
 	GetLightningAnalyticsTool,
 	GetLightningInfoTool,
 	GetMintAnalyticsTool,
@@ -25,11 +27,13 @@ export class ToolService {
 	private readonly registry = new Map<string, AiToolEntry>();
 	private readonly call_log = new Map<string, number[]>();
 	private readonly parsed_queries = new Map<string, DocumentNode>();
+	private schema: GraphQLSchema | null = null;
 
-	constructor(private readonly schemaHost: GraphQLSchemaHost) {
+	constructor(private readonly moduleRef: ModuleRef) {
 		this.register(AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
 		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
-		this.register(AgentFunctionName.GET_HEALTH, GetHealthTool);
+		this.register(AgentFunctionName.GET_PORT_HEALTH, GetPortHealthTool);
+		this.register(AgentFunctionName.GET_URL_HEALTH, GetUrlHealthTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS, GetLightningAnalyticsTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_INFO, GetLightningInfoTool);
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
@@ -137,9 +141,16 @@ export class ToolService {
 	 * Uses the same resolver pipeline as the HTTP API.
 	 */
 	private async executeGraphQL(name: string, variables: Record<string, unknown>): Promise<AiToolResult> {
-		const schema = this.schemaHost.schema;
+		if (!this.schema) {
+			this.schema = this.moduleRef.get(GraphQLSchemaHost, {strict: false}).schema;
+		}
 		const document = this.parsed_queries.get(name)!;
-		const result = await execute({schema, document, variableValues: variables});
+		const result = await execute({
+			schema: this.schema,
+			document,
+			variableValues: variables,
+			contextValue: {req: {headers: {}, user: {id: 'agent', name: 'agent', role: 'ADMIN'}}},
+		});
 
 		if (result.errors?.length) {
 			const messages = result.errors.map((e) => e.message).join('; ');
