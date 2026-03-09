@@ -40,6 +40,24 @@ const GET_MINT_ANALYTICS_QUERY = `
 	}
 `;
 
+const GET_MINT_ANALYTICS_METRICS_QUERY = `
+	query GetMintAnalyticsMetrics(
+		$units: [MintUnit!],
+		$date_start: UnixTimestamp,
+		$date_end: UnixTimestamp,
+		$interval: AnalyticsInterval,
+		$metrics: [MintAnalyticsMetric!]
+	) {
+		mint_analytics_metrics(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, metrics: $metrics) {
+			unit
+			metric
+			amount
+			date
+			count
+		}
+	}
+`;
+
 const GET_MINT_INFO_QUERY = `
 	query GetMintInfo {
 		mint_info {
@@ -77,9 +95,7 @@ export const GetMintInfoTool: AiToolEntry = {
 				'- `version` — mint software version',
 				'- `contact` — operator contact methods (e.g. email, nostr)',
 				'- `icon_url` — mint icon URL',
-				'- `urls` — public endpoint URLs (can be passed to GET_URL_HEALTH for liveness checks)',
-				'',
-				"**Usage:** Call this first to discover the mint's public URLs, then verify them with GET_URL_HEALTH.",
+				'- `urls` — public endpoint URLs',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -167,23 +183,7 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 			},
 		},
 	},
-	query: `
-		query GetMintAnalyticsMetrics(
-			$units: [MintUnit!],
-			$date_start: UnixTimestamp,
-			$date_end: UnixTimestamp,
-			$interval: AnalyticsInterval,
-			$metrics: [MintAnalyticsMetric!]
-		) {
-			mint_analytics_metrics(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, metrics: $metrics) {
-				unit
-				metric
-				amount
-				date
-				count
-			}
-		}
-	`,
+	query: GET_MINT_ANALYTICS_METRICS_QUERY,
 	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
 };
@@ -202,12 +202,6 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 				'- `mints` — tokens issued (Lightning → ecash conversions)',
 				'- `melts` — tokens redeemed (ecash → Lightning conversions)',
 				'- `fees` — fees collected from mint/melt operations',
-				'',
-				'**Interpretation:**',
-				'- A large balance increase without corresponding mints may indicate an accounting anomaly',
-				'- Unusually large individual mints or melts (high amount, low count) should be flagged',
-				'- Fee revenue dropping while volume stays steady could signal a configuration change',
-				'- Compare `mints` vs `melts` to assess net flow direction',
 				'',
 				'**Defaults:** `date_start` = all time (epoch 0), `date_end` = now, `units` = all. Always provide a `date_start` to scope results.',
 			].join('\n'),

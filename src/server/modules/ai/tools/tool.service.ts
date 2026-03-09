@@ -19,6 +19,7 @@ import {
 	GetMintAnalyticsMetricsTool,
 	GetMintAnalyticsTool,
 	GetMintInfoTool,
+	SendNotificationTool,
 } from '@server/modules/ai/agent/tools';
 /* Local Dependencies */
 import {AiToolResult, AiToolEntry} from './tool.types';
@@ -42,6 +43,7 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
+		this.register(AgentFunctionName.SEND_NOTIFICATION, SendNotificationTool);
 	}
 
 	/* *******************************************************

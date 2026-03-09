@@ -51,9 +51,6 @@ export const GetUrlHealthTool: AiToolEntry = {
 				'- Status codes outside 2xx indicate the endpoint is down or misconfigured',
 				'- `has_data: false` with status 200 may indicate an empty or broken response',
 				'- Compare resolved IPs against expected values to detect DNS issues',
-				'',
-				"**Usage:** Pass the mint's public URLs from GET_MINT_INFO to verify they are reachable.",
-				'For raw TCP port checks (e.g. Lightning or Bitcoin P2P ports), use GET_PORT_HEALTH instead.',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -95,9 +92,6 @@ export const GetPortHealthTool: AiToolEntry = {
 				'- `reachable: false` means the service is down or the port is firewalled',
 				'- High `latency_ms` (> 1000) may indicate network congestion or geographic distance',
 				'- Supports `.onion` addresses (routed via SOCKS5 proxy automatically)',
-				'',
-				'**Usage:** Use this to verify that Lightning and Bitcoin P2P ports are accepting connections.',
-				'For HTTP endpoint checks, use GET_URL_HEALTH instead.',
 			].join('\n'),
 			parameters: {
 				type: 'object',

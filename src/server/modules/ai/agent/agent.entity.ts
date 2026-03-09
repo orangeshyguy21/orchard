@@ -24,8 +24,8 @@ export class Agent {
 	@Column({type: 'text', nullable: true})
 	system_message: string | null;
 
-	@Column({type: 'text', default: '[]'})
-	tools: string;
+	@Column({type: 'text', nullable: true})
+	tools: string | null;
 
 	@Column({type: 'text', default: '[]'})
 	schedules: string;

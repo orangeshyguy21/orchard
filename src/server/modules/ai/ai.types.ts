@@ -43,6 +43,7 @@ export type AiMessage = {
 	content: string;
 	thinking?: string;
 	tool_calls?: AiToolCall[];
+	tool_call_id?: string;
 };
 
 /* *******************************************************
@@ -67,6 +68,7 @@ export type AiToolFunction = {
 };
 
 export type AiToolCall = {
+	id?: string;
 	function: {
 		name: AiFunctionName;
 		arguments: Record<string, unknown>;

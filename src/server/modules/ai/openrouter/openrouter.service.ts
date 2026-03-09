@@ -75,10 +75,35 @@ export class OpenRouterService implements AiVendor {
 	async *streamChat(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): AsyncGenerator<AiStreamChunk> {
 		const headers = await this.getHeaders();
 
-		const openai_messages = messages.map((m) => ({
-			role: m.role,
-			content: m.content,
-		}));
+		const openai_messages = messages.map((m) => {
+			/* Assistant messages with tool calls need the full tool_calls array */
+			if (m.role === AiMessageRole.ASSISTANT && m.tool_calls?.length) {
+				return {
+					role: m.role,
+					content: m.content || null,
+					tool_calls: m.tool_calls.map((tc) => ({
+						id: tc.id,
+						type: 'function' as const,
+						function: {
+							name: tc.function.name,
+							arguments: JSON.stringify(tc.function.arguments),
+						},
+					})),
+				};
+			}
+			/* Tool result messages: map FUNCTION role to "tool" with tool_call_id */
+			if (m.role === AiMessageRole.FUNCTION) {
+				return {
+					role: 'tool' as string,
+					tool_call_id: m.tool_call_id,
+					content: m.content,
+				};
+			}
+			return {
+				role: m.role,
+				content: m.content,
+			};
+		});
 
 		const body: Record<string, unknown> = {
 			model,
@@ -119,7 +144,7 @@ export class OpenRouterService implements AiVendor {
 		const reader = stream.getReader();
 		const decoder = new TextDecoder();
 		let buffer = '';
-		const tool_calls_acc = new Map<number, {name: string; arguments: string}>();
+		const tool_calls_acc = new Map<number, {id: string; name: string; arguments: string}>();
 		let last_usage: {prompt_tokens?: number; completion_tokens?: number} | undefined;
 
 		try {
@@ -190,11 +215,12 @@ export class OpenRouterService implements AiVendor {
 	/**
 	 * Accumulate tool call fragments across SSE deltas
 	 * @param {OpenRouterToolCallDelta[]} deltas - Tool call delta fragments
-	 * @param {Map<number, {name: string; arguments: string}>} acc - Accumulator map keyed by tool call index
+	 * @param {Map<number, {id: string; name: string; arguments: string}>} acc - Accumulator map keyed by tool call index
 	 */
-	private accumulateToolCalls(deltas: OpenRouterToolCallDelta[], acc: Map<number, {name: string; arguments: string}>): void {
+	private accumulateToolCalls(deltas: OpenRouterToolCallDelta[], acc: Map<number, {id: string; name: string; arguments: string}>): void {
 		for (const delta of deltas) {
-			const existing = acc.get(delta.index) ?? {name: '', arguments: ''};
+			const existing = acc.get(delta.index) ?? {id: '', name: '', arguments: ''};
+			if (delta.id) existing.id = delta.id;
 			if (delta.function?.name) existing.name += delta.function.name;
 			if (delta.function?.arguments) existing.arguments += delta.function.arguments;
 			acc.set(delta.index, existing);
@@ -204,19 +230,20 @@ export class OpenRouterService implements AiVendor {
 	/**
 	 * Build the final done chunk with accumulated tool calls and usage
 	 * @param {string} model - Model identifier
-	 * @param {Map<number, {name: string; arguments: string}>} tool_calls_acc - Accumulated tool calls
+	 * @param {Map<number, {id: string; name: string; arguments: string}>} tool_calls_acc - Accumulated tool calls
 	 * @param {{prompt_tokens?: number; completion_tokens?: number}} [usage] - Token usage data
 	 * @returns {AiStreamChunk} The final done chunk
 	 */
 	private buildDoneChunk(
 		model: string,
-		tool_calls_acc: Map<number, {name: string; arguments: string}>,
+		tool_calls_acc: Map<number, {id: string; name: string; arguments: string}>,
 		usage?: {prompt_tokens?: number; completion_tokens?: number},
 	): AiStreamChunk {
 		let tool_calls: AiToolCall[] | undefined;
 
 		if (tool_calls_acc.size > 0) {
 			tool_calls = Array.from(tool_calls_acc.values()).map((tc) => ({
+				id: tc.id,
 				function: {
 					name: tc.name as AiFunctionName,
 					arguments: JSON.parse(tc.arguments || '{}'),

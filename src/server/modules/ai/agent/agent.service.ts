@@ -65,7 +65,7 @@ export class AgentService implements OnModuleInit {
 				description: definition.description,
 				active: false,
 				system_message: null,
-				tools: JSON.stringify(definition.tools ?? []),
+				tools: null,
 				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
@@ -207,11 +207,12 @@ export class AgentService implements OnModuleInit {
 		const model = model_setting?.value;
 		if (!model) throw new Error('No AI model configured (ai.server.model)');
 
-		const tool_names: string[] = JSON.parse(agent.tools);
+		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
+		const tool_names: string[] = agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 
-		const base_message =
-			agent.system_message ?? 'You are a monitoring agent. Use your tools to gather data, then provide a concise analysis.';
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
+		const base_message = agent.system_message ?? built_in;
 		const system_message: AiMessage = {
 			role: AiMessageRole.SYSTEM,
 			content: `${base_message}\n\n${this.buildRuntimeContext(agent)}`,
@@ -229,7 +230,7 @@ export class AgentService implements OnModuleInit {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
 					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments);
-					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result)});
+					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
 				this.dumpAgentTrace(agent, messages, total_tokens, response.message.content, tool_names);

@@ -194,15 +194,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 
 		while (true) {
 			const batch = await fetcher({page, page_size: BATCH_SIZE, sort_order: 'ASC'});
-			if (batch.length === 0) {
-				if (page > 1) {
-					this.logger.warn(`Stale checkpoint detected for ${data_type} at page ${page}, resetting to page 1`);
-					page = 1;
-					await this.saveCheckpoint(data_type, page);
-					continue;
-				}
-				break;
-			}
+			if (batch.length === 0) break;
 
 			for (const record of batch) {
 				const hour = DateTime.fromSeconds(record.created_time, {zone: 'UTC'}).startOf('hour').toSeconds();
@@ -211,9 +203,9 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				pending_bucket.get(hour)!.push(record);
 			}
 
+			if (batch.length < BATCH_SIZE) break;
 			page++;
 			await this.saveCheckpoint(data_type, page);
-			if (batch.length < BATCH_SIZE) break;
 			await this.forceFlushIfNeeded(pending_bucket, inserter);
 		}
 
