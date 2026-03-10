@@ -12,6 +12,7 @@ import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxorac
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {SystemMetricsService} from '@server/modules/system/metrics/sysmetrics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -28,6 +29,7 @@ export class TaskService {
 		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
 		private agentService: AgentService,
+		private systemMetricsService: SystemMetricsService,
 	) {}
 
 	/**
@@ -61,7 +63,7 @@ export class TaskService {
 			return;
 		}
 
-		const bitcoin_oracle_enabled = await this.settingService.getSetting(SettingKey.BITCOIN_ORACLE);
+		const bitcoin_oracle_enabled = await this.settingService.getBooleanSetting(SettingKey.BITCOIN_ORACLE);
 		if (!bitcoin_oracle_enabled) {
 			this.logger.debug('Bitcoin oracle is not enabled, skipping oracle job');
 			return;
@@ -206,6 +208,44 @@ export class TaskService {
 			this.logger.log('Agent run cleanup complete');
 		} catch (error) {
 			this.logger.error(`Error cleaning up agent runs: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Collect system metrics every minute
+	 * Guarded by SYSTEM_METRICS setting
+	 */
+	@Cron('* * * * *', {
+		name: 'collect-system-metrics',
+		timeZone: 'UTC',
+	})
+	async collectSystemMetrics() {
+		if (!(await this.settingService.getBooleanSetting(SettingKey.SYSTEM_METRICS))) return;
+
+		try {
+			await this.systemMetricsService.collectAndStore();
+		} catch (error) {
+			this.logger.error(`Error collecting system metrics: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Clean up old system metrics and downsample daily at 2:30 AM UTC
+	 * Guarded by SYSTEM_METRICS setting
+	 */
+	@Cron('30 2 * * *', {
+		name: 'cleanup-system-metrics',
+		timeZone: 'UTC',
+	})
+	async cleanupSystemMetrics() {
+		if (!(await this.settingService.getBooleanSetting(SettingKey.SYSTEM_METRICS))) return;
+
+		this.logger.log('Starting system metrics cleanup...');
+		try {
+			await this.systemMetricsService.cleanupOldMetrics();
+			this.logger.log('System metrics cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up system metrics: ${error.message}`, error.stack);
 		}
 	}
 }

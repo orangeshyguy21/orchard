@@ -27,8 +27,7 @@ export class AiService {
 	 * @returns {Promise<AiVendor>} The appropriate vendor service
 	 */
 	private async getVendor(): Promise<AiVendor> {
-		const vendor_setting = await this.settingService.getSetting(SettingKey.AI_VENDOR);
-		const vendor = vendor_setting?.value ?? 'ollama';
+		const vendor = await this.settingService.getStringSetting(SettingKey.AI_VENDOR);
 		if (vendor === 'openrouter') return this.openRouterService;
 		return this.ollamaService;
 	}

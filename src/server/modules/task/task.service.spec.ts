@@ -11,6 +11,7 @@ import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxorac
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {SystemMetricsService} from '@server/modules/system/metrics/sysmetrics.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -33,6 +34,9 @@ describe('TaskService', () => {
 					provide: SettingService,
 					useValue: {
 						getSetting: jest.fn(),
+						getBooleanSetting: jest.fn(),
+						getStringSetting: jest.fn(),
+						getNumberSetting: jest.fn(),
 					},
 				},
 				{
@@ -72,6 +76,13 @@ describe('TaskService', () => {
 					provide: AgentService,
 					useValue: {
 						cleanupOldRuns: jest.fn(),
+					},
+				},
+				{
+					provide: SystemMetricsService,
+					useValue: {
+						collectAndStore: jest.fn(),
+						cleanupOldMetrics: jest.fn(),
 					},
 				},
 			],

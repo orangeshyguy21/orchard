@@ -28,4 +28,5 @@ export enum SettingKey {
 	NOTIFICATIONS_ENABLED = 'notifications.enabled',
 	NOTIFICATIONS_VENDOR = 'notifications.vendor',
 	NOTIFICATIONS_TELEGRAM_BOT_TOKEN = 'notifications.telegram.bot.token',
+	SYSTEM_METRICS = 'system.metrics',
 }

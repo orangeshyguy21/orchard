@@ -22,7 +22,7 @@ describe('AiHealthService', () => {
 			providers: [
 				AiHealthService,
 				{provide: FetchService, useValue: {fetchWithProxy: jest.fn()}},
-				{provide: SettingService, useValue: {getSetting: jest.fn()}},
+				{provide: SettingService, useValue: {getSetting: jest.fn(), getStringSetting: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();
@@ -38,8 +38,8 @@ describe('AiHealthService', () => {
 	});
 
 	it('returns success for ollama when fetch succeeds', async () => {
-		settingService.getSetting.mockResolvedValueOnce({value: 'ollama'} as any);
-		settingService.getSetting.mockResolvedValueOnce({value: 'http://localhost:11434'} as any);
+		settingService.getStringSetting.mockResolvedValueOnce('ollama');
+		settingService.getStringSetting.mockResolvedValueOnce('http://localhost:11434');
 		fetchService.fetchWithProxy.mockResolvedValue({ok: true} as any);
 
 		const result = await aiHealthService.checkHealth('TAG');
@@ -49,8 +49,8 @@ describe('AiHealthService', () => {
 	});
 
 	it('returns failure for ollama when fetch returns non-ok status', async () => {
-		settingService.getSetting.mockResolvedValueOnce({value: 'ollama'} as any);
-		settingService.getSetting.mockResolvedValueOnce({value: 'http://localhost:11434'} as any);
+		settingService.getStringSetting.mockResolvedValueOnce('ollama');
+		settingService.getStringSetting.mockResolvedValueOnce('http://localhost:11434');
 		fetchService.fetchWithProxy.mockResolvedValue({ok: false, status: 500} as any);
 
 		const result = await aiHealthService.checkHealth('TAG');
@@ -59,8 +59,8 @@ describe('AiHealthService', () => {
 	});
 
 	it('returns success for openrouter when fetch succeeds', async () => {
-		settingService.getSetting.mockResolvedValueOnce({value: 'openrouter'} as any);
-		settingService.getSetting.mockResolvedValueOnce({value: 'sk-or-test-key'} as any);
+		settingService.getStringSetting.mockResolvedValueOnce('openrouter');
+		settingService.getStringSetting.mockResolvedValueOnce('sk-or-test-key');
 		fetchService.fetchWithProxy.mockResolvedValue({ok: true} as any);
 
 		const result = await aiHealthService.checkHealth('TAG');
@@ -70,8 +70,8 @@ describe('AiHealthService', () => {
 	});
 
 	it('returns failure for openrouter when API key is empty', async () => {
-		settingService.getSetting.mockResolvedValueOnce({value: 'openrouter'} as any);
-		settingService.getSetting.mockResolvedValueOnce({value: ''} as any);
+		settingService.getStringSetting.mockResolvedValueOnce('openrouter');
+		settingService.getStringSetting.mockResolvedValueOnce(null);
 
 		const result = await aiHealthService.checkHealth('TAG');
 		expect(result.status).toBe(false);
@@ -79,7 +79,7 @@ describe('AiHealthService', () => {
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		settingService.getSetting.mockRejectedValue(new Error('DB error'));
+		settingService.getStringSetting.mockRejectedValue(new Error('DB error'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
 
 		await expect(aiHealthService.checkHealth('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);

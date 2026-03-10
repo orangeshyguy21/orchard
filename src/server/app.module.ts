@@ -44,6 +44,7 @@ import {
 	EventLogStatus,
 	EventLogDetailStatus,
 } from './modules/event/event.enums';
+import {SystemMetric, SystemMetricsInterval} from './modules/system/metrics/sysmetrics.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -77,6 +78,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(EventLogType, {name: 'EventLogType'});
 	registerEnumType(EventLogStatus, {name: 'EventLogStatus'});
 	registerEnumType(EventLogDetailStatus, {name: 'EventLogDetailStatus'});
+	registerEnumType(SystemMetric, {name: 'SystemMetric'});
+	registerEnumType(SystemMetricsInterval, {name: 'SystemMetricsInterval'});
 
 	const path = configService.get('server.path');
 	const is_production = configService.get('mode.production');

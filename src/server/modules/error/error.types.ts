@@ -55,6 +55,8 @@ export enum OrchardErrorCode {
 	SettingError = 90001,
 	// Event Log Level Errors
 	EventLogError = 100001,
+	// System Metrics Level Errors
+	SystemMetricsError = 110001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -99,4 +101,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InviteInvalidError]: 'InviteInvalidError',
 	[OrchardErrorCode.SettingError]: 'SettingError',
 	[OrchardErrorCode.EventLogError]: 'EventLogError',
+	[OrchardErrorCode.SystemMetricsError]: 'SystemMetricsError',
 };

@@ -206,8 +206,7 @@ export class AgentService implements OnModuleInit {
 	 * and iterates until the LLM returns content or the iteration cap is hit.
 	 */
 	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
-		const model_setting = await this.settingService.getSetting(SettingKey.AI_SERVER_MODEL);
-		const model = model_setting?.value;
+		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
 		if (!model) throw new Error('No AI model configured (ai.server.model)');
 
 		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;

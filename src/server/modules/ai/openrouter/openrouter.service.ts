@@ -25,11 +25,8 @@ export class OpenRouterService implements AiVendor {
 	 * @returns {Promise<string>} The API key
 	 */
 	private async getApiKey(): Promise<string> {
-		const key_setting = await this.settingService.getSetting(SettingKey.AI_OPENROUTER_KEY);
-		const api_key = key_setting?.value ?? '';
-		if (!api_key) {
-			throw new Error('OpenRouter API key is not configured');
-		}
+		const api_key = await this.settingService.getStringSetting(SettingKey.AI_OPENROUTER_KEY);
+		if (!api_key) throw new Error('OpenRouter API key is not configured');
 		return api_key;
 	}
 

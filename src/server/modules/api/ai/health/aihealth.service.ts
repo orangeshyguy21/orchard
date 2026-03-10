@@ -27,9 +27,8 @@ export class AiHealthService {
 	 */
 	async checkHealth(tag: string): Promise<OrchardAiHealth> {
 		try {
-			const vendor_setting = await this.settingService.getSetting(SettingKey.AI_VENDOR);
-			const vendor = vendor_setting?.value ?? '';
-			if (!vendor) return new OrchardAiHealth({status: false, message: 'AI vendor is not configured', vendor});
+			const vendor = await this.settingService.getStringSetting(SettingKey.AI_VENDOR);
+			if (!vendor) return new OrchardAiHealth({status: false, message: 'AI vendor is not configured', vendor: ''});
 			if (vendor === 'openrouter') return await this.checkOpenRouter(vendor);
 			return await this.checkOllama(vendor);
 		} catch (error) {
@@ -46,8 +45,7 @@ export class AiHealthService {
 	 * @returns {Promise<OrchardAiHealth>} Health check result
 	 */
 	private async checkOllama(vendor: string): Promise<OrchardAiHealth> {
-		const api_setting = await this.settingService.getSetting(SettingKey.AI_OLLAMA_API);
-		const base_url = api_setting?.value ?? '';
+		const base_url = await this.settingService.getStringSetting(SettingKey.AI_OLLAMA_API);
 
 		if (!base_url) {
 			return new OrchardAiHealth({
@@ -79,8 +77,7 @@ export class AiHealthService {
 	 * @returns {Promise<OrchardAiHealth>} Health check result
 	 */
 	private async checkOpenRouter(vendor: string): Promise<OrchardAiHealth> {
-		const key_setting = await this.settingService.getSetting(SettingKey.AI_OPENROUTER_KEY);
-		const api_key = key_setting?.value ?? '';
+		const api_key = await this.settingService.getStringSetting(SettingKey.AI_OPENROUTER_KEY);
 
 		if (!api_key) {
 			return new OrchardAiHealth({

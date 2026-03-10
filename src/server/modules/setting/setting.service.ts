@@ -8,7 +8,7 @@ import {Repository} from 'typeorm';
 import {Setting} from './setting.entity';
 import {DEFAULT_SETTINGS} from './setting.config';
 import {SettingKey} from './setting.enums';
-import {isSettingSensitive, maskSensitiveValue, deriveEncryptionKey, encryptValue, decryptValue} from './setting.helpers';
+import {isSettingSensitive, maskSensitiveValue, deriveEncryptionKey, encryptValue, decryptValue, parseSettingValue} from './setting.helpers';
 
 @Injectable()
 export class SettingService implements OnModuleInit {
@@ -89,6 +89,40 @@ export class SettingService implements OnModuleInit {
 	public async getSetting(key: SettingKey): Promise<Setting> {
 		const setting = await this.settingRepository.findOne({where: {key}});
 		return setting ? this.decryptSetting(setting) : setting;
+	}
+
+	/**
+	 * Get a boolean setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<boolean>} The parsed boolean value, false if missing or empty
+	 */
+	public async getBooleanSetting(key: SettingKey): Promise<boolean> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return false;
+		return parseSettingValue(setting) === true;
+	}
+
+	/**
+	 * Get a string setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<string | null>} The string value, null if missing or empty
+	 */
+	public async getStringSetting(key: SettingKey): Promise<string | null> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return null;
+		return String(parseSettingValue(setting)) || null;
+	}
+
+	/**
+	 * Get a number setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<number | null>} The parsed number value, null if missing, empty, or NaN
+	 */
+	public async getNumberSetting(key: SettingKey): Promise<number | null> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return null;
+		const parsed = parseSettingValue(setting);
+		return typeof parsed === 'number' && !isNaN(parsed) ? parsed : null;
 	}
 
 	/* *******************************************************

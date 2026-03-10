@@ -36,17 +36,17 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	/** Initialize or re-initialize the bot from current settings */
 	public async initializeBot(): Promise<void> {
 		this.stopBot();
-		const enabled = await this.settingService.getSetting(SettingKey.NOTIFICATIONS_ENABLED);
-		if (enabled?.value !== 'true') return;
+		const enabled = await this.settingService.getBooleanSetting(SettingKey.NOTIFICATIONS_ENABLED);
+		if (!enabled) return;
 
-		const vendor = await this.settingService.getSetting(SettingKey.NOTIFICATIONS_VENDOR);
-		if (vendor?.value !== 'telegram') return;
+		const vendor = await this.settingService.getStringSetting(SettingKey.NOTIFICATIONS_VENDOR);
+		if (vendor !== 'telegram') return;
 
-		const token_setting = await this.settingService.getSetting(SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN);
-		if (!token_setting?.value) return;
+		const token = await this.settingService.getStringSetting(SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN);
+		if (!token) return;
 
 		try {
-			this.bot = new Bot(token_setting.value);
+			this.bot = new Bot(token);
 			this.registerHandlers();
 			this.bot.start({drop_pending_updates: true});
 			this.logger.log('Telegram bot started (long-polling)');

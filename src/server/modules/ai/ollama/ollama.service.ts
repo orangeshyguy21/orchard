@@ -23,11 +23,8 @@ export class OllamaService implements AiVendor {
 	 * @returns {Promise<string>} The base URL for Ollama API calls
 	 */
 	private async getBaseUrl(): Promise<string> {
-		const api_setting = await this.settingService.getSetting(SettingKey.AI_OLLAMA_API);
-		const base_url = api_setting?.value ?? '';
-		if (!base_url) {
-			throw new Error('Ollama API endpoint is not configured');
-		}
+		const base_url = await this.settingService.getStringSetting(SettingKey.AI_OLLAMA_API);
+		if (!base_url) throw new Error('Ollama API endpoint is not configured');
 		return base_url;
 	}
 

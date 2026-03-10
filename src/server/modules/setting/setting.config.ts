@@ -57,4 +57,10 @@ export const DEFAULT_SETTINGS: Setting[] = [
 		value_type: SettingValue.STRING,
 		description: 'The Telegram bot token from @BotFather',
 	},
+	{
+		key: SettingKey.SYSTEM_METRICS,
+		value: 'true',
+		value_type: SettingValue.BOOLEAN,
+		description: 'Whether system metrics collection is enabled',
+	},
 ];

@@ -1,7 +1,8 @@
 /* Core Dependencies */
 import {createHash, hkdfSync, randomBytes, createCipheriv, createDecipheriv} from 'crypto';
 /* Local Dependencies */
-import {SettingKey, SettingSensitivity} from './setting.enums';
+import {Setting} from './setting.entity';
+import {SettingKey, SettingSensitivity, SettingValue} from './setting.enums';
 
 /**
  * Map of setting keys to their sensitivity level.
@@ -56,6 +57,34 @@ export const maskSensitiveValue = (value: string): string => {
 	if (!value) return '';
 	if (value.length <= 4) return '\u2022\u2022\u2022\u2022';
 	return '\u2022\u2022\u2022\u2022' + value.slice(-4);
+};
+
+/* *******************************************************
+	Parsing
+******************************************************** */
+
+/**
+ * Parse a setting's string value into its typed representation based on value_type.
+ * Mirrors the client-side parseSettingValue in SettingAppService.
+ * @param {Setting} setting - The setting entity
+ * @returns {boolean | number | string | any} The parsed value
+ */
+export const parseSettingValue = (setting: Setting): boolean | number | string | any => {
+	switch (setting.value_type) {
+		case SettingValue.BOOLEAN:
+			return setting.value === 'true';
+		case SettingValue.NUMBER:
+			return Number(setting.value);
+		case SettingValue.JSON:
+			try {
+				return JSON.parse(setting.value);
+			} catch {
+				return null;
+			}
+		case SettingValue.STRING:
+		default:
+			return setting.value;
+	}
 };
 
 /* *******************************************************

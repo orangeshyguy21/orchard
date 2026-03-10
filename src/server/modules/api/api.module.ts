@@ -55,6 +55,8 @@ import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 import {ApiSettingModule} from './setting/setting.module';
 // Event Endpoints
 import {ApiEventLogModule} from './event/event.module';
+// System Endpoints
+import {ApiSystemMetricsModule} from './system/metrics/sysmetrics.module';
 
 @Module({
 	imports: [
@@ -101,6 +103,7 @@ import {ApiEventLogModule} from './event/event.module';
 		CrewInviteModule,
 		ApiSettingModule,
 		ApiEventLogModule,
+		ApiSystemMetricsModule,
 	],
 })
 export class ApiModule {}

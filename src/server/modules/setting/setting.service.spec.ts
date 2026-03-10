@@ -280,6 +280,71 @@ describe('SettingService', () => {
 	});
 
 	/* *******************************************************
+		Typed Accessors
+	******************************************************** */
+
+	describe('getBooleanSetting', () => {
+		it('should return true for boolean setting with value true', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: 'true', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(true);
+		});
+
+		it('should return false for boolean setting with value false', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: 'false', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+
+		it('should return false when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+
+		it('should return false when value is empty', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: '', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+	});
+
+	describe('getStringSetting', () => {
+		it('should return the string value', async () => {
+			mock_repository.findOne.mockResolvedValue({key: SettingKey.AI_VENDOR, value: 'ollama', value_type: SettingValue.STRING, description: null});
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBe('ollama');
+		});
+
+		it('should return null when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBeNull();
+		});
+
+		it('should return null for empty string value', async () => {
+			mock_repository.findOne.mockResolvedValue({key: SettingKey.AI_VENDOR, value: '', value_type: SettingValue.STRING, description: null});
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBeNull();
+		});
+	});
+
+	describe('getNumberSetting', () => {
+		it('should return the parsed number', async () => {
+			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: '42', value_type: SettingValue.NUMBER, description: null});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBe(42);
+		});
+
+		it('should return null when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+
+		it('should return null for empty value', async () => {
+			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: '', value_type: SettingValue.NUMBER, description: null});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+
+		it('should return null for NaN values', async () => {
+			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: 'abc', value_type: SettingValue.NUMBER, description: null});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+	});
+
+	/* *******************************************************
 		Encryption
 	******************************************************** */
 

@@ -3,7 +3,6 @@ import {Test, TestingModule} from '@nestjs/testing';
 /* Application Dependencies */
 import {SettingService} from '@server/modules/setting/setting.service';
 import {UserService} from '@server/modules/user/user.service';
-import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {TelegramService} from './telegram.service';
 
@@ -20,6 +19,8 @@ describe('TelegramService', () => {
 					provide: SettingService,
 					useValue: {
 						getSetting: jest.fn(),
+						getBooleanSetting: jest.fn(),
+						getStringSetting: jest.fn(),
 					},
 				},
 				{
@@ -69,43 +70,22 @@ describe('TelegramService', () => {
 
 	describe('initializeBot', () => {
 		it('should not start bot when notifications are disabled', async () => {
-			settingService.getSetting.mockResolvedValue({
-				key: SettingKey.NOTIFICATIONS_ENABLED,
-				value: 'false',
-				value_type: 'boolean' as any,
-				description: '',
-			});
+			settingService.getBooleanSetting.mockResolvedValue(false);
 			await service.initializeBot();
 			expect(service.isRunning()).toBe(false);
 		});
 
 		it('should not start bot when vendor is not telegram', async () => {
-			settingService.getSetting.mockImplementation(async (key: SettingKey) => {
-				if (key === SettingKey.NOTIFICATIONS_ENABLED) {
-					return {key, value: 'true', value_type: 'boolean' as any, description: ''};
-				}
-				if (key === SettingKey.NOTIFICATIONS_VENDOR) {
-					return {key, value: 'pushover', value_type: 'string' as any, description: ''};
-				}
-				return null;
-			});
+			settingService.getBooleanSetting.mockResolvedValue(true);
+			settingService.getStringSetting.mockResolvedValueOnce('pushover');
 			await service.initializeBot();
 			expect(service.isRunning()).toBe(false);
 		});
 
 		it('should not start bot when token is empty', async () => {
-			settingService.getSetting.mockImplementation(async (key: SettingKey) => {
-				if (key === SettingKey.NOTIFICATIONS_ENABLED) {
-					return {key, value: 'true', value_type: 'boolean' as any, description: ''};
-				}
-				if (key === SettingKey.NOTIFICATIONS_VENDOR) {
-					return {key, value: 'telegram', value_type: 'string' as any, description: ''};
-				}
-				if (key === SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN) {
-					return {key, value: '', value_type: 'string' as any, description: ''};
-				}
-				return null;
-			});
+			settingService.getBooleanSetting.mockResolvedValue(true);
+			settingService.getStringSetting.mockResolvedValueOnce('telegram');
+			settingService.getStringSetting.mockResolvedValueOnce(null);
 			await service.initializeBot();
 			expect(service.isRunning()).toBe(false);
 		});

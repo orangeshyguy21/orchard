@@ -1,0 +1,227 @@
+/* Core Dependencies */
+import {Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import * as os from 'os';
+import {promises as fs} from 'fs';
+/* Vendor Dependencies */
+import {FindOptionsWhere, Repository, LessThan, Between, In} from 'typeorm';
+import {DateTime} from 'luxon';
+/* Local Dependencies */
+import {SystemMetrics} from './sysmetrics.entity';
+import {SystemMetric} from './sysmetrics.enums';
+
+/** Rounds a number to 2 decimal places */
+const round2 = (n: number): number => Math.round(n * 100) / 100;
+
+const RETENTION_DAYS = 90;
+const DOWNSAMPLE_AFTER_DAYS = 7;
+const CPU_SAMPLE_INTERVAL_MS = 100;
+
+@Injectable()
+export class SystemMetricsService {
+	private readonly logger = new Logger(SystemMetricsService.name);
+
+	constructor(
+		@InjectRepository(SystemMetrics)
+		private systemMetricsRepository: Repository<SystemMetrics>,
+	) {}
+
+	/* *******************************************************
+		Collection
+	******************************************************** */
+
+	/**
+	 * Samples all system metrics and stores them for the current minute
+	 */
+	async collectAndStore(): Promise<void> {
+		const now = DateTime.utc();
+		const minute_start = now.startOf('minute').toSeconds();
+		const updated_at = Math.floor(now.toSeconds());
+
+		const samples = await this.sampleAll();
+
+		const rows = Object.entries(samples).map(([metric, value]) => ({
+			metric,
+			date: minute_start,
+			value,
+			updated_at,
+		}));
+
+		await this.systemMetricsRepository.upsert(rows, {conflictPaths: ['metric', 'date']});
+	}
+
+	/**
+	 * Samples all system metrics and returns them as a map
+	 */
+	private async sampleAll(): Promise<Record<string, number>> {
+		const [cpu_percent, disk_percent] = await Promise.all([this.sampleCpuPercent(), this.sampleDiskPercent()]);
+
+		const total_mem = os.totalmem();
+		const free_mem = os.freemem();
+		const memory_percent = ((total_mem - free_mem) / total_mem) * 100;
+
+		const [load_1m, load_5m, load_15m] = os.loadavg();
+
+		const heap = process.memoryUsage();
+		const heap_used_mb = heap.heapUsed / (1024 * 1024);
+		const heap_total_mb = heap.heapTotal / (1024 * 1024);
+
+		return {
+			[SystemMetric.cpu_percent]: round2(cpu_percent),
+			[SystemMetric.memory_percent]: round2(memory_percent),
+			[SystemMetric.disk_percent]: round2(disk_percent),
+			[SystemMetric.load_avg_1m]: round2(load_1m),
+			[SystemMetric.load_avg_5m]: round2(load_5m),
+			[SystemMetric.load_avg_15m]: round2(load_15m),
+			[SystemMetric.heap_used_mb]: round2(heap_used_mb),
+			[SystemMetric.heap_total_mb]: round2(heap_total_mb),
+			[SystemMetric.uptime_system]: Math.floor(os.uptime()),
+			[SystemMetric.uptime_process]: Math.floor(process.uptime()),
+		};
+	}
+
+	/**
+	 * Computes CPU usage percentage by sampling twice with a short interval
+	 */
+	private async sampleCpuPercent(): Promise<number> {
+		const start = os.cpus();
+		await new Promise((resolve) => setTimeout(resolve, CPU_SAMPLE_INTERVAL_MS));
+		const end = os.cpus();
+
+		let total_idle = 0;
+		let total_tick = 0;
+
+		for (let i = 0; i < start.length; i++) {
+			const start_cpu = start[i].times;
+			const end_cpu = end[i].times;
+
+			const idle_diff = end_cpu.idle - start_cpu.idle;
+			const total_diff =
+				end_cpu.user -
+				start_cpu.user +
+				end_cpu.nice -
+				start_cpu.nice +
+				end_cpu.sys -
+				start_cpu.sys +
+				end_cpu.idle -
+				start_cpu.idle +
+				end_cpu.irq -
+				start_cpu.irq;
+
+			total_idle += idle_diff;
+			total_tick += total_diff;
+		}
+
+		return total_tick === 0 ? 0 : ((total_tick - total_idle) / total_tick) * 100;
+	}
+
+	/**
+	 * Gets disk usage percentage for the root filesystem
+	 */
+	private async sampleDiskPercent(): Promise<number> {
+		try {
+			const stats = await fs.statfs('/');
+			const total = stats.blocks * stats.bsize;
+			const free = stats.bfree * stats.bsize;
+			return ((total - free) / total) * 100;
+		} catch (error) {
+			this.logger.warn(`Failed to sample disk stats: ${error.message}`);
+			return 0;
+		}
+	}
+
+	/* *******************************************************
+		Query
+	******************************************************** */
+
+	/**
+	 * Gets stored metrics for a date range
+	 */
+	async getMetrics(date_start: number, date_end: number, metrics?: SystemMetric[]): Promise<SystemMetrics[]> {
+		if (date_end < date_start) return [];
+
+		const where: FindOptionsWhere<SystemMetrics> = {
+			date: Between(date_start, date_end),
+		};
+
+		if (metrics?.length) {
+			where.metric = In(metrics);
+		}
+
+		return this.systemMetricsRepository.find({
+			where,
+			order: {date: 'ASC'},
+		});
+	}
+
+	/* *******************************************************
+		Cleanup
+	******************************************************** */
+
+	/**
+	 * Deletes records older than RETENTION_DAYS and downsamples
+	 * minute-granularity data older than DOWNSAMPLE_AFTER_DAYS to hourly
+	 */
+	async cleanupOldMetrics(): Promise<void> {
+		const now = DateTime.utc();
+
+		// Delete records older than retention period
+		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('minute').toSeconds();
+		const deleted = await this.systemMetricsRepository.delete({
+			date: LessThan(retention_cutoff),
+		});
+		if (deleted.affected) {
+			this.logger.log(`Deleted ${deleted.affected} system metrics older than ${RETENTION_DAYS} days`);
+		}
+
+		// Downsample minute data older than DOWNSAMPLE_AFTER_DAYS to hourly
+		await this.downsampleToHourly(now);
+	}
+
+	/**
+	 * Downsamples minute-granularity data to hourly by averaging values
+	 * for records older than DOWNSAMPLE_AFTER_DAYS.
+	 * Uses SQL GROUP BY to avoid loading all rows into memory.
+	 */
+	private async downsampleToHourly(now: DateTime): Promise<void> {
+		const downsample_cutoff = now.minus({days: DOWNSAMPLE_AFTER_DAYS}).startOf('hour').toSeconds();
+		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('hour').toSeconds();
+		const updated_at = Math.floor(now.toSeconds());
+
+		// Aggregate in SQL: group by metric + hour bucket, compute averages
+		const hourly_averages: {metric: string; hour_bucket: number; avg_value: number; row_count: number}[] =
+			await this.systemMetricsRepository
+				.createQueryBuilder('m')
+				.select('m.metric', 'metric')
+				.addSelect('(m.date - (m.date % 3600))', 'hour_bucket')
+				.addSelect('AVG(m.value)', 'avg_value')
+				.addSelect('COUNT(*)', 'row_count')
+				.where('m.date >= :start AND m.date < :end', {start: retention_cutoff, end: downsample_cutoff})
+				.groupBy('m.metric')
+				.addGroupBy('hour_bucket')
+				.getRawMany();
+
+		if (hourly_averages.length === 0) return;
+
+		const total_rows = hourly_averages.reduce((sum, r) => sum + Number(r.row_count), 0);
+
+		// Delete old minute-granularity records in the range
+		await this.systemMetricsRepository
+			.createQueryBuilder()
+			.delete()
+			.where('date >= :start AND date < :end', {start: retention_cutoff, end: downsample_cutoff})
+			.execute();
+
+		// Insert hourly averages in a single batch
+		const rows = hourly_averages.map((r) => ({
+			metric: r.metric,
+			date: Number(r.hour_bucket),
+			value: round2(Number(r.avg_value)),
+			updated_at,
+		}));
+
+		await this.systemMetricsRepository.upsert(rows, {conflictPaths: ['metric', 'date']});
+
+		this.logger.log(`Downsampled ${total_rows} minute records into ${hourly_averages.length} hourly records`);
+	}
+}
