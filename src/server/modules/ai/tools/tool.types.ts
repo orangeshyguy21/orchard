@@ -2,6 +2,16 @@
 import {AiTool} from '../ai.types';
 
 /* *******************************************************
+	Agent Context
+******************************************************** */
+
+/** Identity context passed from agent execution into tool calls */
+export type AiAgentContext = {
+	agent_id: string;
+	agent_name: string;
+};
+
+/* *******************************************************
 	Tool Results
 ******************************************************** */
 

@@ -15,12 +15,14 @@ import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/a
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
+/* Native Dependencies */
+import {ToolService} from '@server/modules/ai/tools/tool.service';
+import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
 import {AgentFunctionName, AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
-import {ToolService} from '@server/modules/ai/tools/tool.service';
 
 @Injectable()
 export class AgentService implements OnModuleInit {
@@ -220,6 +222,7 @@ export class AgentService implements OnModuleInit {
 		};
 
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
 
 		let total_tokens = 0;
 		let notified = false;
@@ -234,7 +237,7 @@ export class AgentService implements OnModuleInit {
 					if ((tool_call.function.name as string) === AgentFunctionName.SEND_NOTIFICATION) {
 						notified = true;
 					}
-					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments);
+					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments, agent_context);
 					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {

@@ -8,13 +8,8 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
 import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
-import {
-	EventLogActorType,
-	EventLogSection,
-	EventLogEntityType,
-	EventLogStatus,
-	EventLogDetailStatus,
-} from '@server/modules/event/event.enums';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {getActorType} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintApiService} from '@server/modules/cashu/mintapi/cashumintapi.service';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
@@ -39,12 +34,14 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 		const gql_context = GqlExecutionContext.create(context);
 		const ctx = gql_context.getContext();
 		const args = gql_context.getArgs();
-		const user_id: string = ctx.req.user?.id ?? 'unknown';
+		const user = ctx.req.user;
+		const actor_id: string = user?.id ?? 'unknown';
+		const actor_type = getActorType(user);
 		const {entity_type, entity_id, details} = await this.buildLogPayload(metadata, args);
 
 		return next.handle().pipe(
 			tap(() => {
-				this.logEvent(metadata, user_id, entity_type, entity_id, details, EventLogStatus.SUCCESS);
+				this.logEvent(metadata, actor_type, actor_id, entity_type, entity_id, details, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
 				this.logger.error(`Error logging event [${metadata.field}]: ${error}`);
@@ -56,7 +53,7 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 					error_code,
 					error_message,
 				}));
-				this.logEvent(metadata, user_id, entity_type, entity_id, error_details, EventLogStatus.ERROR);
+				this.logEvent(metadata, actor_type, actor_id, entity_type, entity_id, error_details, EventLogStatus.ERROR);
 				throw error;
 			}),
 		);
@@ -156,7 +153,8 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	/**
 	 * Fire-and-forget an event log to the event history
 	 * @param {EventLogMetadata} metadata - The event log configuration
-	 * @param {string} user_id - The actor ID
+	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
+	 * @param {string} actor_id - The actor ID
 	 * @param {EventLogEntityType} entity_type - The entity type
 	 * @param {string | null} entity_id - The entity identifier
 	 * @param {CreateEventLogDetailInput[]} details - The event details
@@ -164,7 +162,8 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	 */
 	private logEvent(
 		metadata: EventLogMetadata,
-		user_id: string,
+		actor_type: EventLogActorType,
+		actor_id: string,
 		entity_type: EventLogEntityType,
 		entity_id: string | null,
 		details: CreateEventLogDetailInput[],
@@ -173,8 +172,8 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 		if (details.length === 0) return;
 		this.eventLogService
 			.createEvent({
-				actor_type: EventLogActorType.USER,
-				actor_id: user_id,
+				actor_type,
+				actor_id,
 				timestamp: Math.floor(DateTime.now().toSeconds()),
 				section: EventLogSection.MINT,
 				section_id: '1',

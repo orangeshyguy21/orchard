@@ -23,8 +23,9 @@ import {
 	createSendNotificationTool,
 } from '@server/modules/ai/agent/tools';
 import {NotificationService} from '@server/modules/notification/notification.service';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
-import {AiToolResult, AiToolEntry} from './tool.types';
+import {AiAgentContext, AiToolResult, AiToolEntry} from './tool.types';
 
 @Injectable()
 export class ToolService {
@@ -87,7 +88,7 @@ export class ToolService {
 	 * Execute a tool by name with bucket-based throttle enforcement.
 	 * Dispatches to GraphQL query or custom handler based on tool entry config.
 	 */
-	public async executeTool(name: string, args: Record<string, unknown>): Promise<AiToolResult> {
+	public async executeTool(name: string, args: Record<string, unknown>, agent?: AiAgentContext): Promise<AiToolResult> {
 		const entry = this.registry.get(name);
 		if (!entry) {
 			return {success: false, error: `Unknown tool: ${name}`};
@@ -102,7 +103,7 @@ export class ToolService {
 
 		try {
 			if (entry.query) {
-				return await this.executeGraphQL(name, args);
+				return await this.executeGraphQL(name, args, agent);
 			} else if (entry.handler) {
 				return await entry.handler(args);
 			}
@@ -152,16 +153,21 @@ export class ToolService {
 	 * Execute a pre-parsed GraphQL query against the compiled schema.
 	 * Uses the same resolver pipeline as the HTTP API.
 	 */
-	private async executeGraphQL(name: string, variables: Record<string, unknown>): Promise<AiToolResult> {
+	private async executeGraphQL(name: string, variables: Record<string, unknown>, agent?: AiAgentContext): Promise<AiToolResult> {
 		if (!this.schema) {
 			this.schema = this.moduleRef.get(GraphQLSchemaHost, {strict: false}).schema;
 		}
 		const document = this.parsed_queries.get(name)!;
+		const user = {
+			id: agent?.agent_id ?? 'agent',
+			name: agent?.agent_name ?? 'agent',
+			role: UserRole.AGENT,
+		};
 		const result = await execute({
 			schema: this.schema,
 			document,
 			variableValues: variables,
-			contextValue: {req: {headers: {}, user: {id: 'agent', name: 'agent', role: 'ADMIN'}}},
+			contextValue: {req: {headers: {}, user}},
 		});
 
 		if (result.errors?.length) {

@@ -8,13 +8,8 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
 import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
-import {
-	EventLogActorType,
-	EventLogSection,
-	EventLogEntityType,
-	EventLogStatus,
-	EventLogDetailStatus,
-} from '@server/modules/event/event.enums';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {getActorType} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 /* Local Dependencies */
@@ -38,14 +33,16 @@ export class MintQuoteInterceptor implements NestInterceptor {
 		const gql_context = GqlExecutionContext.create(context);
 		const ctx = gql_context.getContext();
 		const args = gql_context.getArgs();
-		const user_id: string = ctx.req.user?.id ?? 'unknown';
+		const user = ctx.req.user;
+		const actor_id: string = user?.id ?? 'unknown';
+		const actor_type = getActorType(user);
 		const input: MintQuoteTtlUpdateInput = args.mint_quote_ttl_update;
 		const old_ttls = await this.fetchOldTtls();
 		const details = this.buildEventDetails(input, old_ttls);
 
 		return next.handle().pipe(
 			tap(() => {
-				this.logEvent(metadata, user_id, details, EventLogStatus.SUCCESS);
+				this.logEvent(metadata, actor_type, actor_id, details, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
 				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
@@ -56,7 +53,7 @@ export class MintQuoteInterceptor implements NestInterceptor {
 					error_code,
 					error_message,
 				}));
-				this.logEvent(metadata, user_id, error_details, EventLogStatus.ERROR);
+				this.logEvent(metadata, actor_type, actor_id, error_details, EventLogStatus.ERROR);
 				throw error;
 			}),
 		);
@@ -99,16 +96,23 @@ export class MintQuoteInterceptor implements NestInterceptor {
 	/**
 	 * Fire-and-forget an event log to the event history
 	 * @param {EventLogMetadata} metadata - The event log configuration
-	 * @param {string} user_id - The actor ID
+	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
+	 * @param {string} actor_id - The actor ID
 	 * @param {CreateEventLogDetailInput[]} details - The event details
 	 * @param {EventLogStatus} status - Success or error
 	 */
-	private logEvent(metadata: EventLogMetadata, user_id: string, details: CreateEventLogDetailInput[], status: EventLogStatus): void {
+	private logEvent(
+		metadata: EventLogMetadata,
+		actor_type: EventLogActorType,
+		actor_id: string,
+		details: CreateEventLogDetailInput[],
+		status: EventLogStatus,
+	): void {
 		if (details.length === 0) return;
 		this.eventLogService
 			.createEvent({
-				actor_type: EventLogActorType.USER,
-				actor_id: user_id,
+				actor_type,
+				actor_id,
 				timestamp: Math.floor(DateTime.now().toSeconds()),
 				section: EventLogSection.MINT,
 				section_id: '1',

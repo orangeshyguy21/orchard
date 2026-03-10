@@ -8,13 +8,8 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
 import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
-import {
-	EventLogActorType,
-	EventLogSection,
-	EventLogEntityType,
-	EventLogStatus,
-	EventLogDetailStatus,
-} from '@server/modules/event/event.enums';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {getActorType} from '@server/modules/event/event.helpers';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 import {isSettingSensitive, maskSensitiveValue} from '@server/modules/setting/setting.helpers';
@@ -36,7 +31,9 @@ export class SettingInterceptor implements NestInterceptor {
 		const gql_context = GqlExecutionContext.create(context);
 		const ctx = gql_context.getContext();
 		const args = gql_context.getArgs();
-		const user_id: string = ctx.req.user?.id ?? 'unknown';
+		const user = ctx.req.user;
+		const actor_id: string = user?.id ?? 'unknown';
+		const actor_type = getActorType(user);
 		const keys: SettingKey[] = args.keys ?? [];
 		const values: string[] = args.values ?? [];
 		const old_values = await this.fetchOldValues(keys);
@@ -44,14 +41,14 @@ export class SettingInterceptor implements NestInterceptor {
 		return next.handle().pipe(
 			tap(() => {
 				for (let i = 0; i < keys.length; i++) {
-					this.logEvent(metadata, user_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.SUCCESS);
+					this.logEvent(metadata, actor_type, actor_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.SUCCESS);
 				}
 			}),
 			catchError((error) => {
 				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
 				const error_message = error?.extensions?.details ?? error?.message ?? null;
 				for (let i = 0; i < keys.length; i++) {
-					this.logEvent(metadata, user_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.ERROR, {
+					this.logEvent(metadata, actor_type, actor_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.ERROR, {
 						error_code,
 						error_message,
 					});
@@ -83,7 +80,8 @@ export class SettingInterceptor implements NestInterceptor {
 	/**
 	 * Fire-and-forget an event log to the event history
 	 * @param {EventLogMetadata} metadata - The event log configuration
-	 * @param {string} user_id - The actor ID
+	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
+	 * @param {string} actor_id - The actor ID
 	 * @param {SettingKey} key - The setting key being updated
 	 * @param {string | null} old_value - The previous value
 	 * @param {string | null} new_value - The new value
@@ -92,7 +90,8 @@ export class SettingInterceptor implements NestInterceptor {
 	 */
 	private logEvent(
 		metadata: EventLogMetadata,
-		user_id: string,
+		actor_type: EventLogActorType,
+		actor_id: string,
 		key: SettingKey,
 		old_value: string | null,
 		new_value: string | null,
@@ -105,8 +104,8 @@ export class SettingInterceptor implements NestInterceptor {
 		const detail_status = status === EventLogStatus.SUCCESS ? EventLogDetailStatus.SUCCESS : EventLogDetailStatus.ERROR;
 		this.eventLogService
 			.createEvent({
-				actor_type: EventLogActorType.USER,
-				actor_id: user_id,
+				actor_type,
+				actor_id,
 				timestamp: Math.floor(DateTime.now().toSeconds()),
 				section: EventLogSection.SETTINGS,
 				section_id: null,
