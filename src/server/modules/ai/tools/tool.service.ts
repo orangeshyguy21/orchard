@@ -21,9 +21,9 @@ import {
 	GetMintInfoTool,
 	GetPastRunsTool,
 	GetSystemMetricsTool,
-	createSendNotificationTool,
+	createSendMessageTool,
 } from '@server/modules/ai/agent/tools';
-import {NotificationService} from '@server/modules/notification/notification.service';
+import {MessageService} from '@server/modules/message/message.service';
 import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {AiAgentContext, AiToolResult, AiToolEntry} from './tool.types';
@@ -38,7 +38,7 @@ export class ToolService {
 
 	constructor(
 		private readonly moduleRef: ModuleRef,
-		@Optional() private readonly notificationService?: NotificationService,
+		@Optional() private readonly messageService?: MessageService,
 	) {
 		this.register(AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
 		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
@@ -52,7 +52,7 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
 		this.register(AgentFunctionName.GET_PAST_RUNS, GetPastRunsTool);
 		this.register(AgentFunctionName.GET_SYSTEM_METRICS, GetSystemMetricsTool);
-		this.register(AgentFunctionName.SEND_NOTIFICATION, createSendNotificationTool(this.notificationService));
+		this.register(AgentFunctionName.SEND_MESSAGE, createSendMessageTool(this.messageService));
 	}
 
 	/* *******************************************************

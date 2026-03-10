@@ -8,15 +8,15 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {SettingKey} from '@server/modules/setting/setting.enums';
 import {Setting} from '@server/modules/setting/setting.entity';
 import {isSettingSensitive, maskSensitiveValue} from '@server/modules/setting/setting.helpers';
-import {NotificationService} from '@server/modules/notification/notification.service';
+import {MessageService} from '@server/modules/message/message.service';
 /* Local Dependencies */
 import {OrchardSetting} from './setting.model';
 
-/** Setting keys that require notification service reinitalization when changed */
-const NOTIFICATION_KEYS = new Set<SettingKey>([
-	SettingKey.NOTIFICATIONS_ENABLED,
-	SettingKey.NOTIFICATIONS_VENDOR,
-	SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN,
+/** Setting keys that require message service reinitialization when changed */
+const MESSAGE_KEYS = new Set<SettingKey>([
+	SettingKey.MESSAGES_ENABLED,
+	SettingKey.MESSAGES_VENDOR,
+	SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN,
 ]);
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ApiSettingService {
 	constructor(
 		private settingService: SettingService,
 		private errorService: ErrorService,
-		private notificationService: NotificationService,
+		private messageService: MessageService,
 	) {}
 
 	async getSettings(tag: string): Promise<OrchardSetting[]> {
@@ -45,8 +45,8 @@ export class ApiSettingService {
 		try {
 			if (keys.length !== values.length) throw OrchardErrorCode.SettingError;
 			const settings = await this.settingService.updateSettings(keys, values);
-			if (keys.some((key) => NOTIFICATION_KEYS.has(key))) {
-				await this.notificationService.reinitialize();
+			if (keys.some((key) => MESSAGE_KEYS.has(key))) {
+				await this.messageService.reinitialize();
 			}
 			return settings.map((setting) => this.toMaskedOrchardSetting(setting));
 		} catch (error) {

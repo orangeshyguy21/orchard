@@ -29,8 +29,8 @@ describe('Setting Helpers', () => {
 			expect(SETTING_SENSITIVITY[SettingKey.AI_OPENROUTER_KEY]).toBe(SettingSensitivity.ALWAYS);
 		});
 
-		it('should mark NOTIFICATIONS_TELEGRAM_BOT_TOKEN as ALWAYS sensitive', () => {
-			expect(SETTING_SENSITIVITY[SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN]).toBe(SettingSensitivity.ALWAYS);
+		it('should mark MESSAGES_TELEGRAM_BOT_TOKEN as ALWAYS sensitive', () => {
+			expect(SETTING_SENSITIVITY[SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN]).toBe(SettingSensitivity.ALWAYS);
 		});
 
 		it('should not include non-sensitive keys', () => {
@@ -83,7 +83,7 @@ describe('Setting Helpers', () => {
 		it('should return true for ALWAYS sensitive keys regardless of value', () => {
 			expect(isSettingSensitive(SettingKey.AI_OPENROUTER_KEY, 'sk-or-v1-abc123')).toBe(true);
 			expect(isSettingSensitive(SettingKey.AI_OPENROUTER_KEY, '')).toBe(true);
-			expect(isSettingSensitive(SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN, '123:ABC')).toBe(true);
+			expect(isSettingSensitive(SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN, '123:ABC')).toBe(true);
 		});
 
 		it('should return false for NONE sensitivity keys', () => {

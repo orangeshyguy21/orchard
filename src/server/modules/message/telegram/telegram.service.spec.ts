@@ -69,7 +69,7 @@ describe('TelegramService', () => {
 	});
 
 	describe('initializeBot', () => {
-		it('should not start bot when notifications are disabled', async () => {
+		it('should not start bot when messages are disabled', async () => {
 			settingService.getBooleanSetting.mockResolvedValue(false);
 			await service.initializeBot();
 			expect(service.isRunning()).toBe(false);

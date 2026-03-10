@@ -2,7 +2,7 @@
 import {Logger} from '@nestjs/common';
 
 /* Application Dependencies */
-import {NotificationService} from '@server/modules/notification/notification.service';
+import {MessageService} from '@server/modules/message/message.service';
 
 /* Local Dependencies */
 import {AgentFunctionName} from '../agent.enums';
@@ -12,21 +12,21 @@ import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 	Logger
 ******************************************************** */
 
-const logger = new Logger('AgentNotification');
+const logger = new Logger('AgentMessage');
 
 /* *******************************************************
 	Tool Definitions
 ******************************************************** */
 
-/** Creates a notification tool with optional vendor delivery via NotificationService */
-export function createSendNotificationTool(notificationService?: NotificationService): AiToolEntry {
+/** Creates a message tool with optional vendor delivery via MessageService */
+export function createSendMessageTool(messageService?: MessageService): AiToolEntry {
 	return {
 		tool: {
 			type: 'function',
 			function: {
-				name: AgentFunctionName.SEND_NOTIFICATION,
+				name: AgentFunctionName.SEND_MESSAGE,
 				description: [
-					'Send a notification to the operator.',
+					'Send a message to the operator.',
 					'',
 					'**Severity levels:**',
 					'- `info` — noteworthy but not urgent',
@@ -39,7 +39,7 @@ export function createSendNotificationTool(notificationService?: NotificationSer
 						title: {
 							type: 'string',
 							description:
-								'Short summary of the notification (e.g. "Channel Force-Closed", "Mint Balance Mismatch").',
+								'Short summary of the message (e.g. "Channel Force-Closed", "Mint Balance Mismatch").',
 						},
 						body: {
 							type: 'string',
@@ -61,23 +61,23 @@ export function createSendNotificationTool(notificationService?: NotificationSer
 			const body = args.body as string;
 			const severity = args.severity as string;
 
-			let notification_delivered = 0;
-			let notification_channels: Record<string, number> = {};
+			let message_delivered = 0;
+			let message_channels: Record<string, number> = {};
 
-			if (notificationService) {
-				const result = await notificationService.broadcast(title, body, severity);
-				notification_delivered = result.total;
-				notification_channels = result.delivered;
+			if (messageService) {
+				const result = await messageService.broadcast(title, body, severity);
+				message_delivered = result.total;
+				message_channels = result.delivered;
 			}
 
-			logger.log(`Notification [${severity.toUpperCase()}] "${title}" — ${notification_delivered} delivered`);
+			logger.log(`Message [${severity.toUpperCase()}] "${title}" — ${message_delivered} delivered`);
 
 			return {
 				success: true,
 				data: {
-					delivered: notification_delivered > 0,
-					notification_delivered,
-					notification_channels,
+					delivered: message_delivered > 0,
+					message_delivered,
+					message_channels,
 				},
 			};
 		},

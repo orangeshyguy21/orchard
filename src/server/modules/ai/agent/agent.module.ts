@@ -4,7 +4,7 @@ import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 /* Application Dependencies */
 import {AiModule} from '@server/modules/ai/ai.module';
-import {NotificationModule} from '@server/modules/notification/notification.module';
+import {MessageModule} from '@server/modules/message/message.module';
 import {SettingModule} from '@server/modules/setting/setting.module';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
@@ -13,7 +13,7 @@ import {AgentService} from './agent.service';
 import {ToolService} from '@server/modules/ai/tools/tool.service';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Agent, AgentRun]), AiModule, NotificationModule, SettingModule],
+	imports: [TypeOrmModule.forFeature([Agent, AgentRun]), AiModule, MessageModule, SettingModule],
 	providers: [AgentService, ToolService],
 	exports: [AgentService],
 })

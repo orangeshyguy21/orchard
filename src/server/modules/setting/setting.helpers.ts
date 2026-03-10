@@ -10,7 +10,7 @@ import {SettingKey, SettingSensitivity, SettingValue} from './setting.enums';
  */
 export const SETTING_SENSITIVITY: Partial<Record<SettingKey, SettingSensitivity>> = {
 	[SettingKey.AI_OPENROUTER_KEY]: SettingSensitivity.ALWAYS,
-	[SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN]: SettingSensitivity.ALWAYS,
+	[SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN]: SettingSensitivity.ALWAYS,
 };
 
 /**

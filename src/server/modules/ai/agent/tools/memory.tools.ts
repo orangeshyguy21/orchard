@@ -21,25 +21,25 @@ const GET_PAST_RUNS_QUERY = `
 	Tool Definitions
 ******************************************************** */
 
-/** Retrieves past run results so the agent can avoid repeating notifications */
+/** Retrieves past run results so the agent can avoid repeating messages */
 export const GetPastRunsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
 			name: AgentFunctionName.GET_PAST_RUNS,
 			description: [
-				'Retrieve past runs where you sent notifications.',
+				'Retrieve past runs where you sent messages.',
 				'',
 				'Call this **first** at the start of every run to review what you previously notified about.',
 				'Use the `agent_id` from your runtime context.',
-				'Only runs that triggered at least one notification are returned.',
+				'Only runs that triggered at least one message are returned.',
 				'',
 				'**Returns** (most recent first):',
 				'- `status` — run outcome (`success` or `error`)',
 				'- `started_at` / `completed_at` — unix timestamps',
 				'- `result` — your previous internal notes (what you checked, found, and notified)',
 				'',
-				'Cross-reference these notes before sending notifications to avoid repeating the same findings.',
+				'Cross-reference these notes before sending messages to avoid repeating the same findings.',
 			].join('\n'),
 			parameters: {
 				type: 'object',

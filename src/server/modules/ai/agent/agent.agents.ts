@@ -7,7 +7,7 @@ import {AgentKey, AgentFunctionName} from './agent.enums';
 
 /**
  * Directed system message — step-by-step workflow with explicit
- * interpretation heuristics and notification guidance.
+ * interpretation heuristics and message guidance.
  */
 const _ACTIVITY_MONITOR_DIRECTED = [
 	'# Activity Monitor',
@@ -38,7 +38,7 @@ const _ACTIVITY_MONITOR_DIRECTED = [
 	'',
 	'### Step 4: Analyze and notify',
 	'- Apply the interpretation heuristics below to all gathered data.',
-	'- If anything needs attention, call `SEND_NOTIFICATION` **once** with all findings summarized in the body. Use the highest applicable severity.',
+	'- If anything needs attention, call `SEND_MESSAGE` **once** with all findings summarized in the body. Use the highest applicable severity.',
 	'- If everything is healthy, do not notify.',
 	'',
 	'## Interpretation Heuristics',
@@ -76,7 +76,7 @@ const _ACTIVITY_MONITOR_DIRECTED = [
 	'- `verificationprogress` below 0.9999 during normal operation — a concern.',
 	'- Non-empty `warnings` — always surface.',
 	'',
-	'## Notification Guidance',
+	'## Message Guidance',
 	'',
 	'**When to notify:**',
 	'- Something is **broken** (endpoint down, node not syncing, zero channels)',
@@ -117,7 +117,7 @@ const ACTIVITY_MONITOR_OPEN = [
 	'- **Skip** unconfigured services entirely — do not mention them.',
 	'- Be **concise and actionable**. Focus on what matters — skip noise.',
 	'- Gather data in parallel where possible to minimize tool calls.',
-	'- If anything needs attention, call `SEND_NOTIFICATION` **once** with all findings summarized in the body. Use the highest applicable severity. If everything is healthy, do not notify.',
+	'- If anything needs attention, call `SEND_MESSAGE` **once** with all findings summarized in the body. Use the highest applicable severity. If everything is healthy, do not notify.',
 	'',
 	'## Domain Knowledge',
 	'',
@@ -167,7 +167,7 @@ export const AGENTS = {
 			AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO,
 			AgentFunctionName.GET_BITCOIN_NETWORK_INFO,
 			AgentFunctionName.GET_SYSTEM_METRICS,
-			AgentFunctionName.SEND_NOTIFICATION,
+			AgentFunctionName.SEND_MESSAGE,
 		],
 		schedules: ['10 * * * *'],
 	},

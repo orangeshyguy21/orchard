@@ -1,17 +1,17 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
 /* Local Dependencies */
-import {NotificationService} from './notification.service';
+import {MessageService} from './message.service';
 import {TelegramService} from './telegram/telegram.service';
 
-describe('NotificationService', () => {
-	let service: NotificationService;
+describe('MessageService', () => {
+	let service: MessageService;
 	let telegramService: jest.Mocked<TelegramService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				NotificationService,
+				MessageService,
 				{
 					provide: TelegramService,
 					useValue: {
@@ -23,7 +23,7 @@ describe('NotificationService', () => {
 			],
 		}).compile();
 
-		service = module.get<NotificationService>(NotificationService);
+		service = module.get<MessageService>(MessageService);
 		telegramService = module.get(TelegramService) as jest.Mocked<TelegramService>;
 	});
 

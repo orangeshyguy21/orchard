@@ -4,4 +4,4 @@ export {GetLightningAnalyticsBalancesTool, GetLightningAnalyticsMetricsTool, Get
 export {GetMintAnalyticsMetricsTool, GetMintAnalyticsTool, GetMintInfoTool} from './mint.tools';
 export {GetPastRunsTool} from './memory.tools';
 export {GetSystemMetricsTool} from './system.tools';
-export {createSendNotificationTool} from './notification.tools';
+export {createSendMessageTool} from './message.tools';

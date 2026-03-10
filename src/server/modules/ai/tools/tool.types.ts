@@ -37,7 +37,7 @@ export type AiToolHandler = (args: Record<string, unknown>) => Promise<AiToolRes
  * Registration entry for an AI tool.
  * Supports two execution modes:
  * - `query`: GraphQL query string executed against the compiled schema (default path for data tools)
- * - `handler`: Custom function for non-API tools (external APIs, calculations, notifications, etc.)
+ * - `handler`: Custom function for non-API tools (external APIs, calculations, messages, etc.)
  */
 export type AiToolEntry = {
 	tool: AiTool;

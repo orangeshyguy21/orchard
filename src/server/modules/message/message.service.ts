@@ -3,15 +3,15 @@ import {Injectable, Logger} from '@nestjs/common';
 /* Local Dependencies */
 import {TelegramService} from './telegram/telegram.service';
 
-/** Result of a notification broadcast across all vendors */
-export type NotificationResult = {
+/** Result of a message broadcast across all vendors */
+export type MessageResult = {
 	delivered: Record<string, number>;
 	total: number;
 };
 
 @Injectable()
-export class NotificationService {
-	private readonly logger = new Logger(NotificationService.name);
+export class MessageService {
+	private readonly logger = new Logger(MessageService.name);
 
 	constructor(private readonly telegramService: TelegramService) {}
 
@@ -20,10 +20,10 @@ export class NotificationService {
 	******************************************************** */
 
 	/**
-	 * Broadcast a notification across all enabled vendors.
+	 * Broadcast a message across all enabled vendors.
 	 * Returns delivery counts per vendor and total.
 	 */
-	public async broadcast(title: string, body: string, severity: string): Promise<NotificationResult> {
+	public async broadcast(title: string, body: string, severity: string): Promise<MessageResult> {
 		const delivered: Record<string, number> = {};
 		let total = 0;
 
@@ -36,7 +36,7 @@ export class NotificationService {
 
 		/* Future vendors go here */
 
-		this.logger.log(`Notification broadcast: ${total} total delivered (${JSON.stringify(delivered)})`);
+		this.logger.log(`Message broadcast: ${total} total delivered (${JSON.stringify(delivered)})`);
 		return {delivered, total};
 	}
 

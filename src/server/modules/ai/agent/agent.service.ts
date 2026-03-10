@@ -233,7 +233,7 @@ export class AgentService implements OnModuleInit {
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
-					if ((tool_call.function.name as string) === AgentFunctionName.SEND_NOTIFICATION) {
+					if ((tool_call.function.name as string) === AgentFunctionName.SEND_MESSAGE) {
 						notified = true;
 					}
 					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments, agent_context);
