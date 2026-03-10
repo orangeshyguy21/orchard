@@ -53,6 +53,15 @@ export class EventLogService {
 	}
 
 	/**
+	 * Fire-and-forget an event log. Skips empty details. Failures are caught and logged as warnings.
+	 * @param {CreateEventLogInput} input - The complete event log input
+	 */
+	public logEvent(input: CreateEventLogInput): void {
+		if (input.details.length === 0) return;
+		this.createEvent(input).catch((err) => this.logger.warn(`Failed to log event [${input.entity_type}/${input.type}]: ${err}`));
+	}
+
+	/**
 	 * Get event logs with optional filters
 	 * @param {EventLogFilters} filters - Optional filters for querying events
 	 * @returns {Promise<EventLog[]>} The matching event logs

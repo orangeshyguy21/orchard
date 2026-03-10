@@ -1,15 +1,12 @@
 /* Core Dependencies */
 import {Injectable, Logger, CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
-import {GqlExecutionContext} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {Observable, tap, catchError} from 'rxjs';
-import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
-import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
 import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
-import {getActorType} from '@server/modules/event/event.helpers';
+import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
@@ -29,24 +26,17 @@ export class MintKeysetInterceptor implements NestInterceptor {
 	) {}
 
 	async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-		const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
-		if (!metadata) return next.handle();
-
-		const gql_context = GqlExecutionContext.create(context);
-		const ctx = gql_context.getContext();
-		const args = gql_context.getArgs();
-		const user = ctx.req.user;
-		const actor_id: string = user?.id ?? 'unknown';
-		const actor_type = getActorType(user);
+		const event_context = extractEventContext(context, this.reflector);
+		if (!event_context) return next.handle();
+		const {metadata, args, actor_id, actor_type} = event_context;
 
 		return next.handle().pipe(
 			tap((result: OrchardMintKeysetRotation) => {
-				this.logRotation(metadata, actor_type, actor_id, args, result, EventLogStatus.SUCCESS);
+				this.logRotation(actor_type, actor_id, args, result, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
 				this.logger.error(`Error during keyset rotation [${metadata.field}]: ${error}`);
-				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
-				const error_message = error?.extensions?.details ?? error?.message ?? null;
+				const {error_code, error_message} = extractEventError(error);
 				const error_details: CreateEventLogDetailInput[] = [
 					{
 						field: 'unit',
@@ -56,7 +46,7 @@ export class MintKeysetInterceptor implements NestInterceptor {
 						error_message,
 					},
 				];
-				this.logEvent(metadata, actor_type, actor_id, EventLogType.CREATE, null, error_details, EventLogStatus.ERROR);
+				this.logEvent(actor_type, actor_id, EventLogType.CREATE, null, error_details, EventLogStatus.ERROR);
 				throw error;
 			}),
 		);
@@ -64,7 +54,6 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
 	/**
 	 * Log both the old keyset deactivation and new keyset creation after a successful rotation
-	 * @param {EventLogMetadata} metadata - The event log configuration
 	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
 	 * @param {string} actor_id - The actor ID
 	 * @param {Record<string, any>} args - The resolver arguments
@@ -72,7 +61,6 @@ export class MintKeysetInterceptor implements NestInterceptor {
 	 * @param {EventLogStatus} status - Success or error
 	 */
 	private async logRotation(
-		metadata: EventLogMetadata,
 		actor_type: EventLogActorType,
 		actor_id: string,
 		args: Record<string, any>,
@@ -84,7 +72,6 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
 		if (old_keyset) {
 			this.logEvent(
-				metadata,
 				actor_type,
 				actor_id,
 				EventLogType.UPDATE,
@@ -107,7 +94,7 @@ export class MintKeysetInterceptor implements NestInterceptor {
 			create_details.push({field: 'keyset_v2', new_value: String(args.keyset_v2), status: EventLogDetailStatus.SUCCESS});
 		}
 
-		this.logEvent(metadata, actor_type, actor_id, EventLogType.CREATE, result.id, create_details, status);
+		this.logEvent(actor_type, actor_id, EventLogType.CREATE, result.id, create_details, status);
 	}
 
 	/**
@@ -140,7 +127,6 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
 	/**
 	 * Fire-and-forget an event log to the event history
-	 * @param {EventLogMetadata} metadata - The event log configuration
 	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
 	 * @param {string} actor_id - The actor ID
 	 * @param {EventLogType} type - The event type (CREATE or UPDATE)
@@ -149,7 +135,6 @@ export class MintKeysetInterceptor implements NestInterceptor {
 	 * @param {EventLogStatus} status - Success or error
 	 */
 	private logEvent(
-		metadata: EventLogMetadata,
 		actor_type: EventLogActorType,
 		actor_id: string,
 		type: EventLogType,
@@ -157,20 +142,17 @@ export class MintKeysetInterceptor implements NestInterceptor {
 		details: CreateEventLogDetailInput[],
 		status: EventLogStatus,
 	): void {
-		if (details.length === 0) return;
-		this.eventLogService
-			.createEvent({
-				actor_type,
-				actor_id,
-				timestamp: Math.floor(DateTime.now().toSeconds()),
-				section: EventLogSection.MINT,
-				section_id: '1',
-				entity_type: EventLogEntityType.KEYSET,
-				entity_id,
-				type,
-				status,
-				details,
-			})
-			.catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
+		this.eventLogService.logEvent({
+			actor_type,
+			actor_id,
+			timestamp: eventTimestamp(),
+			section: EventLogSection.MINT,
+			section_id: '1',
+			entity_type: EventLogEntityType.KEYSET,
+			entity_id,
+			type,
+			status,
+			details,
+		});
 	}
 }

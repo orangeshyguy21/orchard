@@ -91,7 +91,13 @@ describe('MintKeysetInterceptor', () => {
 				},
 				{
 					provide: EventLogService,
-					useValue: {createEvent: jest.fn().mockResolvedValue({})},
+					useValue: {
+						createEvent: jest.fn().mockResolvedValue({}),
+						logEvent: jest.fn().mockImplementation(function (this: any, input: any) {
+							if (input.details.length === 0) return;
+							this.createEvent(input).catch(() => {});
+						}),
+					},
 				},
 				{
 					provide: CashuMintDatabaseService,

@@ -1,15 +1,13 @@
 /* Core Dependencies */
 import {Injectable, Logger, CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
-import {GqlExecutionContext} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {Observable, tap, catchError} from 'rxjs';
-import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
-import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogMetadata} from '@server/modules/event/event.decorator';
 import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
-import {getActorType} from '@server/modules/event/event.helpers';
+import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 /* Local Dependencies */
@@ -27,15 +25,9 @@ export class MintQuoteInterceptor implements NestInterceptor {
 	) {}
 
 	async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-		const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
-		if (!metadata) return next.handle();
-
-		const gql_context = GqlExecutionContext.create(context);
-		const ctx = gql_context.getContext();
-		const args = gql_context.getArgs();
-		const user = ctx.req.user;
-		const actor_id: string = user?.id ?? 'unknown';
-		const actor_type = getActorType(user);
+		const event_context = extractEventContext(context, this.reflector);
+		if (!event_context) return next.handle();
+		const {metadata, args, actor_id, actor_type} = event_context;
 		const input: MintQuoteTtlUpdateInput = args.mint_quote_ttl_update;
 		const old_ttls = await this.fetchOldTtls();
 		const details = this.buildEventDetails(input, old_ttls);
@@ -45,8 +37,7 @@ export class MintQuoteInterceptor implements NestInterceptor {
 				this.logEvent(metadata, actor_type, actor_id, details, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
-				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
-				const error_message = error?.extensions?.details ?? error?.message ?? null;
+				const {error_code, error_message} = extractEventError(error);
 				const error_details = details.map((detail) => ({
 					...detail,
 					status: EventLogDetailStatus.ERROR,
@@ -108,20 +99,17 @@ export class MintQuoteInterceptor implements NestInterceptor {
 		details: CreateEventLogDetailInput[],
 		status: EventLogStatus,
 	): void {
-		if (details.length === 0) return;
-		this.eventLogService
-			.createEvent({
-				actor_type,
-				actor_id,
-				timestamp: Math.floor(DateTime.now().toSeconds()),
-				section: EventLogSection.MINT,
-				section_id: '1',
-				entity_type: EventLogEntityType.QUOTE_TTL,
-				entity_id: null,
-				type: metadata.type,
-				status,
-				details,
-			})
-			.catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
+		this.eventLogService.logEvent({
+			actor_type,
+			actor_id,
+			timestamp: eventTimestamp(),
+			section: EventLogSection.MINT,
+			section_id: '1',
+			entity_type: EventLogEntityType.QUOTE_TTL,
+			entity_id: null,
+			type: metadata.type,
+			status,
+			details,
+		});
 	}
 }
