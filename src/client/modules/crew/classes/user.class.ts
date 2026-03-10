@@ -6,6 +6,7 @@ export class User implements OrchardCrewUser {
 	role: UserRole;
 	label: string | null;
 	active: boolean;
+	telegram_chat_id: string | null;
 	created_at: number;
 
 	constructor(ou: OrchardCrewUser) {
@@ -14,6 +15,7 @@ export class User implements OrchardCrewUser {
 		this.role = ou.role;
 		this.label = ou.label ?? null;
 		this.active = ou.active;
+		this.telegram_chat_id = ou.telegram_chat_id ?? null;
 		this.created_at = ou.created_at;
 	}
 }

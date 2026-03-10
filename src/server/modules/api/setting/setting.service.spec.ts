@@ -7,6 +7,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {SettingKey, SettingValue} from '@server/modules/setting/setting.enums';
+import {NotificationService} from '@server/modules/notification/notification.service';
 /* Local Dependencies */
 import {ApiSettingService} from './setting.service';
 
@@ -18,6 +19,7 @@ describe('ApiSettingService', () => {
 	let apiSettingService: ApiSettingService;
 	let settingService: jest.Mocked<SettingService>;
 	let errorService: jest.Mocked<ErrorService>;
+	let notificationService: jest.Mocked<NotificationService>;
 
 	// mock data for testing
 	const mock_setting = {
@@ -44,12 +46,19 @@ describe('ApiSettingService', () => {
 						resolveError: jest.fn(),
 					},
 				},
+				{
+					provide: NotificationService,
+					useValue: {
+						reinitialize: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		apiSettingService = module.get<ApiSettingService>(ApiSettingService);
 		settingService = module.get(SettingService);
 		errorService = module.get(ErrorService);
+		notificationService = module.get(NotificationService);
 	});
 
 	afterEach(() => {
@@ -139,6 +148,28 @@ describe('ApiSettingService', () => {
 			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.SettingError,
 			});
+		});
+
+		it('should reinitialize notification service when notification keys are updated', async () => {
+			// arrange
+			settingService.updateSettings.mockResolvedValue([mock_setting] as any);
+
+			// act
+			await apiSettingService.updateSettings('TAG', [SettingKey.NOTIFICATIONS_ENABLED], ['true']);
+
+			// assert
+			expect(notificationService.reinitialize).toHaveBeenCalledTimes(1);
+		});
+
+		it('should not reinitialize notification service for non-notification keys', async () => {
+			// arrange
+			settingService.updateSettings.mockResolvedValue([mock_setting] as any);
+
+			// act
+			await apiSettingService.updateSettings('TAG', [SettingKey.BITCOIN_ORACLE], ['true']);
+
+			// assert
+			expect(notificationService.reinitialize).not.toHaveBeenCalled();
 		});
 
 		it('should pass correct parameters to underlying service', async () => {

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger, Optional} from '@nestjs/common';
 import {ModuleRef} from '@nestjs/core';
 /* Vendor Dependencies */
 import {GraphQLSchemaHost} from '@nestjs/graphql';
@@ -20,8 +20,9 @@ import {
 	GetMintAnalyticsTool,
 	GetMintInfoTool,
 	GetPastRunsTool,
-	SendNotificationTool,
+	createSendNotificationTool,
 } from '@server/modules/ai/agent/tools';
+import {NotificationService} from '@server/modules/notification/notification.service';
 /* Local Dependencies */
 import {AiToolResult, AiToolEntry} from './tool.types';
 
@@ -33,7 +34,10 @@ export class ToolService {
 	private readonly parsed_queries = new Map<string, DocumentNode>();
 	private schema: GraphQLSchema | null = null;
 
-	constructor(private readonly moduleRef: ModuleRef) {
+	constructor(
+		private readonly moduleRef: ModuleRef,
+		@Optional() private readonly notificationService?: NotificationService,
+	) {
 		this.register(AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
 		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
 		this.register(AgentFunctionName.GET_PORT_HEALTH, GetPortHealthTool);
@@ -45,7 +49,7 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
 		this.register(AgentFunctionName.GET_PAST_RUNS, GetPastRunsTool);
-		this.register(AgentFunctionName.SEND_NOTIFICATION, SendNotificationTool);
+		this.register(AgentFunctionName.SEND_NOTIFICATION, createSendNotificationTool(this.notificationService));
 	}
 
 	/* *******************************************************

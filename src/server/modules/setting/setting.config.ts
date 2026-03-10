@@ -39,4 +39,22 @@ export const DEFAULT_SETTINGS: Setting[] = [
 		value_type: SettingValue.STRING,
 		description: 'The server model to use',
 	},
+	{
+		key: SettingKey.NOTIFICATIONS_ENABLED,
+		value: 'false',
+		value_type: SettingValue.BOOLEAN,
+		description: 'Whether notifications are enabled',
+	},
+	{
+		key: SettingKey.NOTIFICATIONS_VENDOR,
+		value: 'telegram',
+		value_type: SettingValue.STRING,
+		description: 'The notification vendor to use',
+	},
+	{
+		key: SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN,
+		value: '',
+		value_type: SettingValue.STRING,
+		description: 'The Telegram bot token from @BotFather',
+	},
 ];

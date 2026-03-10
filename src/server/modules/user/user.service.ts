@@ -43,6 +43,27 @@ export class UserService {
 	}
 
 	/**
+	 * Get a user by their Telegram chat ID
+	 * @param {string} chat_id - The Telegram chat ID
+	 * @returns {Promise<User | null>} The user, or null
+	 */
+	public async getUserByTelegramChatId(chat_id: string): Promise<User | null> {
+		return this.userRepository.findOne({where: {telegram_chat_id: chat_id, active: true}});
+	}
+
+	/**
+	 * Get all active users with a linked Telegram chat ID
+	 * @returns {Promise<User[]>} Users with telegram_chat_id set
+	 */
+	public async getUsersWithTelegramChatId(): Promise<User[]> {
+		return this.userRepository
+			.createQueryBuilder('user')
+			.where('user.active = :active', {active: true})
+			.andWhere('user.telegram_chat_id IS NOT NULL')
+			.getMany();
+	}
+
+	/**
 	 * Check if the first user is the admin
 	 * @returns {Promise<boolean>} Whether the first user is the admin
 	 */

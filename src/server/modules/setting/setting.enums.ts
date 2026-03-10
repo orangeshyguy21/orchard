@@ -12,4 +12,7 @@ export enum SettingKey {
 	AI_OLLAMA_API = 'ai.ollama.api',
 	AI_OPENROUTER_KEY = 'ai.openrouter.key',
 	AI_SERVER_MODEL = 'ai.server.model',
+	NOTIFICATIONS_ENABLED = 'notifications.enabled',
+	NOTIFICATIONS_VENDOR = 'notifications.vendor',
+	NOTIFICATIONS_TELEGRAM_BOT_TOKEN = 'notifications.telegram.bot.token',
 }

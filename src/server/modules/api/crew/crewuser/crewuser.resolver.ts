@@ -57,6 +57,18 @@ export class CrewUserResolver {
 		return await this.crewUserService.updateUserPassword(tag, user.id, updateUserPassword);
 	}
 
+	@Mutation(() => OrchardCrewUser)
+	async crew_user_update_telegram(
+		@Context() context: any,
+		@Args('telegram_chat_id', {nullable: true}) telegram_chat_id: string | null,
+	): Promise<OrchardCrewUser> {
+		const tag = 'MUTATION { crew_user_update_telegram }';
+		this.logger.debug(tag);
+		const user = context.req.user;
+		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
+		return await this.crewUserService.updateUserTelegram(tag, user.id, telegram_chat_id);
+	}
+
 	@Roles(UserRole.ADMIN)
 	@Mutation(() => OrchardCrewUser)
 	async crew_user_update(@Context() context: any, @Args('updateUser') updateUser: UserUpdateInput): Promise<OrchardCrewUser> {
