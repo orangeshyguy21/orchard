@@ -5,6 +5,7 @@ export const SETTINGS_QUERY = `
             value
             description
             value_type
+            is_sensitive
         }
     }
 `;
@@ -16,6 +17,7 @@ export const SETTINGS_UPDATE_MUTATION = `
             value
             description
             value_type
+            is_sensitive
         }
     }
 `;

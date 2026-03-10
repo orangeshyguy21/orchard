@@ -17,6 +17,7 @@ import {
 } from '@server/modules/event/event.enums';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
+import {isSettingSensitive, maskSensitiveValue} from '@server/modules/setting/setting.helpers';
 
 @Injectable()
 export class SettingInterceptor implements NestInterceptor {
@@ -98,6 +99,9 @@ export class SettingInterceptor implements NestInterceptor {
 		status: EventLogStatus,
 		error?: {error_code: string | null; error_message: string | null},
 	): void {
+		const sensitive = isSettingSensitive(key, new_value ?? old_value ?? '');
+		const safe_old = sensitive && old_value ? maskSensitiveValue(old_value) : old_value;
+		const safe_new = sensitive && new_value ? maskSensitiveValue(new_value) : new_value;
 		const detail_status = status === EventLogStatus.SUCCESS ? EventLogDetailStatus.SUCCESS : EventLogDetailStatus.ERROR;
 		this.eventLogService
 			.createEvent({
@@ -113,8 +117,8 @@ export class SettingInterceptor implements NestInterceptor {
 				details: [
 					{
 						field: key,
-						old_value,
-						new_value,
+						old_value: safe_old,
+						new_value: safe_new,
 						status: detail_status,
 						error_code: error?.error_code ?? null,
 						error_message: error?.error_message ?? null,

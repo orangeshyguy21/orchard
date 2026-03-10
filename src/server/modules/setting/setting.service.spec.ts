@@ -2,6 +2,7 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
 import {getRepositoryToken} from '@nestjs/typeorm';
+import {ConfigService} from '@nestjs/config';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 /* Local Dependencies */
@@ -9,6 +10,7 @@ import {SettingService} from './setting.service';
 import {Setting} from './setting.entity';
 import {SettingKey, SettingValue} from './setting.enums';
 import {DEFAULT_SETTINGS} from './setting.config';
+import {isEncrypted} from './setting.helpers';
 
 /**
  * Test suite for SettingService
@@ -33,6 +35,10 @@ describe('SettingService', () => {
 		save: jest.fn(),
 	};
 
+	const mock_config_service = {
+		get: jest.fn().mockReturnValue('test-secret-key'),
+	};
+
 	beforeEach(async () => {
 		// reset all mocks before each test
 		jest.clearAllMocks();
@@ -43,6 +49,10 @@ describe('SettingService', () => {
 				{
 					provide: getRepositoryToken(Setting),
 					useValue: mock_repository,
+				},
+				{
+					provide: ConfigService,
+					useValue: mock_config_service,
 				},
 			],
 		}).compile();
@@ -266,6 +276,133 @@ describe('SettingService', () => {
 					value: new_value,
 				}),
 			);
+		});
+	});
+
+	/* *******************************************************
+		Encryption
+	******************************************************** */
+
+	describe('encryption', () => {
+		it('should encrypt sensitive settings on write', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-newkey123']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(isEncrypted(saved.value)).toBe(true);
+			expect(saved.value).not.toContain('sk-or-v1-newkey123');
+		});
+
+		it('should not encrypt non-sensitive settings on write', async () => {
+			// arrange
+			mock_repository.findOne.mockResolvedValue(mock_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.BITCOIN_ORACLE], ['false']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('false');
+		});
+
+		it('should not encrypt empty values', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('');
+		});
+
+		it('should decrypt sensitive settings on read', async () => {
+			// arrange
+			await service.onModuleInit();
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// first encrypt it
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-secret']);
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+
+			// now read it back
+			mock_repository.findOne.mockResolvedValue(saved);
+
+			// act
+			const result = await service.getSetting(SettingKey.AI_OPENROUTER_KEY);
+
+			// assert
+			expect(result.value).toBe('sk-or-v1-secret');
+		});
+
+		it('should return empty value when decryption fails (key rotation)', async () => {
+			// arrange - simulate a value encrypted with a different key
+			mock_config_service.get.mockReturnValue('different-secret-key');
+			await service.onModuleInit();
+			const encrypted_with_old_key = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'enc:AAAAAAAAAAAAAAAA:AAAAAAAAAAAAAAAAAAAAAA==:AAAA',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(encrypted_with_old_key);
+
+			// act
+			const result = await service.getSetting(SettingKey.AI_OPENROUTER_KEY);
+
+			// assert
+			expect(result.value).toBe('');
+		});
+
+		it('should skip encryption when server.key is not configured', async () => {
+			// arrange
+			mock_config_service.get.mockReturnValue(undefined);
+			await service.onModuleInit();
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: '',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-plaintext']);
+
+			// assert - stored as plaintext
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('sk-or-v1-plaintext');
 		});
 	});
 });

@@ -184,4 +184,75 @@ describe('ApiSettingService', () => {
 			expect(settingService.updateSettings).toHaveBeenCalledWith([SettingKey.BITCOIN_ORACLE], ['new_value']);
 		});
 	});
+
+	/* *******************************************************
+		Masking
+	******************************************************** */
+
+	describe('masking', () => {
+		it('should mask sensitive setting values in getSettings', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'sk-or-v1-abc123',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			settingService.getSettings.mockResolvedValue([sensitive_setting] as any);
+
+			// act
+			const result = await apiSettingService.getSettings('TEST_TAG');
+
+			// assert
+			expect(result[0].value).toBe('\u2022\u2022\u2022\u2022c123');
+			expect(result[0].is_sensitive).toBe(true);
+		});
+
+		it('should not mask non-sensitive setting values', async () => {
+			// arrange
+			settingService.getSettings.mockResolvedValue([mock_setting] as any);
+
+			// act
+			const result = await apiSettingService.getSettings('TEST_TAG');
+
+			// assert
+			expect(result[0].value).toBe('true');
+			expect(result[0].is_sensitive).toBe(false);
+		});
+
+		it('should mask sensitive setting values in updateSettings response', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN,
+				value: '123456:ABC-DEF',
+				value_type: SettingValue.STRING,
+				description: 'The Telegram bot token',
+			};
+			settingService.updateSettings.mockResolvedValue([sensitive_setting] as any);
+
+			// act
+			const result = await apiSettingService.updateSettings('TAG', [SettingKey.NOTIFICATIONS_TELEGRAM_BOT_TOKEN], ['123456:ABC-DEF']);
+
+			// assert
+			expect(result[0].value).toBe('\u2022\u2022\u2022\u2022-DEF');
+			expect(result[0].is_sensitive).toBe(true);
+		});
+
+		it('should return empty string for empty sensitive setting', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: '',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			settingService.getSettings.mockResolvedValue([sensitive_setting] as any);
+
+			// act
+			const result = await apiSettingService.getSettings('TEST_TAG');
+
+			// assert
+			expect(result[0].value).toBe('');
+		});
+	});
 });

@@ -6,6 +6,8 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {SettingKey} from '@server/modules/setting/setting.enums';
+import {Setting} from '@server/modules/setting/setting.entity';
+import {isSettingSensitive, maskSensitiveValue} from '@server/modules/setting/setting.helpers';
 import {NotificationService} from '@server/modules/notification/notification.service';
 /* Local Dependencies */
 import {OrchardSetting} from './setting.model';
@@ -30,7 +32,7 @@ export class ApiSettingService {
 	async getSettings(tag: string): Promise<OrchardSetting[]> {
 		try {
 			const settings = await this.settingService.getSettings();
-			return settings.map((setting) => new OrchardSetting(setting));
+			return settings.map((setting) => this.toMaskedOrchardSetting(setting));
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SettingError,
@@ -46,12 +48,24 @@ export class ApiSettingService {
 			if (keys.some((key) => NOTIFICATION_KEYS.has(key))) {
 				await this.notificationService.reinitialize();
 			}
-			return settings.map((setting) => new OrchardSetting(setting));
+			return settings.map((setting) => this.toMaskedOrchardSetting(setting));
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SettingError,
 			});
 			throw new OrchardApiError(orchard_error);
 		}
+	}
+
+	/**
+	 * Convert a Setting entity to an OrchardSetting GraphQL model,
+	 * masking the value if the setting is sensitive.
+	 * @param {Setting} setting - The setting with real (decrypted) value
+	 * @returns {OrchardSetting} The GraphQL model with masked value if sensitive
+	 */
+	private toMaskedOrchardSetting(setting: Setting): OrchardSetting {
+		const is_sensitive = isSettingSensitive(setting.key, setting.value);
+		const masked_value = is_sensitive ? maskSensitiveValue(setting.value) : undefined;
+		return new OrchardSetting(setting, is_sensitive, masked_value);
 	}
 }

@@ -241,6 +241,73 @@ describe('SettingInterceptor', () => {
 	});
 
 	/**
+	 * Test sensitive value redaction in event logs
+	 */
+	describe('sensitive value redaction', () => {
+		it('should mask sensitive values in event log', async () => {
+			// arrange
+			reflector.get.mockReturnValue(mock_metadata);
+			settingService.getSetting.mockResolvedValue({
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'sk-or-v1-old-secret',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			} as any);
+
+			const context = createMockContext({keys: [SettingKey.AI_OPENROUTER_KEY], values: ['sk-or-v1-new-secret']});
+			const handler = createMockCallHandler({key: SettingKey.AI_OPENROUTER_KEY, value: 'sk-or-v1-new-secret'});
+
+			// act
+			const result = await interceptor.intercept(context, handler);
+			await lastValueFrom(result);
+
+			// assert
+			expect(eventLogService.createEvent).toHaveBeenCalledWith(
+				expect.objectContaining({
+					details: [
+						expect.objectContaining({
+							field: SettingKey.AI_OPENROUTER_KEY,
+							old_value: '\u2022\u2022\u2022\u2022cret',
+							new_value: '\u2022\u2022\u2022\u2022cret',
+							status: EventLogDetailStatus.SUCCESS,
+						}),
+					],
+				}),
+			);
+		});
+
+		it('should not mask non-sensitive values in event log', async () => {
+			// arrange
+			reflector.get.mockReturnValue(mock_metadata);
+			settingService.getSetting.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: 'false',
+				value_type: SettingValue.BOOLEAN,
+				description: 'Whether the bitcoin oracle is enabled',
+			} as any);
+
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
+			const handler = createMockCallHandler({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+
+			// act
+			const result = await interceptor.intercept(context, handler);
+			await lastValueFrom(result);
+
+			// assert
+			expect(eventLogService.createEvent).toHaveBeenCalledWith(
+				expect.objectContaining({
+					details: [
+						expect.objectContaining({
+							old_value: 'false',
+							new_value: 'true',
+						}),
+					],
+				}),
+			);
+		});
+	});
+
+	/**
 	 * Test fire-and-forget: event log failures don't break the mutation
 	 */
 	describe('when event logging fails', () => {
