@@ -266,7 +266,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		const data_source = this.data();
 		data_source.filterPredicate = (entity: Invite | User, filter_string: string) => {
 			const {text, state, role} = JSON.parse(filter_string);
-			const now = DateTime.now().toSeconds();
+			const now = DateTime.now().toUnixInteger();
 			const entity_state =
 				'name' in entity
 					? entity.active
@@ -280,7 +280,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		};
 
 		data_source.sortingDataAccessor = (entity: Invite | User, column_id: string) => {
-			const now = DateTime.now().toSeconds();
+			const now = DateTime.now().toUnixInteger();
 			switch (column_id) {
 				case 'created':
 					return entity.created_at;

@@ -20,6 +20,7 @@ import {
 	GetMintAnalyticsTool,
 	GetMintInfoTool,
 	GetPastRunsTool,
+	GetSystemMetricsTool,
 	createSendNotificationTool,
 } from '@server/modules/ai/agent/tools';
 import {NotificationService} from '@server/modules/notification/notification.service';
@@ -50,6 +51,7 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
 		this.register(AgentFunctionName.GET_PAST_RUNS, GetPastRunsTool);
+		this.register(AgentFunctionName.GET_SYSTEM_METRICS, GetSystemMetricsTool);
 		this.register(AgentFunctionName.SEND_NOTIFICATION, createSendNotificationTool(this.notificationService));
 	}
 

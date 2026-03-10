@@ -183,7 +183,7 @@ export class MintAnalyticsService {
 
 	/** Resolves common query parameters with defaults */
 	private resolveQueryParams(args: MintAnalyticsApiArgs) {
-		const now = DateTime.utc().toSeconds();
+		const now = DateTime.utc().toUnixInteger();
 		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
 		return {
 			interval: args.interval ?? AnalyticsInterval.hour,

@@ -23,7 +23,7 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 	public editInvite = output<Invite>();
 	public deleteInvite = output<Invite>();
 
-	public now = signal(DateTime.now().toSeconds());
+	public now = signal(DateTime.now().toUnixInteger());
 
 	public invite_url = computed(() => {
 		return `${window.location.origin}/auth/signup/${this.invite().token}`;

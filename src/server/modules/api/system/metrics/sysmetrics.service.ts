@@ -38,9 +38,9 @@ export class ApiSystemMetricsService {
 	 */
 	async getMetrics(tag: string, args: SystemMetricsArgs): Promise<OrchardSystemMetrics[]> {
 		try {
-			const now = DateTime.utc().toSeconds();
+			const now = DateTime.utc().toUnixInteger();
 			const interval = args.interval ?? SystemMetricsInterval.minute;
-			const date_start = args.date_start ?? 0;
+			const date_start = args.date_start ?? DateTime.utc().minus({days: 90}).toUnixInteger();
 			const date_end = args.date_end ?? now;
 			const metrics = args.metrics ?? Object.values(SystemMetric);
 

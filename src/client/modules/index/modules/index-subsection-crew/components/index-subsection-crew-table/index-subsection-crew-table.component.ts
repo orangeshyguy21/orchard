@@ -55,7 +55,7 @@ export class IndexSubsectionCrewTableComponent {
 
 	public more_entity = signal<Invite | User | null>(null);
 	public more_entity_type = signal<MoreEntityType | null>(null);
-	public now = DateTime.now().toSeconds();
+	public now = DateTime.now().toUnixInteger();
 	public readonly CrewEntity = CrewEntity;
 	public readonly MoreEntityType = MoreEntityType;
 	public readonly UserRole = UserRole;
