@@ -125,13 +125,23 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 		Messaging
 	******************************************************** */
 
-	/** Send a message to a specific Telegram chat */
+	/** Send a message to a specific Telegram chat, falling back to plain text if Markdown parsing fails */
 	public async sendMessage(chat_id: string, text: string): Promise<boolean> {
 		if (!this.bot) return false;
 		try {
 			await this.bot.api.sendMessage(chat_id, text, {parse_mode: 'Markdown'});
 			return true;
 		} catch (error) {
+			if (error.message?.includes("can't parse entities")) {
+				this.logger.warn(`Markdown parse failed for chat ${chat_id}, retrying as plain text`);
+				try {
+					await this.bot.api.sendMessage(chat_id, text);
+					return true;
+				} catch (retryError) {
+					this.logger.error(`Failed to send plain text message to ${chat_id}: ${retryError.message}`);
+					return false;
+				}
+			}
 			this.logger.error(`Failed to send Telegram message to ${chat_id}: ${error.message}`);
 			return false;
 		}

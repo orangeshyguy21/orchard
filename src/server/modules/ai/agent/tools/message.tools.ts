@@ -26,12 +26,20 @@ export function createSendMessageTool(messageService?: MessageService): AiToolEn
 			function: {
 				name: AgentFunctionName.SEND_MESSAGE,
 				description: [
-					'Send a message to the operator.',
+					'Send a message to the operator via Telegram.',
 					'',
 					'**Severity levels:**',
 					'- `info` — noteworthy but not urgent',
 					'- `warning` — potential issue that may need attention',
 					'- `critical` — requires immediate action',
+					'',
+					'**Formatting (Telegram legacy Markdown):**',
+					'- Supported: *bold*, _italic_, `inline code`, ```code block```',
+					'- Every *, _, and ` must have a matching closing character — unmatched ones break the message.',
+					'- Use *single asterisks* for bold — NOT **double**.',
+					'- Avoid * or _ inside numbers or technical strings (e.g. write "5 x 3" not "5 * 3").',
+					'- Do not nest formatting (e.g. no *_bold italic_*).',
+					'- Use plain dashes (-) for lists.',
 				].join('\n'),
 				parameters: {
 					type: 'object',
