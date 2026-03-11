@@ -89,7 +89,7 @@ export class ConversationService implements OnModuleInit {
 		if (last_user_idx <= 0) return;
 
 		const is_large_result = (m: AiMessage) =>
-			m.role === AiMessageRole.FUNCTION && m.content.length > ConversationService.COMPRESS_THRESHOLD;
+			m.role === AiMessageRole.TOOL && m.content.length > ConversationService.COMPRESS_THRESHOLD;
 
 		for (let i = 0; i < last_user_idx; i++) {
 			if (is_large_result(messages[i])) {

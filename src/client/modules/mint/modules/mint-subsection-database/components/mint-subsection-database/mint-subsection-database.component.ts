@@ -48,7 +48,7 @@ import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 /* Shared Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, AiAssistant, AiFunctionName} from '@shared/generated.types';
+import {MintUnit, MintQuoteState, MeltQuoteState, AiAssistant, AiToolName} from '@shared/generated.types';
 
 enum FormMode {
 	CREATE = 'CREATE',
@@ -703,21 +703,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
+		if (tool_call.function.name === AiToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiFunctionName.MintDatabaseDataTypeUpdate) {
+		if (tool_call.function.name === AiToolName.MintDatabaseDataTypeUpdate) {
 			if (tool_call.function.arguments.type && Object.values(MintDataType).includes(tool_call.function.arguments.type)) {
 				this.onTypeChange(tool_call.function.arguments.type);
 			} else {
 				console.warn('Invalid MintDataType received:', tool_call.function.arguments.type);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate) {
+		if (tool_call.function.name === AiToolName.MintAnalyticsUnitsUpdate) {
 			if (
 				tool_call.function.arguments.units &&
 				tool_call.function.arguments.units.every((unit: string) => this.unit_options.some((option) => option.value === unit))
@@ -727,7 +727,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				console.warn('Invalid Units received:', tool_call.function.arguments.units);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintDatabaseStatesUpdate) {
+		if (tool_call.function.name === AiToolName.MintDatabaseStatesUpdate) {
 			if (
 				tool_call.function.arguments.states &&
 				tool_call.function.arguments.states.every((state: string) => this.state_options.includes(state))
@@ -737,7 +737,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				console.warn('Invalid States received:', tool_call.function.arguments.states);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintBackupFilenameUpdate) {
+		if (tool_call.function.name === AiToolName.MintBackupFilenameUpdate) {
 			if (tool_call.function.arguments.filename) {
 				this.form_backup.patchValue({filename: tool_call.function.arguments.filename});
 			} else {

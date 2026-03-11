@@ -1,12 +1,12 @@
 export enum AiMessageRole {
 	USER = 'user',
 	ASSISTANT = 'assistant',
-	FUNCTION = 'function',
+	TOOL = 'tool',
 	SYSTEM = 'system',
 	ERROR = 'error',
 }
 
-export enum AiFunctionName {
+export enum AiToolName {
 	UPDATE_SEARCH = 'UPDATE_SEARCH',
 	CREW_STATES_UPDATE = 'CREW_STATES_UPDATE',
 	CREW_ROLES_UPDATE = 'CREW_ROLES_UPDATE',

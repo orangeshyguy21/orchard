@@ -23,7 +23,7 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogType, EventLogStatus, AiAssistant, AiFunctionName, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus, AiAssistant, AiToolName, QueryEvent_LogsArgs} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-event-subsection-log',
@@ -316,35 +316,35 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 
 	/** Executes the tool call from the AI assistant */
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
+		if (tool_call.function.name === AiToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogSectionsUpdate) {
+		if (tool_call.function.name === AiToolName.EventLogSectionsUpdate) {
 			const valid = tool_call.function.arguments.sections.every((s: string) =>
 				Object.values(EventLogSection).includes(s as EventLogSection),
 			);
 			if (valid) this.onSectionsChange(tool_call.function.arguments.sections as EventLogSection[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogTypesUpdate) {
+		if (tool_call.function.name === AiToolName.EventLogTypesUpdate) {
 			const valid = tool_call.function.arguments.types.every((t: string) => Object.values(EventLogType).includes(t as EventLogType));
 			if (valid) this.onTypesChange(tool_call.function.arguments.types as EventLogType[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogStatusesUpdate) {
+		if (tool_call.function.name === AiToolName.EventLogStatusesUpdate) {
 			const valid = tool_call.function.arguments.statuses.every((s: string) =>
 				Object.values(EventLogStatus).includes(s as EventLogStatus),
 			);
 			if (valid) this.onStatusesChange(tool_call.function.arguments.statuses as EventLogStatus[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogActorIdsUpdate) {
+		if (tool_call.function.name === AiToolName.EventLogActorIdsUpdate) {
 			const available_ids = this.users().map((u) => u.id);
 			const valid = tool_call.function.arguments.actor_ids.every((id: string) => available_ids.includes(id));
 			if (valid) this.onActorIdsChange(tool_call.function.arguments.actor_ids);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogResetFilters) {
+		if (tool_call.function.name === AiToolName.EventLogResetFilters) {
 			this.onResetFilter();
 		}
 	}

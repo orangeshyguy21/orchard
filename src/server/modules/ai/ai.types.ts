@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AiMessageRole, AiFunctionName} from './ai.enums';
+import {AiMessageRole, AiToolName} from './ai.enums';
 
 /* *******************************************************
 	Models
@@ -70,7 +70,7 @@ export type AiToolFunction = {
 export type AiToolCall = {
 	id?: string;
 	function: {
-		name: AiFunctionName;
+		name: AiToolName;
 		arguments: Record<string, unknown>;
 	};
 };

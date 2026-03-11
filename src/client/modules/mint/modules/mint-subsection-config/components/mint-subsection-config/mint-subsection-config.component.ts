@@ -44,7 +44,7 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {Nut15Method, Nut17Commands} from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
-import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/generated.types';
+import {OrchardNut4Method, OrchardNut5Method, AiToolName} from '@shared/generated.types';
 
 enum TertiaryNav {
 	Nut4 = 'nav4',
@@ -865,7 +865,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	******************************************************** */
 
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
+		if (tool_call.function.name === AiToolName.MintEnabledUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
 			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
@@ -873,7 +873,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_group.get('enabled')?.markAsDirty();
 			form_group.get('enabled')?.setValue(enabled);
 		}
-		if (tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate) {
+		if (tool_call.function.name === AiToolName.MintQuoteTtlUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const ttl = tool_call.function.arguments.ttl;
 			const form_control = operation === 'minting' ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
@@ -881,7 +881,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(ttl);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMinUpdate) {
+		if (tool_call.function.name === AiToolName.MintMethodMinUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
@@ -892,7 +892,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(min_amount);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMaxUpdate) {
+		if (tool_call.function.name === AiToolName.MintMethodMaxUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
@@ -903,7 +903,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(max_amount);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate) {
+		if (tool_call.function.name === AiToolName.MintMethodDescriptionUpdate) {
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
 			const description = tool_call.function.arguments.description;

@@ -8,7 +8,7 @@ import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {AiVendor} from '../ai.vendor';
 import {AiModel, AiMessage, AiTool, AiStreamChunk, AiToolCall} from '../ai.types';
-import {AiMessageRole, AiFunctionName} from '../ai.enums';
+import {AiMessageRole, AiToolName} from '../ai.enums';
 import {OpenRouterModelsResponse, OpenRouterModel, OpenRouterChatChunk, OpenRouterToolCallDelta} from './openrouter.types';
 
 @Injectable()
@@ -88,10 +88,10 @@ export class OpenRouterService implements AiVendor {
 					})),
 				};
 			}
-			/* Tool result messages: map FUNCTION role to "tool" with tool_call_id */
-			if (m.role === AiMessageRole.FUNCTION) {
+			/* Tool result messages need tool_call_id */
+			if (m.role === AiMessageRole.TOOL) {
 				return {
-					role: 'tool' as string,
+					role: m.role,
 					tool_call_id: m.tool_call_id,
 					content: m.content,
 				};
@@ -242,7 +242,7 @@ export class OpenRouterService implements AiVendor {
 			tool_calls = Array.from(tool_calls_acc.values()).map((tc) => ({
 				id: tc.id,
 				function: {
-					name: tc.name as AiFunctionName,
+					name: tc.name as AiToolName,
 					arguments: JSON.parse(tc.arguments || '{}'),
 				},
 			}));

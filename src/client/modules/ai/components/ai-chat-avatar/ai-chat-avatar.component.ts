@@ -19,7 +19,7 @@ export class AiChatAvatarComponent {
 		[AiMessageRole.Assistant]: 'avatar-role-assistant',
 		[AiMessageRole.User]: 'avatar-role-user',
 		[AiMessageRole.System]: 'avatar-role-system',
-		[AiMessageRole.Function]: 'avatar-role-function',
+		[AiMessageRole.Tool]: 'avatar-role-tool',
 		[AiMessageRole.Error]: 'avatar-role-error',
 	};
 

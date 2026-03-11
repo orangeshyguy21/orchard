@@ -25,7 +25,7 @@ import {StateOption, RoleOption} from '@client/modules/index/modules/index-subse
 import {IndexSubsectionCrewDialogUserComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
 import {IndexSubsectionCrewDialogInviteComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
 /* Shared Dependencies */
-import {UserRole, AiAssistant, AiFunctionName} from '@shared/generated.types';
+import {UserRole, AiAssistant, AiToolName} from '@shared/generated.types';
 
 export enum CrewFormType {
 	INVITE_CREATE = 'INVITE_CREATE',
@@ -734,15 +734,15 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	}
 
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.UpdateSearch) {
+		if (tool_call.function.name === AiToolName.UpdateSearch) {
 			this.panel.get('filter')?.setValue(tool_call.function.arguments.search);
 			this.applyFilters();
 		}
-		if (tool_call.function.name === AiFunctionName.CrewStatesUpdate) {
+		if (tool_call.function.name === AiToolName.CrewStatesUpdate) {
 			this.panel.get('state')?.setValue(tool_call.function.arguments.states as CrewState[]);
 			this.applyFilters();
 		}
-		if (tool_call.function.name === AiFunctionName.CrewRolesUpdate) {
+		if (tool_call.function.name === AiToolName.CrewRolesUpdate) {
 			this.panel.get('role')?.setValue(tool_call.function.arguments.roles as UserRole[]);
 			this.applyFilters();
 		}
@@ -750,11 +750,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		const form_group = this.getActiveFormGroup();
 		if (!form_group) return;
 
-		if (tool_call.function.name === AiFunctionName.CrewInviteRoleUpdate) {
+		if (tool_call.function.name === AiToolName.CrewInviteRoleUpdate) {
 			form_group.get('role')?.setValue(tool_call.function.arguments.role as UserRole);
 			form_group.get('role')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.CrewInviteExpirationEnabledUpdate) {
+		if (tool_call.function.name === AiToolName.CrewInviteExpirationEnabledUpdate) {
 			form_group.get('expiration_enabled')?.setValue(tool_call.function.arguments.expiration_enabled as boolean);
 			form_group.get('expiration_enabled')?.markAsDirty();
 			if (tool_call.function.arguments.expiration_enabled as boolean) {
@@ -765,18 +765,18 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 				form_group.get('expiration_time')?.disable();
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.CrewInviteExpirationUpdate) {
+		if (tool_call.function.name === AiToolName.CrewInviteExpirationUpdate) {
 			form_group.get('expiration_date')?.setValue(DateTime.fromISO(tool_call.function.arguments.expiration_datetime));
 			form_group.get('expiration_time')?.setValue(form_group.get('expiration_date')?.value?.hour || null);
 			form_group.get('expiration_date')?.markAsDirty();
 			form_group.get('expiration_time')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.CrewLabelUpdate) {
+		if (tool_call.function.name === AiToolName.CrewLabelUpdate) {
 			form_group.get('label')?.setValue(tool_call.function.arguments.label as string);
 			form_group.get('label')?.markAsDirty();
 		}
 
-		if (tool_call.function.name === AiFunctionName.CrewUserActiveUpdate) {
+		if (tool_call.function.name === AiToolName.CrewUserActiveUpdate) {
 			form_group.get('active')?.setValue(tool_call.function.arguments.active as boolean);
 			form_group.get('active')?.markAsDirty();
 		}

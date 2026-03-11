@@ -2,12 +2,12 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {AiToolCall, AiMessage, AiStreamChunk, AiStreamUsage} from '@server/modules/ai/ai.types';
-import {AiMessageRole, AiFunctionName} from '@server/modules/ai/ai.enums';
+import {AiMessageRole, AiToolName} from '@server/modules/ai/ai.enums';
 
 @ObjectType()
 export class OrchardAiChatFunction {
-	@Field(() => AiFunctionName)
-	name: AiFunctionName;
+	@Field(() => AiToolName)
+	name: AiToolName;
 
 	@Field()
 	arguments: string;

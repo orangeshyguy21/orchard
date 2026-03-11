@@ -247,7 +247,7 @@ export class AgentService implements OnModuleInit {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
 					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments, agent_context);
-					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
+					messages.push({role: AiMessageRole.TOOL, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
 				return {result: response.message.content, tokens_used: total_tokens, messages};

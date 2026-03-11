@@ -30,7 +30,7 @@ import {AnalyticsInterval} from './modules/analytics/analytics.enums';
 import {MintAnalyticsMetric} from './modules/cashu/mintanalytics/mintanalytics.enums';
 import {LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
-import {AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
+import {AiMessageRole, AiToolName} from './modules/ai/ai.enums';
 import {AiAssistant} from './modules/ai/assistant/ai.assistant.enums';
 import {AgentKey, AgentRunStatus} from './modules/ai/agent/agent.enums';
 import {UserRole} from './modules/user/user.enums';
@@ -67,7 +67,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(AgentRunStatus, {name: 'AgentRunStatus'});
 	registerEnumType(AiAssistant, {name: 'AiAssistant'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
-	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});
+	registerEnumType(AiToolName, {name: 'AiToolName'});
 	registerEnumType(UserRole, {name: 'UserRole'});
 	registerEnumType(SettingKey, {name: 'SettingKey'});
 	registerEnumType(SettingValue, {name: 'SettingValue'});

@@ -270,8 +270,8 @@ export class AiService {
 			if (last_message.role === AiMessageRole.Assistant && last_message.tool_calls?.length) {
 				this.conversation_cache.messages.push(
 					new AiChatCompiledMessage(id, {
-						role: AiMessageRole.Function,
-						content: this.getFullContext(context, AiMessageRole.Function),
+						role: AiMessageRole.Tool,
+						content: this.getFullContext(context, AiMessageRole.Tool),
 					}),
 				);
 			}

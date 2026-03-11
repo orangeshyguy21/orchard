@@ -8,7 +8,7 @@ import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {AiVendor} from '../ai.vendor';
 import {AiModel, AiMessage, AiTool, AiStreamChunk} from '../ai.types';
-import {AiMessageRole, AiFunctionName} from '../ai.enums';
+import {AiMessageRole, AiToolName} from '../ai.enums';
 import {OllamaTagsResponse, OllamaChatChunk, OllamaModel} from './ollama.types';
 
 @Injectable()
@@ -136,7 +136,7 @@ export class OllamaService implements AiVendor {
 				thinking: chunk.message.thinking,
 				tool_calls: chunk.message.tool_calls?.map((tc) => ({
 					function: {
-						name: tc.function.name as AiFunctionName,
+						name: tc.function.name as AiToolName,
 						arguments: tc.function.arguments,
 					},
 				})),
