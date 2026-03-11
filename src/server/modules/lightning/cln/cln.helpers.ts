@@ -297,6 +297,8 @@ export function mapClnTransactions(response: ClnListTransactionsResponse): Light
 	return transactions.map((t: ClnTransaction) => ({
 		tx_hash: bufferToHex(Buffer.from(t.hash).reverse()), // Reverse for display order
 		time_stamp: 0, // Will be enriched from Bitcoin RPC or estimated
+		amount: null, // CLN ListTransactions doesn't provide wallet-relative amounts
+		total_fees: null, // CLN ListTransactions doesn't provide fee data
 		block_height: t.blockheight ?? undefined,
 	}));
 }

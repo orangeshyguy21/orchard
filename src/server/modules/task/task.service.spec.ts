@@ -9,6 +9,7 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {BitcoinAnalyticsService} from '@server/modules/bitcoin/analytics/btcanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {AgentService} from '@server/modules/ai/agent/agent.service';
 import {ConversationService} from '@server/modules/ai/conversation/conversation.service';
@@ -55,6 +56,13 @@ describe('TaskService', () => {
 				},
 				{
 					provide: LightningAnalyticsService,
+					useValue: {
+						runStreamingBackfill: jest.fn(),
+						rescanRecentRecords: jest.fn(),
+					},
+				},
+				{
+					provide: BitcoinAnalyticsService,
 					useValue: {
 						runStreamingBackfill: jest.fn(),
 						rescanRecentRecords: jest.fn(),

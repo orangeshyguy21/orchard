@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -39,7 +39,7 @@ export const GetSystemMetricsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_SYSTEM_METRICS,
+			name: AgentToolName.GET_SYSTEM_METRICS,
 			description: [
 				'Retrieve host system resource metrics over a time range.',
 				'',

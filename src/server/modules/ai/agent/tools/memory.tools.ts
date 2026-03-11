@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -26,7 +26,7 @@ export const GetPastRunsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_PAST_RUNS,
+			name: AgentToolName.GET_PAST_RUNS,
 			description: [
 				'Retrieve past runs where you sent messages.',
 				'',

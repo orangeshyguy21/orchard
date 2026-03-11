@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -158,7 +158,7 @@ export const GetLightningChannelsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_CHANNELS,
+			name: AgentToolName.GET_LIGHTNING_CHANNELS,
 			description: [
 				'Retrieve all open Lightning channels.',
 				'',
@@ -189,7 +189,7 @@ export const GetLightningClosedChannelsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_CLOSED_CHANNELS,
+			name: AgentToolName.GET_LIGHTNING_CLOSED_CHANNELS,
 			description: [
 				'Retrieve all closed Lightning channels.',
 				'',
@@ -221,7 +221,7 @@ export const GetLightningPeersTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_PEERS,
+			name: AgentToolName.GET_LIGHTNING_PEERS,
 			description: [
 				'Retrieve all connected Lightning peers.',
 				'',
@@ -252,7 +252,7 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES,
+			name: AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES,
 			description: [
 				'Retrieve Lightning channel balance analytics for a time range.',
 				'',
@@ -297,7 +297,7 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS,
+			name: AgentToolName.GET_LIGHTNING_ANALYTICS_METRICS,
 			description: [
 				'Retrieve raw Lightning network activity metrics for a time range.',
 				'',
@@ -363,7 +363,7 @@ export const GetLightningInfoTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_LIGHTNING_INFO,
+			name: AgentToolName.GET_LIGHTNING_INFO,
 			description: [
 				'Retrieve Lightning node identity and operational status.',
 				'',

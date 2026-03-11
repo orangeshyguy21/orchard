@@ -164,11 +164,13 @@ export type LightningPeer = {
 };
 
 /**
- * Common transaction type for timestamp lookups
+ * Common transaction type for on-chain wallet transactions
  */
 export type LightningTransaction = {
 	tx_hash: string;
 	time_stamp: number; // seconds since epoch
+	amount: string | null; // signed sats (positive=receive, negative=send). null if unavailable (CLN)
+	total_fees: string | null; // on-chain fees in sats. null if unavailable (CLN)
 	block_height?: number; // optional, used for enrichment from Bitcoin RPC
 };
 

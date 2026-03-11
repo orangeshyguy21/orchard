@@ -30,6 +30,7 @@ import {MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
 import {AnalyticsInterval} from './modules/analytics/analytics.enums';
 import {MintAnalyticsMetric} from './modules/cashu/mintanalytics/mintanalytics.enums';
 import {LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
+import {BitcoinAnalyticsMetric} from './modules/bitcoin/analytics/btcanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiMessageRole, AiToolName} from './modules/ai/ai.enums';
 import {AiAssistant} from './modules/ai/assistant/ai.assistant.enums';
@@ -63,6 +64,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(LightningChannelCloseType, {name: 'LightningChannelCloseType'});
 	registerEnumType(LightningChannelOpenInitiator, {name: 'LightningChannelOpenInitiator'});
 	registerEnumType(LightningAnalyticsMetric, {name: 'LightningAnalyticsMetric'});
+	registerEnumType(BitcoinAnalyticsMetric, {name: 'BitcoinAnalyticsMetric'});
 	registerEnumType(MintAnalyticsMetric, {name: 'MintAnalyticsMetric'});
 	registerEnumType(AgentKey, {name: 'AgentKey'});
 	registerEnumType(AgentRunStatus, {name: 'AgentRunStatus'});

@@ -7,8 +7,9 @@ import {DocumentNode, GraphQLSchema, execute, parse} from 'graphql';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AiTool} from '@server/modules/ai/ai.types';
-import {AgentFunctionName} from '@server/modules/ai/agent/agent.enums';
+import {AgentToolName} from '@server/modules/ai/agent/agent.enums';
 import {
+	GetBitcoinAnalyticsMetricsTool,
 	GetBitcoinBlockchainInfoTool,
 	GetBitcoinNetworkInfoTool,
 	GetPortHealthTool,
@@ -43,22 +44,23 @@ export class ToolService {
 		private readonly moduleRef: ModuleRef,
 		@Optional() private readonly messageService?: MessageService,
 	) {
-		this.register(AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
-		this.register(AgentFunctionName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
-		this.register(AgentFunctionName.GET_PORT_HEALTH, GetPortHealthTool);
-		this.register(AgentFunctionName.GET_URL_HEALTH, GetUrlHealthTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, GetLightningAnalyticsBalancesTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS, GetLightningAnalyticsMetricsTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_CHANNELS, GetLightningChannelsTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_CLOSED_CHANNELS, GetLightningClosedChannelsTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_INFO, GetLightningInfoTool);
-		this.register(AgentFunctionName.GET_LIGHTNING_PEERS, GetLightningPeersTool);
-		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
-		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
-		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
-		this.register(AgentFunctionName.GET_PAST_RUNS, GetPastRunsTool);
-		this.register(AgentFunctionName.GET_SYSTEM_METRICS, GetSystemMetricsTool);
-		this.register(AgentFunctionName.SEND_MESSAGE, createSendMessageTool(this.messageService));
+		this.register(AgentToolName.GET_BITCOIN_ANALYTICS_METRICS, GetBitcoinAnalyticsMetricsTool);
+		this.register(AgentToolName.GET_BITCOIN_BLOCKCHAIN_INFO, GetBitcoinBlockchainInfoTool);
+		this.register(AgentToolName.GET_BITCOIN_NETWORK_INFO, GetBitcoinNetworkInfoTool);
+		this.register(AgentToolName.GET_PORT_HEALTH, GetPortHealthTool);
+		this.register(AgentToolName.GET_URL_HEALTH, GetUrlHealthTool);
+		this.register(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, GetLightningAnalyticsBalancesTool);
+		this.register(AgentToolName.GET_LIGHTNING_ANALYTICS_METRICS, GetLightningAnalyticsMetricsTool);
+		this.register(AgentToolName.GET_LIGHTNING_CHANNELS, GetLightningChannelsTool);
+		this.register(AgentToolName.GET_LIGHTNING_CLOSED_CHANNELS, GetLightningClosedChannelsTool);
+		this.register(AgentToolName.GET_LIGHTNING_INFO, GetLightningInfoTool);
+		this.register(AgentToolName.GET_LIGHTNING_PEERS, GetLightningPeersTool);
+		this.register(AgentToolName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
+		this.register(AgentToolName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
+		this.register(AgentToolName.GET_MINT_INFO, GetMintInfoTool);
+		this.register(AgentToolName.GET_PAST_RUNS, GetPastRunsTool);
+		this.register(AgentToolName.GET_SYSTEM_METRICS, GetSystemMetricsTool);
+		this.register(AgentToolName.SEND_MESSAGE, createSendMessageTool(this.messageService));
 	}
 
 	/* *******************************************************
@@ -66,7 +68,7 @@ export class ToolService {
 	******************************************************** */
 
 	/** Register a tool entry in the registry, pre-parsing any GraphQL query */
-	private register(name: AgentFunctionName, entry: AiToolEntry): void {
+	private register(name: AgentToolName, entry: AiToolEntry): void {
 		this.registry.set(name, entry);
 		if (entry.query) {
 			this.parsed_queries.set(name, parse(entry.query));

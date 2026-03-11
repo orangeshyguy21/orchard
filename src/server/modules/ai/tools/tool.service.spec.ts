@@ -3,7 +3,7 @@ import {Test, TestingModule} from '@nestjs/testing';
 import {GraphQLSchemaHost} from '@nestjs/graphql';
 import {makeExecutableSchema} from '@graphql-tools/schema';
 /* Application Dependencies */
-import {AgentFunctionName} from '@server/modules/ai/agent/agent.enums';
+import {AgentToolName} from '@server/modules/ai/agent/agent.enums';
 /* Local Dependencies */
 import {ToolService} from './tool.service';
 
@@ -140,9 +140,9 @@ describe('ToolService', () => {
 
 	describe('getToolSchemas', () => {
 		it('returns schemas for registered tools', () => {
-			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES]);
+			const schemas = service.getToolSchemas([AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES]);
 			expect(schemas.length).toEqual(1);
-			expect(schemas[0].function.name).toBe(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES);
+			expect(schemas[0].function.name).toBe(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES);
 		});
 
 		it('returns empty array for unknown tool names', () => {
@@ -151,7 +151,7 @@ describe('ToolService', () => {
 		});
 
 		it('filters out unknown names from mixed input', () => {
-			const schemas = service.getToolSchemas([AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, 'UNKNOWN']);
+			const schemas = service.getToolSchemas([AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, 'UNKNOWN']);
 			expect(schemas.length).toEqual(1);
 		});
 	});
@@ -159,10 +159,10 @@ describe('ToolService', () => {
 	describe('getRegisteredTools', () => {
 		it('returns all registered tool names', () => {
 			const tools = service.getRegisteredTools();
-			expect(tools).toContain(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES);
-			expect(tools).toContain(AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS);
-			expect(tools).toContain(AgentFunctionName.GET_MINT_ANALYTICS);
-			expect(tools).toContain(AgentFunctionName.GET_MINT_ANALYTICS_METRICS);
+			expect(tools).toContain(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES);
+			expect(tools).toContain(AgentToolName.GET_LIGHTNING_ANALYTICS_METRICS);
+			expect(tools).toContain(AgentToolName.GET_MINT_ANALYTICS);
+			expect(tools).toContain(AgentToolName.GET_MINT_ANALYTICS_METRICS);
 		});
 	});
 
@@ -174,13 +174,13 @@ describe('ToolService', () => {
 		});
 
 		it('executes a GraphQL-backed tool', async () => {
-			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
+			const result = await service.executeTool(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 			expect(result.success).toBe(true);
 			expect(result.data).toBeDefined();
 		});
 
 		it('executes the mint analytics metrics tool', async () => {
-			const result = await service.executeTool(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, {});
+			const result = await service.executeTool(AgentToolName.GET_MINT_ANALYTICS_METRICS, {});
 			expect(result.success).toBe(true);
 			expect(result.data).toBeDefined();
 		});
@@ -189,7 +189,7 @@ describe('ToolService', () => {
 	describe('throttling', () => {
 		it('allows calls within the bucket limit', async () => {
 			for (let i = 0; i < 5; i++) {
-				const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
+				const result = await service.executeTool(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 				expect(result.success).toBe(true);
 			}
 		});
@@ -197,9 +197,9 @@ describe('ToolService', () => {
 		it('throttles when bucket limit is exceeded', async () => {
 			/* Lightning analytics allows 15 calls per 60s — fill the bucket */
 			for (let i = 0; i < 15; i++) {
-				await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
+				await service.executeTool(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 			}
-			const result = await service.executeTool(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
+			const result = await service.executeTool(AgentToolName.GET_LIGHTNING_ANALYTICS_BALANCES, {});
 			expect(result.success).toBe(false);
 			expect(result.error).toContain('throttled');
 		});

@@ -1,4 +1,4 @@
-export {GetBitcoinBlockchainInfoTool, GetBitcoinNetworkInfoTool} from './bitcoin.tools';
+export {GetBitcoinAnalyticsMetricsTool, GetBitcoinBlockchainInfoTool, GetBitcoinNetworkInfoTool} from './bitcoin.tools';
 export {GetPortHealthTool, GetUrlHealthTool} from './health.tools';
 export {
 	GetLightningAnalyticsBalancesTool,

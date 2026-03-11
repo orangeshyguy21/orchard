@@ -13,9 +13,11 @@ export enum OrchardErrorCode {
 	SignupError = 10011,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
+    BitcoinAnalyticsError = 20002,
 	// Lightning Level Errors
 	LightningRpcConnectionError = 30001,
 	LightningRpcActionError = 30002,
+	LightningAnalyticsError = 30003,
 	// what will 300003 be?
 	LightningSupportError = 30004,
 	// Mint Level Errors
@@ -30,6 +32,7 @@ export enum OrchardErrorCode {
 	MintDatabaseBackupError = 40009,
 	MintDatabaseRestoreError = 40010,
 	MintDatabaseRestoreInvalidError = 40011,
+    MintAnalyticsError = 40012,
 	// Ecash Level Errors
 
 	// AI Level Errors
@@ -72,8 +75,10 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InitializationError]: 'InitializationError',
 	[OrchardErrorCode.SignupError]: 'SignupError',
 	[OrchardErrorCode.BitcoinRPCError]: 'BitcoinRPCError',
+    [OrchardErrorCode.BitcoinAnalyticsError]: 'BitcoinAnalyticsError',
 	[OrchardErrorCode.LightningRpcConnectionError]: 'LightningRpcConnectionError',
 	[OrchardErrorCode.LightningRpcActionError]: 'LightningRpcActionError',
+    [OrchardErrorCode.LightningAnalyticsError]: 'LightningAnalyticsError',
 	[OrchardErrorCode.LightningSupportError]: 'LightningSupportError',
 	[OrchardErrorCode.MintPublicApiError]: 'MintPublicApiError',
 	[OrchardErrorCode.MintDatabaseConnectionError]: 'MintDatabaseConnectionError',
@@ -85,6 +90,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.MintDatabaseBackupError]: 'MintDatabaseBackupError',
 	[OrchardErrorCode.MintDatabaseRestoreError]: 'MintDatabaseRestoreError',
 	[OrchardErrorCode.MintDatabaseRestoreInvalidError]: 'MintDatabaseRestoreInvalidError',
+    [OrchardErrorCode.MintAnalyticsError]: 'MintAnalyticsError',
 	[OrchardErrorCode.AiError]: 'AiError',
 	[OrchardErrorCode.AiStreamError]: 'AiStreamError',
 	[OrchardErrorCode.AiStreamParseError]: 'AiStreamParseError',

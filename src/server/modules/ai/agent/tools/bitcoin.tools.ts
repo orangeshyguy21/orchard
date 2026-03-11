@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -46,6 +46,28 @@ const GET_BITCOIN_BLOCKCHAIN_INFO_QUERY = `
 	}
 `;
 
+const GET_BITCOIN_ANALYTICS_METRICS_QUERY = `
+	query GetBitcoinAnalyticsMetrics(
+		$date_start: UnixTimestamp,
+		$date_end: UnixTimestamp,
+		$interval: AnalyticsInterval,
+		$metrics: [BitcoinAnalyticsMetric!]
+	) {
+		bitcoin_analytics_metrics(
+			date_start: $date_start,
+			date_end: $date_end,
+			interval: $interval,
+			metrics: $metrics
+		) {
+			unit
+			metric
+			amount
+			date
+			count
+		}
+	}
+`;
+
 /* *******************************************************
 	Tool Definitions
 ******************************************************** */
@@ -55,7 +77,7 @@ export const GetBitcoinNetworkInfoTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_BITCOIN_NETWORK_INFO,
+			name: AgentToolName.GET_BITCOIN_NETWORK_INFO,
 			description: [
 				'Retrieve Bitcoin node network and peer connectivity information.',
 				'',
@@ -73,7 +95,7 @@ export const GetBitcoinNetworkInfoTool: AiToolEntry = {
 		},
 	},
 	query: GET_BITCOIN_NETWORK_INFO_QUERY,
-	throttle_max_calls: 10,
+	throttle_max_calls: 2,
 	throttle_window_seconds: 60,
 };
 
@@ -82,7 +104,7 @@ export const GetBitcoinBlockchainInfoTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_BITCOIN_BLOCKCHAIN_INFO,
+			name: AgentToolName.GET_BITCOIN_BLOCKCHAIN_INFO,
 			description: [
 				'Retrieve Bitcoin blockchain sync status and chain state.',
 				'',
@@ -102,6 +124,59 @@ export const GetBitcoinBlockchainInfoTool: AiToolEntry = {
 		},
 	},
 	query: GET_BITCOIN_BLOCKCHAIN_INFO_QUERY,
-	throttle_max_calls: 10,
+	throttle_max_calls: 2,
+	throttle_window_seconds: 60,
+};
+
+/** Fetches bitcoin per-metric analytics with optional filters */
+export const GetBitcoinAnalyticsMetricsTool: AiToolEntry = {
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentToolName.GET_BITCOIN_ANALYTICS_METRICS,
+			description: [
+				'Retrieve raw Bitcoin on-chain activity metrics for a time range.',
+				'',
+				'**Returns** per metric per interval bucket: `unit`, `metric`, `amount`, `date`, `count`.',
+				'Amounts are in **satoshis** (for BTC) or the native unit for Taproot Assets.',
+				'',
+				'**Available metrics:**',
+				'- `payments_in` — incoming on-chain payments received',
+				'- `payments_out` — outgoing on-chain payments sent',
+				'- `fees` — on-chain transaction fees paid',
+				'',
+				'**Defaults:** `date_start` = all time, `date_end` = now, `metrics` = all. Always provide a `date_start` to scope results.',
+			].join('\n'),
+			parameters: {
+				type: 'object',
+				properties: {
+					date_start: {
+						type: 'number',
+						description:
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
+					},
+					date_end: {
+						type: 'number',
+						description: 'End of the time range as a unix timestamp in seconds. Defaults to now.',
+					},
+					interval: {
+						type: 'string',
+						description: 'The aggregation interval for bucketing analytics data.',
+						enum: ['hour', 'day', 'week', 'month'],
+					},
+					metrics: {
+						type: 'array',
+						description: 'Which metrics to include. Defaults to all metrics if omitted.',
+						items: {
+							type: 'string',
+							enum: ['payments_in', 'payments_out', 'fees'],
+						},
+					},
+				},
+			},
+		},
+	},
+	query: GET_BITCOIN_ANALYTICS_METRICS_QUERY,
+	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
 };

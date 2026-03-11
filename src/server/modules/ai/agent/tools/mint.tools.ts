@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -85,7 +85,7 @@ export const GetMintInfoTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_MINT_INFO,
+			name: AgentToolName.GET_MINT_INFO,
 			description: [
 				'Retrieve Cashu mint identity and configuration.',
 				'',
@@ -113,7 +113,7 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_MINT_ANALYTICS_METRICS,
+			name: AgentToolName.GET_MINT_ANALYTICS_METRICS,
 			description: [
 				'Retrieve per-metric Cashu mint analytics for a time range.',
 				'Returns individual metric data points, each with `unit`, `metric`, `amount`, `date`, `count`.',
@@ -193,7 +193,7 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 	tool: {
 		type: 'function',
 		function: {
-			name: AgentFunctionName.GET_MINT_ANALYTICS,
+			name: AgentToolName.GET_MINT_ANALYTICS,
 			description: [
 				'Retrieve Cashu mint operational metrics for a time range.',
 				'',

@@ -310,6 +310,8 @@ export function mapLndTransactions(response: LndGetTransactionsResponse): Lightn
 	return transactions.map((t: LndTransaction) => ({
 		tx_hash: t.tx_hash ?? '',
 		time_stamp: Number(t.time_stamp ?? 0),
+		amount: t.amount ?? null,
+		total_fees: t.total_fees ?? null,
 	}));
 }
 

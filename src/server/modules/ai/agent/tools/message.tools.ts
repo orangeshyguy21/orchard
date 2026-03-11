@@ -5,7 +5,7 @@ import {Logger} from '@nestjs/common';
 import {MessageService} from '@server/modules/message/message.service';
 
 /* Local Dependencies */
-import {AgentFunctionName} from '../agent.enums';
+import {AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -24,7 +24,7 @@ export function createSendMessageTool(messageService?: MessageService): AiToolEn
 		tool: {
 			type: 'function',
 			function: {
-				name: AgentFunctionName.SEND_MESSAGE,
+				name: AgentToolName.SEND_MESSAGE,
 				description: [
 					'Send a message to the operator via Telegram.',
 					'',

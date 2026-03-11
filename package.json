@@ -34,9 +34,10 @@
     "migration:run": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/server/database/data-source.ts",
     "migration:revert": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/server/database/data-source.ts",
     "migration:show": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/server/database/data-source.ts",
+    "debug:btc-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-btc-analytics.ts",
     "debug:ln-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-ln-analytics.ts",
     "debug:mint-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-mint-analytics.ts",
-    "integration": "npm run debug:ln-analytics && npm run debug:mint-analytics"
+    "integration": "npm run debug:btc-analytics && npm run debug:ln-analytics && npm run debug:mint-analytics"
   },
   "dependencies": {
     "@angular/animations": "^21.2.0",

@@ -10,6 +10,7 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {BitcoinAnalyticsService} from '@server/modules/bitcoin/analytics/btcanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {AgentService} from '@server/modules/ai/agent/agent.service';
 import {ConversationService} from '@server/modules/ai/conversation/conversation.service';
@@ -27,6 +28,7 @@ export class TaskService {
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private lightningAnalyticsService: LightningAnalyticsService,
+		private bitcoinAnalyticsService: BitcoinAnalyticsService,
 		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
 		private agentService: AgentService,
@@ -192,6 +194,54 @@ export class TaskService {
 			this.logger.log('Daily cashu mint analytics rescan complete');
 		} catch (error) {
 			this.logger.error(`Error during cashu mint analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Update bitcoin on-chain analytics at 10 minutes past each hour
+	 * Tracks BTC wallet transactions and taproot asset transfers
+	 */
+	@Cron('10 * * * *', {
+		name: 'hourly-bitcoin-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyBitcoinAnalytics() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping bitcoin analytics job');
+			return;
+		}
+
+		this.logger.log('Starting bitcoin analytics update...');
+		try {
+			await this.bitcoinAnalyticsService.runStreamingBackfill();
+			this.logger.log('Bitcoin analytics update complete');
+		} catch (error) {
+			this.logger.error(`Error updating bitcoin analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent bitcoin on-chain records to catch late confirmations
+	 * Runs at 3:30am UTC
+	 */
+	@Cron('30 3 * * *', {
+		name: 'daily-bitcoin-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyBitcoinAnalyticsRescan() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping bitcoin analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily bitcoin analytics rescan...');
+		try {
+			await this.bitcoinAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily bitcoin analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during bitcoin analytics rescan: ${error.message}`, error.stack);
 		}
 	}
 

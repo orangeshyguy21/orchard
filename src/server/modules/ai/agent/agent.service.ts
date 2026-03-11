@@ -21,7 +21,7 @@ import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
-import {AgentFunctionName, AgentKey, AgentRunStatus} from './agent.enums';
+import {AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
 
 @Injectable()
@@ -215,7 +215,7 @@ export class AgentService implements OnModuleInit {
 		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
 
 		const notified = loop_result.messages.some(
-			(m) => m.tool_calls?.some((tc) => (tc.function.name as string) === AgentFunctionName.SEND_MESSAGE),
+			(m) => m.tool_calls?.some((tc) => (tc.function.name as string) === AgentToolName.SEND_MESSAGE),
 		);
 
 		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);

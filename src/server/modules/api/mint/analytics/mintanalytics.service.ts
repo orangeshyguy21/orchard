@@ -300,7 +300,7 @@ export class MintAnalyticsService {
 	/** Wraps errors in OrchardApiError */
 	private handleError(tag: string, error: unknown): OrchardApiError {
 		const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-			errord: OrchardErrorCode.MintDatabaseSelectError,
+			errord: OrchardErrorCode.MintAnalyticsError,
 		});
 		return new OrchardApiError(orchard_error);
 	}
