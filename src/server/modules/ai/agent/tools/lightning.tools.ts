@@ -78,9 +78,170 @@ const GET_LIGHTNING_ANALYTICS_METRICS_QUERY = `
 	}
 `;
 
+const GET_LIGHTNING_CHANNELS_QUERY = `
+	query GetLightningChannels {
+		lightning_channels {
+			channel_point
+			chan_id
+			capacity
+			local_balance
+			remote_balance
+			remote_pubkey
+			initiator
+			push_amount_sat
+			private
+			active
+			funding_txid
+			asset {
+				group_key
+				asset_id
+				name
+				local_balance
+				remote_balance
+				capacity
+				decimal_display
+			}
+		}
+	}
+`;
+
+const GET_LIGHTNING_CLOSED_CHANNELS_QUERY = `
+	query GetLightningClosedChannels {
+		lightning_closed_channels {
+			channel_point
+			chan_id
+			capacity
+			close_height
+			settled_balance
+			time_locked_balance
+			close_type
+			open_initiator
+			remote_pubkey
+			funding_txid
+			closing_txid
+			asset {
+				group_key
+				asset_id
+				name
+				local_balance
+				remote_balance
+				capacity
+				decimal_display
+			}
+		}
+	}
+`;
+
+const GET_LIGHTNING_PEERS_QUERY = `
+	query GetLightningPeers {
+		lightning_peers {
+			pubkey
+			address
+			bytes_sent
+			bytes_recv
+			sat_sent
+			sat_recv
+			inbound
+			ping_time
+		}
+	}
+`;
+
 /* *******************************************************
 	Tool Definitions
 ******************************************************** */
+
+/** Fetches all open Lightning channels with balances and peer info */
+export const GetLightningChannelsTool: AiToolEntry = {
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentFunctionName.GET_LIGHTNING_CHANNELS,
+			description: [
+				'Retrieve all open Lightning channels.',
+				'',
+				'**Returns** per channel:',
+				'- `chan_id` / `channel_point` — channel identifiers',
+				'- `capacity` / `local_balance` / `remote_balance` — balances in **satoshis**',
+				'- `remote_pubkey` — peer public key (cross-reference with `GET_LIGHTNING_PEERS`)',
+				'- `active` — whether the channel is currently online',
+				'- `private` — whether the channel is unadvertised',
+				'- `initiator` — true if we opened the channel',
+				'- `funding_txid` — on-chain funding transaction',
+				'- `asset` — Taproot Asset details if applicable (null otherwise)',
+			].join('\n'),
+			parameters: {
+				type: 'object',
+				properties: {},
+			},
+		},
+	},
+	query: GET_LIGHTNING_CHANNELS_QUERY,
+	throttle_max_calls: 2,
+	throttle_window_seconds: 60,
+};
+
+/** Fetches all closed Lightning channels with close details and peer info */
+export const GetLightningClosedChannelsTool: AiToolEntry = {
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentFunctionName.GET_LIGHTNING_CLOSED_CHANNELS,
+			description: [
+				'Retrieve all closed Lightning channels.',
+				'',
+				'**Returns** per channel:',
+				'- `chan_id` / `channel_point` — channel identifiers',
+				'- `capacity` / `settled_balance` / `time_locked_balance` — amounts in **satoshis**',
+				'- `remote_pubkey` — peer public key (cross-reference with `GET_LIGHTNING_PEERS`)',
+				'- `close_type` — how the channel closed: `COOPERATIVE`, `LOCAL_FORCE`, `REMOTE_FORCE`, `BREACH`, `FUNDING_CANCELED`, `ABANDONED`, `UNKNOWN`',
+				'- `open_initiator` — who opened: `LOCAL`, `REMOTE`, `BOTH`, `UNKNOWN`',
+				'- `close_height` — block height at which the channel closed',
+				'- `funding_txid` / `closing_txid` — on-chain transactions',
+				'- `asset` — Taproot Asset details if applicable (null otherwise)',
+				'',
+				'**Severity guidance:** `BREACH` and `REMOTE_FORCE` closes warrant operator attention.',
+			].join('\n'),
+			parameters: {
+				type: 'object',
+				properties: {},
+			},
+		},
+	},
+	query: GET_LIGHTNING_CLOSED_CHANNELS_QUERY,
+	throttle_max_calls: 2,
+	throttle_window_seconds: 60,
+};
+
+/** Fetches all connected Lightning peers */
+export const GetLightningPeersTool: AiToolEntry = {
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentFunctionName.GET_LIGHTNING_PEERS,
+			description: [
+				'Retrieve all connected Lightning peers.',
+				'',
+				'**Returns** per peer:',
+				'- `pubkey` — peer public key (matches `remote_pubkey` on channels)',
+				'- `address` — network address',
+				'- `bytes_sent` / `bytes_recv` — traffic counters',
+				'- `sat_sent` / `sat_recv` — satoshis exchanged with this peer',
+				'- `inbound` — whether the peer initiated the connection',
+				'- `ping_time` — latency in milliseconds',
+				'',
+				'Some fields may be null depending on the Lightning backend (CLN exposes fewer peer details than LND).',
+			].join('\n'),
+			parameters: {
+				type: 'object',
+				properties: {},
+			},
+		},
+	},
+	query: GET_LIGHTNING_PEERS_QUERY,
+	throttle_max_calls: 2,
+	throttle_window_seconds: 60,
+};
 
 /** Fetches lightning balance analytics (local + remote) */
 export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
@@ -218,6 +379,6 @@ export const GetLightningInfoTool: AiToolEntry = {
 		},
 	},
 	query: GET_LIGHTNING_INFO_QUERY,
-	throttle_max_calls: 10,
+	throttle_max_calls: 2,
 	throttle_window_seconds: 60,
 };

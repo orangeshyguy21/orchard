@@ -15,7 +15,10 @@ import {
 	GetUrlHealthTool,
 	GetLightningAnalyticsBalancesTool,
 	GetLightningAnalyticsMetricsTool,
+	GetLightningChannelsTool,
+	GetLightningClosedChannelsTool,
 	GetLightningInfoTool,
+	GetLightningPeersTool,
 	GetMintAnalyticsMetricsTool,
 	GetMintAnalyticsTool,
 	GetMintInfoTool,
@@ -46,7 +49,10 @@ export class ToolService {
 		this.register(AgentFunctionName.GET_URL_HEALTH, GetUrlHealthTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_BALANCES, GetLightningAnalyticsBalancesTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_ANALYTICS_METRICS, GetLightningAnalyticsMetricsTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_CHANNELS, GetLightningChannelsTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_CLOSED_CHANNELS, GetLightningClosedChannelsTool);
 		this.register(AgentFunctionName.GET_LIGHTNING_INFO, GetLightningInfoTool);
+		this.register(AgentFunctionName.GET_LIGHTNING_PEERS, GetLightningPeersTool);
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS, GetMintAnalyticsTool);
 		this.register(AgentFunctionName.GET_MINT_ANALYTICS_METRICS, GetMintAnalyticsMetricsTool);
 		this.register(AgentFunctionName.GET_MINT_INFO, GetMintInfoTool);
