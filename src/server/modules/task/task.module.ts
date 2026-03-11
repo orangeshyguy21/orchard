@@ -8,6 +8,7 @@ import {BitcoinRpcModule} from '@server/modules/bitcoin/rpc/btcrpc.module';
 import {LightningAnalyticsModule} from '@server/modules/lightning/analytics/lnanalytics.module';
 import {CashuMintAnalyticsModule} from '@server/modules/cashu/mintanalytics/mintanalytics.module';
 import {AgentModule} from '@server/modules/ai/agent/agent.module';
+import {ConversationModule} from '@server/modules/ai/conversation/conversation.module';
 import {SystemMetricsModule} from '@server/modules/system/metrics/sysmetrics.module';
 /* Local Dependencies */
 import {TaskService} from './task.service';
@@ -21,6 +22,7 @@ import {TaskService} from './task.service';
 		LightningAnalyticsModule,
 		CashuMintAnalyticsModule,
 		AgentModule,
+		ConversationModule,
 		SystemMetricsModule,
 	],
 	providers: [TaskService],

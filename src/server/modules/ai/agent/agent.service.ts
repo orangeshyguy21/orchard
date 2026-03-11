@@ -206,25 +206,38 @@ export class AgentService implements OnModuleInit {
 	 * and iterates until the LLM returns content or the iteration cap is hit.
 	 */
 	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
-		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
-		if (!model) throw new Error('No AI model configured (ai.server.model)');
-
-		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
-		const tool_names: string[] = agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
-		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
-
-		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
-		const base_message = agent.system_message ?? built_in;
-		const system_message: AiMessage = {
-			role: AiMessageRole.SYSTEM,
-			content: `${base_message}\n\n${this.buildRuntimeContext(agent)}`,
-		};
+		const tool_names = this.resolveToolNames(agent);
+		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
 
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
 		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
 
+		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
+
+		const notified = loop_result.messages.some(
+			(m) => m.tool_calls?.some((tc) => (tc.function.name as string) === AgentFunctionName.SEND_MESSAGE),
+		);
+
+		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);
+		return {result: loop_result.result, tokens_used: loop_result.tokens_used, notified};
+	}
+
+	/**
+	 * Reusable LLM tool-call loop. Resolves the model, builds tool schemas, and iterates
+	 * until the LLM returns content or the iteration cap is hit.
+	 * Used by both scheduled agent runs and conversational flows.
+	 */
+	public async runToolLoop(options: {
+		messages: AiMessage[];
+		tool_names: string[];
+		agent_context: AiAgentContext;
+	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
+		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
+		if (!model) throw new Error('No AI model configured (ai.server.model)');
+
+		const {messages, tool_names, agent_context} = options;
+		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 		let total_tokens = 0;
-		let notified = false;
 
 		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
 			const response = await this.collectStreamResponse(model, messages, tool_schemas);
@@ -233,21 +246,15 @@ export class AgentService implements OnModuleInit {
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
-					if ((tool_call.function.name as string) === AgentFunctionName.SEND_MESSAGE) {
-						notified = true;
-					}
 					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments, agent_context);
 					messages.push({role: AiMessageRole.FUNCTION, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
-				this.dumpAgentTrace(agent, messages, total_tokens, response.message.content, tool_names);
-				return {result: response.message.content, tokens_used: total_tokens, notified};
+				return {result: response.message.content, tokens_used: total_tokens, messages};
 			}
 		}
 
-		const capped_result = 'Agent reached maximum tool iterations without producing a final response.';
-		this.dumpAgentTrace(agent, messages, total_tokens, capped_result, tool_names);
-		return {result: capped_result, tokens_used: total_tokens, notified};
+		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens, messages};
 	}
 
 	/**
@@ -311,11 +318,28 @@ export class AgentService implements OnModuleInit {
 	}
 
 	/* *******************************************************
+		Agent Resolution Helpers
+	******************************************************** */
+
+	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
+	public resolveToolNames(agent: Agent): string[] {
+		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
+		return agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
+	}
+
+	/** Build a system message from agent config + runtime context */
+	public buildSystemMessage(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
+		const base_message = agent.system_message ?? built_in ?? '';
+		return `${base_message}\n\n${this.buildRuntimeContext(agent)}`;
+	}
+
+	/* *******************************************************
 		Runtime Context
 	******************************************************** */
 
 	/** Builds a runtime context string to append to agent system messages */
-	private buildRuntimeContext(agent: Agent): string {
+	public buildRuntimeContext(agent: Agent): string {
 		const now = DateTime.utc();
 		const version = this.configService.get<string>('mode.version');
 
@@ -395,6 +419,11 @@ export class AgentService implements OnModuleInit {
 	/** Find a single agent by ID */
 	public async getAgent(id: string): Promise<Agent | null> {
 		return this.agentRepository.findOne({where: {id}});
+	}
+
+	/** Find a single agent by its built-in key */
+	public async getAgentByKey(key: AgentKey): Promise<Agent | null> {
+		return this.agentRepository.findOne({where: {agent_key: key}});
 	}
 
 	/** Get runs for an agent, most recent first, with pagination and optional notified filter */

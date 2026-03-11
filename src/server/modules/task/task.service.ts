@@ -12,6 +12,7 @@ import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxorac
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {ConversationService} from '@server/modules/ai/conversation/conversation.service';
 import {SystemMetricsService} from '@server/modules/system/metrics/sysmetrics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
@@ -29,6 +30,7 @@ export class TaskService {
 		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
 		private agentService: AgentService,
+		private conversationService: ConversationService,
 		private systemMetricsService: SystemMetricsService,
 	) {}
 
@@ -246,6 +248,23 @@ export class TaskService {
 			this.logger.log('System metrics cleanup complete');
 		} catch (error) {
 			this.logger.error(`Error cleaning up system metrics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Expire stale conversations daily at 4:30 AM UTC
+	 */
+	@Cron('30 4 * * *', {
+		name: 'cleanup-expired-conversations',
+		timeZone: 'UTC',
+	})
+	async cleanupExpiredConversations() {
+		this.logger.log('Starting expired conversation cleanup...');
+		try {
+			await this.conversationService.cleanupExpiredConversations();
+			this.logger.log('Expired conversation cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up expired conversations: ${error.message}`);
 		}
 	}
 }

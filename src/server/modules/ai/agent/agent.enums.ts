@@ -1,4 +1,5 @@
 export enum AgentKey {
+	ORCHARD = 'ORCHARD',
 	ACTIVITY_MONITOR = 'ACTIVITY_MONITOR',
 }
 

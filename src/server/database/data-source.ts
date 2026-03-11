@@ -13,6 +13,7 @@ import {EventLog} from '../modules/event/event.entity';
 import {EventLogDetail} from '../modules/event/event-detail.entity';
 import {Agent} from '../modules/ai/agent/agent.entity';
 import {AgentRun} from '../modules/ai/agent/agent-run.entity';
+import {Conversation} from '../modules/ai/conversation/conversation.entity';
 
 export const AppDataSource = new DataSource({
 	type: 'better-sqlite3',
@@ -30,6 +31,7 @@ export const AppDataSource = new DataSource({
 		EventLogDetail,
 		Agent,
 		AgentRun,
+		Conversation,
 	],
 	migrations: ['src/server/database/migrations/*.ts'],
 	synchronize: false,

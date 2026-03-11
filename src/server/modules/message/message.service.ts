@@ -1,7 +1,8 @@
 /* Core Dependencies */
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 /* Local Dependencies */
 import {TelegramService} from './telegram/telegram.service';
+import {IncomingMessageHandler} from './message.types';
 
 /** Result of a message broadcast across all vendors */
 export type MessageResult = {
@@ -10,10 +11,39 @@ export type MessageResult = {
 };
 
 @Injectable()
-export class MessageService {
+export class MessageService implements OnModuleInit {
 	private readonly logger = new Logger(MessageService.name);
+	private message_handler: IncomingMessageHandler | null = null;
 
 	constructor(private readonly telegramService: TelegramService) {}
+
+	async onModuleInit(): Promise<void> {
+		this.telegramService.onMessage(async (chat_id, user_id, text) => {
+			if (!this.message_handler) return;
+			await this.message_handler(chat_id, user_id, text);
+		});
+	}
+
+	/* *******************************************************
+		Incoming Messages
+	******************************************************** */
+
+	/** Register a callback to handle incoming user messages */
+	public onMessage(handler: IncomingMessageHandler): void {
+		this.message_handler = handler;
+	}
+
+	/* *******************************************************
+		Reply
+	******************************************************** */
+
+	/** Send a reply to a specific chat via the active vendor */
+	public async sendReply(chat_id: string, text: string): Promise<boolean> {
+		if (this.telegramService.isRunning()) {
+			return this.telegramService.sendMessage(chat_id, text);
+		}
+		return false;
+	}
 
 	/* *******************************************************
 		Broadcast
