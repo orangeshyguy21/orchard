@@ -1,5 +1,4 @@
 /* Vendor Dependencies */
-import {ConfigService} from '@nestjs/config';
 import {Test, TestingModule} from '@nestjs/testing';
 import {getRepositoryToken} from '@nestjs/typeorm';
 /* Application Dependencies */
@@ -54,7 +53,6 @@ describe('ConversationService', () => {
 	};
 
 	const mock_message_service = {
-		onMessage: jest.fn(),
 		sendReply: jest.fn().mockResolvedValue(true),
 	};
 
@@ -66,7 +64,6 @@ describe('ConversationService', () => {
 				{provide: getRepositoryToken(Conversation), useValue: mock_conversation_repo},
 				{provide: AgentService, useValue: mock_agent_service},
 				{provide: MessageService, useValue: mock_message_service},
-				{provide: ConfigService, useValue: {get: jest.fn().mockReturnValue(null)}},
 			],
 		}).compile();
 		service = module.get<ConversationService>(ConversationService);
@@ -80,7 +77,7 @@ describe('ConversationService', () => {
 		it('should create a conversation when none exists', async () => {
 			mock_conversation_repo.findOne.mockResolvedValueOnce(null);
 
-			await service.handleIncomingMessage('chat-123', 'user-456', 'hello');
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
 
 			expect(mock_agent_service.getAgentByKey).toHaveBeenCalledWith(AgentKey.ORCHARD);
 			expect(mock_conversation_repo.save).toHaveBeenCalled();
@@ -99,13 +96,38 @@ describe('ConversationService', () => {
 				last_activity_at: now,
 			});
 
-			await service.handleIncomingMessage('chat-123', 'user-456', 'follow-up');
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'follow-up'});
 
 			expect(mock_conversation_repo.save).not.toHaveBeenCalled();
 			expect(mock_agent_service.runToolLoop).toHaveBeenCalled();
 			const update_call = mock_conversation_repo.update.mock.calls[0];
 			expect(update_call[0]).toBe('existing-conv');
 			expect(update_call[1].tokens_used).toBe(150);
+		});
+	});
+
+	describe('handleReset', () => {
+		it('should expire active conversation and reply', async () => {
+			const now = Math.floor(Date.now() / 1000);
+			mock_conversation_repo.findOne.mockResolvedValueOnce({
+				id: 'active-conv',
+				chat_id: 'chat-123',
+				status: ConversationStatus.ACTIVE,
+				last_activity_at: now,
+			});
+
+			await service.handleReset({chat_id: 'chat-123', user_id: 'user-456'});
+
+			expect(mock_conversation_repo.update).toHaveBeenCalledWith('active-conv', {status: ConversationStatus.EXPIRED});
+			expect(mock_message_service.sendReply).toHaveBeenCalledWith('chat-123', 'Conversation reset. Send a message to start fresh.');
+		});
+
+		it('should reply even when no active conversation exists', async () => {
+			mock_conversation_repo.findOne.mockResolvedValueOnce(null);
+
+			await service.handleReset({chat_id: 'chat-123', user_id: 'user-456'});
+
+			expect(mock_message_service.sendReply).toHaveBeenCalledWith('chat-123', 'Conversation reset. Send a message to start fresh.');
 		});
 	});
 

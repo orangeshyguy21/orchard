@@ -20,6 +20,7 @@ import {
 	LightningTransaction,
 	LightningHistoryArgs,
 	LightningPaginatedResult,
+	LightningPeer,
 } from './lightning.types';
 import {
 	mapLndPayments,
@@ -28,6 +29,7 @@ import {
 	mapLndChannels,
 	mapLndClosedChannels,
 	mapLndTransactions,
+	mapLndPeers,
 } from '@server/modules/lightning/lnd/lnd.helpers';
 import {
 	mapClnPayments,
@@ -36,6 +38,7 @@ import {
 	mapClnChannels,
 	mapClnClosedChannels,
 	mapClnTransactions,
+	mapClnPeers,
 } from '@server/modules/lightning/cln/cln.helpers';
 
 @Injectable()
@@ -111,6 +114,15 @@ export class LightningService implements OnModuleInit {
 	async getClosedChannels(): Promise<LightningClosedChannel[]> {
 		if (this.type === 'lnd') return mapLndClosedChannels(await this.makeGrpcRequest('ClosedChannels', {}));
 		if (this.type === 'cln') return mapClnClosedChannels(await this.makeGrpcRequest('ListClosedChannels', {}));
+		return [];
+	}
+
+	/**
+	 * Gets connected peers from the Lightning node
+	 */
+	async getPeers(): Promise<LightningPeer[]> {
+		if (this.type === 'lnd') return mapLndPeers(await this.makeGrpcRequest('ListPeers', {}));
+		if (this.type === 'cln') return mapClnPeers(await this.makeGrpcRequest('ListPeers', {}));
 		return [];
 	}
 

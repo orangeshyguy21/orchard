@@ -16,6 +16,9 @@ import {
 } from './mintanalytics.model';
 import {MintAnalyticsService} from './mintanalytics.service';
 
+/** [DEBUG] Convert unix timestamp to human-readable string */
+const debugTs = (ts?: number): string => (ts ? `${ts} (${new Date(ts * 1000).toISOString()})` : 'undefined');
+
 @Resolver()
 export class MintAnalyticsResolver {
 	private readonly logger = new Logger(MintAnalyticsResolver.name);
@@ -31,8 +34,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_balances }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsBalances(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsBalances(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -44,8 +49,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_mints }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsMints(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsMints(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -57,8 +64,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_melts }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsMelts(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsMelts(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -70,8 +79,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_swaps }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsSwaps(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsSwaps(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -83,8 +94,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_fees }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsFees(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsFees(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -96,8 +109,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_proofs }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsProofs(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsProofs(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -109,8 +124,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_promises }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsPromises(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsPromises(tag, {units, date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintAnalyticsMetric])
@@ -123,8 +140,10 @@ export class MintAnalyticsResolver {
 		@Args('metrics', {type: () => [MintAnalyticsMetric], nullable: true}) metrics?: MintAnalyticsMetric[],
 	): Promise<OrchardMintAnalyticsMetric[]> {
 		const tag = 'GET { mint_analytics_metrics }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getAnalyticsMetrics(tag, {units, date_start, date_end, interval, timezone, metrics});
+		this.logger.debug(`${tag} args: units=${JSON.stringify(units)}, date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}, metrics=${JSON.stringify(metrics)}`);
+		const result = await this.mintAnalyticsService.getAnalyticsMetrics(tag, {units, date_start, date_end, interval, timezone, metrics});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => [OrchardMintKeysetsAnalytics])
@@ -135,8 +154,10 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintKeysetsAnalytics[]> {
 		const tag = 'GET { mint_analytics_keysets }';
-		this.logger.debug(tag);
-		return await this.mintAnalyticsService.getMintAnalyticsKeysets(tag, {date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} args: date_start=${debugTs(date_start)}, date_end=${debugTs(date_end)}, interval=${interval}, timezone=${timezone}`);
+		const result = await this.mintAnalyticsService.getMintAnalyticsKeysets(tag, {date_start, date_end, interval, timezone});
+		this.logger.debug(`${tag} result: ${JSON.stringify(result)}`);
+		return result;
 	}
 
 	@Query(() => OrchardMintAnalyticsBackfillStatus)

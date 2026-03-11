@@ -124,6 +124,7 @@ export type LightningChannel = {
 	push_amount_sat: string | null; // amount pushed on open (may not be available)
 	private: boolean;
 	active: boolean;
+	remote_pubkey: string; // peer public key
 	funding_txid: string; // for timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
@@ -140,9 +141,24 @@ export type LightningClosedChannel = {
 	time_locked_balance: string | null;
 	close_type: LightningChannelCloseType;
 	open_initiator: LightningChannelOpenInitiator;
+	remote_pubkey: string; // peer public key
 	funding_txid: string; // for open timestamp lookup
 	closing_txid: string; // for close timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
+};
+
+/**
+ * Common peer type
+ */
+export type LightningPeer = {
+	pubkey: string;
+	address: string;
+	bytes_sent: string | null; // null when backend doesn't expose (CLN)
+	bytes_recv: string | null;
+	sat_sent: string | null;
+	sat_recv: string | null;
+	inbound: boolean | null;
+	ping_time: number | null;
 };
 
 /**

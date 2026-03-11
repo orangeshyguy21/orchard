@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
+/* Vendor Dependencies */
+import {EventEmitter2} from '@nestjs/event-emitter';
 /* Application Dependencies */
 import {SettingService} from '@server/modules/setting/setting.service';
 import {UserService} from '@server/modules/user/user.service';
@@ -28,6 +30,13 @@ describe('TelegramService', () => {
 					useValue: {
 						getUsersWithTelegramChatId: jest.fn(),
 						getUserByTelegramChatId: jest.fn(),
+					},
+				},
+				{
+					provide: EventEmitter2,
+					useValue: {
+						emit: jest.fn(),
+						emitAsync: jest.fn().mockResolvedValue([]),
 					},
 				},
 			],

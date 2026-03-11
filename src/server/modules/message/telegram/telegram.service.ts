@@ -2,22 +2,23 @@
 import {Injectable, Logger, OnModuleInit, OnModuleDestroy} from '@nestjs/common';
 /* Vendor Dependencies */
 import {Bot} from 'grammy';
+import {EventEmitter2} from '@nestjs/event-emitter';
 /* Application Dependencies */
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 import {UserService} from '@server/modules/user/user.service';
 /* Native Dependencies */
-import {IncomingMessageHandler} from '@server/modules/message/message.types';
+import {MESSAGE_INCOMING_EVENT, MESSAGE_RESET_EVENT, IncomingMessagePayload, ResetMessagePayload} from '@server/modules/message/message.types';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	private readonly logger = new Logger(TelegramService.name);
 	private bot: Bot | null = null;
-	private message_handler: IncomingMessageHandler | null = null;
 
 	constructor(
 		private readonly settingService: SettingService,
 		private readonly userService: UserService,
+		private readonly eventEmitter: EventEmitter2,
 	) {}
 
 	/* *******************************************************
@@ -68,15 +69,6 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	/* *******************************************************
-		Incoming Messages
-	******************************************************** */
-
-	/** Register a callback to handle incoming user messages */
-	public onMessage(handler: IncomingMessageHandler): void {
-		this.message_handler = handler;
-	}
-
-	/* *******************************************************
 		Handlers
 	******************************************************** */
 
@@ -91,6 +83,22 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 			);
 		});
 
+		this.bot.command('new', async (ctx) => {
+			const chat_id = ctx.chat.id.toString();
+			const user = await this.userService.getUserByTelegramChatId(chat_id);
+			if (!user) {
+				await ctx.reply('Your Telegram account is not linked to an Orchard user. Use /start to get your Chat ID.');
+				return;
+			}
+			try {
+				const payload: ResetMessagePayload = {chat_id, user_id: user.id};
+				await this.eventEmitter.emitAsync(MESSAGE_RESET_EVENT, payload);
+			} catch (error) {
+				this.logger.error(`Error handling /new command from ${chat_id}: ${error.message}`);
+				await ctx.reply('Something went wrong resetting your conversation. Please try again.');
+			}
+		});
+
 		this.bot.on('message:text', async (ctx) => {
 			if (ctx.message.text.startsWith('/')) return;
 			const chat_id = ctx.chat.id.toString();
@@ -99,9 +107,9 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 				await ctx.reply('Your Telegram account is not linked to an Orchard user. Use /start to get your Chat ID.');
 				return;
 			}
-			if (!this.message_handler) return;
 			try {
-				await this.message_handler(chat_id, user.id, ctx.message.text);
+				const payload: IncomingMessagePayload = {chat_id, user_id: user.id, text: ctx.message.text};
+				await this.eventEmitter.emitAsync(MESSAGE_INCOMING_EVENT, payload);
 			} catch (error) {
 				this.logger.error(`Error handling incoming message from ${chat_id}: ${error.message}`);
 				await ctx.reply('Something went wrong processing your message. Please try again.');

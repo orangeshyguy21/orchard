@@ -20,6 +20,7 @@ import {LightningBalanceModule} from './lightning/balance/lnbalance.module';
 import {LightningWalletModule} from './lightning/wallet/lnwallet.module';
 import {LightningRequestModule} from './lightning/request/lnrequest.module';
 import {LightningChannelModule} from './lightning/channel/lnchannel.module';
+import {LightningPeerModule} from './lightning/peer/lnpeer.module';
 import {ApiLightningAnalyticsModule} from './lightning/analytics/lnanalytics.module';
 // Taproot Assets Endpoints
 import {TaprootAssetsInfoModule} from './tapass/info/tapinfo.module';
@@ -75,6 +76,7 @@ import {ApiSystemMetricsModule} from './system/metrics/sysmetrics.module';
 		LightningWalletModule,
 		LightningRequestModule,
 		LightningChannelModule,
+		LightningPeerModule,
 		ApiLightningAnalyticsModule,
 		TaprootAssetsInfoModule,
 		TaprootAssetsAssetModule,

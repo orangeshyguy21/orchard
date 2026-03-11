@@ -7,6 +7,7 @@ import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {DataSource, DataSourceOptions} from 'typeorm';
 import {ScheduleModule} from '@nestjs/schedule';
+import {EventEmitterModule} from '@nestjs/event-emitter';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
 import {AuthModule} from './modules/auth/auth.module';
@@ -142,6 +143,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			},
 		}),
 		ScheduleModule.forRoot(),
+		EventEmitterModule.forRoot(),
 		SecurityModule,
 		AuthModule,
 		ApiModule,

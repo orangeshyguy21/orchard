@@ -1,9 +1,10 @@
 /* Core Dependencies */
-import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 import {DateTime} from 'luxon';
+import {OnEvent} from '@nestjs/event-emitter';
 /* Application Dependencies */
 import {AgentService} from '@server/modules/ai/agent/agent.service';
 import {AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
@@ -13,12 +14,18 @@ import {AiMessage} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 import {MessageService} from '@server/modules/message/message.service';
+import {
+	MESSAGE_INCOMING_EVENT,
+	MESSAGE_RESET_EVENT,
+	IncomingMessagePayload,
+	ResetMessagePayload,
+} from '@server/modules/message/message.types';
 /* Local Dependencies */
 import {Conversation} from './conversation.entity';
 import {ConversationStatus} from './conversation.enums';
 
 @Injectable()
-export class ConversationService implements OnModuleInit {
+export class ConversationService {
 	private readonly logger = new Logger(ConversationService.name);
 
 	private static readonly IDLE_TIMEOUT_SECONDS = 3600;
@@ -32,18 +39,15 @@ export class ConversationService implements OnModuleInit {
 		private messageService: MessageService,
 	) {}
 
-	async onModuleInit(): Promise<void> {
-		this.messageService.onMessage(async (chat_id, user_id, text) => {
-			await this.handleIncomingMessage(chat_id, user_id, text);
-		});
-	}
-
 	/* *******************************************************
-		Incoming Message Handler
+		Event Handlers
 	******************************************************** */
 
 	/** Handle an incoming user message: get or create conversation, run agent, reply */
-	public async handleIncomingMessage(chat_id: string, user_id: string, text: string): Promise<void> {
+	@OnEvent(MESSAGE_INCOMING_EVENT, {async: true})
+	public async handleIncomingMessage(payload: IncomingMessagePayload): Promise<void> {
+		const {chat_id, user_id, text} = payload;
+
 		const agent = await this.agentService.getAgentByKey(AgentKey.ORCHARD);
 		if (!agent) {
 			this.logger.warn('ORCHARD agent not found — cannot start conversation');
@@ -62,7 +66,9 @@ export class ConversationService implements OnModuleInit {
 		const tool_names = this.agentService.resolveToolNames(agent);
 		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
 
+		this.logger.log(`Agent ${agent.name} conversation started (chat: ${chat_id})`);
 		const loop_result = await this.agentService.runToolLoop({messages, tool_names, agent_context});
+		this.logger.log(`Agent ${agent.name} conversation completed (tokens: ${loop_result.tokens_used})`);
 
 		this.truncateHistory(loop_result.messages);
 
@@ -76,6 +82,20 @@ export class ConversationService implements OnModuleInit {
 		await this.messageService.sendReply(chat_id, loop_result.result);
 	}
 
+	/** Handle a /new command: expire the active conversation and confirm */
+	@OnEvent(MESSAGE_RESET_EVENT, {async: true})
+	public async handleReset(payload: ResetMessagePayload): Promise<void> {
+		const {chat_id} = payload;
+
+		const conversation = await this.getActiveConversation(chat_id);
+		if (conversation) {
+			await this.expireConversation(conversation.id);
+			this.logger.log(`Conversation reset for chat ${chat_id}`);
+		}
+
+		await this.messageService.sendReply(chat_id, 'Conversation reset. Send a message to start fresh.');
+	}
+
 	/* *******************************************************
 		Context Management
 	******************************************************** */
@@ -85,7 +105,7 @@ export class ConversationService implements OnModuleInit {
 	 * Only messages before the last user message are compressed; the current turn is untouched.
 	 */
 	private compressPreviousTurns(messages: AiMessage[]): void {
-		const last_user_idx = messages.findLastIndex(m => m.role === AiMessageRole.USER);
+		const last_user_idx = messages.findLastIndex((m) => m.role === AiMessageRole.USER);
 		if (last_user_idx <= 0) return;
 
 		const is_large_result = (m: AiMessage) =>
