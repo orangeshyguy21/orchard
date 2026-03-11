@@ -8,6 +8,9 @@ export class OrchardLightningPeer {
 	@Field(() => String)
 	pubkey: string;
 
+	@Field(() => String, {nullable: true})
+	alias: string | null;
+
 	@Field(() => String)
 	address: string;
 
@@ -31,6 +34,7 @@ export class OrchardLightningPeer {
 
 	constructor(peer: LightningPeer) {
 		this.pubkey = peer.pubkey;
+		this.alias = peer.alias;
 		this.address = peer.address;
 		this.bytes_sent = peer.bytes_sent != null ? parseFloat(peer.bytes_sent) : null;
 		this.bytes_recv = peer.bytes_recv != null ? parseFloat(peer.bytes_recv) : null;

@@ -5,7 +5,6 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
-import {LightningPeer} from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {OrchardLightningPeer} from './lnpeer.model';
 
@@ -18,10 +17,19 @@ export class LightningPeerService {
 		private errorService: ErrorService,
 	) {}
 
+	/**
+	 * Gets connected peers enriched with node aliases
+	 */
 	async getLightningPeers(tag: string): Promise<OrchardLightningPeer[]> {
 		try {
-			const peers: LightningPeer[] = await this.lightningService.getPeers();
-			return peers.map((p) => new OrchardLightningPeer(p));
+			const peers = await this.lightningService.getPeers();
+			const enriched = await Promise.all(
+				peers.map(async (p) => {
+					const alias = await this.lightningService.getNodeAlias(p.pubkey).catch(() => null);
+					return new OrchardLightningPeer({...p, alias});
+				}),
+			);
+			return enriched;
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,

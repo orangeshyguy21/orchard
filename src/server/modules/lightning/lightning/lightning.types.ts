@@ -125,6 +125,7 @@ export type LightningChannel = {
 	private: boolean;
 	active: boolean;
 	remote_pubkey: string; // peer public key
+	peer_alias: string | null; // peer alias (LND only via peer_alias_lookup)
 	funding_txid: string; // for timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
@@ -152,6 +153,7 @@ export type LightningClosedChannel = {
  */
 export type LightningPeer = {
 	pubkey: string;
+	alias: string | null; // resolved via GetNodeInfo (LND) / ListNodes (CLN)
 	address: string;
 	bytes_sent: string | null; // null when backend doesn't expose (CLN)
 	bytes_recv: string | null;

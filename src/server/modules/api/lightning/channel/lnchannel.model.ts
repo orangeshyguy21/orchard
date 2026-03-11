@@ -70,6 +70,9 @@ export class OrchardLightningChannel {
 	@Field(() => String)
 	remote_pubkey: string;
 
+	@Field(() => String, {nullable: true})
+	peer_alias: string | null;
+
 	@Field(() => String)
 	funding_txid: string;
 
@@ -87,6 +90,7 @@ export class OrchardLightningChannel {
 		this.private = channel.private;
 		this.active = channel.active;
 		this.remote_pubkey = channel.remote_pubkey;
+		this.peer_alias = channel.peer_alias;
 		this.funding_txid = channel.funding_txid;
 		this.asset = channel.asset ? new OrchardLightningChannelAsset(channel.asset) : null;
 	}

@@ -87,6 +87,7 @@ const GET_LIGHTNING_CHANNELS_QUERY = `
 			local_balance
 			remote_balance
 			remote_pubkey
+			peer_alias
 			initiator
 			push_amount_sat
 			private
@@ -136,6 +137,7 @@ const GET_LIGHTNING_PEERS_QUERY = `
 	query GetLightningPeers {
 		lightning_peers {
 			pubkey
+			alias
 			address
 			bytes_sent
 			bytes_recv
@@ -164,6 +166,7 @@ export const GetLightningChannelsTool: AiToolEntry = {
 				'- `chan_id` / `channel_point` — channel identifiers',
 				'- `capacity` / `local_balance` / `remote_balance` — balances in **satoshis**',
 				'- `remote_pubkey` — peer public key (cross-reference with `GET_LIGHTNING_PEERS`)',
+				'- `peer_alias` — peer node alias (may be null)',
 				'- `active` — whether the channel is currently online',
 				'- `private` — whether the channel is unadvertised',
 				'- `initiator` — true if we opened the channel',
@@ -224,6 +227,7 @@ export const GetLightningPeersTool: AiToolEntry = {
 				'',
 				'**Returns** per peer:',
 				'- `pubkey` — peer public key (matches `remote_pubkey` on channels)',
+				'- `alias` — peer node alias (may be null)',
 				'- `address` — network address',
 				'- `bytes_sent` / `bytes_recv` — traffic counters',
 				'- `sat_sent` / `sat_recv` — satoshis exchanged with this peer',

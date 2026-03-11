@@ -227,6 +227,7 @@ export function mapClnChannels(response: ClnListPeerChannelsResponse): Lightning
 		private: c.private ?? false,
 		active: c.peer_connected ?? false,
 		remote_pubkey: bufferToHex(c.peer_id),
+		peer_alias: null, // CLN does not provide alias on channels
 		funding_txid: extractClnFundingTxid(c.funding_txid),
 		asset: null, // CLN does not support Taproot Assets
 	}));
@@ -308,6 +309,7 @@ export function mapClnPeers(response: ClnListPeersResponse): LightningPeer[] {
 	const peers = response?.peers ?? [];
 	return peers.map((p: ClnPeer) => ({
 		pubkey: bufferToHex(p.id),
+		alias: null, // enriched in peer service via ListNodes
 		address: p.netaddr?.[0] ?? p.remote_addr ?? '',
 		bytes_sent: null, // CLN does not expose byte counters
 		bytes_recv: null,

@@ -103,7 +103,7 @@ export class LightningService implements OnModuleInit {
 	 * Gets currently open channels from the Lightning node
 	 */
 	async getChannels(): Promise<LightningChannel[]> {
-		if (this.type === 'lnd') return mapLndChannels(await this.makeGrpcRequest('ListChannels', {}));
+		if (this.type === 'lnd') return mapLndChannels(await this.makeGrpcRequest('ListChannels', {peer_alias_lookup: true}));
 		if (this.type === 'cln') return mapClnChannels(await this.makeGrpcRequest('ListPeerChannels', {}));
 		return [];
 	}
@@ -124,6 +124,25 @@ export class LightningService implements OnModuleInit {
 		if (this.type === 'lnd') return mapLndPeers(await this.makeGrpcRequest('ListPeers', {}));
 		if (this.type === 'cln') return mapClnPeers(await this.makeGrpcRequest('ListPeers', {}));
 		return [];
+	}
+
+	/**
+	 * Gets the alias for a node by its public key
+	 * LND: GetNodeInfo, CLN: ListNodes with id filter
+	 */
+	async getNodeAlias(pubkey: string): Promise<string | null> {
+		try {
+			if (this.type === 'lnd') {
+				const info = await this.makeGrpcRequest('GetNodeInfo', {pub_key: pubkey, include_channels: false});
+				return info?.node?.alias || null;
+			}
+			if (this.type === 'cln') {
+				const response = await this.makeGrpcRequest('ListNodes', {id: Buffer.from(pubkey, 'hex')});
+				return response?.nodes?.[0]?.alias || null;
+			}
+		} catch {
+			return null;
+		}
 	}
 
 	/**

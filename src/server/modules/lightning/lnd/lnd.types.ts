@@ -489,6 +489,14 @@ export type LndListChannelsResponse = {
 	channels: LndChannel[];
 };
 
+/* Node Info Types */
+
+export type LndNodeInfo = {
+	node: {alias: string; pub_key: string; color: string};
+	num_channels: number;
+	total_capacity: string;
+};
+
 /* Peer Types */
 
 export type LndPeer = {

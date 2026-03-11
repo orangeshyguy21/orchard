@@ -236,6 +236,7 @@ export function mapLndChannels(response: LndListChannelsResponse): LightningChan
 		private: c.private ?? false,
 		active: c.active ?? false,
 		remote_pubkey: c.remote_pubkey ?? '',
+		peer_alias: c.peer_alias ?? null,
 		funding_txid: extractLndFundingTxid(c.channel_point),
 		asset: parseLndCustomChannelData(c.custom_channel_data),
 	}));
@@ -319,6 +320,7 @@ export function mapLndPeers(response: LndListPeersResponse): LightningPeer[] {
 	const peers = response?.peers ?? [];
 	return peers.map((p: LndPeer) => ({
 		pubkey: p.pub_key ?? '',
+		alias: null, // enriched in peer service via GetNodeInfo
 		address: p.address ?? '',
 		bytes_sent: p.bytes_sent ?? '0',
 		bytes_recv: p.bytes_recv ?? '0',
