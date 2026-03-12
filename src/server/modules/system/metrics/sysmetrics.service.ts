@@ -205,14 +205,6 @@ export class SystemMetricsService {
 
 		const total_rows = hourly_averages.reduce((sum, r) => sum + Number(r.row_count), 0);
 
-		// Delete old minute-granularity records in the range
-		await this.systemMetricsRepository
-			.createQueryBuilder()
-			.delete()
-			.where('date >= :start AND date < :end', {start: retention_cutoff, end: downsample_cutoff})
-			.execute();
-
-		// Insert hourly averages in a single batch
 		const rows = hourly_averages.map((r) => ({
 			metric: r.metric,
 			date: Number(r.hour_bucket),
@@ -220,7 +212,17 @@ export class SystemMetricsService {
 			updated_at,
 		}));
 
-		await this.systemMetricsRepository.upsert(rows, {conflictPaths: ['metric', 'date']});
+		// Delete + insert in a transaction to prevent data loss on crash
+		await this.systemMetricsRepository.manager.transaction(async (manager) => {
+			await manager
+				.createQueryBuilder()
+				.delete()
+				.from(SystemMetrics)
+				.where('date >= :start AND date < :end', {start: retention_cutoff, end: downsample_cutoff})
+				.execute();
+
+			await manager.upsert(SystemMetrics, rows, {conflictPaths: ['metric', 'date']});
+		});
 
 		this.logger.log(`Downsampled ${total_rows} minute records into ${hourly_averages.length} hourly records`);
 	}

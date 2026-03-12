@@ -30,6 +30,7 @@ export class AgentService implements OnModuleInit {
 	private readonly logger = new Logger(AgentService.name);
 
 	private static readonly MAX_TOOL_ITERATIONS = 25;
+	private static readonly MIN_CRON_INTERVAL_MINUTES = 5;
 
 	constructor(
 		@InjectRepository(Agent)
@@ -99,10 +100,31 @@ export class AgentService implements OnModuleInit {
 	}
 
 	/**
+	 * Validates that a cron expression is syntactically correct and does not fire
+	 * more frequently than MIN_CRON_INTERVAL_MINUTES.
+	 */
+	private validateCronExpression(cron_expression: string): void {
+		try {
+			const probe = new CronJob(cron_expression, () => {});
+			const [first, second] = probe.nextDates(2) as unknown as DateTime[];
+			const diff_minutes = second.diff(first, 'minutes').minutes;
+			if (diff_minutes < AgentService.MIN_CRON_INTERVAL_MINUTES) {
+				throw new Error(
+					`Cron expression "${cron_expression}" fires every ${diff_minutes} minute(s). Minimum allowed interval is ${AgentService.MIN_CRON_INTERVAL_MINUTES} minutes.`,
+				);
+			}
+		} catch (err: any) {
+			if (err.message?.includes('Minimum allowed interval')) throw err;
+			throw new Error(`Invalid cron expression: "${cron_expression}"`);
+		}
+	}
+
+	/**
 	 * Registers a single cron job for an agent + schedule expression.
 	 * Job name format: agent:{agent.id}:{cron_expression}
 	 */
 	private registerCronJob(agent: Agent, cron_expression: string): void {
+		this.validateCronExpression(cron_expression);
 		const job_name = `agent:${agent.id}:${cron_expression}`;
 		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
 		const job = new CronJob(cron_expression, async () => {
@@ -459,6 +481,10 @@ export class AgentService implements OnModuleInit {
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);
+		if (updates.schedules) {
+			const expressions: string[] = JSON.parse(updates.schedules);
+			expressions.forEach((expr) => this.validateCronExpression(expr));
+		}
 		const now = DateTime.utc().toUnixInteger();
 		Object.assign(agent, updates, {updated_at: now});
 		const saved = await this.agentRepository.save(agent);

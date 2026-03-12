@@ -57,7 +57,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 		try {
 			this.bot = new Bot(token);
 			this.registerHandlers();
-			this.bot.start({drop_pending_updates: true});
+			this.bot.start({drop_pending_updates: true}).catch((error) => {
+				this.logger.error(`Telegram bot polling error: ${error.message}`);
+				this.bot = null;
+			});
 			this.logger.log('Telegram bot started (long-polling)');
 		} catch (error) {
 			this.logger.error(`Failed to start Telegram bot: ${error.message}`);

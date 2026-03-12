@@ -97,16 +97,17 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
+		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
+
 		let client: CashuMintDatabase;
 		try {
 			client = await this.cashuMintDatabaseService.getMintDatabase();
 			if (client.type === 'postgres') await client.database.connect();
 		} catch (error) {
 			this.logger.error('Failed to connect to mint database for backfill', error);
+			this.backfill_status = {is_running: false, started_at: 0, hours_completed: 0, errors: 0};
 			return;
 		}
-
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
 		this.logger.log('Starting cashu mint analytics backfill');
 
 		try {

@@ -9,10 +9,11 @@
 			[device_type]="device_type()"
 			[invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
 			[dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
+			[invalid_openrouter_key]="form_group().get('openrouter_key')?.invalid || false"
+			[dirty_openrouter_key]="form_group().get('openrouter_key')?.dirty || false"
 			(update)="update.emit()"
-			(submit)="submit.emit('ollama_api')"
-			(cancel)="cancel.emit('ollama_api')"
-		>
-		</orc-settings-subsection-app-ai-integration>
+			(submit)="submit.emit($event)"
+			(cancel)="cancel.emit($event)"
+		></orc-settings-subsection-app-ai-integration>
 	</mat-card-content>
 </mat-card>
