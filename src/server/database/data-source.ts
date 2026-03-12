@@ -14,6 +14,8 @@ import {EventLogDetail} from '../modules/event/event-detail.entity';
 import {Agent} from '../modules/ai/agent/agent.entity';
 import {AgentRun} from '../modules/ai/agent/agent-run.entity';
 import {Conversation} from '../modules/ai/conversation/conversation.entity';
+import {BitcoinAnalytics} from '../modules/bitcoin/analytics/btcanalytics.entity';
+import {SystemMetrics} from '../modules/system/metrics/sysmetrics.entity';
 
 export const AppDataSource = new DataSource({
 	type: 'better-sqlite3',
@@ -27,11 +29,13 @@ export const AppDataSource = new DataSource({
 		AnalyticsCheckpoint,
 		LightningAnalytics,
 		MintAnalytics,
+		BitcoinAnalytics,
 		EventLog,
 		EventLogDetail,
 		Agent,
 		AgentRun,
 		Conversation,
+		SystemMetrics,
 	],
 	migrations: ['src/server/database/migrations/*.ts'],
 	synchronize: false,
