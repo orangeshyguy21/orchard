@@ -36,10 +36,13 @@ export class SettingsSubsectionAppAiComponent {
 	}
 
 	private getAiHealth(): void {
-		this.aiService.getAiHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-			next: (health: AiHealth) => {
-				this.ai_health.set(health);
-			},
-		});
+		this.aiService
+			.getAiHealth()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe({
+				next: (health: AiHealth) => {
+					this.ai_health.set(health);
+				},
+			});
 	}
 }

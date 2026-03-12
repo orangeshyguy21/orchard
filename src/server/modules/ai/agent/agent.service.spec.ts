@@ -145,9 +145,7 @@ describe('AgentService', () => {
 		it('should record schedule_trigger when provided', async () => {
 			await service.executeAgent('agent-1', '10 * * * *');
 
-			expect(mock_run_repo.create).toHaveBeenCalledWith(
-				expect.objectContaining({schedule_trigger: '10 * * * *'}),
-			);
+			expect(mock_run_repo.create).toHaveBeenCalledWith(expect.objectContaining({schedule_trigger: '10 * * * *'}));
 		});
 
 		it('should throw when agent not found', async () => {
@@ -220,7 +218,10 @@ describe('AgentService', () => {
 			});
 
 			const result = await service.runToolLoop({
-				messages: [{role: AiMessageRole.SYSTEM, content: 'sys'}, {role: AiMessageRole.USER, content: 'hi'}],
+				messages: [
+					{role: AiMessageRole.SYSTEM, content: 'sys'},
+					{role: AiMessageRole.USER, content: 'hi'},
+				],
 				tool_names: [],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
 			});
@@ -259,7 +260,10 @@ describe('AgentService', () => {
 			mock_tool_executor.executeTool.mockResolvedValueOnce({cpu: 0.5});
 
 			const result = await service.runToolLoop({
-				messages: [{role: AiMessageRole.SYSTEM, content: 'sys'}, {role: AiMessageRole.USER, content: 'check cpu'}],
+				messages: [
+					{role: AiMessageRole.SYSTEM, content: 'sys'},
+					{role: AiMessageRole.USER, content: 'check cpu'},
+				],
 				tool_names: ['GET_SYSTEM_METRICS'],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
 			});
@@ -329,9 +333,33 @@ describe('AgentService', () => {
 
 	describe('enqueueAgent', () => {
 		const mock_agents: Record<string, Partial<Agent>> = {
-			'agent-1': {id: 'agent-1', agent_key: AgentKey.ACTIVITY_MONITOR, name: 'Agent 1', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
-			'agent-2': {id: 'agent-2', agent_key: AgentKey.ORCHARD, name: 'Agent 2', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
-			'agent-3': {id: 'agent-3', agent_key: AgentKey.ORCHARD, name: 'Agent 3', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
+			'agent-1': {
+				id: 'agent-1',
+				agent_key: AgentKey.ACTIVITY_MONITOR,
+				name: 'Agent 1',
+				active: true,
+				system_message: null,
+				tools: null,
+				schedules: '["10 * * * *"]',
+			},
+			'agent-2': {
+				id: 'agent-2',
+				agent_key: AgentKey.ORCHARD,
+				name: 'Agent 2',
+				active: true,
+				system_message: null,
+				tools: null,
+				schedules: '["10 * * * *"]',
+			},
+			'agent-3': {
+				id: 'agent-3',
+				agent_key: AgentKey.ORCHARD,
+				name: 'Agent 3',
+				active: true,
+				system_message: null,
+				tools: null,
+				schedules: '["10 * * * *"]',
+			},
 		};
 
 		beforeEach(() => {
@@ -440,7 +468,15 @@ describe('AgentService', () => {
 			const promises: Promise<void>[] = [];
 			for (let i = 0; i < 12; i++) {
 				const id = `agent-q-${i}`;
-				agents[id] = {id, agent_key: AgentKey.ORCHARD, name: `Agent ${i}`, active: true, system_message: null, tools: null, schedules: '[]'};
+				agents[id] = {
+					id,
+					agent_key: AgentKey.ORCHARD,
+					name: `Agent ${i}`,
+					active: true,
+					system_message: null,
+					tools: null,
+					schedules: '[]',
+				};
 			}
 			mock_agent_repo.findOne.mockImplementation((opts: any) => Promise.resolve(agents[opts.where.id] ?? null));
 
@@ -602,9 +638,7 @@ describe('AgentService', () => {
 		it('should validate cron expressions on update', async () => {
 			mock_agent_repo.findOne.mockResolvedValueOnce({id: 'agent-1', active: true, schedules: '[]'} as Agent);
 
-			await expect(
-				service.updateAgent('agent-1', {schedules: '["* * * * *"]'}),
-			).rejects.toThrow('Minimum allowed interval');
+			await expect(service.updateAgent('agent-1', {schedules: '["* * * * *"]'})).rejects.toThrow('Minimum allowed interval');
 		});
 
 		it('should save updated fields and sync schedules', async () => {

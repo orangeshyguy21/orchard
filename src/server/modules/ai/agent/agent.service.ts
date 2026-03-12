@@ -361,7 +361,12 @@ export class AgentService implements OnModuleInit {
 	 * Collects a full streamed response into a single chunk with accumulated content and tool calls.
 	 * Accumulates content and tool_calls from intermediate chunks so the result is vendor-agnostic.
 	 */
-	private async collectStreamResponse(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): Promise<AiStreamChunk> {
+	private async collectStreamResponse(
+		model: string,
+		messages: AiMessage[],
+		tools: AiTool[],
+		signal?: AbortSignal,
+	): Promise<AiStreamChunk> {
 		let final_chunk: AiStreamChunk | null = null;
 		let accumulated_content = '';
 		const accumulated_tool_calls: AiToolCall[] = [];

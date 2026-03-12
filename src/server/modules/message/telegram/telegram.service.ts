@@ -137,10 +137,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	public async sendMessage(chat_id: string, text: string): Promise<{success: boolean; message_id?: number}> {
 		if (!this.bot) return {success: false};
 		try {
-			const result = await this.withMarkdownFallback(
-				(opts) => this.bot!.api.sendMessage(chat_id, text, opts),
-				`send to ${chat_id}`,
-			);
+			const result = await this.withMarkdownFallback((opts) => this.bot!.api.sendMessage(chat_id, text, opts), `send to ${chat_id}`);
 			return {success: true, message_id: result.message_id};
 		} catch (error) {
 			this.logger.error(`Failed to send Telegram message to ${chat_id}: ${error.message}`);
@@ -152,10 +149,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	public async editMessage(chat_id: string, message_id: number, text: string): Promise<boolean> {
 		if (!this.bot) return false;
 		try {
-			await this.withMarkdownFallback(
-				(opts) => this.bot!.api.editMessageText(chat_id, message_id, text, opts),
-				`edit in ${chat_id}`,
-			);
+			await this.withMarkdownFallback((opts) => this.bot!.api.editMessageText(chat_id, message_id, text, opts), `edit in ${chat_id}`);
 			return true;
 		} catch (error) {
 			this.logger.error(`Failed to edit Telegram message in ${chat_id}: ${error.message}`);

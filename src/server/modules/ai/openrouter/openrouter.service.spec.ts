@@ -232,7 +232,8 @@ describe('OpenRouterService', () => {
 		});
 
 		it('should skip keepalive comments and empty lines', async () => {
-			const raw = ': keepalive\n\ndata: ' +
+			const raw =
+				': keepalive\n\ndata: ' +
 				JSON.stringify({
 					id: 'gen-4',
 					object: 'chat.completion.chunk',
@@ -271,7 +272,11 @@ describe('OpenRouterService', () => {
 
 			const messages = [
 				{role: AiMessageRole.SYSTEM, content: 'You are helpful'},
-				{role: AiMessageRole.ASSISTANT, content: '', tool_calls: [{id: 'tc-1', function: {name: 'GET_MINT_INFO' as any, arguments: {foo: 'bar'}}}]},
+				{
+					role: AiMessageRole.ASSISTANT,
+					content: '',
+					tool_calls: [{id: 'tc-1', function: {name: 'GET_MINT_INFO' as any, arguments: {foo: 'bar'}}}],
+				},
 				{role: AiMessageRole.TOOL, content: '{"result":true}', tool_call_id: 'tc-1'},
 				{role: AiMessageRole.USER, content: 'thanks'},
 			];

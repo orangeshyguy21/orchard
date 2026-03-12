@@ -188,7 +188,13 @@ describe('OllamaService', () => {
 					message: {role: 'assistant', content: 'Answer', thinking: 'Let me think about this...'},
 					done: false,
 				},
-				{model: 'llama3', created_at: '2024-01-01T00:00:01Z', message: {role: 'assistant', content: ''}, done: true, done_reason: 'stop'},
+				{
+					model: 'llama3',
+					created_at: '2024-01-01T00:00:01Z',
+					message: {role: 'assistant', content: ''},
+					done: true,
+					done_reason: 'stop',
+				},
 			]);
 
 			mock_fetch_service.fetchWithProxy.mockResolvedValueOnce({ok: true, body: stream});
@@ -214,7 +220,13 @@ describe('OllamaService', () => {
 
 		it('should handle error field in stream chunk', async () => {
 			const stream = createNDJSONStream([
-				{model: 'llama3', created_at: '2024-01-01T00:00:00Z', message: {role: 'assistant', content: ''}, done: true, error: 'out of memory'},
+				{
+					model: 'llama3',
+					created_at: '2024-01-01T00:00:00Z',
+					message: {role: 'assistant', content: ''},
+					done: true,
+					error: 'out of memory',
+				},
 			]);
 
 			mock_fetch_service.fetchWithProxy.mockResolvedValueOnce({ok: true, body: stream});
@@ -228,7 +240,8 @@ describe('OllamaService', () => {
 		});
 
 		it('should skip unparseable NDJSON lines gracefully', async () => {
-			const raw = '{"model":"llama3","created_at":"2024-01-01T00:00:00Z","message":{"role":"assistant","content":"ok"},"done":false}\nBAD_JSON\n{"model":"llama3","created_at":"2024-01-01T00:00:01Z","message":{"role":"assistant","content":""},"done":true,"done_reason":"stop"}\n';
+			const raw =
+				'{"model":"llama3","created_at":"2024-01-01T00:00:00Z","message":{"role":"assistant","content":"ok"},"done":false}\nBAD_JSON\n{"model":"llama3","created_at":"2024-01-01T00:00:01Z","message":{"role":"assistant","content":""},"done":true,"done_reason":"stop"}\n';
 			const stream = Readable.from(Buffer.from(raw));
 
 			mock_fetch_service.fetchWithProxy.mockResolvedValueOnce({ok: true, body: stream});
@@ -246,7 +259,8 @@ describe('OllamaService', () => {
 
 		it('should parse remaining buffer after stream ends', async () => {
 			/* No trailing newline — forces buffer parsing in the finally path */
-			const raw = '{"model":"llama3","created_at":"2024-01-01T00:00:00Z","message":{"role":"assistant","content":""},"done":true,"done_reason":"stop"}';
+			const raw =
+				'{"model":"llama3","created_at":"2024-01-01T00:00:00Z","message":{"role":"assistant","content":""},"done":true,"done_reason":"stop"}';
 			const stream = Readable.from(Buffer.from(raw));
 
 			mock_fetch_service.fetchWithProxy.mockResolvedValueOnce({ok: true, body: stream});

@@ -232,17 +232,13 @@ describe('MintAnalyticsService', () => {
 		it('should pass unit filters to getCachedAnalytics', async () => {
 			await service.getMintAnalyticsMints('test', {units: ['sat' as any, 'usd' as any]});
 
-			expect(mock_cashu_analytics.getCachedAnalytics).toHaveBeenCalledWith(
-				expect.objectContaining({units: ['sat', 'usd']}),
-			);
+			expect(mock_cashu_analytics.getCachedAnalytics).toHaveBeenCalledWith(expect.objectContaining({units: ['sat', 'usd']}));
 		});
 
 		it('should pass date_start to getCachedAnalytics', async () => {
 			await service.getMintAnalyticsMints('test', {date_start: 1700000000});
 
-			expect(mock_cashu_analytics.getCachedAnalytics).toHaveBeenCalledWith(
-				expect.objectContaining({date_start: 1700000000}),
-			);
+			expect(mock_cashu_analytics.getCachedAnalytics).toHaveBeenCalledWith(expect.objectContaining({date_start: 1700000000}));
 		});
 	});
 });

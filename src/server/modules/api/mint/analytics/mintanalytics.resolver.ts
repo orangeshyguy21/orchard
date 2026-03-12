@@ -31,7 +31,7 @@ export class MintAnalyticsResolver {
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_balances }';
-        this.logger.debug(tag);
+		this.logger.debug(tag);
 		return await this.mintAnalyticsService.getMintAnalyticsBalances(tag, {units, date_start, date_end, interval, timezone});
 	}
 
