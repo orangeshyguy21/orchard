@@ -8,7 +8,12 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 import {UserService} from '@server/modules/user/user.service';
 /* Native Dependencies */
-import {MESSAGE_INCOMING_EVENT, MESSAGE_RESET_EVENT, IncomingMessagePayload, ResetMessagePayload} from '@server/modules/message/message.types';
+import {
+	MESSAGE_INCOMING_EVENT,
+	MESSAGE_RESET_EVENT,
+	IncomingMessagePayload,
+	ResetMessagePayload,
+} from '@server/modules/message/message.types';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {

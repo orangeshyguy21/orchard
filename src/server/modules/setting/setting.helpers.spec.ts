@@ -118,37 +118,57 @@ describe('Setting Helpers', () => {
 
 	describe('parseSettingValue', () => {
 		it('should parse boolean true', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'true', value_type: SettingValue.BOOLEAN, description: null})).toBe(true);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'true', value_type: SettingValue.BOOLEAN, description: null}),
+			).toBe(true);
 		});
 
 		it('should parse boolean false', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'false', value_type: SettingValue.BOOLEAN, description: null})).toBe(false);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'false', value_type: SettingValue.BOOLEAN, description: null}),
+			).toBe(false);
 		});
 
 		it('should treat non-true strings as false for booleans', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '', value_type: SettingValue.BOOLEAN, description: null})).toBe(false);
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'yes', value_type: SettingValue.BOOLEAN, description: null})).toBe(false);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '', value_type: SettingValue.BOOLEAN, description: null}),
+			).toBe(false);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'yes', value_type: SettingValue.BOOLEAN, description: null}),
+			).toBe(false);
 		});
 
 		it('should parse number values', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '42', value_type: SettingValue.NUMBER, description: null})).toBe(42);
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '3.14', value_type: SettingValue.NUMBER, description: null})).toBe(3.14);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '42', value_type: SettingValue.NUMBER, description: null}),
+			).toBe(42);
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '3.14', value_type: SettingValue.NUMBER, description: null}),
+			).toBe(3.14);
 		});
 
 		it('should return NaN for invalid number values', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'abc', value_type: SettingValue.NUMBER, description: null})).toBeNaN();
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: 'abc', value_type: SettingValue.NUMBER, description: null}),
+			).toBeNaN();
 		});
 
 		it('should parse JSON values', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '{"a":1}', value_type: SettingValue.JSON, description: null})).toEqual({a: 1});
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '{"a":1}', value_type: SettingValue.JSON, description: null}),
+			).toEqual({a: 1});
 		});
 
 		it('should return null for invalid JSON', () => {
-			expect(parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '{invalid', value_type: SettingValue.JSON, description: null})).toBeNull();
+			expect(
+				parseSettingValue({key: SettingKey.BITCOIN_ORACLE, value: '{invalid', value_type: SettingValue.JSON, description: null}),
+			).toBeNull();
 		});
 
 		it('should return string values as-is', () => {
-			expect(parseSettingValue({key: SettingKey.AI_VENDOR, value: 'ollama', value_type: SettingValue.STRING, description: null})).toBe('ollama');
+			expect(
+				parseSettingValue({key: SettingKey.AI_VENDOR, value: 'ollama', value_type: SettingValue.STRING, description: null}),
+			).toBe('ollama');
 		});
 
 		it('should return empty string as-is for string type', () => {

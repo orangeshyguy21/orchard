@@ -6,7 +6,13 @@ import {Observable, tap, catchError} from 'rxjs';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
 import {EventLogMetadata} from '@server/modules/event/event.decorator';
-import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {
+	EventLogActorType,
+	EventLogSection,
+	EventLogEntityType,
+	EventLogStatus,
+	EventLogDetailStatus,
+} from '@server/modules/event/event.enums';
 import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintApiService} from '@server/modules/cashu/mintapi/cashumintapi.service';

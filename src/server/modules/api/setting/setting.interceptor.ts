@@ -6,7 +6,13 @@ import {Observable, tap, catchError} from 'rxjs';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
 import {EventLogMetadata} from '@server/modules/event/event.decorator';
-import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {
+	EventLogActorType,
+	EventLogSection,
+	EventLogEntityType,
+	EventLogStatus,
+	EventLogDetailStatus,
+} from '@server/modules/event/event.enums';
 import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {EventLogError} from '@server/modules/event/event.interfaces';
 import {SettingService} from '@server/modules/setting/setting.service';
@@ -40,7 +46,16 @@ export class SettingInterceptor implements NestInterceptor {
 			catchError((error) => {
 				const event_error = extractEventError(error);
 				for (let i = 0; i < keys.length; i++) {
-					this.logEvent(metadata, actor_type, actor_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.ERROR, event_error);
+					this.logEvent(
+						metadata,
+						actor_type,
+						actor_id,
+						keys[i],
+						old_values[i],
+						values[i] ?? null,
+						EventLogStatus.ERROR,
+						event_error,
+					);
 				}
 				throw error;
 			}),

@@ -5,7 +5,14 @@ import {Reflector} from '@nestjs/core';
 import {Observable, tap, catchError} from 'rxjs';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
-import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {
+	EventLogActorType,
+	EventLogSection,
+	EventLogEntityType,
+	EventLogType,
+	EventLogStatus,
+	EventLogDetailStatus,
+} from '@server/modules/event/event.enums';
 import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';

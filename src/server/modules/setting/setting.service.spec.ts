@@ -307,7 +307,12 @@ describe('SettingService', () => {
 
 	describe('getStringSetting', () => {
 		it('should return the string value', async () => {
-			mock_repository.findOne.mockResolvedValue({key: SettingKey.AI_VENDOR, value: 'ollama', value_type: SettingValue.STRING, description: null});
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.AI_VENDOR,
+				value: 'ollama',
+				value_type: SettingValue.STRING,
+				description: null,
+			});
 			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBe('ollama');
 		});
 
@@ -317,14 +322,24 @@ describe('SettingService', () => {
 		});
 
 		it('should return null for empty string value', async () => {
-			mock_repository.findOne.mockResolvedValue({key: SettingKey.AI_VENDOR, value: '', value_type: SettingValue.STRING, description: null});
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.AI_VENDOR,
+				value: '',
+				value_type: SettingValue.STRING,
+				description: null,
+			});
 			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBeNull();
 		});
 	});
 
 	describe('getNumberSetting', () => {
 		it('should return the parsed number', async () => {
-			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: '42', value_type: SettingValue.NUMBER, description: null});
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: '42',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
 			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBe(42);
 		});
 
@@ -334,12 +349,22 @@ describe('SettingService', () => {
 		});
 
 		it('should return null for empty value', async () => {
-			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: '', value_type: SettingValue.NUMBER, description: null});
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: '',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
 			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
 		});
 
 		it('should return null for NaN values', async () => {
-			mock_repository.findOne.mockResolvedValue({key: SettingKey.BITCOIN_ORACLE, value: 'abc', value_type: SettingValue.NUMBER, description: null});
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: 'abc',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
 			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
 		});
 	});

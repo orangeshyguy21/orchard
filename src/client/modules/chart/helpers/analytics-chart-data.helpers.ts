@@ -53,10 +53,7 @@ export function prependData(analytics: AnalyticsGroup, preceding_data: Analytics
 }
 
 /** Keys analytics data by timestamp, extracting a numeric metric value */
-export function getDataKeyedByTimestamp(
-	analytics: AnalyticsDataPoint[],
-	metric: 'amount' | 'count',
-): Record<number, number> {
+export function getDataKeyedByTimestamp(analytics: AnalyticsDataPoint[], metric: 'amount' | 'count'): Record<number, number> {
 	return analytics.reduce(
 		(acc, item) => {
 			const value = item[metric];

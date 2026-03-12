@@ -214,8 +214,8 @@ export class AgentService implements OnModuleInit {
 
 		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
 
-		const notified = loop_result.messages.some(
-			(m) => m.tool_calls?.some((tc) => (tc.function.name as string) === AgentToolName.SEND_MESSAGE),
+		const notified = loop_result.messages.some((m) =>
+			m.tool_calls?.some((tc) => (tc.function.name as string) === AgentToolName.SEND_MESSAGE),
 		);
 
 		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);
@@ -246,7 +246,11 @@ export class AgentService implements OnModuleInit {
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
-					const tool_result = await this.toolExecutor.executeTool(tool_call.function.name, tool_call.function.arguments, agent_context);
+					const tool_result = await this.toolExecutor.executeTool(
+						tool_call.function.name,
+						tool_call.function.arguments,
+						agent_context,
+					);
 					messages.push({role: AiMessageRole.TOOL, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {

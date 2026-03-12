@@ -8,7 +8,14 @@ import {Repository} from 'typeorm';
 import {Setting} from './setting.entity';
 import {DEFAULT_SETTINGS} from './setting.config';
 import {SettingKey} from './setting.enums';
-import {isSettingSensitive, maskSensitiveValue, deriveEncryptionKey, encryptValue, decryptValue, parseSettingValue} from './setting.helpers';
+import {
+	isSettingSensitive,
+	maskSensitiveValue,
+	deriveEncryptionKey,
+	encryptValue,
+	decryptValue,
+	parseSettingValue,
+} from './setting.helpers';
 
 @Injectable()
 export class SettingService implements OnModuleInit {

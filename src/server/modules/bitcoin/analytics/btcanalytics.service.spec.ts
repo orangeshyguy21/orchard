@@ -192,9 +192,7 @@ describe('BitcoinAnalyticsService', () => {
 		it('skips transactions with null amount (CLN)', async () => {
 			lightningService.isConfigured.mockReturnValue(true);
 			checkpointRepo.findOne.mockResolvedValue(null);
-			lightningService.getTransactions.mockResolvedValue([
-				{tx_hash: 'tx1', time_stamp: 1700000100, amount: null, total_fees: null},
-			]);
+			lightningService.getTransactions.mockResolvedValue([{tx_hash: 'tx1', time_stamp: 1700000100, amount: null, total_fees: null}]);
 			taprootAssetsService.getListTaprootAssets.mockRejectedValue(new Error('not configured'));
 
 			await service.runStreamingBackfill();

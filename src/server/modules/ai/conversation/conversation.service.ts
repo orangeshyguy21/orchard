@@ -151,10 +151,7 @@ export class ConversationService {
 
 	/** Create a new conversation, expiring any existing active one for this chat */
 	public async createConversation(agent: Agent, user_id: string, chat_id: string): Promise<Conversation> {
-		await this.conversationRepository.update(
-			{chat_id, status: ConversationStatus.ACTIVE},
-			{status: ConversationStatus.EXPIRED},
-		);
+		await this.conversationRepository.update({chat_id, status: ConversationStatus.ACTIVE}, {status: ConversationStatus.EXPIRED});
 
 		const system_message = await this.buildConversationSystemMessage(agent);
 		const messages: AiMessage[] = [{role: AiMessageRole.SYSTEM, content: system_message}];
@@ -180,7 +177,9 @@ export class ConversationService {
 
 		const agents = await this.agentService.getAgents();
 		const run_results = await Promise.all(
-			agents.map((a) => this.agentService.getAgentRuns({agent_id: a.id, page_size: 3, notified: true}).then((runs) => ({agent: a, runs}))),
+			agents.map((a) =>
+				this.agentService.getAgentRuns({agent_id: a.id, page_size: 3, notified: true}).then((runs) => ({agent: a, runs})),
+			),
 		);
 
 		const recent_summaries: string[] = [];

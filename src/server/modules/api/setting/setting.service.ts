@@ -13,11 +13,7 @@ import {MessageService} from '@server/modules/message/message.service';
 import {OrchardSetting} from './setting.model';
 
 /** Setting keys that require message service reinitialization when changed */
-const MESSAGE_KEYS = new Set<SettingKey>([
-	SettingKey.MESSAGES_ENABLED,
-	SettingKey.MESSAGES_VENDOR,
-	SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN,
-]);
+const MESSAGE_KEYS = new Set<SettingKey>([SettingKey.MESSAGES_ENABLED, SettingKey.MESSAGES_VENDOR, SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN]);
 
 @Injectable()
 export class ApiSettingService {

@@ -31,11 +31,7 @@ export class ApiLightningAnalyticsService {
 	/** Gets local balance analytics (channel_opens + invoices_in + forward_fees - payments_out - channel_closes) */
 	async getAnalyticsLocalBalance(tag: string, args: LightningAnalyticsApiArgs): Promise<OrchardLightningAnalytics[]> {
 		return this.getNetBalance(tag, args, {
-			positive: [
-				LightningAnalyticsMetric.channel_opens,
-				LightningAnalyticsMetric.invoices_in,
-				LightningAnalyticsMetric.forward_fees,
-			],
+			positive: [LightningAnalyticsMetric.channel_opens, LightningAnalyticsMetric.invoices_in, LightningAnalyticsMetric.forward_fees],
 			negative: [LightningAnalyticsMetric.payments_out, LightningAnalyticsMetric.channel_closes],
 		});
 	}
@@ -177,7 +173,9 @@ export class ApiLightningAnalyticsService {
 		date_start?: number,
 	): OrchardLightningAnalyticsMetric[] {
 		if (interval === AnalyticsInterval.hour) {
-			return data.map((d) => new OrchardLightningAnalyticsMetric(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, d.count));
+			return data.map(
+				(d) => new OrchardLightningAnalyticsMetric(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, d.count),
+			);
 		}
 
 		const tz = timezone ?? 'UTC';
@@ -192,7 +190,13 @@ export class ApiLightningAnalyticsService {
 				existing.amount += BigInt(d.amount);
 				existing.count += d.count;
 			} else {
-				acc.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date, count: d.count});
+				acc.set(key, {
+					unit: d.unit,
+					metric: d.metric as LightningAnalyticsMetric,
+					amount: BigInt(d.amount),
+					date: bucket_date,
+					count: d.count,
+				});
 			}
 			return acc;
 		}, new Map<string, Bucket>());

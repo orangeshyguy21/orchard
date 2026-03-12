@@ -45,7 +45,11 @@ describe('ConversationService', () => {
 		runToolLoop: jest.fn().mockResolvedValue({
 			result: 'Hello, operator!',
 			tokens_used: 100,
-			messages: [{role: 'system', content: 'sys'}, {role: 'user', content: 'hi'}, {role: 'assistant', content: 'Hello, operator!'}],
+			messages: [
+				{role: 'system', content: 'sys'},
+				{role: 'user', content: 'hi'},
+				{role: 'assistant', content: 'Hello, operator!'},
+			],
 		}),
 		buildRuntimeContext: jest.fn().mockReturnValue('[Runtime Context]\nAgent ID: agent-uuid'),
 		buildSystemMessage: jest.fn().mockReturnValue('System message'),

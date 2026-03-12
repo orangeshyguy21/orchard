@@ -67,9 +67,39 @@ describe('ApiBitcoinAnalyticsService', () => {
 	describe('getAnalyticsBalance', () => {
 		it('returns net balance from cached analytics', async () => {
 			bitcoinAnalyticsService.getCachedAnalytics.mockResolvedValue([
-				{id: '1', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'payments_in', date: 1700000000, amount: '100000', count: 2, updated_at: 0},
-				{id: '2', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'payments_out', date: 1700000000, amount: '30000', count: 1, updated_at: 0},
-				{id: '3', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'fees', date: 1700000000, amount: '500', count: 1, updated_at: 0},
+				{
+					id: '1',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'payments_in',
+					date: 1700000000,
+					amount: '100000',
+					count: 2,
+					updated_at: 0,
+				},
+				{
+					id: '2',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'payments_out',
+					date: 1700000000,
+					amount: '30000',
+					count: 1,
+					updated_at: 0,
+				},
+				{
+					id: '3',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'fees',
+					date: 1700000000,
+					amount: '500',
+					count: 1,
+					updated_at: 0,
+				},
 			]);
 
 			const result = await service.getAnalyticsBalance('TAG', {});
@@ -83,8 +113,28 @@ describe('ApiBitcoinAnalyticsService', () => {
 
 		it('filters out zero-net buckets', async () => {
 			bitcoinAnalyticsService.getCachedAnalytics.mockResolvedValue([
-				{id: '1', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'payments_in', date: 1700000000, amount: '1000', count: 1, updated_at: 0},
-				{id: '2', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'payments_out', date: 1700000000, amount: '1000', count: 1, updated_at: 0},
+				{
+					id: '1',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'payments_in',
+					date: 1700000000,
+					amount: '1000',
+					count: 1,
+					updated_at: 0,
+				},
+				{
+					id: '2',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'payments_out',
+					date: 1700000000,
+					amount: '1000',
+					count: 1,
+					updated_at: 0,
+				},
 			]);
 
 			const result = await service.getAnalyticsBalance('TAG', {});
@@ -96,8 +146,28 @@ describe('ApiBitcoinAnalyticsService', () => {
 	describe('getAnalyticsMetrics', () => {
 		it('returns per-metric analytics from cached data', async () => {
 			bitcoinAnalyticsService.getCachedAnalytics.mockResolvedValue([
-				{id: '1', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'payments_in', date: 1700000000, amount: '50000', count: 3, updated_at: 0},
-				{id: '2', node_pubkey: 'pk', group_key: '', unit: 'sat', metric: 'fees', date: 1700000000, amount: '200', count: 1, updated_at: 0},
+				{
+					id: '1',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'payments_in',
+					date: 1700000000,
+					amount: '50000',
+					count: 3,
+					updated_at: 0,
+				},
+				{
+					id: '2',
+					node_pubkey: 'pk',
+					group_key: '',
+					unit: 'sat',
+					metric: 'fees',
+					date: 1700000000,
+					amount: '200',
+					count: 1,
+					updated_at: 0,
+				},
 			]);
 
 			const result = await service.getAnalyticsMetrics('TAG', {});

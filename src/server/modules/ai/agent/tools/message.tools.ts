@@ -46,8 +46,7 @@ export function createSendMessageTool(messageService?: MessageService): AiToolEn
 					properties: {
 						title: {
 							type: 'string',
-							description:
-								'Short summary of the message (e.g. "Channel Force-Closed", "Mint Balance Mismatch").',
+							description: 'Short summary of the message (e.g. "Channel Force-Closed", "Mint Balance Mismatch").',
 						},
 						body: {
 							type: 'string',

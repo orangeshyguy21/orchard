@@ -46,7 +46,10 @@ export class AiAgentService {
 	}
 
 	/** Retrieves runs for an agent with pagination and optional notified filter */
-	async getAgentRuns(tag: string, options: {agent_id: string; page?: number; page_size?: number; notified?: boolean}): Promise<OrchardAgentRun[]> {
+	async getAgentRuns(
+		tag: string,
+		options: {agent_id: string; page?: number; page_size?: number; notified?: boolean},
+	): Promise<OrchardAgentRun[]> {
 		try {
 			const runs = await this.agentService.getAgentRuns(options);
 			return runs.map((run) => new OrchardAgentRun(run));
