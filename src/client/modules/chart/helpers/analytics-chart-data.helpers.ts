@@ -95,13 +95,13 @@ export function getNextTimestamp(timestamp: number, interval: AnalyticsInterval)
 
 /** Creates chart data points with optional cumulative summing and unit conversion */
 export function getAmountData(
-	unqiue_timestamps: number[],
+	unique_timestamps: number[],
 	data_keyed_by_timestamp: Record<number, number>,
 	unit: string,
 	cumulative: boolean,
 ): {x: number; y: number}[] {
 	let running_sum = 0;
-	return unqiue_timestamps.map((timestamp) => {
+	return unique_timestamps.map((timestamp) => {
 		const val = data_keyed_by_timestamp[timestamp] || 0;
 		running_sum += LocalAmountPipe.getConvertedAmount(unit, val);
 		return {

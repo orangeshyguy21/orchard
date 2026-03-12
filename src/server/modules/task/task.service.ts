@@ -127,9 +127,9 @@ export class TaskService {
 
 	/**
 	 * Daily rescan of recent lightning records to catch pending invoices/payments that settled
-	 * Runs at 3am UTC
+	 * Runs at 3:15am UTC
 	 */
-	@Cron('0 3 * * *', {
+	@Cron('15 3 * * *', {
 		name: 'daily-lightning-analytics-rescan',
 		timeZone: 'UTC',
 	})
@@ -175,9 +175,9 @@ export class TaskService {
 
 	/**
 	 * Daily rescan of recent cashu mint records to catch state changes (UNPAID → PAID → ISSUED)
-	 * Runs at 3:15am UTC
+	 * Runs at 3:30am UTC
 	 */
-	@Cron('15 3 * * *', {
+	@Cron('30 3 * * *', {
 		name: 'daily-cashu-mint-analytics-rescan',
 		timeZone: 'UTC',
 	})
@@ -223,9 +223,9 @@ export class TaskService {
 
 	/**
 	 * Daily rescan of recent bitcoin on-chain records to catch late confirmations
-	 * Runs at 3:30am UTC
+	 * Runs at 3:45am UTC
 	 */
-	@Cron('30 3 * * *', {
+	@Cron('45 3 * * *', {
 		name: 'daily-bitcoin-analytics-rescan',
 		timeZone: 'UTC',
 	})

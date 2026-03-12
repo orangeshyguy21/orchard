@@ -1,5 +1,6 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, inject, effect, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, input, output, inject, effect, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -15,6 +16,7 @@ import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 })
 export class SettingsSubsectionAppAiComponent {
 	private readonly aiService = inject(AiService);
+	private readonly destroyRef = inject(DestroyRef);
 
 	public ai_enabled = input.required<boolean>();
 	public form_group = input.required<FormGroup>();
@@ -34,7 +36,7 @@ export class SettingsSubsectionAppAiComponent {
 	}
 
 	private getAiHealth(): void {
-		this.aiService.getAiHealth().subscribe({
+		this.aiService.getAiHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
 			next: (health: AiHealth) => {
 				this.ai_health.set(health);
 			},
