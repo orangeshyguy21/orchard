@@ -330,9 +330,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			this.backfill_status.hours_completed++;
 		}
 
-		// Save checkpoint as the max timestamp we processed
-		const max_ts = Math.max(...new_txs.map((tx) => tx.time_stamp));
-		await this.saveCheckpoint('transactions', max_ts);
+		// Save checkpoint from flushed records only (not current-hour records)
+		if (buckets.size > 0) {
+			const flushed = Array.from(buckets.values()).flat();
+			const max_ts = Math.max(...flushed.map((tx) => tx.time_stamp));
+			await this.saveCheckpoint('transactions', max_ts);
+		}
 	}
 
 	/* *******************************************************
@@ -429,8 +432,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			this.backfill_status.hours_completed++;
 		}
 
-		const max_ts = Math.max(...new_transfers.map((t) => Number(t.transfer_timestamp)));
-		await this.saveCheckpoint('asset_transfers', max_ts);
+		// Save checkpoint from flushed records only (not current-hour records)
+		if (buckets.size > 0) {
+			const flushed = Array.from(buckets.values()).flat();
+			const max_ts = Math.max(...flushed.map((t) => Number(t.transfer_timestamp)));
+			await this.saveCheckpoint('asset_transfers', max_ts);
+		}
 	}
 
 	/* *******************************************************
@@ -507,8 +514,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			this.backfill_status.hours_completed++;
 		}
 
-		const max_ts = Math.max(...new_events.map((e) => Number(e.creation_time_unix_seconds)));
-		await this.saveCheckpoint('asset_receives', max_ts);
+		// Save checkpoint from flushed records only (not current-hour records)
+		if (buckets.size > 0) {
+			const flushed = Array.from(buckets.values()).flat();
+			const max_ts = Math.max(...flushed.map((e) => Number(e.creation_time_unix_seconds)));
+			await this.saveCheckpoint('asset_receives', max_ts);
+		}
 	}
 
 	/* *******************************************************
