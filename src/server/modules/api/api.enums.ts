@@ -108,7 +108,7 @@ registerEnumType(LightningAddressType, {
 	name: 'LightningAddressType',
 	description: 'Lightning node address type',
 	valuesMap: {
-		UNKOWN: {description: 'Unknown address type'},
+		UNKNOWN: {description: 'Unknown address type'},
 		WITNESS_PUBKEY_HASH: {description: 'Native SegWit (P2WPKH)'},
 		NESTED_WITNESS_PUBKEY_HASH: {description: 'Nested SegWit (P2SH-P2WPKH)'},
 		HYBRID_NESTED_WITNESS_PUBKEY_HASH: {description: 'Hybrid nested SegWit'},
