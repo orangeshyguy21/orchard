@@ -38,6 +38,10 @@ export class OllamaService implements AiVendor {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
 		});
+		if (!response.ok) {
+			const error_text = await response.text();
+			throw new Error(`Ollama returned status ${response.status}: ${error_text}`);
+		}
 		const data: OllamaTagsResponse = await response.json();
 		return data.models.map((m) => this.mapModel(m));
 	}
@@ -83,14 +87,22 @@ export class OllamaService implements AiVendor {
 					const trimmed = line.trim();
 					if (!trimmed) continue;
 
-					const chunk: OllamaChatChunk = JSON.parse(trimmed);
-					yield this.mapChunk(chunk);
+					try {
+						const chunk: OllamaChatChunk = JSON.parse(trimmed);
+						yield this.mapChunk(chunk);
+					} catch {
+						/* Skip unparseable lines */
+					}
 				}
 			}
 
 			if (buffer.trim()) {
-				const chunk: OllamaChatChunk = JSON.parse(buffer.trim());
-				yield this.mapChunk(chunk);
+				try {
+					const chunk: OllamaChatChunk = JSON.parse(buffer.trim());
+					yield this.mapChunk(chunk);
+				} catch {
+					/* Skip unparseable lines */
+				}
 			}
 		} finally {
 			reader.releaseLock();

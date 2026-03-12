@@ -6,6 +6,7 @@ export enum AiMessageRole {
 	ERROR = 'error',
 }
 
+/* @TODO: move this enum to assistant enum */
 export enum AiToolName {
 	UPDATE_SEARCH = 'UPDATE_SEARCH',
 	CREW_STATES_UPDATE = 'CREW_STATES_UPDATE',
