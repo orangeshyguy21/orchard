@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {Module} from '@nestjs/common';
-/* Local Dependencies */
 // Orchard Endpoints
 import {StatusModule} from './status/status.module';
 // Auth Endpoints
@@ -59,6 +58,8 @@ import {ApiSettingModule} from './setting/setting.module';
 import {ApiEventLogModule} from './event/event.module';
 // System Endpoints
 import {ApiSystemMetricsModule} from './system/metrics/sysmetrics.module';
+/* Enum Registration */
+import './api.enums';
 
 @Module({
 	imports: [

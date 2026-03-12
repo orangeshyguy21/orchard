@@ -18,7 +18,7 @@ export class AuthInitializationResolver {
 	constructor(private initializationService: AuthInitializationService) {}
 
 	@Public()
-	@Query(() => OrchardInitialization)
+	@Query(() => OrchardInitialization, {description: 'Check whether the application has been initialized'})
 	async auth_initialization() {
 		const tag = 'GET { initialization }';
 		this.logger.debug(tag);
@@ -27,8 +27,8 @@ export class AuthInitializationResolver {
 
 	@Public()
 	@Throttle({default: {limit: 4, ttl: seconds(10)}})
-	@Mutation(() => OrchardAuthentication)
-	async auth_initialize(@Args('initialize') initialize: InitializationInput) {
+	@Mutation(() => OrchardAuthentication, {description: 'Initialize the application with a first admin user'})
+	async auth_initialize(@Args('initialize', {description: 'Initial admin user credentials'}) initialize: InitializationInput) {
 		const tag = 'MUTATION { initialize }';
 		this.logger.debug(tag);
 		return await this.initializationService.initialize(tag, initialize);

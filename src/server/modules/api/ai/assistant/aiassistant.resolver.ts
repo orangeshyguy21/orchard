@@ -13,8 +13,10 @@ export class AiAssistantResolver {
 
 	constructor(private aiAssistantService: AiAssistantService) {}
 
-	@Query(() => OrchardAiAssistant)
-	async ai_assistant(@Args('assistant', {type: () => AiAssistant}) assistant: AiAssistant): Promise<OrchardAiAssistant> {
+	@Query(() => OrchardAiAssistant, {description: 'Get an AI assistant by type'})
+	async ai_assistant(
+		@Args('assistant', {type: () => AiAssistant, description: 'Assistant type to retrieve'}) assistant: AiAssistant,
+	): Promise<OrchardAiAssistant> {
 		const tag = 'GET { ai_assistant }';
 		this.logger.debug(tag);
 		return await this.aiAssistantService.getAssistant(tag, assistant);

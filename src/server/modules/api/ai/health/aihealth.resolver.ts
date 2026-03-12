@@ -11,7 +11,7 @@ export class AiHealthResolver {
 
 	constructor(private aiHealthService: AiHealthService) {}
 
-	@Query(() => OrchardAiHealth)
+	@Query(() => OrchardAiHealth, {description: 'Get AI service health status'})
 	async ai_health(): Promise<OrchardAiHealth> {
 		const tag = 'GET { ai_health }';
 		this.logger.debug(tag);

@@ -13,27 +13,27 @@ import {
 import {EventLog} from '@server/modules/event/event.entity';
 import {EventLogDetail} from '@server/modules/event/event-detail.entity';
 
-@ObjectType()
+@ObjectType({description: 'Event log detail entry'})
 export class OrchardEventLogDetail {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Unique detail identifier'})
 	id: string;
 
-	@Field()
+	@Field({description: 'Field name affected by the event'})
 	field: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Previous value of the field'})
 	old_value: string | null;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'New value of the field'})
 	new_value: string | null;
 
-	@Field(() => EventLogDetailStatus)
+	@Field(() => EventLogDetailStatus, {description: 'Status of the detail entry'})
 	status: EventLogDetailStatus;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Error code if the detail failed'})
 	error_code: string | null;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Error message if the detail failed'})
 	error_message: string | null;
 
 	constructor(detail: EventLogDetail) {
@@ -47,39 +47,39 @@ export class OrchardEventLogDetail {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Event log entry'})
 export class OrchardEventLog {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Unique event log identifier'})
 	id: string;
 
-	@Field(() => EventLogActorType)
+	@Field(() => EventLogActorType, {description: 'Type of actor that triggered the event'})
 	actor_type: EventLogActorType;
 
-	@Field()
+	@Field({description: 'Identifier of the actor that triggered the event'})
 	actor_id: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Event timestamp'})
 	timestamp: number;
 
-	@Field(() => EventLogSection)
+	@Field(() => EventLogSection, {description: 'Section the event belongs to'})
 	section: EventLogSection;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Identifier of the section instance'})
 	section_id: string | null;
 
-	@Field(() => EventLogEntityType)
+	@Field(() => EventLogEntityType, {description: 'Type of entity affected by the event'})
 	entity_type: EventLogEntityType;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Identifier of the affected entity'})
 	entity_id: string | null;
 
-	@Field(() => EventLogType)
+	@Field(() => EventLogType, {description: 'Type of event that occurred'})
 	type: EventLogType;
 
-	@Field(() => EventLogStatus)
+	@Field(() => EventLogStatus, {description: 'Overall status of the event'})
 	status: EventLogStatus;
 
-	@Field(() => [OrchardEventLogDetail])
+	@Field(() => [OrchardEventLogDetail], {description: 'Detailed changes associated with the event'})
 	details: OrchardEventLogDetail[];
 
 	constructor(event: EventLog) {

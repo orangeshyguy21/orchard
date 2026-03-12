@@ -11,7 +11,7 @@ export class BitcoinMempoolResolver {
 
 	constructor(private bitcoinMempoolService: BitcoinMempoolService) {}
 
-	@Query(() => [OrchardBitcoinMempoolTransaction])
+	@Query(() => [OrchardBitcoinMempoolTransaction], {description: 'Get all Bitcoin mempool transactions'})
 	async bitcoin_mempool_transactions(): Promise<OrchardBitcoinMempoolTransaction[]> {
 		const tag = 'GET { bitcoin_mempool_transactions }';
 		this.logger.debug(tag);

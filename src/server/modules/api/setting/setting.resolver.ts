@@ -18,7 +18,7 @@ export class SettingResolver {
 
 	constructor(private settingService: ApiSettingService) {}
 
-	@Query(() => [OrchardSetting])
+	@Query(() => [OrchardSetting], {description: 'Get all application settings'})
 	async settings(): Promise<OrchardSetting[]> {
 		const tag = 'GET { settings }';
 		this.logger.debug(tag);
@@ -33,10 +33,10 @@ export class SettingResolver {
 		arg_keys: ['values'],
 		old_value_key: 'value',
 	})
-	@Mutation(() => [OrchardSetting])
+	@Mutation(() => [OrchardSetting], {description: 'Update application settings'})
 	async settings_update(
-		@Args('keys', {type: () => [SettingKey]}) keys: SettingKey[],
-		@Args('values', {type: () => [String]}) values: string[],
+		@Args('keys', {type: () => [SettingKey], description: 'Setting keys to update'}) keys: SettingKey[],
+		@Args('values', {type: () => [String], description: 'New values for the settings'}) values: string[],
 	): Promise<OrchardSetting[]> {
 		const tag = 'UPDATE { settings }';
 		this.logger.debug(tag);

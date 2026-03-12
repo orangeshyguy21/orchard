@@ -3,12 +3,12 @@ import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {CashuMintBalance} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint keyset balance'})
 export class OrchardMintBalance {
-	@Field()
+	@Field({description: 'Keyset identifier'})
 	keyset: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Balance amount in the smallest unit'})
 	balance: number;
 
 	constructor(cashu_mint_balance: CashuMintBalance) {

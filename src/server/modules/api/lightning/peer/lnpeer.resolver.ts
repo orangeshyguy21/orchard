@@ -11,7 +11,7 @@ export class LightningPeerResolver {
 
 	constructor(private lightningPeerService: LightningPeerService) {}
 
-	@Query(() => [OrchardLightningPeer])
+	@Query(() => [OrchardLightningPeer], {description: 'Get all connected lightning peers'})
 	async lightning_peers(): Promise<OrchardLightningPeer[]> {
 		const tag = 'GET { lightning_peers }';
 		this.logger.debug(tag);

@@ -14,9 +14,9 @@ import {
 import {CashuMintInfoRpc} from '@server/modules/cashu/mintrpc/cashumintrpc.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
-@ObjectType()
+@ObjectType({description: 'NUT support status'})
 export class OrchardNutSupported {
-	@Field()
+	@Field({description: 'Whether the NUT is supported'})
 	supported: boolean;
 
 	constructor(
@@ -33,12 +33,12 @@ export class OrchardNutSupported {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-04 minting configuration'})
 export class OrchardNut4 {
-	@Field(() => [OrchardNut4Method])
+	@Field(() => [OrchardNut4Method], {description: 'Supported minting methods'})
 	methods: OrchardNut4Method[];
 
-	@Field()
+	@Field({description: 'Whether minting is disabled'})
 	disabled: boolean;
 
 	constructor(nut4: CashuMintInfo['nuts']['4']) {
@@ -47,12 +47,12 @@ export class OrchardNut4 {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-05 melting configuration'})
 export class OrchardNut5 {
-	@Field(() => [OrchardNut5Method])
+	@Field(() => [OrchardNut5Method], {description: 'Supported melting methods'})
 	methods: OrchardNut5Method[];
 
-	@Field()
+	@Field({description: 'Whether melting is disabled'})
 	disabled: boolean;
 
 	constructor(nut5: CashuMintInfo['nuts']['5']) {
@@ -61,9 +61,9 @@ export class OrchardNut5 {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-15 multipath payment configuration'})
 export class OrchardNut15 {
-	@Field(() => [OrchardNut15Method])
+	@Field(() => [OrchardNut15Method], {description: 'Supported multipath payment methods'})
 	methods: OrchardNut15Method[];
 
 	constructor(nut15: CashuMintInfo['nuts']['15']) {
@@ -71,9 +71,9 @@ export class OrchardNut15 {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-17 WebSocket subscription configuration'})
 export class OrchardNut17 {
-	@Field(() => [OrchardNut17Supported])
+	@Field(() => [OrchardNut17Supported], {description: 'Supported WebSocket subscription methods'})
 	supported: OrchardNut17Supported[];
 
 	constructor(nut17: CashuMintInfo['nuts']['17']) {
@@ -81,12 +81,12 @@ export class OrchardNut17 {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-19 cached endpoint configuration'})
 export class OrchardNut19 {
-	@Field(() => [OrchardCachedEndpoint])
+	@Field(() => [OrchardCachedEndpoint], {description: 'Cached endpoints'})
 	cached_endpoints: OrchardCachedEndpoint[];
 
-	@Field()
+	@Field({description: 'Cache time-to-live in seconds'})
 	ttl: number;
 
 	constructor(nut19: CashuMintInfo['nuts']['19']) {
@@ -95,45 +95,45 @@ export class OrchardNut19 {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu NUT support matrix'})
 export class OrchardNuts {
-	@Field()
+	@Field({description: 'NUT-04 minting configuration'})
 	nut4: OrchardNut4;
 
-	@Field()
+	@Field({description: 'NUT-05 melting configuration'})
 	nut5: OrchardNut5;
 
-	@Field()
+	@Field({description: 'NUT-07 token state check support'})
 	nut7: OrchardNutSupported;
 
-	@Field()
+	@Field({description: 'NUT-08 lightning fee return support'})
 	nut8: OrchardNutSupported;
 
-	@Field()
+	@Field({description: 'NUT-09 restore support'})
 	nut9: OrchardNutSupported;
 
-	@Field()
+	@Field({description: 'NUT-10 spending conditions support'})
 	nut10: OrchardNutSupported;
 
-	@Field()
+	@Field({description: 'NUT-11 pay-to-pubkey support'})
 	nut11: OrchardNutSupported;
 
-	@Field()
+	@Field({description: 'NUT-12 DLEQ proofs support'})
 	nut12: OrchardNutSupported;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'NUT-14 hashed timelock contracts support'})
 	nut14: OrchardNutSupported;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'NUT-15 multipath payment configuration'})
 	nut15: OrchardNut15;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'NUT-17 WebSocket subscription configuration'})
 	nut17: OrchardNut17;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'NUT-19 cached endpoint configuration'})
 	nut19: OrchardNut19;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'NUT-20 signature on mint quote support'})
 	nut20: OrchardNutSupported;
 
 	constructor(nuts: CashuMintInfo['nuts']) {
@@ -153,39 +153,39 @@ export class OrchardNuts {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint information'})
 export class OrchardMintInfo {
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Mint name'})
 	name: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Mint public key'})
 	pubkey: string;
 
-	@Field()
+	@Field({description: 'Mint software version'})
 	version: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Short description of the mint'})
 	description: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Long description of the mint'})
 	description_long: string;
 
-	@Field(() => [OrchardContact], {nullable: true})
+	@Field(() => [OrchardContact], {nullable: true, description: 'Mint contact methods'})
 	contact: OrchardContact[];
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Mint icon URL'})
 	icon_url: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Terms of service URL'})
 	tos_url: string;
 
-	@Field(() => [String], {nullable: true})
+	@Field(() => [String], {nullable: true, description: 'Mint URLs'})
 	urls: string[];
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Mint server timestamp'})
 	time: number;
 
-	@Field(() => OrchardNuts)
+	@Field(() => OrchardNuts, {description: 'Supported NUTs and their configuration'})
 	nuts: OrchardNuts;
 
 	constructor(cashu_info: CashuMintInfo) {
@@ -203,12 +203,12 @@ export class OrchardMintInfo {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint contact information'})
 export class OrchardContact {
-	@Field()
+	@Field({description: 'Contact method type'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Contact information value'})
 	info: string;
 
 	constructor(contact: CashuContact) {
@@ -217,21 +217,21 @@ export class OrchardContact {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-04 minting method details'})
 export class OrchardNut4Method {
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method identifier'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Currency unit'})
 	unit: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Whether descriptions are supported'})
 	description?: boolean;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Minimum minting amount'})
 	min_amount?: number;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Maximum minting amount'})
 	max_amount?: number;
 
 	constructor(method: CashuNut4Method) {
@@ -243,21 +243,21 @@ export class OrchardNut4Method {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-05 melting method details'})
 export class OrchardNut5Method {
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method identifier'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Currency unit'})
 	unit: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Whether amountless melting is supported'})
 	amountless?: boolean;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Minimum melting amount'})
 	min_amount?: number;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Maximum melting amount'})
 	max_amount?: number;
 
 	constructor(method: CashuNut5Method) {
@@ -269,12 +269,12 @@ export class OrchardNut5Method {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-15 multipath payment method details'})
 export class OrchardNut15Method {
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method identifier'})
 	method: string;
 
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Currency unit'})
 	unit: MintUnit;
 
 	constructor(method: CashuNut15Method) {
@@ -283,15 +283,15 @@ export class OrchardNut15Method {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'NUT-17 WebSocket subscription method details'})
 export class OrchardNut17Supported {
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method identifier'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Currency unit'})
 	unit: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Supported subscription commands'})
 	commands: string[];
 
 	constructor(supported: CashuNutSupported) {
@@ -301,12 +301,12 @@ export class OrchardNut17Supported {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cached endpoint entry'})
 export class OrchardCachedEndpoint {
-	@Field()
+	@Field({description: 'HTTP method'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Endpoint path'})
 	path: string;
 
 	constructor(cached_endpoint: CashuCachedEndpoint) {
@@ -315,36 +315,36 @@ export class OrchardCachedEndpoint {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint RPC information'})
 export class OrchardMintInfoRpc {
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Mint name'})
 	name: string;
 
-	@Field()
+	@Field({description: 'Mint software version'})
 	version: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Short description of the mint'})
 	description: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Message of the day'})
 	motd: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Total amount of ecash issued'})
 	total_issued: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Total amount of ecash redeemed'})
 	total_redeemed: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Long description of the mint'})
 	description_long: string;
 
-	@Field(() => [OrchardContact])
+	@Field(() => [OrchardContact], {description: 'Mint contact methods'})
 	contact: OrchardContact[];
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Mint icon URL'})
 	icon_url: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Mint URLs'})
 	urls: string[];
 
 	constructor(cashu_info: CashuMintInfoRpc) {
@@ -361,41 +361,41 @@ export class OrchardMintInfoRpc {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint name update result'})
 export class OrchardMintNameUpdate {
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Updated mint name'})
 	name: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint icon update result'})
 export class OrchardMintIconUpdate {
-	@Field()
+	@Field({description: 'Updated icon URL'})
 	icon_url: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint description update result'})
 export class OrchardMintDescriptionUpdate {
-	@Field()
+	@Field({description: 'Updated description'})
 	description: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint message of the day update result'})
 export class OrchardMintMotdUpdate {
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Updated message of the day'})
 	motd: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint URL update result'})
 export class OrchardMintUrlUpdate {
-	@Field()
+	@Field({description: 'Updated URL'})
 	url: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Mint contact update result'})
 export class OrchardMintContactUpdate {
-	@Field()
+	@Field({description: 'Contact method type'})
 	method: string;
 
-	@Field()
+	@Field({description: 'Contact information value'})
 	info: string;
 }

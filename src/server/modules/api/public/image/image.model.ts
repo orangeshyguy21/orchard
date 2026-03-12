@@ -1,12 +1,12 @@
 /* Core Dependencies */
 import {Field, ObjectType} from '@nestjs/graphql';
 
-@ObjectType()
+@ObjectType({description: 'Public image data'})
 export class OrchardPublicImage {
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Base64-encoded image data URI'})
 	data: string;
 
-	@Field()
+	@Field({description: 'MIME type of the image'})
 	type: string;
 
 	constructor(data: Buffer, type: string) {

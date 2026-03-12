@@ -14,10 +14,10 @@ export class MintActivityResolver {
 
 	constructor(private mintActivityService: MintActivityService) {}
 
-	@Query(() => OrchardMintActivitySummary)
+	@Query(() => OrchardMintActivitySummary, {description: 'Get mint activity summary for a time period'})
 	async mint_activity_summary(
-		@Args('period', {type: () => MintActivityPeriod}) period: MintActivityPeriod,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('period', {type: () => MintActivityPeriod, description: 'Time period to summarize activity for'}) period: MintActivityPeriod,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
 	): Promise<OrchardMintActivitySummary> {
 		const tag = 'GET { mint_activity_summary }';
 		this.logger.debug(tag);

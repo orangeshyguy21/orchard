@@ -5,36 +5,36 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint keyset configuration'})
 export class OrchardMintKeyset {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Keyset ID'})
 	id: string;
 
-	@Field()
+	@Field({description: 'BIP-32 derivation path'})
 	derivation_path: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Index within the derivation path'})
 	derivation_path_index: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the keyset becomes valid'})
 	valid_from: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the keyset expires'})
 	valid_to: number;
 
-	@Field()
+	@Field({description: 'Whether the keyset is currently active'})
 	active: boolean;
 
-	@Field()
+	@Field({description: 'Currency unit of the keyset'})
 	unit: MintUnit;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Input fee in parts per thousand'})
 	input_fee_ppk: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Total fees paid for this keyset'})
 	fees_paid: number;
 
-	@Field(() => [Float], {nullable: true})
+	@Field(() => [Float], {nullable: true, description: 'Denomination amounts in the keyset'})
 	amounts: number[];
 
 	constructor(cashu_keyset: CashuMintKeyset) {
@@ -51,30 +51,30 @@ export class OrchardMintKeyset {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Result of a keyset rotation'})
 export class OrchardMintKeysetRotation {
-	@Field()
+	@Field({description: 'New keyset ID'})
 	id: string;
 
-	@Field()
+	@Field({description: 'Currency unit of the rotated keyset'})
 	unit: string;
 
-	@Field(() => [Float], {nullable: true})
+	@Field(() => [Float], {nullable: true, description: 'Denomination amounts in the new keyset'})
 	amounts: number[];
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Input fee in parts per thousand'})
 	input_fee_ppk: number;
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint keyset proof and promise counts'})
 export class OrchardMintKeysetCount {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Keyset ID'})
 	id: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of proofs for this keyset'})
 	proof_count: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of promises for this keyset'})
 	promise_count: number;
 
 	constructor(cashu_keyset_count: {id: string; proof_count: number; promise_count: number}) {

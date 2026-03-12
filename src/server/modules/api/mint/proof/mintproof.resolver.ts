@@ -13,8 +13,10 @@ export class MintProofResolver {
 
 	constructor(private mintProofService: MintProofService) {}
 
-	@Query(() => OrchardMintProofGroupStats)
-	async mint_proof_group_stats(@Args('unit', {type: () => MintUnit}) unit: MintUnit): Promise<OrchardMintProofGroupStats> {
+	@Query(() => OrchardMintProofGroupStats, {description: 'Get grouped statistics for mint proofs'})
+	async mint_proof_group_stats(
+		@Args('unit', {type: () => MintUnit, description: 'Unit to filter proof statistics by'}) unit: MintUnit,
+	): Promise<OrchardMintProofGroupStats> {
 		const tag = 'GET { mint_proof_group_stats }';
 		this.logger.debug(tag);
 		return await this.mintProofService.getMintProofGroupStats(tag, unit);

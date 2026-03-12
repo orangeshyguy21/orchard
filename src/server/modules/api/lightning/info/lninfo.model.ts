@@ -4,69 +4,69 @@ import {Field, Int, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {LightningInfo} from '@server/modules/lightning/lightning/lightning.types';
 
-@ObjectType()
+@ObjectType({description: 'Lightning node general information'})
 export class OrchardLightningInfo {
-	@Field(() => String)
+	@Field(() => String, {description: 'Software version of the lightning node'})
 	version: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Git commit hash of the running build'})
 	commit_hash: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Public key identity of the lightning node'})
 	identity_pubkey: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Node alias visible on the network'})
 	alias: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Hex color code for the node'})
 	color: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of channels pending to open'})
 	num_pending_channels: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of currently active channels'})
 	num_active_channels: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of currently inactive channels'})
 	num_inactive_channels: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of connected peers'})
 	num_peers: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Current best known block height'})
 	block_height: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Hash of the current best known block'})
 	block_hash: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the best known block header'})
 	best_header_timestamp: number;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the node is synced to the blockchain'})
 	synced_to_chain: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the node is synced to the network graph'})
 	synced_to_graph: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the node is running on testnet'})
 	testnet: boolean;
 
-	@Field(() => [OrchardLightningChain])
+	@Field(() => [OrchardLightningChain], {description: 'Blockchain networks the node is connected to'})
 	chains: OrchardLightningChain[];
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Network addresses where the node can be reached'})
 	uris: string[];
 
-	@Field(() => [OrchardLightningFeature])
+	@Field(() => [OrchardLightningFeature], {description: 'Feature bits supported by the node'})
 	features: OrchardLightningFeature[];
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether HTLC interceptor is required'})
 	require_htlc_interceptor: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether final HTLC resolutions are stored'})
 	store_final_htlc_resolutions: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether this node serves as a backend'})
 	backend: boolean;
 
 	constructor(ln_info: LightningInfo, backend: boolean = false) {
@@ -94,12 +94,12 @@ export class OrchardLightningInfo {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Blockchain network the lightning node is connected to'})
 export class OrchardLightningChain {
-	@Field(() => String)
+	@Field(() => String, {description: 'Blockchain name (e.g. bitcoin)'})
 	chain: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Network type (e.g. mainnet, testnet)'})
 	network: string;
 
 	constructor(chain: LightningInfo['chains'][number]) {
@@ -108,18 +108,18 @@ export class OrchardLightningChain {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Lightning node feature bit'})
 export class OrchardLightningFeature {
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Feature bit number'})
 	bit: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Human-readable feature name'})
 	name: string;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether this feature is required for peers'})
 	is_required: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether this feature is recognized by the node'})
 	is_known: boolean;
 
 	constructor(feature: LightningInfo['features'][number], bit: string) {

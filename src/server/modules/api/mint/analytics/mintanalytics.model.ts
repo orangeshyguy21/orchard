@@ -5,18 +5,18 @@ import {MintUnit} from '@server/modules/cashu/cashu.enums';
 import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint analytics data point'})
 export class OrchardMintAnalytics {
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Currency unit'})
 	unit: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Aggregated amount as string'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Operation count for the period'})
 	count?: number;
 
 	constructor(unit: string, amount: string, date: number, count?: number) {
@@ -27,15 +27,15 @@ export class OrchardMintAnalytics {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint keyset-level analytics data point'})
 export class OrchardMintKeysetsAnalytics {
-	@Field(() => String)
+	@Field(() => String, {description: 'Keyset ID'})
 	keyset_id: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Aggregated amount as string'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the data point'})
 	date: number;
 
 	constructor(keyset_id: string, amount: string, date: number) {
@@ -45,21 +45,21 @@ export class OrchardMintKeysetsAnalytics {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint analytics metric data point'})
 export class OrchardMintAnalyticsMetric {
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Currency unit'})
 	unit: string;
 
-	@Field(() => MintAnalyticsMetric)
+	@Field(() => MintAnalyticsMetric, {description: 'Type of analytics metric'})
 	metric: MintAnalyticsMetric;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Aggregated amount as string'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Operation count for the period'})
 	count?: number;
 
 	constructor(unit: string, metric: MintAnalyticsMetric, amount: string, date: number, count?: number) {
@@ -71,17 +71,17 @@ export class OrchardMintAnalyticsMetric {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint analytics backfill job status'})
 export class OrchardMintAnalyticsBackfillStatus {
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the backfill job is currently running'})
 	is_running: boolean;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill started'})
 	started_at?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
 	errors?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of hours completed in the backfill'})
 	hours_completed?: number;
 }

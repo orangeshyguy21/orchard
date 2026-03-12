@@ -11,7 +11,7 @@ export class LightningWalletResolver {
 
 	constructor(private lightningWalletService: LightningWalletService) {}
 
-	@Query(() => [OrchardLightningAccount])
+	@Query(() => [OrchardLightningAccount], {description: 'Get all lightning wallet accounts'})
 	async lightning_wallet(): Promise<OrchardLightningAccount[]> {
 		const tag = 'GET { lightning_wallet }';
 		this.logger.debug(tag);

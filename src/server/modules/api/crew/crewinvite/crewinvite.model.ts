@@ -5,34 +5,34 @@ import {Invite} from '@server/modules/invite/invite.entity';
 import {UserRole} from '@server/modules/user/user.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Crew invite for onboarding new users'})
 export class OrchardCrewInvite {
-	@Field()
+	@Field({description: 'Unique invite identifier'})
 	id: string;
 
-	@Field()
-	token: string; // 12-character invite code
+	@Field({description: '12-character invite code'})
+	token: string;
 
-	@Field({nullable: true})
-	label: string | null; // suggested username/label
+	@Field({nullable: true, description: 'Suggested username or label for the invitee'})
+	label: string | null;
 
-	@Field(() => UserRole)
-	role: UserRole; // role to assign when claimed
+	@Field(() => UserRole, {description: 'Role to assign when the invite is claimed'})
+	role: UserRole;
 
-	@Field()
-	created_by_id: string; // ID of admin who created invite
+	@Field({description: 'ID of the admin who created the invite'})
+	created_by_id: string;
 
-	@Field({nullable: true})
-	claimed_by_id: string | null; // ID of user who claimed invite
+	@Field({nullable: true, description: 'ID of the user who claimed the invite'})
+	claimed_by_id: string | null;
 
-	@Field(() => UnixTimestamp, {nullable: true})
-	used_at: number | null; // when invite was claimed
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the invite was claimed'})
+	used_at: number | null;
 
-	@Field(() => UnixTimestamp, {nullable: true})
-	expires_at: number | null; // when invite expires
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the invite expires'})
+	expires_at: number | null;
 
-	@Field(() => UnixTimestamp)
-	created_at: number; // when invite was created
+	@Field(() => UnixTimestamp, {description: 'Timestamp when the invite was created'})
+	created_at: number;
 
 	constructor(invite: Invite) {
 		this.id = invite.id;

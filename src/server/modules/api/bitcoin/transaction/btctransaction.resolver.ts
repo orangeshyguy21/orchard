@@ -11,9 +11,9 @@ export class BtcTransactionResolver {
 
 	constructor(private btcTransactionService: BtcTransactionService) {}
 
-	@Query(() => [OrchardBitcoinTxFeeEstimate])
+	@Query(() => [OrchardBitcoinTxFeeEstimate], {description: 'Get Bitcoin transaction fee estimates for confirmation targets'})
 	async bitcoin_transaction_fee_estimates(
-		@Args('targets', {type: () => [Int]}) targets: number[],
+		@Args('targets', {type: () => [Int], description: 'Confirmation target block counts'}) targets: number[],
 	): Promise<OrchardBitcoinTxFeeEstimate[]> {
 		const tag = 'GET { bitcoin_transaction_fee_estimates }';
 		this.logger.debug(tag);

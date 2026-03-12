@@ -5,12 +5,12 @@ import {AiToolCall, AiMessage, AiStreamChunk, AiStreamUsage} from '@server/modul
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AssistantToolName} from '@server/modules/ai/assistant/ai.assistant.enums';
 
-@ObjectType()
+@ObjectType({description: 'AI chat tool function call'})
 export class OrchardAiChatFunction {
-	@Field(() => AssistantToolName)
+	@Field(() => AssistantToolName, {description: 'Name of the called function'})
 	name: string;
 
-	@Field()
+	@Field({description: 'JSON-encoded function arguments'})
 	arguments: string;
 
 	constructor(funct: AiToolCall['function']) {
@@ -19,9 +19,9 @@ export class OrchardAiChatFunction {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI chat tool call'})
 export class OrchardAiChatToolCall {
-	@Field(() => OrchardAiChatFunction)
+	@Field(() => OrchardAiChatFunction, {description: 'Function invocation details'})
 	function: OrchardAiChatFunction;
 
 	constructor(tool_call: AiToolCall) {
@@ -29,18 +29,18 @@ export class OrchardAiChatToolCall {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI chat message'})
 export class OrchardAiChatMessage {
-	@Field(() => AiMessageRole)
+	@Field(() => AiMessageRole, {description: 'Role of the message sender'})
 	role: AiMessageRole;
 
-	@Field()
+	@Field({description: 'Message text content'})
 	content: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Thinking or reasoning content'})
 	thinking: string;
 
-	@Field(() => [OrchardAiChatToolCall], {nullable: true})
+	@Field(() => [OrchardAiChatToolCall], {nullable: true, description: 'Tool calls requested by the model'})
 	tool_calls: OrchardAiChatToolCall[];
 
 	constructor(message: AiMessage) {
@@ -51,18 +51,18 @@ export class OrchardAiChatMessage {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI chat token usage statistics'})
 export class OrchardAiChatUsage {
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of tokens in the prompt'})
 	prompt_tokens?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of tokens in the completion'})
 	completion_tokens?: number;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Total processing duration in nanoseconds'})
 	total_duration?: number;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Evaluation duration in nanoseconds'})
 	eval_duration?: number;
 
 	constructor(usage: AiStreamUsage) {
@@ -73,27 +73,27 @@ export class OrchardAiChatUsage {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI chat streaming chunk'})
 export class OrchardAiChatChunk {
-	@Field()
+	@Field({description: 'Stream identifier'})
 	id: string;
 
-	@Field()
+	@Field({description: 'Model used for generation'})
 	model: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Unix timestamp when the chunk was generated'})
 	created_at: number;
 
-	@Field(() => OrchardAiChatMessage)
+	@Field(() => OrchardAiChatMessage, {description: 'Message content of the chunk'})
 	message: OrchardAiChatMessage;
 
-	@Field()
+	@Field({description: 'Whether the stream is complete'})
 	done: boolean;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Reason the stream finished'})
 	done_reason: string;
 
-	@Field(() => OrchardAiChatUsage, {nullable: true})
+	@Field(() => OrchardAiChatUsage, {nullable: true, description: 'Token usage statistics for the completed stream'})
 	usage?: OrchardAiChatUsage;
 
 	constructor(chunk: AiStreamChunk, id: string) {
@@ -107,8 +107,8 @@ export class OrchardAiChatChunk {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI chat stream reference'})
 export class OrchardAiChatStream {
-	@Field()
+	@Field({description: 'Stream identifier'})
 	id: string;
 }

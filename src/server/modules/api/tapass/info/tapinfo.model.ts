@@ -3,30 +3,30 @@ import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {TaprootAssetsInfo} from '@server/modules/tapass/tapass/tapass.types';
 
-@ObjectType()
+@ObjectType({description: 'Taproot Assets daemon information'})
 export class OrchardTaprootAssetsInfo {
-	@Field(() => String)
+	@Field(() => String, {description: 'Taproot Assets daemon version'})
 	version: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Connected LND version'})
 	lnd_version: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Active Bitcoin network'})
 	network: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'LND node identity public key'})
 	lnd_identity_pubkey: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'LND node alias'})
 	node_alias: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Current block height'})
 	block_height: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Current block hash'})
 	block_hash: string;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the node is synced to the chain'})
 	sync_to_chain: boolean;
 
 	constructor(ta_info: TaprootAssetsInfo) {

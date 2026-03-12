@@ -3,57 +3,57 @@ import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {BitcoinBlockchainInfo} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin block count'})
 export class OrchardBitcoinBlockCount {
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Current block height'})
 	height: number;
 
 	constructor(height: number) {
 		this.height = height;
 	}
 }
-@ObjectType()
+@ObjectType({description: 'Bitcoin blockchain information'})
 export class OrchardBitcoinBlockchainInfo {
-	@Field(() => String)
+	@Field(() => String, {description: 'Name of the active chain (main, test, regtest)'})
 	chain: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of validated blocks'})
 	blocks: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of headers received'})
 	headers: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Hash of the best known block'})
 	bestblockhash: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Current mining difficulty'})
 	difficulty: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Chain verification progress estimate'})
 	verificationprogress: number;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the initial block download is in progress'})
 	initialblockdownload: boolean;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Cumulative chainwork in hex'})
 	chainwork: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Blockchain data size on disk in bytes'})
 	size_on_disk: number;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether pruning is enabled'})
 	pruned: boolean;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Lowest block height stored when pruned'})
 	pruneheight: number;
 
-	@Field(() => Boolean, {nullable: true})
+	@Field(() => Boolean, {nullable: true, description: 'Whether automatic pruning is enabled'})
 	automatic_pruning: boolean;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Target size for pruning in bytes'})
 	prune_target_size: number;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Active network warnings'})
 	warnings: string[];
 
 	constructor(obi: BitcoinBlockchainInfo) {

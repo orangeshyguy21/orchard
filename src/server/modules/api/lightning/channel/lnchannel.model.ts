@@ -4,27 +4,27 @@ import {Field, ObjectType, Float, Int} from '@nestjs/graphql';
 import {LightningChannel, LightningClosedChannel, LightningChannelAsset} from '@server/modules/lightning/lightning/lightning.types';
 import {LightningChannelCloseType, LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset associated with a lightning channel'})
 export class OrchardLightningChannelAsset {
-	@Field(() => String)
+	@Field(() => String, {description: 'Taproot asset group key'})
 	group_key: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Unique identifier of the asset'})
 	asset_id: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Human-readable name of the asset'})
 	name: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Local balance of the asset in the channel'})
 	local_balance: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Remote balance of the asset in the channel'})
 	remote_balance: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Total asset capacity in the channel'})
 	capacity: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Number of decimal places for display'})
 	decimal_display: number;
 
 	constructor(asset: LightningChannelAsset) {
@@ -38,45 +38,45 @@ export class OrchardLightningChannelAsset {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Lightning channel information'})
 export class OrchardLightningChannel {
-	@Field(() => String)
+	@Field(() => String, {description: 'Outpoint of the funding transaction'})
 	channel_point: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Unique channel identifier'})
 	chan_id: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Channel capacity in satoshis'})
 	capacity: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Local balance in satoshis'})
 	local_balance: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Remote balance in satoshis'})
 	remote_balance: number;
 
-	@Field(() => Boolean, {nullable: true})
+	@Field(() => Boolean, {nullable: true, description: 'Whether the local node initiated the channel open'})
 	initiator: boolean | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Amount pushed to the remote peer on open in satoshis'})
 	push_amount_sat: number | null;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the channel is private'})
 	private: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the channel is currently active'})
 	active: boolean;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Public key of the remote peer'})
 	remote_pubkey: string;
 
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Alias of the remote peer'})
 	peer_alias: string | null;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Transaction ID of the funding transaction'})
 	funding_txid: string;
 
-	@Field(() => OrchardLightningChannelAsset, {nullable: true})
+	@Field(() => OrchardLightningChannelAsset, {nullable: true, description: 'Taproot asset associated with this channel'})
 	asset: OrchardLightningChannelAsset | null;
 
 	constructor(channel: LightningChannel) {
@@ -96,42 +96,42 @@ export class OrchardLightningChannel {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Closed lightning channel information'})
 export class OrchardLightningClosedChannel {
-	@Field(() => String)
+	@Field(() => String, {description: 'Outpoint of the funding transaction'})
 	channel_point: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Unique channel identifier'})
 	chan_id: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Channel capacity in satoshis'})
 	capacity: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Block height at which the channel was closed'})
 	close_height: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Settled balance in satoshis at close'})
 	settled_balance: number;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Time-locked balance in satoshis awaiting maturity'})
 	time_locked_balance: number | null;
 
-	@Field(() => LightningChannelCloseType)
+	@Field(() => LightningChannelCloseType, {description: 'How the channel was closed'})
 	close_type: LightningChannelCloseType;
 
-	@Field(() => LightningChannelOpenInitiator)
+	@Field(() => LightningChannelOpenInitiator, {description: 'Which side initiated the channel open'})
 	open_initiator: LightningChannelOpenInitiator;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Public key of the remote peer'})
 	remote_pubkey: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Transaction ID of the funding transaction'})
 	funding_txid: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Transaction ID of the closing transaction'})
 	closing_txid: string;
 
-	@Field(() => OrchardLightningChannelAsset, {nullable: true})
+	@Field(() => OrchardLightningChannelAsset, {nullable: true, description: 'Taproot asset associated with this channel'})
 	asset: OrchardLightningChannelAsset | null;
 
 	constructor(channel: LightningClosedChannel) {

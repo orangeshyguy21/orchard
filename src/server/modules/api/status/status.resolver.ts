@@ -11,7 +11,7 @@ export class StatusResolver {
 
 	constructor(private statusService: StatusService) {}
 
-	@Query(() => OrchardStatus)
+	@Query(() => OrchardStatus, {description: 'Get the application status'})
 	async status(): Promise<OrchardStatus> {
 		this.logger.debug('GET { status }');
 		return await this.statusService.getStatus();

@@ -11,7 +11,7 @@ export class LightningBalanceResolver {
 
 	constructor(private lightningBalanceService: LightningBalanceService) {}
 
-	@Query(() => OrchardLightningBalance)
+	@Query(() => OrchardLightningBalance, {description: 'Get lightning channel balance summary'})
 	async lightning_balance(): Promise<OrchardLightningBalance> {
 		const tag = 'GET { lightning_balance }';
 		this.logger.debug(tag);

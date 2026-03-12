@@ -18,7 +18,7 @@ export class MintQuoteResolver {
 
 	constructor(private mintQuoteService: MintQuoteService) {}
 
-	@Query(() => OrchardMintQuoteTtls)
+	@Query(() => OrchardMintQuoteTtls, {description: 'Get mint quote TTL settings'})
 	async mint_quote_ttl(): Promise<OrchardMintQuoteTtls> {
 		const tag = 'GET { mint_quote_ttl }';
 		this.logger.debug(tag);
@@ -31,9 +31,9 @@ export class MintQuoteResolver {
 		type: EventLogType.UPDATE,
 		field: 'quote_ttl',
 	})
-	@Mutation(() => OrchardMintQuoteTtls)
+	@Mutation(() => OrchardMintQuoteTtls, {description: 'Update mint quote TTL settings'})
 	async mint_quote_ttl_update(
-		@Args('mint_quote_ttl_update') mint_quote_ttl_update: MintQuoteTtlUpdateInput,
+		@Args('mint_quote_ttl_update', {description: 'Quote TTL values to update'}) mint_quote_ttl_update: MintQuoteTtlUpdateInput,
 	): Promise<OrchardMintQuoteTtls> {
 		const tag = 'MUTATION { mint_quote_ttl_update }';
 		this.logger.debug(tag);

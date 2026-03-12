@@ -11,7 +11,7 @@ export class BitcoinNetworkResolver {
 
 	constructor(private bitcoinNetworkService: BitcoinNetworkService) {}
 
-	@Query(() => OrchardBitcoinNetworkInfo)
+	@Query(() => OrchardBitcoinNetworkInfo, {description: 'Get Bitcoin network information'})
 	async bitcoin_network_info(): Promise<OrchardBitcoinNetworkInfo> {
 		const tag = 'GET { bitcoin_network_info }';
 		this.logger.debug(tag);

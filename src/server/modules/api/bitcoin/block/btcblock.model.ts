@@ -4,33 +4,33 @@ import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {BitcoinBlock, BitcoinBlockTemplate} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin block data'})
 export class OrchardBitcoinBlock {
-	@Field(() => String)
+	@Field(() => String, {description: 'Block hash'})
 	hash: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Block height in the chain'})
 	height: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Block timestamp'})
 	time: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Cumulative chainwork in hex'})
 	chainwork: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of transactions in the block'})
 	nTx: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Block size in bytes'})
 	size: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Block weight in weight units'})
 	weight: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Lowest fee rate in the block in sat/vB'})
 	feerate_low: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Highest fee rate in the block in sat/vB'})
 	feerate_high: number;
 
 	constructor(obb: BitcoinBlock) {
@@ -129,24 +129,24 @@ export class OrchardBitcoinBlock {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin block template for mining'})
 export class OrchardBitcoinBlockTemplate {
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Height of the next block to be mined'})
 	height: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of transactions in the template'})
 	nTx: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Template size in bytes'})
 	size: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Template weight in weight units'})
 	weight: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Lowest fee rate in the template in sat/vB'})
 	feerate_low: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Highest fee rate in the template in sat/vB'})
 	feerate_high: number;
 
 	constructor(obbt: BitcoinBlockTemplate) {

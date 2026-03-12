@@ -1,14 +1,14 @@
 /* Core Dependencies */
 import {InputType, Field} from '@nestjs/graphql';
 
-@InputType()
+@InputType({description: 'Input for initializing the application with a first admin user'})
 export class InitializationInput {
-	@Field()
+	@Field({description: 'Initialization key for authorization'})
 	key: string;
 
-	@Field()
+	@Field({description: 'Username for the initial admin account'})
 	name: string;
 
-	@Field()
+	@Field({description: 'Password for the initial admin account'})
 	password: string;
 }

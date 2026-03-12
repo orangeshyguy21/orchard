@@ -3,9 +3,9 @@ import {Field, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Entity genesis timestamp'})
 export class OrchardCommonGenesis {
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Earliest recorded timestamp'})
 	timestamp: number;
 
 	constructor(timestamp: number) {

@@ -5,9 +5,9 @@ import {TaprootAssetsUtxos, TaprootAsset, TaprootAssets, TaprootAssetGroup} from
 import {TaprootAssetType, TaprootAssetVersion} from '@server/modules/tapass/tapass.enums';
 import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset decimal display configuration'})
 export class OrchardTaprootAssetDecimalDisplay {
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of decimal places for display'})
 	decimal_display: number;
 
 	constructor(decimal_display: TaprootAsset['decimal_display']) {
@@ -15,21 +15,21 @@ export class OrchardTaprootAssetDecimalDisplay {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset genesis information'})
 export class OrchardTaprootAssetGenesis {
-	@Field(() => String)
+	@Field(() => String, {description: 'Genesis outpoint of the asset'})
 	genesis_point: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Asset name'})
 	name: string;
 
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Unique asset identifier'})
 	asset_id: string;
 
-	@Field(() => TaprootAssetType)
+	@Field(() => TaprootAssetType, {description: 'Type of the Taproot asset'})
 	asset_type: TaprootAssetType;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Output index in the genesis transaction'})
 	output_index: number;
 
 	constructor(asset_genesis: TaprootAsset['asset_genesis']) {
@@ -41,18 +41,18 @@ export class OrchardTaprootAssetGenesis {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset group key information'})
 export class OrchardTaprootAssetGroup {
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Raw group key before tweaking'})
 	raw_group_key: string;
 
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Tweaked group key'})
 	tweaked_group_key: string;
 
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Witness data for group membership'})
 	asset_witness: string;
 
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Tapscript root hash'})
 	tapscript_root: string;
 
 	constructor(group: TaprootAssetGroup) {
@@ -63,27 +63,27 @@ export class OrchardTaprootAssetGroup {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset definition'})
 export class OrchardTaprootAsset {
-	@Field(() => TaprootAssetVersion)
+	@Field(() => TaprootAssetVersion, {description: 'Asset version'})
 	version: TaprootAssetVersion;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Asset amount'})
 	amount: string;
 
-	@Field(() => OrchardTaprootAssetGroup, {nullable: true})
+	@Field(() => OrchardTaprootAssetGroup, {nullable: true, description: 'Asset group information'})
 	asset_group: OrchardTaprootAssetGroup | null;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the asset has been spent'})
 	is_spent: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the asset has been burned'})
 	is_burn: boolean;
 
-	@Field(() => OrchardTaprootAssetGenesis)
+	@Field(() => OrchardTaprootAssetGenesis, {description: 'Genesis information for the asset'})
 	asset_genesis: OrchardTaprootAssetGenesis;
 
-	@Field(() => OrchardTaprootAssetDecimalDisplay)
+	@Field(() => OrchardTaprootAssetDecimalDisplay, {description: 'Decimal display configuration'})
 	decimal_display: OrchardTaprootAssetDecimalDisplay;
 
 	constructor(asset: TaprootAsset) {
@@ -97,15 +97,15 @@ export class OrchardTaprootAsset {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Taproot assets collection with pending status'})
 export class OrchardTaprootAssets {
-	@Field(() => [OrchardTaprootAsset])
+	@Field(() => [OrchardTaprootAsset], {description: 'List of Taproot assets'})
 	assets: OrchardTaprootAsset[];
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Unconfirmed transfers count'})
 	unconfirmed_transfers: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Unconfirmed mints count'})
 	unconfirmed_mints: string;
 
 	constructor(ta_assets: TaprootAssets) {
@@ -115,15 +115,15 @@ export class OrchardTaprootAssets {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Taproot asset UTXO'})
 export class OrchardTaprootAssetsUtxo {
-	@Field(() => String)
+	@Field(() => String, {description: 'UTXO outpoint identifier'})
 	id: string;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'UTXO amount in satoshis'})
 	amt_sat: number;
 
-	@Field(() => [OrchardTaprootAsset])
+	@Field(() => [OrchardTaprootAsset], {description: 'Assets contained in this UTXO'})
 	assets: OrchardTaprootAsset[];
 
 	constructor(ta_utxo: TaprootAssetsUtxos['managed_utxos'][string], key: string) {

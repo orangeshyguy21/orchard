@@ -11,7 +11,7 @@ export class AiModelResolver {
 
 	constructor(private aiModelService: AiModelService) {}
 
-	@Query(() => [OrchardAiModel])
+	@Query(() => [OrchardAiModel], {description: 'Get all available AI models'})
 	async ai_models(): Promise<OrchardAiModel[]> {
 		const tag = 'GET { ai_models }';
 		this.logger.debug(tag);

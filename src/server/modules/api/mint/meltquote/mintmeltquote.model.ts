@@ -5,42 +5,42 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
 import {CashuMintMeltQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint quote for melting tokens'})
 export class OrchardMintMeltQuote {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Unique identifier of the melt quote'})
 	id: string;
 
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Unit of the melt quote'})
 	unit: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Amount to melt in the specified unit'})
 	amount: number;
 
-	@Field()
+	@Field({description: 'Payment request to be paid for melting'})
 	request: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Fee reserve for the melt payment'})
 	fee_reserve: number;
 
-	@Field(() => MeltQuoteState)
+	@Field(() => MeltQuoteState, {description: 'Current state of the melt quote'})
 	state: MeltQuoteState;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Payment preimage proving payment was made'})
 	payment_preimage: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Lookup identifier for the payment request'})
 	request_lookup_id: string;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Amount in millisatoshis to pay'})
 	msat_to_pay: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp when the quote was created'})
 	created_time: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when payment was made'})
 	paid_time: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method used for the quote'})
 	payment_method: string;
 
 	constructor(cashu_mint_melt_quote: CashuMintMeltQuote) {
@@ -59,29 +59,29 @@ export class OrchardMintMeltQuote {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Result of a NUT-05 melt quote settings update'})
 export class OrchardMintNut05Update {
-	@Field()
+	@Field({description: 'Unit for the melt quote setting'})
 	unit: string;
 
-	@Field()
+	@Field({description: 'Payment method for the melt quote setting'})
 	method: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Whether melting is disabled for this method'})
 	disabled: boolean;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Minimum allowed melt amount'})
 	min_amount: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Maximum allowed melt amount'})
 	max_amount: number;
 }
 
-@ObjectType()
+@ObjectType({description: 'Result of a NUT-05 individual quote state update'})
 export class OrchardMintNut05QuoteUpdate {
-	@Field()
+	@Field({description: 'Identifier of the updated quote'})
 	quote_id: string;
 
-	@Field()
+	@Field({description: 'New state of the quote'})
 	state: string;
 }

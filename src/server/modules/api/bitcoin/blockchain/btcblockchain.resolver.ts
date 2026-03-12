@@ -28,7 +28,7 @@ export class BitcoinBlockchainResolver {
 	// 	this.bitcoinBlockCountService.stopBlockCountPolling();
 	// }
 
-	@Query(() => OrchardBitcoinBlockCount)
+	@Query(() => OrchardBitcoinBlockCount, {description: 'Get the current Bitcoin block count'})
 	async bitcoin_blockcount(): Promise<OrchardBitcoinBlockCount> {
 		const tag = 'GET { bitcoin_blockcount }';
 		this.logger.debug(tag);
@@ -38,13 +38,14 @@ export class BitcoinBlockchainResolver {
 	@Subscription(() => OrchardBitcoinBlockCount, {
 		name: 'blockCount',
 		resolve: (value) => value.blockCount,
+		description: 'Subscribe to new Bitcoin block notifications',
 	})
 	subscribeToBlockCount() {
 		this.logger.debug('SUBSCRIPTION { bitcoin.blockcount }');
 		return pubSub.asyncIterableIterator('bitcoin.blockcount');
 	}
 
-	@Query(() => OrchardBitcoinBlockchainInfo)
+	@Query(() => OrchardBitcoinBlockchainInfo, {description: 'Get Bitcoin blockchain information'})
 	async bitcoin_blockchain_info(): Promise<OrchardBitcoinBlockchainInfo> {
 		const tag = 'GET { bitcoin_blockchain_info }';
 		this.logger.debug(tag);

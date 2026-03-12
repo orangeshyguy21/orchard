@@ -13,8 +13,10 @@ export class MintFeeResolver {
 
 	constructor(private mintFeeService: MintfeeService) {}
 
-	@Query(() => [OrchardMintFee])
-	async mint_fees(@Args('limit', {type: () => Int, nullable: true}) limit?: number): Promise<OrchardMintFee[]> {
+	@Query(() => [OrchardMintFee], {description: 'Get mint fee snapshots'})
+	async mint_fees(
+		@Args('limit', {type: () => Int, nullable: true, description: 'Maximum number of fee snapshots to return'}) limit?: number,
+	): Promise<OrchardMintFee[]> {
 		const tag = 'GET { mint_fees }';
 		this.logger.debug(tag);
 		return await this.mintFeeService.getMintFees(tag, limit);

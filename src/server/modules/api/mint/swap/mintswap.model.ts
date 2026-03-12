@@ -5,24 +5,24 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {CashuMintSwap} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint swap record'})
 export class OrchardMintSwap {
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Unique operation identifier'})
 	operation_id: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Associated keyset IDs'})
 	keyset_ids: string[];
 
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Currency unit of the swap'})
 	unit: MintUnit;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Swap amount in base unit'})
 	amount: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp when the swap was created'})
 	created_time: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Fee charged for the swap'})
 	fee: number | null;
 
 	constructor(swap: CashuMintSwap) {

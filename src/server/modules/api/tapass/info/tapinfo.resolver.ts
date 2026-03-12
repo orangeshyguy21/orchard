@@ -11,7 +11,7 @@ export class TaprootAssetsInfoResolver {
 
 	constructor(private taprootAssetsInfoService: TaprootAssetsInfoService) {}
 
-	@Query(() => OrchardTaprootAssetsInfo)
+	@Query(() => OrchardTaprootAssetsInfo, {description: 'Get Taproot Assets daemon info'})
 	async taproot_assets_info(): Promise<OrchardTaprootAssetsInfo> {
 		const tag = 'GET { taproot_assets_info }';
 		this.logger.debug(tag);

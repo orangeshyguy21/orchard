@@ -1,11 +1,11 @@
 /* Core Dependencies */
 import {InputType, Field} from '@nestjs/graphql';
 
-@InputType()
+@InputType({description: 'Input for authenticating a user'})
 export class AuthenticationInput {
-	@Field()
+	@Field({description: 'Username for authentication'})
 	name: string;
 
-	@Field()
+	@Field({description: 'Password for authentication'})
 	password: string;
 }

@@ -18,26 +18,26 @@ export class AiAgentResolver {
 		Queries
 	******************************************************** */
 
-	@Query(() => [OrchardAgent])
+	@Query(() => [OrchardAgent], {description: 'Get all AI agents'})
 	async ai_agents(): Promise<OrchardAgent[]> {
 		const tag = 'GET { ai_agents }';
 		this.logger.debug(tag);
 		return await this.aiAgentService.getAgents(tag);
 	}
 
-	@Query(() => OrchardAgent)
-	async ai_agent(@Args('id') id: string): Promise<OrchardAgent> {
+	@Query(() => OrchardAgent, {description: 'Get an AI agent by ID'})
+	async ai_agent(@Args('id', {description: 'Agent identifier'}) id: string): Promise<OrchardAgent> {
 		const tag = 'GET { ai_agent }';
 		this.logger.debug(tag);
 		return await this.aiAgentService.getAgent(tag, id);
 	}
 
-	@Query(() => [OrchardAgentRun])
+	@Query(() => [OrchardAgentRun], {description: 'Get execution runs for an AI agent'})
 	async ai_agent_runs(
-		@Args('agent_id') agent_id: string,
-		@Args('page', {type: () => Int, nullable: true, defaultValue: 0}) page: number,
-		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 20}) page_size: number,
-		@Args('notified', {nullable: true}) notified?: boolean,
+		@Args('agent_id', {description: 'Agent identifier to filter runs'}) agent_id: string,
+		@Args('page', {type: () => Int, nullable: true, defaultValue: 0, description: 'Page number for pagination'}) page: number,
+		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 20, description: 'Number of runs per page'}) page_size: number,
+		@Args('notified', {nullable: true, description: 'Filter by notification status'}) notified?: boolean,
 	): Promise<OrchardAgentRun[]> {
 		const tag = 'GET { ai_agent_runs }';
 		this.logger.debug(tag);
@@ -49,15 +49,16 @@ export class AiAgentResolver {
 	******************************************************** */
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
-	@Mutation(() => OrchardAgent)
+	@Mutation(() => OrchardAgent, {description: 'Update an AI agent configuration'})
 	async ai_agent_update(
-		@Args('id') id: string,
-		@Args('name', {nullable: true}) name: string,
-		@Args('description', {nullable: true}) description: string,
-		@Args('active', {nullable: true}) active: boolean,
-		@Args('system_message', {nullable: true}) system_message: string,
-		@Args('tools', {type: () => [String], nullable: true}) tools: string[],
-		@Args('schedules', {type: () => [String], nullable: true}) schedules: string[],
+		@Args('id', {description: 'Agent identifier'}) id: string,
+		@Args('name', {nullable: true, description: 'New agent name'}) name: string,
+		@Args('description', {nullable: true, description: 'New agent description'}) description: string,
+		@Args('active', {nullable: true, description: 'Whether the agent should be active'}) active: boolean,
+		@Args('system_message', {nullable: true, description: 'New system message for the agent'}) system_message: string,
+		@Args('tools', {type: () => [String], nullable: true, description: 'List of tool identifiers to assign'}) tools: string[],
+		@Args('schedules', {type: () => [String], nullable: true, description: 'Cron schedules for automatic execution'})
+		schedules: string[],
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_update }';
 		this.logger.debug(tag);
@@ -65,8 +66,8 @@ export class AiAgentResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
-	@Mutation(() => OrchardAgentRun)
-	async ai_agent_execute(@Args('id') id: string): Promise<OrchardAgentRun> {
+	@Mutation(() => OrchardAgentRun, {description: 'Execute an AI agent immediately'})
+	async ai_agent_execute(@Args('id', {description: 'Agent identifier'}) id: string): Promise<OrchardAgentRun> {
 		const tag = 'MUTATION { ai_agent_execute }';
 		this.logger.debug(tag);
 		return await this.aiAgentService.executeAgent(tag, id);

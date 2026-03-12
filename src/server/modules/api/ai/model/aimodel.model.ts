@@ -6,33 +6,33 @@ import {DateTime} from 'luxon';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {AiModel, AiModelOllama, AiModelOpenRouter} from '@server/modules/ai/ai.types';
 
-@ObjectType()
+@ObjectType({description: 'Ollama-specific AI model details'})
 export class OrchardAiModelOllama {
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp when the model was last modified'})
 	modified_at: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Model file size in bytes'})
 	size: number;
 
-	@Field()
+	@Field({description: 'Model content digest hash'})
 	digest: string;
 
-	@Field()
+	@Field({description: 'Parent model identifier'})
 	parent_model: string;
 
-	@Field()
+	@Field({description: 'Model file format'})
 	format: string;
 
-	@Field()
+	@Field({description: 'Primary model family'})
 	family: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'All model families'})
 	families: string[];
 
-	@Field()
+	@Field({description: 'Model parameter count'})
 	parameter_size: string;
 
-	@Field()
+	@Field({description: 'Quantization level applied to the model'})
 	quantization_level: string;
 
 	constructor(details: AiModelOllama) {
@@ -48,24 +48,24 @@ export class OrchardAiModelOllama {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'OpenRouter-specific AI model details'})
 export class OrchardAiModelOpenRouter {
-	@Field()
+	@Field({description: 'Cost per prompt token'})
 	pricing_prompt: string;
 
-	@Field()
+	@Field({description: 'Cost per completion token'})
 	pricing_completion: string;
 
-	@Field()
+	@Field({description: 'Model modality type'})
 	modality: string;
 
-	@Field()
+	@Field({description: 'Tokenizer used by the model'})
 	tokenizer: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Maximum number of completion tokens'})
 	max_completion_tokens: number;
 
-	@Field()
+	@Field({description: 'Model family'})
 	family: string;
 
 	constructor(details: AiModelOpenRouter) {
@@ -78,21 +78,21 @@ export class OrchardAiModelOpenRouter {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI model'})
 export class OrchardAiModel {
-	@Field()
+	@Field({description: 'Model identifier'})
 	model: string;
 
-	@Field()
+	@Field({description: 'Display name'})
 	name: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Maximum context window length in tokens'})
 	context_length: number;
 
-	@Field(() => OrchardAiModelOllama, {nullable: true})
+	@Field(() => OrchardAiModelOllama, {nullable: true, description: 'Ollama-specific model details'})
 	ollama?: OrchardAiModelOllama;
 
-	@Field(() => OrchardAiModelOpenRouter, {nullable: true})
+	@Field(() => OrchardAiModelOpenRouter, {nullable: true, description: 'OpenRouter-specific model details'})
 	openrouter?: OrchardAiModelOpenRouter;
 
 	constructor(ai_model: AiModel) {

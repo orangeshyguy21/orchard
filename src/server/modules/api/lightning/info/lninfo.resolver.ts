@@ -11,7 +11,7 @@ export class LightningInfoResolver {
 
 	constructor(private lightningInfoService: LightningInfoService) {}
 
-	@Query(() => OrchardLightningInfo)
+	@Query(() => OrchardLightningInfo, {description: 'Get lightning node information'})
 	async lightning_info(): Promise<OrchardLightningInfo> {
 		const tag = 'GET { lightning_info }';
 		this.logger.debug(tag);

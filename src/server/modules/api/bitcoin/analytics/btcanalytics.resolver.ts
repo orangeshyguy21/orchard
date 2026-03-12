@@ -21,25 +21,28 @@ export class BitcoinAnalyticsResolver {
 		Analytics Queries
 	******************************************************** */
 
-	@Query(() => [OrchardBitcoinAnalytics])
+	@Query(() => [OrchardBitcoinAnalytics], {description: 'Get Bitcoin analytics balance data'})
 	async bitcoin_analytics_balance(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
 	): Promise<OrchardBitcoinAnalytics[]> {
 		const tag = 'GET { bitcoin_analytics_balance }';
 		this.logger.debug(tag);
 		return await this.apiBitcoinAnalyticsService.getAnalyticsBalance(tag, {date_start, date_end, interval, timezone});
 	}
 
-	@Query(() => [OrchardBitcoinAnalyticsMetric])
+	@Query(() => [OrchardBitcoinAnalyticsMetric], {description: 'Get Bitcoin analytics metrics'})
 	async bitcoin_analytics_metrics(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
-		@Args('metrics', {type: () => [BitcoinAnalyticsMetric], nullable: true}) metrics?: BitcoinAnalyticsMetric[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
+		@Args('metrics', {type: () => [BitcoinAnalyticsMetric], nullable: true, description: 'Specific metrics to retrieve'})
+		metrics?: BitcoinAnalyticsMetric[],
 	): Promise<OrchardBitcoinAnalyticsMetric[]> {
 		const tag = 'GET { bitcoin_analytics_metrics }';
 		this.logger.debug(tag);
@@ -50,7 +53,7 @@ export class BitcoinAnalyticsResolver {
 		Backfill Status
 	******************************************************** */
 
-	@Query(() => OrchardBitcoinAnalyticsBackfillStatus)
+	@Query(() => OrchardBitcoinAnalyticsBackfillStatus, {description: 'Get Bitcoin analytics backfill status'})
 	bitcoin_analytics_backfill_status(): OrchardBitcoinAnalyticsBackfillStatus {
 		const tag = 'GET { bitcoin_analytics_backfill_status }';
 		this.logger.debug(tag);

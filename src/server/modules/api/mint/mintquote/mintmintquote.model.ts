@@ -5,45 +5,45 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {MintUnit, MintQuoteState} from '@server/modules/cashu/cashu.enums';
 import {CashuMintMintQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint quote for minting tokens'})
 export class OrchardMintMintQuote {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Unique identifier of the mint quote'})
 	id: string;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Quote amount in the specified unit'})
 	amount: number;
 
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Unit of the mint quote'})
 	unit: string;
 
-	@Field()
+	@Field({description: 'Payment request for the mint quote'})
 	request: string;
 
-	@Field(() => MintQuoteState)
+	@Field(() => MintQuoteState, {description: 'Current state of the mint quote'})
 	state: MintQuoteState;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Lookup identifier for the payment request'})
 	request_lookup_id: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Public key associated with the mint quote'})
 	pubkey: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp when the quote was created'})
 	created_time: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when tokens were issued'})
 	issued_time: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when payment was received'})
 	paid_time: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Amount that has been paid'})
 	amount_paid: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Amount of tokens that have been issued'})
 	amount_issued: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Payment method used for the quote'})
 	payment_method: string;
 
 	constructor(cashu_mint_mint_quote: CashuMintMintQuote) {
@@ -63,32 +63,32 @@ export class OrchardMintMintQuote {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Result of a NUT-04 mint quote settings update'})
 export class OrchardMintNut04Update {
-	@Field()
+	@Field({description: 'Unit for the mint quote setting'})
 	unit: string;
 
-	@Field()
+	@Field({description: 'Payment method for the mint quote setting'})
 	method: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Whether minting is disabled for this method'})
 	disabled: boolean;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Minimum allowed mint amount'})
 	min_amount: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Maximum allowed mint amount'})
 	max_amount: number;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Whether descriptions are enabled for mint quotes'})
 	description: boolean;
 }
 
-@ObjectType()
+@ObjectType({description: 'Result of a NUT-04 individual quote state update'})
 export class OrchardMintNut04QuoteUpdate {
-	@Field()
+	@Field({description: 'Identifier of the updated quote'})
 	quote_id: string;
 
-	@Field()
+	@Field({description: 'New state of the quote'})
 	state: string;
 }

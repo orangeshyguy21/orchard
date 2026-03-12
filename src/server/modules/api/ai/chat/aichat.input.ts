@@ -4,32 +4,32 @@ import {InputType, Field} from '@nestjs/graphql';
 import {AiAssistant} from '@server/modules/ai/assistant/ai.assistant.enums';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 
-@InputType()
+@InputType({description: 'Input for a single chat message'})
 export class AiChatMessageInput {
-	@Field(() => AiMessageRole)
+	@Field(() => AiMessageRole, {description: 'Role of the message sender'})
 	role: AiMessageRole;
 
-	@Field()
+	@Field({description: 'Message text content'})
 	content: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Thinking or reasoning content'})
 	thinking: string;
 }
 
-@InputType()
+@InputType({description: 'Input for sending a chat message'})
 export class AiChatInput {
-	@Field()
+	@Field({description: 'Unique stream identifier'})
 	id: string;
 
-	@Field()
+	@Field({description: 'AI model to use for generation'})
 	model: string;
 
-	@Field()
+	@Field({description: 'JWT access token for authentication'})
 	auth: string;
 
-	@Field(() => AiAssistant, {nullable: true})
+	@Field(() => AiAssistant, {nullable: true, description: 'Optional assistant to use'})
 	assistant: AiAssistant | null;
 
-	@Field(() => [AiChatMessageInput])
+	@Field(() => [AiChatMessageInput], {description: 'Conversation message history'})
 	messages: AiChatMessageInput[];
 }
