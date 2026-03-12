@@ -168,6 +168,126 @@ describe('ConversationService', () => {
 		});
 	});
 
+	describe('handleIncomingMessage — error paths', () => {
+		it('should send error message when runToolLoop throws', async () => {
+			mock_conversation_repo.findOne.mockResolvedValueOnce(null);
+			mock_agent_service.runToolLoop.mockRejectedValueOnce(new Error('LLM unavailable'));
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
+
+			expect(mock_message_service.editReply).toHaveBeenCalledWith('chat-123', 42, 'Something went wrong processing your message.');
+		});
+
+		it('should do nothing when ORCHARD agent is not found', async () => {
+			mock_agent_service.getAgentByKey.mockResolvedValueOnce(null);
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
+
+			expect(mock_agent_service.runToolLoop).not.toHaveBeenCalled();
+			expect(mock_message_service.sendReply).not.toHaveBeenCalled();
+		});
+
+		it('should fall back to sendReply when thinking has no message_id', async () => {
+			mock_conversation_repo.findOne.mockResolvedValueOnce(null);
+			mock_message_service.sendReply.mockResolvedValueOnce({success: true});
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
+
+			/* When sendReply returns no message_id, replyOrEdit should call sendReply for the final message */
+			expect(mock_message_service.sendReply).toHaveBeenCalledWith('chat-123', '...');
+		});
+	});
+
+	describe('compressPreviousTurns (via handleIncomingMessage)', () => {
+		it('should compress large tool results from previous turns', async () => {
+			const now = Math.floor(Date.now() / 1000);
+			const large_content = 'x'.repeat(600);
+			/* Two user messages — tool result from first turn is before the second user message */
+			const messages = [
+				{role: 'system', content: 'sys'},
+				{role: 'user', content: 'first question'},
+				{role: 'assistant', content: '', tool_calls: [{id: 'tc-1', function: {name: 'GET_MINT_INFO', arguments: {}}}]},
+				{role: 'tool', content: large_content, tool_call_id: 'tc-1'},
+				{role: 'assistant', content: 'Here is the info'},
+				{role: 'user', content: 'second question'},
+				{role: 'assistant', content: 'More info'},
+			];
+
+			mock_conversation_repo.findOne.mockResolvedValueOnce({
+				id: 'conv-1',
+				chat_id: 'chat-123',
+				status: ConversationStatus.ACTIVE,
+				messages: JSON.stringify(messages),
+				tokens_used: 50,
+				last_activity_at: now,
+			});
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'follow-up'});
+
+			/* The first update call persists the user message with compressed previous turns */
+			const persist_call = mock_conversation_repo.update.mock.calls[0];
+			const persisted_messages = JSON.parse(persist_call[1].messages);
+			const tool_msg = persisted_messages.find((m: any) => m.role === 'tool');
+			expect(tool_msg.content).toBe('[Result processed]');
+		});
+
+		it('should not compress tool results after the last user message', async () => {
+			const now = Math.floor(Date.now() / 1000);
+			/* Only one user message — tool result is AFTER it, so not compressed */
+			const messages = [
+				{role: 'system', content: 'sys'},
+				{role: 'user', content: 'question'},
+				{role: 'assistant', content: '', tool_calls: [{id: 'tc-1', function: {name: 'GET_MINT_INFO', arguments: {}}}]},
+				{role: 'tool', content: 'x'.repeat(600), tool_call_id: 'tc-1'},
+				{role: 'assistant', content: 'answer'},
+			];
+
+			mock_conversation_repo.findOne.mockResolvedValueOnce({
+				id: 'conv-1',
+				chat_id: 'chat-123',
+				status: ConversationStatus.ACTIVE,
+				messages: JSON.stringify(messages),
+				tokens_used: 50,
+				last_activity_at: now,
+			});
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'another'});
+
+			const persist_call = mock_conversation_repo.update.mock.calls[0];
+			const persisted_messages = JSON.parse(persist_call[1].messages);
+			/* Tool at index 3 is after the last user (index 1), so it remains uncompressed */
+			const tool_msg = persisted_messages.find((m: any) => m.role === 'tool');
+			expect(tool_msg.content).toBe('x'.repeat(600));
+		});
+	});
+
+	describe('truncateHistory (via handleIncomingMessage)', () => {
+		it('should preserve system message and drop oldest messages when exceeding MAX_MESSAGES', async () => {
+			mock_conversation_repo.findOne.mockResolvedValueOnce(null);
+
+			/* Simulate runToolLoop returning more than 50 messages */
+			const many_messages = [{role: 'system', content: 'sys'}];
+			for (let i = 0; i < 55; i++) {
+				many_messages.push({role: 'user', content: `msg-${i}`});
+			}
+
+			mock_agent_service.runToolLoop.mockResolvedValueOnce({
+				result: 'Done',
+				tokens_used: 200,
+				messages: many_messages,
+			});
+
+			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
+
+			/* createConversation calls update[0] to expire existing, update[1] persists user message, update[2] persists final */
+			const final_update = mock_conversation_repo.update.mock.calls[2];
+			const final_messages = JSON.parse(final_update[1].messages);
+			expect(final_messages.length).toBe(50);
+			expect(final_messages[0].role).toBe('system');
+			expect(final_messages[0].content).toBe('sys');
+		});
+	});
+
 	describe('cleanupExpiredConversations', () => {
 		it('should bulk-expire stale conversations', async () => {
 			await service.cleanupExpiredConversations();
