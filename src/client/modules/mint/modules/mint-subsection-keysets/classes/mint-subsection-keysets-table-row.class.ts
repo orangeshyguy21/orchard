@@ -38,8 +38,8 @@ export class MintSubsectionKeysetsTableRow {
 	}
 
 	private getBalance(keyset_analytics: MintAnalyticKeyset[], keyset_analytics_pre: MintAnalyticKeyset[]): number {
-		const balance = keyset_analytics.reduce((acc, curr) => acc + curr.amount, 0);
-		const balance_pre = keyset_analytics_pre.reduce((acc, curr) => acc + curr.amount, 0);
-		return balance_pre + balance;
+		const balance = keyset_analytics.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
+		const balance_pre = keyset_analytics_pre.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
+		return Number(balance_pre + balance);
 	}
 }

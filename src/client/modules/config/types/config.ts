@@ -22,9 +22,6 @@ export type Config = {
 		critical_path: string;
 		database_type: string;
 	};
-	ai: {
-		enabled: boolean;
-	};
 	constants: {
 		epoch_start: number;
 		taproot_group_keys: {

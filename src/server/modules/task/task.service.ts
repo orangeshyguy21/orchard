@@ -10,6 +10,11 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {BitcoinAnalyticsService} from '@server/modules/bitcoin/analytics/btcanalytics.service';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
+import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {ConversationService} from '@server/modules/ai/conversation/conversation.service';
+import {SystemMetricsService} from '@server/modules/system/metrics/sysmetrics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -23,7 +28,12 @@ export class TaskService {
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private lightningAnalyticsService: LightningAnalyticsService,
+		private bitcoinAnalyticsService: BitcoinAnalyticsService,
+		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
+		private agentService: AgentService,
+		private conversationService: ConversationService,
+		private systemMetricsService: SystemMetricsService,
 	) {}
 
 	/**
@@ -57,7 +67,7 @@ export class TaskService {
 			return;
 		}
 
-		const bitcoin_oracle_enabled = await this.settingService.getSetting(SettingKey.BITCOIN_ORACLE);
+		const bitcoin_oracle_enabled = await this.settingService.getBooleanSetting(SettingKey.BITCOIN_ORACLE);
 		if (!bitcoin_oracle_enabled) {
 			this.logger.debug('Bitcoin oracle is not enabled, skipping oracle job');
 			return;
@@ -117,9 +127,9 @@ export class TaskService {
 
 	/**
 	 * Daily rescan of recent lightning records to catch pending invoices/payments that settled
-	 * Runs at 3am UTC
+	 * Runs at 3:15am UTC
 	 */
-	@Cron('0 3 * * *', {
+	@Cron('15 3 * * *', {
 		name: 'daily-lightning-analytics-rescan',
 		timeZone: 'UTC',
 	})
@@ -136,6 +146,175 @@ export class TaskService {
 			this.logger.log('Daily lightning analytics rescan complete');
 		} catch (error) {
 			this.logger.error(`Error during lightning analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Update cashu mint analytics at 5 minutes past each hour
+	 * Uses streaming backfill which is checkpoint-based
+	 */
+	@Cron('5 * * * *', {
+		name: 'hourly-cashu-mint-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyCashuMintAnalytics() {
+		const cashu_type = this.configService.get<string>('cashu.type');
+		if (!cashu_type) {
+			this.logger.debug('Cashu not configured, skipping mint analytics job');
+			return;
+		}
+
+		this.logger.log('Starting cashu mint analytics update...');
+		try {
+			await this.cashuMintAnalyticsService.runBackfill();
+			this.logger.log('Cashu mint analytics update complete');
+		} catch (error) {
+			this.logger.error(`Error updating cashu mint analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent cashu mint records to catch state changes (UNPAID → PAID → ISSUED)
+	 * Runs at 3:30am UTC
+	 */
+	@Cron('30 3 * * *', {
+		name: 'daily-cashu-mint-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyCashuMintAnalyticsRescan() {
+		const cashu_type = this.configService.get<string>('cashu.type');
+		if (!cashu_type) {
+			this.logger.debug('Cashu not configured, skipping mint analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily cashu mint analytics rescan...');
+		try {
+			await this.cashuMintAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily cashu mint analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during cashu mint analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Update bitcoin on-chain analytics at 10 minutes past each hour
+	 * Tracks BTC wallet transactions and taproot asset transfers
+	 */
+	@Cron('10 * * * *', {
+		name: 'hourly-bitcoin-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyBitcoinAnalytics() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping bitcoin analytics job');
+			return;
+		}
+
+		this.logger.log('Starting bitcoin analytics update...');
+		try {
+			await this.bitcoinAnalyticsService.runStreamingBackfill();
+			this.logger.log('Bitcoin analytics update complete');
+		} catch (error) {
+			this.logger.error(`Error updating bitcoin analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent bitcoin on-chain records to catch late confirmations
+	 * Runs at 3:45am UTC
+	 */
+	@Cron('45 3 * * *', {
+		name: 'daily-bitcoin-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyBitcoinAnalyticsRescan() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping bitcoin analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily bitcoin analytics rescan...');
+		try {
+			await this.bitcoinAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily bitcoin analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during bitcoin analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Clean up old agent runs, keeping the last 100 per agent
+	 * Runs daily at 4 AM UTC
+	 */
+	@Cron('0 4 * * *', {
+		name: 'cleanup-agent-runs',
+		timeZone: 'UTC',
+	})
+	async cleanupAgentRuns() {
+		this.logger.log('Starting agent run cleanup...');
+		try {
+			await this.agentService.cleanupOldRuns();
+			this.logger.log('Agent run cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up agent runs: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Collect system metrics every minute
+	 * Guarded by SYSTEM_METRICS setting
+	 */
+	@Cron('* * * * *', {
+		name: 'collect-system-metrics',
+		timeZone: 'UTC',
+	})
+	async collectSystemMetrics() {
+		if (!(await this.settingService.getBooleanSetting(SettingKey.SYSTEM_METRICS))) return;
+
+		try {
+			await this.systemMetricsService.collectAndStore();
+		} catch (error) {
+			this.logger.error(`Error collecting system metrics: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Clean up old system metrics and downsample daily at 2:30 AM UTC
+	 * Guarded by SYSTEM_METRICS setting
+	 */
+	@Cron('30 2 * * *', {
+		name: 'cleanup-system-metrics',
+		timeZone: 'UTC',
+	})
+	async cleanupSystemMetrics() {
+		if (!(await this.settingService.getBooleanSetting(SettingKey.SYSTEM_METRICS))) return;
+
+		this.logger.log('Starting system metrics cleanup...');
+		try {
+			await this.systemMetricsService.cleanupOldMetrics();
+			this.logger.log('System metrics cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up system metrics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Expire stale conversations daily at 4:30 AM UTC
+	 */
+	@Cron('30 4 * * *', {
+		name: 'cleanup-expired-conversations',
+		timeZone: 'UTC',
+	})
+	async cleanupExpiredConversations() {
+		this.logger.log('Starting expired conversation cleanup...');
+		try {
+			await this.conversationService.cleanupExpiredConversations();
+			this.logger.log('Expired conversation cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up expired conversations: ${error.message}`);
 		}
 	}
 }

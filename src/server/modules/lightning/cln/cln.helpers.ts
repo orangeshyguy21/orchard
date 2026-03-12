@@ -8,6 +8,7 @@ import {
 	LightningClosedChannel,
 	LightningTransaction,
 	LightningPaginatedResult,
+	LightningPeer,
 } from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {
@@ -28,6 +29,8 @@ import {
 	ClnListPeerChannelsResponse,
 	ClnListClosedChannelsResponse,
 	ClnListTransactionsResponse,
+	ClnPeer,
+	ClnListPeersResponse,
 } from './cln.types';
 
 export function asBigIntMsat(v: any): bigint {
@@ -223,6 +226,8 @@ export function mapClnChannels(response: ClnListPeerChannelsResponse): Lightning
 		push_amount_sat: c.funding?.pushed_msat ? (BigInt(extractMsat(c.funding.pushed_msat)) / BigInt(1000)).toString() : null,
 		private: c.private ?? false,
 		active: c.peer_connected ?? false,
+		remote_pubkey: bufferToHex(c.peer_id),
+		peer_alias: null, // CLN does not provide alias on channels
 		funding_txid: extractClnFundingTxid(c.funding_txid),
 		asset: null, // CLN does not support Taproot Assets
 	}));
@@ -277,6 +282,7 @@ export function mapClnClosedChannels(response: ClnListClosedChannelsResponse): L
 		time_locked_balance: null, // CLN doesn't track this separately
 		close_type: mapClnCloseType(c.close_cause),
 		open_initiator: mapClnInitiator(c.opener),
+		remote_pubkey: c.peer_id ? bufferToHex(c.peer_id) : '',
 		funding_txid: extractClnFundingTxid(c.funding_txid),
 		closing_txid: c.last_commitment_txid ? extractClnFundingTxid(c.last_commitment_txid) : '',
 		asset: null, // CLN does not support Taproot Assets
@@ -291,6 +297,27 @@ export function mapClnTransactions(response: ClnListTransactionsResponse): Light
 	return transactions.map((t: ClnTransaction) => ({
 		tx_hash: bufferToHex(Buffer.from(t.hash).reverse()), // Reverse for display order
 		time_stamp: 0, // Will be enriched from Bitcoin RPC or estimated
+		amount: null, // CLN ListTransactions doesn't provide wallet-relative amounts
+		total_fees: null, // CLN ListTransactions doesn't provide fee data
 		block_height: t.blockheight ?? undefined,
+	}));
+}
+
+/**
+ * Maps CLN ListPeersResponse to common LightningPeer[]
+ * Note: CLN peers have limited bandwidth/satoshi stats compared to LND
+ */
+export function mapClnPeers(response: ClnListPeersResponse): LightningPeer[] {
+	const peers = response?.peers ?? [];
+	return peers.map((p: ClnPeer) => ({
+		pubkey: bufferToHex(p.id),
+		alias: null, // enriched in peer service via ListNodes
+		address: p.netaddr?.[0] ?? p.remote_addr ?? '',
+		bytes_sent: null, // CLN does not expose byte counters
+		bytes_recv: null,
+		sat_sent: null, // CLN does not expose sat counters on peers
+		sat_recv: null,
+		inbound: null, // CLN does not distinguish inbound peers
+		ping_time: null, // CLN does not expose ping time
 	}));
 }

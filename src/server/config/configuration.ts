@@ -103,10 +103,6 @@ export const config = (): Config => {
 		rpc_ca: process.env.MINT_RPC_CA,
 	};
 
-	const ai = {
-		api: replaceLocalhostInDocker(process.env.AI_API),
-	};
-
 	const config = {
 		mode,
 		server,
@@ -115,7 +111,6 @@ export const config = (): Config => {
 		lightning,
 		taproot_assets,
 		cashu,
-		ai,
 	};
 
 	return config;

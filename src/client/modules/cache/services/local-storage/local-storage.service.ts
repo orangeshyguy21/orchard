@@ -15,7 +15,9 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
+	SettingsAppSettings,
 	EventLogSettings,
+	AiFavorites,
 } from './local-storage.types';
 
 @Injectable({
@@ -35,12 +37,15 @@ export class LocalStorageService {
 		/* Bitcoin Oracle Settings */
 		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
-		MINT_DASHBOARD_KEY: 'v2.mint.dashboard.settings',
+		MINT_DASHBOARD_KEY: 'v3.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v1.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
+		SETTINGS_APP_KEY: 'v0.settings.app.settings',
+		/* AI Settings */
+		AI_FAVORITES_KEY: 'v0.setting.ai_favorites',
 		/* Event Log Settings */
 		EVENT_LOG_KEY: 'v0.event.log.settings',
 	};
@@ -121,7 +126,7 @@ export class LocalStorageService {
 				date_preset: null,
 				units: null,
 				interval: null,
-				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},
+				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null, ecash: null},
 				tertiary_nav: null,
 				oracle_used: null,
 			};
@@ -146,6 +151,16 @@ export class LocalStorageService {
 		const settings = this.getItem<SettingsDeviceSettings>(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY);
 		if (!settings) return {tertiary_nav: null};
 		return settings;
+	}
+	getSettingsAppSettings(): SettingsAppSettings {
+		const settings = this.getItem<SettingsAppSettings>(this.STORAGE_KEYS.SETTINGS_APP_KEY);
+		if (!settings) return {tertiary_nav: null};
+		return settings;
+	}
+	getAiFavorites(): AiFavorites {
+		const favorites = this.getItem<AiFavorites>(this.STORAGE_KEYS.AI_FAVORITES_KEY);
+		if (!favorites) return {ollama: [], openrouter: []};
+		return favorites;
 	}
 	getEventLogSettings(): EventLogSettings {
 		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
@@ -191,6 +206,12 @@ export class LocalStorageService {
 	}
 	setSettingsDeviceSettings(settings: SettingsDeviceSettings): void {
 		this.setItem(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY, settings);
+	}
+	setSettingsAppSettings(settings: SettingsAppSettings): void {
+		this.setItem(this.STORAGE_KEYS.SETTINGS_APP_KEY, settings);
+	}
+	setAiFavorites(favorites: AiFavorites): void {
+		this.setItem(this.STORAGE_KEYS.AI_FAVORITES_KEY, favorites);
 	}
 	setEventLogSettings(settings: EventLogSettings): void {
 		this.setItem(this.STORAGE_KEYS.EVENT_LOG_KEY, settings);

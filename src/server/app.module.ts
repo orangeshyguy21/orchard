@@ -7,6 +7,7 @@ import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {DataSource, DataSourceOptions} from 'typeorm';
 import {ScheduleModule} from '@nestjs/schedule';
+import {EventEmitterModule} from '@nestjs/event-emitter';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
 import {AuthModule} from './modules/auth/auth.module';
@@ -25,10 +26,15 @@ import {
 	LightningChannelOpenInitiator,
 } from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
-import {MintAnalyticsInterval, MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
-import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
+import {MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
+import {AnalyticsInterval} from './modules/analytics/analytics.enums';
+import {MintAnalyticsMetric} from './modules/cashu/mintanalytics/mintanalytics.enums';
+import {LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
+import {BitcoinAnalyticsMetric} from './modules/bitcoin/analytics/btcanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
-import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
+import {AiMessageRole} from './modules/ai/ai.enums';
+import {AssistantToolName, AiAssistant} from './modules/ai/assistant/ai.assistant.enums';
+import {AgentKey, AgentRunStatus} from './modules/ai/agent/agent.enums';
 import {UserRole} from './modules/user/user.enums';
 import {SettingKey, SettingValue} from './modules/setting/setting.enums';
 import {UTXOracleProgressStatus} from './modules/bitcoin/utxoracle/utxoracle.enums';
@@ -40,6 +46,7 @@ import {
 	EventLogStatus,
 	EventLogDetailStatus,
 } from './modules/event/event.enums';
+import {SystemMetric, SystemMetricsInterval} from './modules/system/metrics/sysmetrics.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -48,7 +55,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(MintQuoteState, {name: 'MintQuoteState'});
 	registerEnumType(MeltQuoteState, {name: 'MeltQuoteState'});
 	registerEnumType(MintProofState, {name: 'MintProofState'});
-	registerEnumType(MintAnalyticsInterval, {name: 'MintAnalyticsInterval'});
+	registerEnumType(AnalyticsInterval, {name: 'AnalyticsInterval'});
 	registerEnumType(MintActivityPeriod, {name: 'MintActivityPeriod'});
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
@@ -56,11 +63,14 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(LightningRequestType, {name: 'LightningRequestType'});
 	registerEnumType(LightningChannelCloseType, {name: 'LightningChannelCloseType'});
 	registerEnumType(LightningChannelOpenInitiator, {name: 'LightningChannelOpenInitiator'});
-	registerEnumType(LightningAnalyticsInterval, {name: 'LightningAnalyticsInterval'});
 	registerEnumType(LightningAnalyticsMetric, {name: 'LightningAnalyticsMetric'});
-	registerEnumType(AiAgent, {name: 'AiAgent'});
+	registerEnumType(BitcoinAnalyticsMetric, {name: 'BitcoinAnalyticsMetric'});
+	registerEnumType(MintAnalyticsMetric, {name: 'MintAnalyticsMetric'});
+	registerEnumType(AgentKey, {name: 'AgentKey'});
+	registerEnumType(AgentRunStatus, {name: 'AgentRunStatus'});
+	registerEnumType(AiAssistant, {name: 'AiAssistant'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
-	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});
+	registerEnumType(AssistantToolName, {name: 'AssistantToolName'});
 	registerEnumType(UserRole, {name: 'UserRole'});
 	registerEnumType(SettingKey, {name: 'SettingKey'});
 	registerEnumType(SettingValue, {name: 'SettingValue'});
@@ -71,6 +81,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(EventLogType, {name: 'EventLogType'});
 	registerEnumType(EventLogStatus, {name: 'EventLogStatus'});
 	registerEnumType(EventLogDetailStatus, {name: 'EventLogDetailStatus'});
+	registerEnumType(SystemMetric, {name: 'SystemMetric'});
+	registerEnumType(SystemMetricsInterval, {name: 'SystemMetricsInterval'});
 
 	const path = configService.get('server.path');
 	const is_production = configService.get('mode.production');
@@ -133,6 +145,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			},
 		}),
 		ScheduleModule.forRoot(),
+		EventEmitterModule.forRoot(),
 		SecurityModule,
 		AuthModule,
 		ApiModule,

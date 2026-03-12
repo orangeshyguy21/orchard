@@ -38,18 +38,3 @@ export type NutshellMintEcash = {
 	unit: MintUnit;
 	amounts: string;
 };
-
-export type NutshellMintAnalytics = {
-	time_group: string;
-	unit: MintUnit;
-	amount: number;
-	operation_count: number;
-	min_created_time: number;
-};
-
-export type NutshellMintKeysetsAnalytics = {
-	time_group: string;
-	keyset_id: string;
-	amount: number;
-	min_created_time: number;
-};

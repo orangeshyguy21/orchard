@@ -2,25 +2,30 @@
 
 :host {
 	@extend %flex;
+	--orc-oracle-dark-fill: var(--mat-sys-surface-container-low);
+
+	&.high-bg {
+		--orc-oracle-dark-fill: var(--mat-sys-surface-container-high);
+	}
 }
 
 .graphic-oracle-container {
 	@extend %flex;
 
 	.oracle-base {
-		fill: var(--mat-sys-surface-container-low);
+		fill: var(--orc-oracle-dark-fill);
 	}
 
 	.oracle-eye {
-		fill: var(--mat-sys-surface-container-low);
+		fill: var(--orc-oracle-dark-fill);
 	}
 
 	.oracle-block {
-		fill: var(--mat-sys-surface-container-low);
+		fill: var(--orc-oracle-dark-fill);
 	}
 
 	.oracle-orb {
-		fill: var(--mat-sys-surface-container-low);
+		fill: var(--orc-oracle-dark-fill);
 	}
 
 	.lightest-fill,
@@ -46,6 +51,15 @@
 		}
 		.darkest-fill {
 			fill: var(--mat-sys-primary-container);
+		}
+	}
+
+	&.active {
+		.oracle-eye {
+			@extend %orc-brand-lightest-fill;
+		}
+		.oracle-block {
+			@extend %orc-brand-lightest-fill;
 		}
 	}
 

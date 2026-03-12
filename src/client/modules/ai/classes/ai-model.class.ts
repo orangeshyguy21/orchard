@@ -1,19 +1,18 @@
-import {OrchardAiModel, OrchardAiModelDetails} from '@shared/generated.types';
+/* Shared Dependencies */
+import {OrchardAiModel, OrchardAiModelOllama, OrchardAiModelOpenRouter} from '@shared/generated.types';
 
 export class AiModel implements OrchardAiModel {
 	model: string;
-	modified_at: number;
 	name: string;
-	size: number;
-	digest: string;
-	details: OrchardAiModelDetails;
+	context_length: number;
+	ollama?: OrchardAiModelOllama;
+	openrouter?: OrchardAiModelOpenRouter;
 
 	constructor(aiModel: OrchardAiModel) {
 		this.model = aiModel.model;
-		this.modified_at = aiModel.modified_at;
 		this.name = aiModel.name;
-		this.size = aiModel.size;
-		this.digest = aiModel.digest;
-		this.details = aiModel.details;
+		this.context_length = aiModel.context_length;
+		this.ollama = aiModel.ollama ?? undefined;
+		this.openrouter = aiModel.openrouter ?? undefined;
 	}
 }

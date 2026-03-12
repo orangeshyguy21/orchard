@@ -4,13 +4,14 @@ import {Module} from '@nestjs/common';
 import {ErrorModule} from '@server/modules/error/error.module';
 import {EventLogModule} from '@server/modules/event/event.module';
 import {SettingModule} from '@server/modules/setting/setting.module';
+import {MessageModule} from '@server/modules/message/message.module';
 /* Local Dependencies */
 import {SettingResolver} from './setting.resolver';
 import {ApiSettingService} from './setting.service';
 import {SettingInterceptor} from './setting.interceptor';
 
 @Module({
-	imports: [ErrorModule, EventLogModule, SettingModule],
+	imports: [ErrorModule, EventLogModule, SettingModule, MessageModule],
 	providers: [SettingResolver, ApiSettingService, SettingInterceptor],
 })
 export class ApiSettingModule {}

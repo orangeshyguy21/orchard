@@ -124,6 +124,8 @@ export type LightningChannel = {
 	push_amount_sat: string | null; // amount pushed on open (may not be available)
 	private: boolean;
 	active: boolean;
+	remote_pubkey: string; // peer public key
+	peer_alias: string | null; // peer alias (LND only via peer_alias_lookup)
 	funding_txid: string; // for timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
@@ -140,17 +142,35 @@ export type LightningClosedChannel = {
 	time_locked_balance: string | null;
 	close_type: LightningChannelCloseType;
 	open_initiator: LightningChannelOpenInitiator;
+	remote_pubkey: string; // peer public key
 	funding_txid: string; // for open timestamp lookup
 	closing_txid: string; // for close timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
 
 /**
- * Common transaction type for timestamp lookups
+ * Common peer type
+ */
+export type LightningPeer = {
+	pubkey: string;
+	alias: string | null; // resolved via GetNodeInfo (LND) / ListNodes (CLN)
+	address: string;
+	bytes_sent: string | null; // null when backend doesn't expose (CLN)
+	bytes_recv: string | null;
+	sat_sent: string | null;
+	sat_recv: string | null;
+	inbound: boolean | null;
+	ping_time: number | null;
+};
+
+/**
+ * Common transaction type for on-chain wallet transactions
  */
 export type LightningTransaction = {
 	tx_hash: string;
 	time_stamp: number; // seconds since epoch
+	amount: string | null; // signed sats (positive=receive, negative=send). null if unavailable (CLN)
+	total_fees: string | null; // on-chain fees in sats. null if unavailable (CLN)
 	block_height?: number; // optional, used for enrichment from Bitcoin RPC
 };
 

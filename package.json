@@ -34,7 +34,10 @@
     "migration:run": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/server/database/data-source.ts",
     "migration:revert": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/server/database/data-source.ts",
     "migration:show": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/server/database/data-source.ts",
-    "debug:ln-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-ln-analytics.ts"
+    "debug:btc-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-btc-analytics.ts",
+    "debug:ln-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-ln-analytics.ts",
+    "debug:mint-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-mint-analytics.ts",
+    "integration": "npm run debug:btc-analytics && npm run debug:ln-analytics && npm run debug:mint-analytics"
   },
   "dependencies": {
     "@angular/animations": "^21.2.0",
@@ -56,6 +59,7 @@
     "@nestjs/common": "^11.1.14",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.14",
+    "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/graphql": "13.2.4",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
@@ -70,6 +74,7 @@
     "chartjs-adapter-luxon": "^1.3.1",
     "chartjs-plugin-annotation": "^3.1.0",
     "compression": "^1.8.1",
+    "grammy": "^1.41.1",
     "graphql": "^16.12.0",
     "graphql-subscriptions": "^3.0.0",
     "graphql-tools": "^9.0.26",

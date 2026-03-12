@@ -1,6 +1,7 @@
 <div
 	class="graphic-oracle-container graphic-orchard-logo-container"
-	[class.stone]="!running()"
+	[class.stone]="!running() && !active()"
+	[class.active]="active() && !running()"
 	[class.running]="running()"
 	[class.completed]="status() === UtxOracleProgressStatus.Completed"
 	[class.error]="status() === UtxOracleProgressStatus.Error"

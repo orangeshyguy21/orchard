@@ -1,0 +1,567 @@
+/* Core Dependencies */
+import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {InjectRepository} from '@nestjs/typeorm';
+/* Vendor Dependencies */
+import {mkdirSync, writeFileSync} from 'fs';
+import {join} from 'path';
+import {Repository} from 'typeorm';
+import {SchedulerRegistry} from '@nestjs/schedule';
+import {CronJob} from 'cron';
+import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {AiService} from '@server/modules/ai/ai.service';
+import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/ai.types';
+import {AiMessageRole} from '@server/modules/ai/ai.enums';
+import {SettingService} from '@server/modules/setting/setting.service';
+import {SettingKey} from '@server/modules/setting/setting.enums';
+import {safeParse} from '@server/utils/safe-parse';
+/* Native Dependencies */
+import {ToolService} from '@server/modules/ai/tools/tool.service';
+import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
+/* Local Dependencies */
+import {Agent} from './agent.entity';
+import {AgentRun} from './agent-run.entity';
+import {AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
+import {AGENTS} from './agent.agents';
+
+@Injectable()
+export class AgentService implements OnModuleInit {
+	private readonly logger = new Logger(AgentService.name);
+
+	private static readonly MAX_TOOL_ITERATIONS = 25;
+	private static readonly MIN_CRON_INTERVAL_MINUTES = 5;
+	private static readonly MAX_QUEUE_DEPTH = 10;
+
+	private execution_queue: Promise<any> = Promise.resolve();
+	private queue_depth = 0;
+	private readonly pending_agents = new Set<string>();
+
+	constructor(
+		@InjectRepository(Agent)
+		private agentRepository: Repository<Agent>,
+		@InjectRepository(AgentRun)
+		private runRepository: Repository<AgentRun>,
+		private schedulerRegistry: SchedulerRegistry,
+		private aiService: AiService,
+		private configService: ConfigService,
+		private settingService: SettingService,
+		private toolExecutor: ToolService,
+	) {}
+
+	async onModuleInit(): Promise<void> {
+		await this.seedBuiltInAgents();
+		await this.registerAllSchedules();
+	}
+
+	/* *******************************************************
+		Seeding
+	******************************************************** */
+
+	/**
+	 * Seeds built-in agents from the AGENTS registry if they do not already exist.
+	 * Existing records are never overwritten — user customizations are preserved.
+	 */
+	private async seedBuiltInAgents(): Promise<void> {
+		const now = DateTime.utc().toUnixInteger();
+		for (const [key, definition] of Object.entries(AGENTS)) {
+			const agent_key = key as AgentKey;
+			const existing = await this.agentRepository.findOne({where: {agent_key}});
+			if (existing) continue;
+			const agent = this.agentRepository.create({
+				agent_key,
+				name: definition.name,
+				description: definition.description,
+				active: false,
+				system_message: null,
+				tools: null,
+				schedules: JSON.stringify(definition.schedules ?? []),
+				last_run_at: null,
+				last_run_status: null,
+				created_at: now,
+				updated_at: now,
+			});
+			await this.agentRepository.save(agent);
+			this.logger.log(`Seeded agent: ${definition.name} (${agent_key})`);
+		}
+	}
+
+	/* *******************************************************
+		Scheduling
+	******************************************************** */
+
+	/**
+	 * Registers cron schedules for all active agents on boot.
+	 */
+	private async registerAllSchedules(): Promise<void> {
+		const agents = await this.agentRepository.find();
+		for (const agent of agents) {
+			if (!agent.active) continue;
+			const schedules: string[] = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
+			for (const cron_expression of schedules) {
+				this.registerCronJob(agent, cron_expression);
+			}
+		}
+	}
+
+	/**
+	 * Validates that a cron expression is syntactically correct and does not fire
+	 * more frequently than MIN_CRON_INTERVAL_MINUTES.
+	 */
+	private validateCronExpression(cron_expression: string): void {
+		try {
+			const probe = new CronJob(cron_expression, () => {});
+			const [first, second] = probe.nextDates(2) as unknown as DateTime[];
+			const diff_minutes = second.diff(first, 'minutes').minutes;
+			if (diff_minutes < AgentService.MIN_CRON_INTERVAL_MINUTES) {
+				throw new Error(
+					`Cron expression "${cron_expression}" fires every ${diff_minutes} minute(s). Minimum allowed interval is ${AgentService.MIN_CRON_INTERVAL_MINUTES} minutes.`,
+				);
+			}
+		} catch (err: any) {
+			if (err.message?.includes('Minimum allowed interval')) throw err;
+			throw new Error(`Invalid cron expression: "${cron_expression}"`);
+		}
+	}
+
+	/**
+	 * Registers a single cron job for an agent + schedule expression.
+	 * Job name format: agent:{agent.id}:{cron_expression}
+	 */
+	private registerCronJob(agent: Agent, cron_expression: string): void {
+		this.validateCronExpression(cron_expression);
+		const job_name = `agent:${agent.id}:${cron_expression}`;
+		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
+		const job = new CronJob(cron_expression, async () => {
+			await this.enqueueAgent(agent.id, cron_expression);
+		});
+		this.schedulerRegistry.addCronJob(job_name, job);
+		job.start();
+		this.logger.log(`Registered cron: ${job_name}`);
+	}
+
+	/**
+	 * Enqueues a scheduled agent run for sequential execution.
+	 * Deduplicates by agent_id and enforces a max queue depth to prevent unbounded growth.
+	 */
+	private async enqueueAgent(agent_id: string, schedule_trigger: string): Promise<void> {
+		if (this.pending_agents.has(agent_id)) {
+			this.logger.warn(`Agent ${agent_id} already queued, skipping duplicate`);
+			return;
+		}
+		if (this.queue_depth >= AgentService.MAX_QUEUE_DEPTH) {
+			this.logger.warn(`Execution queue full (${this.queue_depth}), dropping scheduled run for ${agent_id}`);
+			return;
+		}
+		this.pending_agents.add(agent_id);
+		this.queue_depth++;
+		const task = () =>
+			this.executeAgent(agent_id, schedule_trigger).finally(() => {
+				this.pending_agents.delete(agent_id);
+				this.queue_depth--;
+			});
+		const result = this.execution_queue.then(task, task);
+		this.execution_queue = result.catch(() => {});
+		await result;
+	}
+
+	/**
+	 * Removes all cron jobs registered for a specific agent.
+	 */
+	private removeCronJobsForAgent(agent_id: string): void {
+		const all_jobs = this.schedulerRegistry.getCronJobs();
+		const prefix = `agent:${agent_id}:`;
+		all_jobs.forEach((_job, name) => {
+			if (name.startsWith(prefix)) {
+				this.schedulerRegistry.deleteCronJob(name);
+				this.logger.log(`Removed cron: ${name}`);
+			}
+		});
+	}
+
+	/**
+	 * Re-registers cron jobs for an agent after update.
+	 */
+	public async syncAgentSchedules(agent: Agent): Promise<void> {
+		this.removeCronJobsForAgent(agent.id);
+		if (!agent.active) return;
+		const schedules: string[] = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
+		for (const cron_expression of schedules) {
+			this.registerCronJob(agent, cron_expression);
+		}
+	}
+
+	/* *******************************************************
+		Execution
+	******************************************************** */
+
+	/**
+	 * Creates a run record, executes the agent via LLM with tool calling, and updates run status.
+	 */
+	public async executeAgent(agent_id: string, schedule_trigger: string | null = null): Promise<AgentRun> {
+		const now = DateTime.utc().toUnixInteger();
+		const agent = await this.agentRepository.findOne({where: {id: agent_id}});
+		if (!agent) throw new Error(`Agent not found: ${agent_id}`);
+
+		const run = this.runRepository.create({
+			agent,
+			status: AgentRunStatus.RUNNING,
+			schedule_trigger,
+			started_at: now,
+			completed_at: null,
+			result: null,
+			error: null,
+			tokens_used: null,
+		});
+		const saved_run = await this.runRepository.save(run);
+
+		await this.agentRepository.update(agent_id, {
+			last_run_at: now,
+			last_run_status: AgentRunStatus.RUNNING,
+			updated_at: now,
+		});
+
+		try {
+			const {result, tokens_used, notified} = await this.runAgentLoop(agent);
+			const completed_at = DateTime.utc().toUnixInteger();
+			await this.runRepository.update(saved_run.id, {
+				status: AgentRunStatus.SUCCESS,
+				completed_at,
+				result,
+				tokens_used,
+				notified,
+			});
+			await this.agentRepository.update(agent_id, {
+				last_run_status: AgentRunStatus.SUCCESS,
+				updated_at: completed_at,
+			});
+			this.logger.log(`Agent ${agent.name} completed successfully`);
+			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used, notified};
+		} catch (error) {
+			const completed_at = DateTime.utc().toUnixInteger();
+			await this.runRepository.update(saved_run.id, {
+				status: AgentRunStatus.ERROR,
+				completed_at,
+				error: error.message,
+			});
+			await this.agentRepository.update(agent_id, {
+				last_run_status: AgentRunStatus.ERROR,
+				updated_at: completed_at,
+			});
+			this.logger.error(`Agent ${agent.name} failed: ${error.message}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * Runs the LLM tool-call loop for an agent.
+	 * Sends the system message and tools to the LLM, processes tool calls,
+	 * and iterates until the LLM returns content or the iteration cap is hit.
+	 */
+	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
+		const tool_names = this.resolveToolNames(agent);
+		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
+
+		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
+
+		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
+
+		const notified = loop_result.messages.some((m) => {
+			if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
+			const is_send = loop_result.messages.some((msg) =>
+				msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
+			);
+			if (!is_send) return false;
+			try {
+				const result = JSON.parse(m.content);
+				return result?.success === true && result?.data?.delivered === true;
+			} catch {
+				return false;
+			}
+		});
+
+		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);
+		return {result: loop_result.result, tokens_used: loop_result.tokens_used, notified};
+	}
+
+	/**
+	 * Reusable LLM tool-call loop. Resolves the model, builds tool schemas, and iterates
+	 * until the LLM returns content or the iteration cap is hit.
+	 * Used by both scheduled agent runs and conversational flows.
+	 */
+	public async runToolLoop(options: {
+		messages: AiMessage[];
+		tool_names: string[];
+		agent_context: AiAgentContext;
+		signal?: AbortSignal;
+	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
+		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
+		if (!model) throw new Error('No AI model configured (ai.server.model)');
+
+		const {messages, tool_names, agent_context, signal} = options;
+		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
+		let total_tokens = 0;
+
+		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
+			if (signal?.aborted) {
+				return {result: '', tokens_used: total_tokens, messages};
+			}
+
+			const response = await this.collectStreamResponse(model, messages, tool_schemas, signal);
+			total_tokens += (response.usage?.prompt_tokens ?? 0) + (response.usage?.completion_tokens ?? 0);
+
+			if (response.message.tool_calls?.length) {
+				messages.push(response.message);
+				for (const tool_call of response.message.tool_calls) {
+					if (signal?.aborted) {
+						return {result: '', tokens_used: total_tokens, messages};
+					}
+					const tool_result = await this.toolExecutor.executeTool(
+						tool_call.function.name,
+						tool_call.function.arguments,
+						agent_context,
+					);
+					messages.push({role: AiMessageRole.TOOL, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
+				}
+			} else {
+				return {result: response.message.content, tokens_used: total_tokens, messages};
+			}
+		}
+
+		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens, messages};
+	}
+
+	/**
+	 * Writes the full agent conversation trace to a tmp file for dev inspection.
+	 */
+	private dumpAgentTrace(agent: Agent, messages: AiMessage[], tokens_used: number, result: string, tool_names: string[] = []): void {
+		try {
+			const timestamp = DateTime.utc().toFormat('yyyyMMdd-HHmmss');
+			const safe_name = agent.name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+			const dir = join(process.cwd(), 'data', 'tmp');
+			mkdirSync(dir, {recursive: true});
+			const file_path = join(dir, `agent-${safe_name}-${timestamp}.json`);
+			const trace = {
+				agent: {id: agent.id, name: agent.name, agent_key: agent.agent_key},
+				timestamp: DateTime.utc().toISO(),
+				tokens_used,
+				tool_names,
+				result,
+				messages,
+			};
+			writeFileSync(file_path, JSON.stringify(trace, null, 2));
+			this.logger.log(`Agent trace dumped: ${file_path}`);
+		} catch (err) {
+			this.logger.warn(`Failed to dump agent trace: ${err.message}`);
+		}
+	}
+
+	/**
+	 * Collects a full streamed response into a single chunk with accumulated content and tool calls.
+	 * Accumulates content and tool_calls from intermediate chunks so the result is vendor-agnostic.
+	 */
+	private async collectStreamResponse(
+		model: string,
+		messages: AiMessage[],
+		tools: AiTool[],
+		signal?: AbortSignal,
+	): Promise<AiStreamChunk> {
+		let final_chunk: AiStreamChunk | null = null;
+		let accumulated_content = '';
+		const accumulated_tool_calls: AiToolCall[] = [];
+
+		for await (const chunk of this.aiService.streamAgent(model, messages, tools, signal)) {
+			if (chunk.done) {
+				final_chunk = chunk;
+			} else {
+				accumulated_content += chunk.message.content ?? '';
+				if (chunk.message.tool_calls?.length) {
+					accumulated_tool_calls.push(...chunk.message.tool_calls);
+				}
+			}
+		}
+
+		if (!final_chunk) {
+			throw new Error('Stream ended without a done chunk');
+		}
+
+		/* Prefer accumulated stream content over the done chunk's content */
+		final_chunk.message.content = accumulated_content || final_chunk.message.content;
+
+		/* Merge tool calls: use accumulated if present, fall back to done chunk's */
+		if (accumulated_tool_calls.length) {
+			final_chunk.message.tool_calls = accumulated_tool_calls;
+		}
+
+		return final_chunk;
+	}
+
+	/* *******************************************************
+		Agent Resolution Helpers
+	******************************************************** */
+
+	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
+	public resolveToolNames(agent: Agent): string[] {
+		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
+		return agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
+	}
+
+	/** Build a system message from agent config + runtime context */
+	public buildSystemMessage(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
+		const base_message = agent.system_message ?? built_in ?? '';
+		return `${base_message}\n\n${this.buildRuntimeContext(agent)}`;
+	}
+
+	/* *******************************************************
+		Runtime Context
+	******************************************************** */
+
+	/** Builds a runtime context string to append to agent system messages */
+	public buildRuntimeContext(agent: Agent): string {
+		const now = DateTime.utc();
+		const version = this.configService.get<string>('mode.version');
+
+		const services: string[] = [];
+		const bitcoin = this.configService.get<string>('bitcoin.type');
+		const lightning = this.configService.get<string>('lightning.type');
+		const mint = this.configService.get<string>('cashu.type');
+		if (bitcoin) services.push(`bitcoin (${bitcoin})`);
+		if (lightning) services.push(`lightning (${lightning})`);
+		if (mint) services.push(`mint (${mint})`);
+		const schedules: string[] = JSON.parse(agent.schedules);
+		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s)).join('; ') : 'on-demand only';
+
+		return [
+			'[Runtime Context]',
+			`Agent ID: ${agent.id}`,
+			`Current time: ${now.toISO()} (unix: ${now.toUnixInteger()})`,
+			`App version: ${version}`,
+			`Configured services: ${services.length ? services.join(', ') : 'none'}`,
+			`Schedule: ${cadence}`,
+		].join('\n');
+	}
+
+	/**
+	 * Converts a cron expression into a cadence description the agent can reason about.
+	 * Focuses on the interval between runs so the agent knows what time window to analyze.
+	 */
+	private describeCadence(cron: string): string {
+		const parts = cron.trim().split(/\s+/);
+		if (parts.length !== 5) return `custom (${cron})`;
+		const [minute, hour, day_of_month, _month, day_of_week] = parts;
+
+		/* Sub-hourly */
+		if (hour === '*' && minute.startsWith('*/')) {
+			const mins = parseInt(minute.slice(2), 10);
+			return `every ${mins} minutes — focus on the last ${mins} minutes of activity`;
+		}
+
+		/* Hourly */
+		if (hour === '*') {
+			return 'every hour — focus on the last hour of activity';
+		}
+
+		/* Every N hours */
+		if (hour.startsWith('*/')) {
+			const hrs = parseInt(hour.slice(2), 10);
+			return `every ${hrs} hours — focus on the last ${hrs} hours of activity`;
+		}
+
+		/* Monthly */
+		if (day_of_month !== '*' && day_of_week === '*') {
+			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 30 days of activity`;
+		}
+
+		/* Weekly */
+		if (day_of_month === '*' && day_of_week !== '*') {
+			return 'weekly — focus on the last 7 days of activity';
+		}
+
+		/* Daily */
+		if (day_of_month === '*' && day_of_week === '*') {
+			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 24 hours of activity`;
+		}
+
+		return `custom (${cron})`;
+	}
+
+	/* *******************************************************
+		Data Access
+	******************************************************** */
+
+	/** Find all agents */
+	public async getAgents(): Promise<Agent[]> {
+		return this.agentRepository.find({order: {created_at: 'ASC'}});
+	}
+
+	/** Find a single agent by ID */
+	public async getAgent(id: string): Promise<Agent | null> {
+		return this.agentRepository.findOne({where: {id}});
+	}
+
+	/** Find a single agent by its built-in key */
+	public async getAgentByKey(key: AgentKey): Promise<Agent | null> {
+		return this.agentRepository.findOne({where: {agent_key: key}});
+	}
+
+	/** Get runs for an agent, most recent first, with pagination and optional notified filter */
+	public async getAgentRuns(options: {agent_id: string; page?: number; page_size?: number; notified?: boolean}): Promise<AgentRun[]> {
+		const {agent_id, page = 0, page_size = 20, notified} = options;
+		const where: Record<string, any> = {agent: {id: agent_id}};
+		if (notified !== undefined) where.notified = notified;
+		return this.runRepository.find({
+			where,
+			order: {started_at: 'DESC'},
+			skip: page * page_size,
+			take: page_size,
+		});
+	}
+
+	/** Update an agent and re-sync its cron schedules */
+	public async updateAgent(
+		id: string,
+		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'system_message' | 'tools' | 'schedules'>>,
+	): Promise<Agent> {
+		const agent = await this.agentRepository.findOne({where: {id}});
+		if (!agent) throw new Error(`Agent not found: ${id}`);
+		if (updates.schedules) {
+			const expressions: string[] = JSON.parse(updates.schedules);
+			expressions.forEach((expr) => this.validateCronExpression(expr));
+		}
+		const now = DateTime.utc().toUnixInteger();
+		Object.assign(agent, updates, {updated_at: now});
+		const saved = await this.agentRepository.save(agent);
+		await this.syncAgentSchedules(saved);
+		return saved;
+	}
+
+	/* *******************************************************
+		Retention
+	******************************************************** */
+
+	/**
+	 * Deletes runs older than the most recent 100 for each agent.
+	 * Called by TaskService on a schedule.
+	 */
+	public async cleanupOldRuns(): Promise<void> {
+		const agents = await this.agentRepository.find();
+		for (const agent of agents) {
+			const boundary_runs = await this.runRepository.find({
+				where: {agent: {id: agent.id}},
+				order: {started_at: 'DESC'},
+				skip: 100,
+				take: 1,
+			});
+			if (boundary_runs.length === 0) continue;
+			const cutoff = boundary_runs[0].started_at;
+			await this.runRepository
+				.createQueryBuilder()
+				.delete()
+				.where('agent_id = :agent_id AND started_at <= :cutoff', {agent_id: agent.id, cutoff})
+				.execute();
+			this.logger.log(`Cleaned up old runs for agent ${agent.name}`);
+		}
+	}
+}

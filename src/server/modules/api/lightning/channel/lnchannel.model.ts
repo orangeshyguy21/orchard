@@ -68,6 +68,12 @@ export class OrchardLightningChannel {
 	active: boolean;
 
 	@Field(() => String)
+	remote_pubkey: string;
+
+	@Field(() => String, {nullable: true})
+	peer_alias: string | null;
+
+	@Field(() => String)
 	funding_txid: string;
 
 	@Field(() => OrchardLightningChannelAsset, {nullable: true})
@@ -83,6 +89,8 @@ export class OrchardLightningChannel {
 		this.push_amount_sat = channel.push_amount_sat ? parseFloat(channel.push_amount_sat) : null;
 		this.private = channel.private;
 		this.active = channel.active;
+		this.remote_pubkey = channel.remote_pubkey;
+		this.peer_alias = channel.peer_alias;
 		this.funding_txid = channel.funding_txid;
 		this.asset = channel.asset ? new OrchardLightningChannelAsset(channel.asset) : null;
 	}
@@ -115,6 +123,9 @@ export class OrchardLightningClosedChannel {
 	open_initiator: LightningChannelOpenInitiator;
 
 	@Field(() => String)
+	remote_pubkey: string;
+
+	@Field(() => String)
 	funding_txid: string;
 
 	@Field(() => String)
@@ -132,6 +143,7 @@ export class OrchardLightningClosedChannel {
 		this.time_locked_balance = channel.time_locked_balance ? parseFloat(channel.time_locked_balance) : null;
 		this.close_type = channel.close_type;
 		this.open_initiator = channel.open_initiator;
+		this.remote_pubkey = channel.remote_pubkey;
 		this.funding_txid = channel.funding_txid;
 		this.closing_txid = channel.closing_txid;
 		this.asset = channel.asset ? new OrchardLightningChannelAsset(channel.asset) : null;

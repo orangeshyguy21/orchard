@@ -24,9 +24,14 @@ describe('SettingsSubsectionAppBitcoinOracleComponent', () => {
 		});
 
 		fixture.componentRef.setInput('bitcoin_enabled', false);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
 		fixture.componentRef.setInput('form_group', mock_form_group);
 		fixture.componentRef.setInput('control_name', 'bitcoin_oracle_enabled');
 		fixture.componentRef.setInput('oracle_price', null);
+		fixture.componentRef.setInput('oracle_running', false);
+		fixture.componentRef.setInput('oracle_progress', 0);
+		fixture.componentRef.setInput('oracle_status', null);
+		fixture.componentRef.setInput('device_type', 'desktop');
 
 		fixture.detectChanges();
 	});

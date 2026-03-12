@@ -1,13 +1,15 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, output, signal, effect} from '@angular/core';
 import {FormControl} from '@angular/forms';
+/* Application Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
+import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
-import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-nav',
@@ -21,10 +23,12 @@ import {AiAgent} from '@shared/generated.types';
 })
 export class AiNavComponent {
 	/* Inputs */
-	public active_agent = input.required<AiAgent>();
+	public active_assistant = input.required<AiAssistant>();
 	public active_chat = input.required<boolean>();
 	public model = input.required<string | null>();
 	public model_options = input.required<AiModel[]>();
+	public vendor = input<string>('ollama');
+	public favorites = input<AiFavorites>({ollama: [], openrouter: []});
 	public actionable = input.required<boolean>();
 	public content = input.required<FormControl>();
 	public conversation = input.required<AiChatConversation | null>();
@@ -33,20 +37,21 @@ export class AiNavComponent {
 	public log_open = input<boolean>();
 	public opened = input<boolean>(false);
 	public device_type = input.required<DeviceType>();
-	public mobile_agent = input.required<boolean>();
+	public mobile_assistant = input.required<boolean>();
 	public event_pending = input<boolean>(false);
 
 	/* Outputs */
 	public command = output<void>();
 	public modelChange = output<string>();
+	public favoritesChange = output<AiFavorites>();
 	public toggleLog = output<void>();
-	public hideAgent = output<void>();
+	public hideAssistant = output<void>();
 
 	public focus = signal<boolean>(false);
 
 	constructor(private aiService: AiService) {
 		effect(() => {
-			if (this.mobile_agent()) {
+			if (this.mobile_assistant()) {
 				this.focus.set(true);
 			}
 		});
@@ -64,8 +69,8 @@ export class AiNavComponent {
 	 */
 	private startChat(): void {
 		if (!this.content().value) return;
-		const agent = this.active_agent() || AiAgent.Default;
-		this.aiService.requestAgent(agent, this.content().value);
+		const assistant = this.active_assistant() || AiAssistant.Default;
+		this.aiService.requestAssistant(assistant, this.content().value);
 		this.content().reset();
 	}
 
@@ -77,10 +82,10 @@ export class AiNavComponent {
 	}
 
 	/**
-	 * Hides the agent and resets the focus
+	 * Hides the assistant and resets the focus
 	 */
-	public onHideAgent(): void {
+	public onHideAssistant(): void {
 		this.focus.set(false);
-		this.hideAgent.emit();
+		this.hideAssistant.emit();
 	}
 }

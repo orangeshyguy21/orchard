@@ -6,16 +6,14 @@ import {
 	OrchardMintAnalytics,
 	OrchardMintMintQuote,
 	OrchardMintMeltQuote,
-	OrchardMintProofGroup,
-	OrchardMintPromiseGroup,
 	OrchardMintSwap,
 	OrchardMintKeysetsAnalytics,
 	OrchardMintActivitySummary,
 	MintUnit,
-	MintAnalyticsInterval,
+	AnalyticsInterval,
+	OrchardMintAnalyticsBackfillStatus,
 	MintQuoteState,
 	MeltQuoteState,
-	MintProofState,
 	OrchardMintInfoRpc,
 	OrchardMintCount,
 	OrchardMintNameUpdate,
@@ -95,6 +93,18 @@ export type MintMeltQuotesResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 };
 
+export type MintAnalyticsProofsResponse = {
+	mint_analytics_proofs: OrchardMintAnalytics[];
+};
+
+export type MintAnalyticsPromisesResponse = {
+	mint_analytics_promises: OrchardMintAnalytics[];
+};
+
+export type MintAnalyticsBackfillStatusResponse = {
+	mint_analytics_backfill_status: OrchardMintAnalyticsBackfillStatus;
+};
+
 export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 };
@@ -107,7 +117,7 @@ export type MintAnalyticsArgs = {
 	units?: MintUnit[];
 	date_start?: number;
 	date_end?: number;
-	interval?: MintAnalyticsInterval;
+	interval?: AnalyticsInterval;
 	timezone?: string;
 };
 
@@ -125,25 +135,6 @@ export type MintMeltQuotesArgs = {
 	date_start?: number;
 	date_end?: number;
 	states?: MeltQuoteState[];
-	page?: number;
-	page_size?: number;
-};
-
-export type MintProofGroupsArgs = {
-	id_keysets?: string[];
-	date_start?: number;
-	date_end?: number;
-	units?: MintUnit[];
-	states?: MintProofState[];
-	page?: number;
-	page_size?: number;
-};
-
-export type MintPromiseGroupsArgs = {
-	units?: MintUnit[];
-	id_keysets?: string[];
-	date_start?: number;
-	date_end?: number;
 	page?: number;
 	page_size?: number;
 };
@@ -233,16 +224,6 @@ export type MintMintQuotesDataResponse = {
 export type MintMeltQuotesDataResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 	mint_count_melt_quotes: OrchardMintCount;
-};
-
-export type MintProofGroupsDataResponse = {
-	mint_proof_groups: OrchardMintProofGroup[];
-	mint_count_proof_groups: OrchardMintCount;
-};
-
-export type MintPromiseGroupsDataResponse = {
-	mint_promise_groups: OrchardMintPromiseGroup[];
-	mint_count_promise_groups: OrchardMintCount;
 };
 
 export type MintDatabaseInfoResponse = {

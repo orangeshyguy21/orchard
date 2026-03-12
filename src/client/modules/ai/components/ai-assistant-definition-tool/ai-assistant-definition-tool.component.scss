@@ -1,0 +1,17 @@
+@use 'molecule/molecule';
+
+.assistant-property {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-5;
+}
+
+.assistant-property-label {
+	@extend %font-size-xs;
+	@extend %font-weight-light;
+	@extend %orc-on-surface-variant-color;
+}
+
+.assistant-property-value {
+	@extend %font-size-s;
+}

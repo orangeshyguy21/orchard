@@ -27,6 +27,9 @@ export class User {
 	@Column({type: 'text', nullable: true, length: 100})
 	label: string | null;
 
+	@Column({type: 'text', nullable: true})
+	telegram_chat_id: string | null;
+
 	@Column({type: 'integer'})
 	created_at: number;
 }

@@ -1,17 +1,22 @@
 /* Local Dependencies */
-import {UpdateMintNameTool} from './tools';
-import {AiMessageRole, AiFunctionName} from './ai.enums';
+import {AiMessageRole} from './ai.enums';
+
+/* *******************************************************
+	Models
+******************************************************** */
 
 export type AiModel = {
-	name: string;
 	model: string;
+	name: string;
+	context_length: number;
+	ollama?: AiModelOllama;
+	openrouter?: AiModelOpenRouter;
+};
+
+export type AiModelOllama = {
 	modified_at: string;
 	size: number;
 	digest: string;
-	details: AiModelDetails;
-};
-
-export type AiModelDetails = {
 	parent_model: string;
 	format: string;
 	family: string;
@@ -20,11 +25,35 @@ export type AiModelDetails = {
 	quantization_level: string;
 };
 
+export type AiModelOpenRouter = {
+	pricing_prompt: string;
+	pricing_completion: string;
+	modality: string;
+	tokenizer: string;
+	max_completion_tokens: number;
+	family: string;
+};
+
+/* *******************************************************
+	Messages
+******************************************************** */
+
 export type AiMessage = {
 	role: AiMessageRole;
 	content: string;
 	thinking?: string;
 	tool_calls?: AiToolCall[];
+	tool_call_id?: string;
+};
+
+/* *******************************************************
+	Tools
+******************************************************** */
+
+export type AiToolParameters = {
+	type: string;
+	properties: Record<string, unknown>;
+	required?: string[];
 };
 
 export type AiTool = {
@@ -35,12 +64,34 @@ export type AiTool = {
 export type AiToolFunction = {
 	name: string;
 	description: string;
-	parameters: (typeof UpdateMintNameTool)['function']['parameters'];
+	parameters: AiToolParameters;
 };
 
 export type AiToolCall = {
+	id?: string;
 	function: {
-		name: AiFunctionName;
-		arguments: (typeof UpdateMintNameTool)['function']['parameters'];
+		name: string;
+		arguments: Record<string, unknown>;
 	};
+};
+
+/* *******************************************************
+	Streaming
+******************************************************** */
+
+export type AiStreamChunk = {
+	model: string;
+	created_at: string;
+	message: AiMessage;
+	done: boolean;
+	done_reason?: string;
+	usage?: AiStreamUsage;
+	error?: string;
+};
+
+export type AiStreamUsage = {
+	prompt_tokens?: number;
+	completion_tokens?: number;
+	total_duration?: number;
+	eval_duration?: number;
 };

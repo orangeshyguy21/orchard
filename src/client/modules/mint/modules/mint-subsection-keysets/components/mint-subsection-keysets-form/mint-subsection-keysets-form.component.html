@@ -134,7 +134,7 @@
 										<div class="title-form-section p-b-1">
 											<span>Keyset Version</span>
 										</div>
-										<div class="flex flex-row flex-gap-1">
+										<orc-form-toggle-group>
 											<orc-form-toggle
 												class="flex-1 h-min-6"
 												[selected]="!form_group().get('keyset_v2')?.value"
@@ -164,7 +164,7 @@
 													<div class="font-size-xs orc-outline-color">{{ keyset_v2_desc() }}</div>
 												</div>
 											</orc-form-toggle>
-										</div>
+										</orc-form-toggle-group>
 									</div>
 									<div>
 										<div class="title-form-section">

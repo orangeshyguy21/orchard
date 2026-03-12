@@ -10,6 +10,7 @@ import {
 	LightningChannelAsset,
 	LightningAssetBalance,
 	LightningPaginatedResult,
+	LightningPeer,
 } from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {
@@ -29,6 +30,8 @@ import {
 	LndListChannelsResponse,
 	LndClosedChannelsResponse,
 	LndGetTransactionsResponse,
+	LndPeer,
+	LndListPeersResponse,
 } from './lnd.types';
 
 export function mapRequestDescription(description: string | null): string | null {
@@ -232,6 +235,8 @@ export function mapLndChannels(response: LndListChannelsResponse): LightningChan
 		push_amount_sat: c.push_amount_sat ? String(c.push_amount_sat) : null,
 		private: c.private ?? false,
 		active: c.active ?? false,
+		remote_pubkey: c.remote_pubkey ?? '',
+		peer_alias: c.peer_alias ?? null,
 		funding_txid: extractLndFundingTxid(c.channel_point),
 		asset: parseLndCustomChannelData(c.custom_channel_data),
 	}));
@@ -290,6 +295,7 @@ export function mapLndClosedChannels(response: LndClosedChannelsResponse): Light
 		time_locked_balance: c.time_locked_balance ? String(c.time_locked_balance) : null,
 		close_type: mapLndCloseType(c.close_type),
 		open_initiator: mapLndInitiator(c.open_initiator),
+		remote_pubkey: c.remote_pubkey ?? '',
 		funding_txid: extractLndFundingTxid(c.channel_point),
 		closing_txid: c.closing_tx_hash ?? '',
 		asset: parseLndCustomChannelData(c.custom_channel_data),
@@ -304,5 +310,25 @@ export function mapLndTransactions(response: LndGetTransactionsResponse): Lightn
 	return transactions.map((t: LndTransaction) => ({
 		tx_hash: t.tx_hash ?? '',
 		time_stamp: Number(t.time_stamp ?? 0),
+		amount: t.amount ?? null,
+		total_fees: t.total_fees ?? null,
+	}));
+}
+
+/**
+ * Maps LND ListPeersResponse to common LightningPeer[]
+ */
+export function mapLndPeers(response: LndListPeersResponse): LightningPeer[] {
+	const peers = response?.peers ?? [];
+	return peers.map((p: LndPeer) => ({
+		pubkey: p.pub_key ?? '',
+		alias: null, // enriched in peer service via GetNodeInfo
+		address: p.address ?? '',
+		bytes_sent: p.bytes_sent ?? '0',
+		bytes_recv: p.bytes_recv ?? '0',
+		sat_sent: p.sat_sent ?? '0',
+		sat_recv: p.sat_recv ?? '0',
+		inbound: p.inbound ?? false,
+		ping_time: Number(p.ping_time ?? 0),
 	}));
 }

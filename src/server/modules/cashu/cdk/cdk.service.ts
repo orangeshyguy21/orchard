@@ -15,36 +15,28 @@ import {
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintProofGroup,
-	CashuMintPromiseGroup,
+	CashuMintProof,
+	CashuMintPromise,
 	CashuMintSwap,
-	CashuMintAnalytics,
-	CashuMintKeysetsAnalytics,
 	CashuMintCount,
-	CashuMintKeysetCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintMintQuotesArgs,
-	CashuMintAnalyticsArgs,
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
-	CashuMintKeysetCountsArgs,
 	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
 	buildCountQuery,
-	getAnalyticsTimeGroupStamp,
-	getAnalyticsConditions,
-	getAnalyticsTimeGroupSql,
-	mergeKeysetCounts,
 	queryRows,
 	queryRow,
 	extractRequestString,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
-import {CdkMintProof, CdkMintPromise, CdkMintAnalytics, CdkMintKeysetsAnalytics} from './cdk.types';
+import {CdkMintProof} from './cdk.types';
 
 @Injectable()
 export class CdkService {
@@ -105,7 +97,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
+	public async getBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? 'WHERE ka.keyset_id = ?' : '';
 		const sql = `
 			SELECT
@@ -126,7 +118,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, total_issued AS balance
 			FROM keyset_amounts
@@ -138,7 +130,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, total_redeemed AS balance
 			FROM keyset_amounts
@@ -150,7 +142,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
+	public async getKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = `
             SELECT *, CAST(COALESCE(fee_collected, 0) AS INTEGER) AS fees_paid FROM keyset
             LEFT JOIN keyset_amounts ON keyset_amounts.keyset_id = keyset.id
@@ -163,7 +155,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+	public async listMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -226,7 +218,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+	public async lookupMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
 		const state_case = `
 			CASE
 				WHEN amount_paid = 0 AND amount_issued = 0 THEN 'UNPAID'
@@ -247,7 +239,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+	public async lookupMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
 		const sql = `SELECT * FROM melt_quote WHERE id = ?`;
 		try {
 			const row = await queryRow<CashuMintMeltQuote | undefined>(client, sql, [quote_id]);
@@ -257,7 +249,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+	public async listMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -282,7 +274,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+	public async listProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		const field_mappings = {
 			states: 'p.state',
 			units: 'k.unit',
@@ -344,7 +336,37 @@ export class CdkService {
 		}
 	}
 
-	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
+		const field_mappings = {
+			states: 'p.state',
+			units: 'k.unit',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
+		};
+
+		const select_statement = `
+			SELECT
+				p.amount,
+				p.keyset_id,
+				k.unit,
+				p.state,
+				p.created_time
+			FROM proof p
+			LEFT JOIN keyset k ON k.id = p.keyset_id`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proof',
+			args,
+			field_mappings,
+			select_statement,
+			time_is_epoch_seconds: true,
+		});
+		return queryRows<CashuMintProof>(client, sql, params);
+	}
+
+	public async listPromises(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromise[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'bs.keyset_id',
@@ -353,15 +375,13 @@ export class CdkService {
 		};
 
 		const select_statement = `
-			SELECT 
-				bs.created_time,
+			SELECT
+				bs.amount,
 				bs.keyset_id,
 				k.unit,
-				json_group_array(bs.amount) as amounts
+				bs.created_time
 			FROM blind_signature bs
 			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-
-		const group_by = 'bs.created_time, k.unit, bs.keyset_id';
 
 		const {sql, params} = buildDynamicQuery({
 			db_type: client.type,
@@ -369,41 +389,12 @@ export class CdkService {
 			args,
 			field_mappings,
 			select_statement,
-			group_by,
 			time_is_epoch_seconds: true,
 		});
-		try {
-			const rows = await queryRows<CdkMintPromise>(client, sql, params);
-			const groups = {};
-			rows.forEach((row) => {
-				const key = `${row.created_time}_${row.unit}`;
-				const amounts = Array.isArray(row.amounts) ? row.amounts : JSON.parse(row.amounts);
-				if (!groups[key]) {
-					groups[key] = {
-						created_time: row.created_time,
-						unit: row.unit,
-						keysets: [],
-						amounts: [],
-					};
-				}
-				groups[key].keysets.push(row.keyset_id);
-				groups[key].amounts.push(amounts);
-			});
-
-			const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
-				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-				created_time: group.created_time,
-				keyset_ids: group.keysets,
-				unit: group.unit,
-				amounts: group.amounts,
-			}));
-			return promise_groups;
-		} catch (err) {
-			throw err;
-		}
+		return queryRows<CashuMintPromise>(client, sql, params);
 	}
 
-	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
+	public async countMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -444,7 +435,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
+	public async countMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -466,98 +457,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
-		const field_mappings = {
-			states: 'p.state',
-			units: 'k.unit',
-			id_keysets: 'p.keyset_id',
-			date_start: 'p.created_time',
-			date_end: 'p.created_time',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					p.created_time,
-					k.unit,
-					p.state
-				FROM proof p
-				LEFT JOIN keyset k ON k.id = p.keyset_id`;
-		const group_by = 'p.created_time, k.unit, p.state';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'proof',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-			time_is_epoch_seconds: true,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'bs.keyset_id',
-			date_start: 'bs.created_time',
-			date_end: 'bs.created_time',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					bs.created_time,
-					k.unit
-				FROM blind_signature bs
-				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-		const group_by = 'bs.created_time, k.unit';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'blind_signature',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-			time_is_epoch_seconds: true,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintKeysetCounts(client: CashuMintDatabase, args?: CashuMintKeysetCountsArgs): Promise<CashuMintKeysetCount[]> {
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const proof_sql = `SELECT keyset_id AS id, COUNT(*) AS count FROM proof ${where_clause} GROUP BY keyset_id;`;
-		const promise_sql = `SELECT keyset_id AS id, COUNT(*) AS count FROM blind_signature ${where_clause} GROUP BY keyset_id;`;
-		try {
-			const [proof_rows, promise_rows] = await Promise.all([
-				queryRows<{id: string; count: number}>(client, proof_sql, [...params]),
-				queryRows<{id: string; count: number}>(client, promise_sql, [...params]),
-			]);
-			return mergeKeysetCounts(proof_rows, promise_rows);
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+	public async countSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
 		const swap_args = {...args, operation_kind: 'swap'};
 		const field_mappings = {
 			units: 'k.unit',
@@ -591,7 +491,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+	public async listSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
 		const swap_args = {...args, operation_kind: 'swap'};
 		const field_mappings = {
 			units: 'k.unit',
@@ -632,386 +532,6 @@ export class CdkService {
 				...row,
 				keyset_ids: row.keyset_ids ? row.keyset_ids.split(',') : [],
 			}));
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	/* Analytics */
-
-	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'completed_at',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'completed_at',
-			group_by: 'unit',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-
-		const sql = `
-			WITH ops_with_unit AS (
-				SELECT
-					co.completed_at,
-					co.total_issued - co.total_redeemed AS amount,
-					COALESCE(bs_k.unit, p_k.unit) AS unit
-				FROM completed_operations co
-				LEFT JOIN (
-					SELECT operation_id, MIN(keyset_id) AS keyset_id FROM blind_signature GROUP BY operation_id
-				) bs ON bs.operation_id = co.operation_id
-				LEFT JOIN keyset bs_k ON bs_k.id = bs.keyset_id
-				LEFT JOIN (
-					SELECT operation_id, MIN(keyset_id) AS keyset_id FROM proof GROUP BY operation_id
-				) p ON p.operation_id = co.operation_id
-				LEFT JOIN keyset p_k ON p_k.id = p.keyset_id
-			)
-			SELECT
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(amount) AS amount,
-				COUNT(*) AS operation_count,
-				MIN(completed_at) as min_created_time
-			FROM
-				ops_with_unit
-				${where_clause}
-			GROUP BY
-				time_group, unit
-			ORDER BY
-				min_created_time;`;
-
-		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					unit: row.unit,
-					amount: row.amount,
-					created_time: timestamp,
-					operation_count: row.operation_count,
-				};
-			});
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintAnalyticsMints(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time',
-			group_by: 'unit',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(amount_issued) AS amount,
-				COUNT(DISTINCT CASE WHEN amount_issued > 0 THEN id ELSE NULL END) AS operation_count,
-				MIN(created_time) as min_created_time
-			FROM 
-				mint_quote
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY 
-				min_created_time;`;
-
-		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					unit: row.unit,
-					amount: row.amount,
-					created_time: timestamp,
-					operation_count: row.operation_count,
-				};
-			});
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintAnalyticsMelts(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time',
-			group_by: 'unit',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN state = 'PAID' THEN id ELSE NULL END) AS operation_count,
-				MIN(created_time) as min_created_time
-			FROM 
-				melt_quote
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY 
-				min_created_time;`;
-
-		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					unit: row.unit,
-					amount: row.amount,
-					created_time: timestamp,
-					operation_count: row.operation_count,
-				};
-			});
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintAnalyticsSwaps(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		where_conditions.push('quote_id IS NULL');
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time',
-			group_by: 'unit',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(amount) AS amount,
-				COUNT(DISTINCT secret) AS operation_count,
-				MIN(created_time) as min_created_time
-			FROM 
-				proof
-				LEFT JOIN keyset k ON k.id = proof.keyset_id
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY
-				min_created_time;`;
-
-		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					unit: row.unit,
-					amount: row.amount,
-					created_time: timestamp,
-					operation_count: row.operation_count,
-				};
-			});
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	/** Retrieves fee analytics from completed_operations, grouped by time interval and unit. */
-	public async getMintAnalyticsFees(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'completed_at',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'completed_at',
-			group_by: 'unit',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-
-		const sql = `
-			WITH ops_with_unit AS (
-				SELECT
-					co.completed_at,
-					co.fee_collected,
-					COALESCE(bs_k.unit, p_k.unit) AS unit
-				FROM completed_operations co
-				LEFT JOIN (
-					SELECT operation_id, MIN(keyset_id) AS keyset_id FROM blind_signature GROUP BY operation_id
-				) bs ON bs.operation_id = co.operation_id
-				LEFT JOIN keyset bs_k ON bs_k.id = bs.keyset_id
-				LEFT JOIN (
-					SELECT operation_id, MIN(keyset_id) AS keyset_id FROM proof GROUP BY operation_id
-				) p ON p.operation_id = co.operation_id
-				LEFT JOIN keyset p_k ON p_k.id = p.keyset_id
-			)
-			SELECT
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(fee_collected) AS amount,
-				COUNT(*) AS operation_count,
-				MIN(completed_at) as min_created_time
-			FROM
-				ops_with_unit
-				${where_clause}
-			GROUP BY
-				time_group, unit
-			ORDER BY
-				min_created_time;`;
-
-		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					unit: row.unit,
-					amount: row.amount,
-					created_time: timestamp,
-					operation_count: row.operation_count,
-				};
-			});
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time',
-			group_by: 'keyset_id',
-			db_type: client.type,
-			time_is_epoch_seconds: true,
-		});
-
-		const sql = `
-			WITH issued AS (
-				SELECT 
-					${time_group_sql} AS time_group,
-					keyset_id,
-					SUM(amount) AS issued_amount,
-					MIN(created_time) as min_created_time
-				FROM blind_signature
-				${where_clause}
-				GROUP BY time_group, keyset_id
-			),
-			redeemed AS (
-				SELECT 
-					${time_group_sql} AS time_group,
-					keyset_id,
-					SUM(amount) AS redeemed_amount,
-					MIN(created_time) as min_created_time
-				FROM proof
-				${where_clause}
-				AND state = 'SPENT'
-				GROUP BY time_group, keyset_id
-			)
-			SELECT 
-				COALESCE(i.time_group, r.time_group) AS time_group,
-				COALESCE(i.keyset_id, r.keyset_id) AS keyset_id,
-				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS amount,
-				COALESCE(i.min_created_time, r.min_created_time) AS min_created_time
-			FROM issued i
-			FULL OUTER JOIN redeemed r 
-				ON i.time_group = r.time_group 
-				AND i.keyset_id = r.keyset_id
-			ORDER BY min_created_time;
-		`;
-
-		try {
-			const rows = await queryRows<CdkMintKeysetsAnalytics>(client, sql, [...params, ...params]);
-			return rows.map((row) => {
-				const timestamp = getAnalyticsTimeGroupStamp({
-					min_created_time: row.min_created_time,
-					time_group: row.time_group,
-					interval: interval,
-					timezone: timezone,
-				});
-				return {
-					keyset_id: row.keyset_id,
-					amount: row.amount,
-					created_time: timestamp,
-				};
-			});
 		} catch (err) {
 			throw err;
 		}

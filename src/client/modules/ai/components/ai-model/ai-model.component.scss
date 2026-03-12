@@ -2,10 +2,52 @@
 
 .active-model-option {
 	@extend %orc-surface-variant-bg;
+}
 
-	&.mat-mdc-menu-item {
-		&:hover {
-			@extend %orc-surface-variant-bg;
-		}
+.model-panel {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %orc-surface-container-bg;
+	@extend %border;
+	@extend %orc-corner-large;
+	@extend %orc-level3;
+	@extend %overflow-hidden;
+	@extend %p-0-5;
+	width: 420px;
+	height: 24rem;
+
+	&.mobile {
+		width: 100vw;
+		border-radius: 0;
 	}
+}
+
+.search-field {
+	@extend %w-full;
+}
+
+.model-list {
+	@extend %flex-grow;
+	@extend %overflow-y-auto;
+}
+
+.ai-vendor-logo {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: white;
+	flex-shrink: 0;
+
+	img {
+		width: 1.5rem;
+		height: 1.5rem;
+		object-fit: contain;
+	}
+}
+
+.ai-favorite {
+	@extend %orc-outline-variant-color;
 }

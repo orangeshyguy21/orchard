@@ -4,7 +4,7 @@ import {FormControl} from '@angular/forms';
 /* Native Dependencies */
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 /* Local Dependencies */
 import {AiNavComponent} from './ai-nav.component';
 
@@ -19,7 +19,7 @@ describe('AiNavComponent', () => {
 
 		fixture = TestBed.createComponent(AiNavComponent);
 		component = fixture.componentInstance;
-		fixture.componentRef.setInput('active_agent', AiAgent.Default);
+		fixture.componentRef.setInput('active_assistant', AiAssistant.Default);
 		fixture.componentRef.setInput('active_chat', false);
 		fixture.componentRef.setInput('model', null);
 		fixture.componentRef.setInput('model_options', []);
@@ -29,7 +29,7 @@ describe('AiNavComponent', () => {
 		fixture.componentRef.setInput('tool_length', 0);
 		fixture.componentRef.setInput('log_open', false);
 		fixture.componentRef.setInput('device_type', 'desktop');
-		fixture.componentRef.setInput('mobile_agent', false);
+		fixture.componentRef.setInput('mobile_assistant', false);
 		fixture.detectChanges();
 	});
 

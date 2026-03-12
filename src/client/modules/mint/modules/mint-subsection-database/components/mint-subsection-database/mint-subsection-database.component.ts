@@ -44,13 +44,11 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
-// import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-// import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 /* Shared Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, AiAgent, AiFunctionName} from '@shared/generated.types';
+import {MintUnit, MintQuoteState, MeltQuoteState, AiAssistant, AssistantToolName} from '@shared/generated.types';
 
 enum FormMode {
 	CREATE = 'CREATE',
@@ -147,8 +145,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
-			this.subscriptions.add(this.getAgentSubscription());
+		if (this.settingAppService.getSetting('ai_enabled')) {
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 		if (this.bitcoin_oracle_enabled) {
@@ -178,20 +176,20 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			switch (this.form_mode) {
 				case FormMode.CREATE:
-					return this.hireBackupAgent(AiAgent.MintBackup, content);
+					return this.hireBackupAssistant(AiAssistant.MintBackup, content);
 				default:
-					return this.hireAnalyticsAgent(agent, content);
+					return this.hireAnalyticsAssistant(assistant, content);
 			}
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -554,7 +552,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async getDefaultFilename(): Promise<void> {
 		this.mintService.loadMintInfo().subscribe((mint_info) => {
 			this.database_version = mint_info.version.replace(/\//g, '-');
-			this.database_timestamp = DateTime.now().toSeconds();
+			this.database_timestamp = DateTime.now().toUnixInteger();
 			this.database_implementation = this.configService.config.mint.database_type;
 			const extension = this.database_implementation === 'sqlite' ? 'db' : 'sql';
 			const filename = `MintDatabaseBackup-${this.database_version}-${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyyMMdd-HHmmss')}.${extension}`;
@@ -681,10 +679,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	/* *******************************************************
-	   Agent                      
+	   Assistant
 	******************************************************** */
 
-	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
+	private hireAnalyticsAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
 		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
 		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
@@ -693,33 +691,33 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		context += `* **States:** ${this.page_settings.states.join(', ')}\n`;
 		context += `* **Available Data Types:** ${Object.values(MintDataType).join(', ')}\n`;
 		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private hireBackupAgent(agent: AiAgent, content: string | null): void {
+	private hireBackupAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Mint Version:** ${this.database_version}\n`;
 		context += `* **Mint Timestamp:** ${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyy-MM-dd HH:mm:ss')}\n`;
 		context += `* **Mint Implementation:** ${this.database_implementation}\n`;
 		context += `* **Backup Filename:** ${this.form_backup.get('filename')?.value}`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AssistantToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiFunctionName.MintDatabaseDataTypeUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintDatabaseDataTypeUpdate) {
 			if (tool_call.function.arguments.type && Object.values(MintDataType).includes(tool_call.function.arguments.type)) {
 				this.onTypeChange(tool_call.function.arguments.type);
 			} else {
 				console.warn('Invalid MintDataType received:', tool_call.function.arguments.type);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintAnalyticsUnitsUpdate) {
 			if (
 				tool_call.function.arguments.units &&
 				tool_call.function.arguments.units.every((unit: string) => this.unit_options.some((option) => option.value === unit))
@@ -729,7 +727,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				console.warn('Invalid Units received:', tool_call.function.arguments.units);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintDatabaseStatesUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintDatabaseStatesUpdate) {
 			if (
 				tool_call.function.arguments.states &&
 				tool_call.function.arguments.states.every((state: string) => this.state_options.includes(state))
@@ -739,7 +737,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				console.warn('Invalid States received:', tool_call.function.arguments.states);
 			}
 		}
-		if (tool_call.function.name === AiFunctionName.MintBackupFilenameUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintBackupFilenameUpdate) {
 			if (tool_call.function.arguments.filename) {
 				this.form_backup.patchValue({filename: tool_call.function.arguments.filename});
 			} else {

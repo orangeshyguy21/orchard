@@ -1,0 +1,190 @@
+<div class="flex flex-gap-2 p-1 flex-wrap flex-items-start">
+	<div [formGroup]="form_group()" class="flex-1 flex flex-column">
+		<div class="flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
+			<orc-form-toggle-group>
+				<orc-form-toggle
+					class="flex-1 w-min-10 h-min-6"
+					[selected]="!form_group().get('enabled')?.value"
+					(click)="toggleAIEnabled(false)"
+				>
+					<div class="ai-sticker">
+						<mat-icon class="icon-lg mat-symbol-outline">block</mat-icon>
+					</div>
+					<div class="ai-label">
+						<div class="font-size-s">Disabled</div>
+						<div class="font-size-xs orc-outline-color">standard application</div>
+					</div>
+				</orc-form-toggle>
+				<orc-form-toggle
+					class="flex-1 w-min-10 h-min-6"
+					[selected]="form_group().get('enabled')?.value"
+					(click)="toggleAIEnabled(true)"
+				>
+					<div class="ai-sticker">
+						<mat-icon class="icon-lg mat-symbol-outline">spa</mat-icon>
+					</div>
+					<div class="ai-label">
+						<div class="font-size-s">Enabled</div>
+						<div class="font-size-xs orc-outline-color">agents available</div>
+					</div>
+				</orc-form-toggle>
+			</orc-form-toggle-group>
+
+			<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+				<mat-icon class="orc-outline-color">info</mat-icon>
+			</button>
+		</div>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-2 p-b-1 w-max-36">
+					<orc-form-help-text class="orc-surface-container-high-bg"> help text </orc-form-help-text>
+				</div>
+			</div>
+		</div>
+		<div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="form_group().get('enabled')?.value">
+			<div class="orc-animation-expand-collapse-inner p-t-1">
+				<mat-tab-group class="p-t-1" [selectedIndex]="selected_tab_index()" (selectedIndexChange)="onVendorTabChange($event)">
+					<mat-tab>
+						<ng-template mat-tab-label>
+							<div class="ai-vendor-label">
+								<orc-ai-vendor-icon vendor="ollama" [size]="'2rem'"></orc-ai-vendor-icon>
+								<div class="ai-vendor-text">
+									<span class="ai-vendor-label-name">Ollama</span>
+									<span class="ai-vendor-label-desc">Local AI models</span>
+								</div>
+							</div>
+						</ng-template>
+
+						<form
+							[formGroup]="form_group()"
+							(ngSubmit)="onSubmitOllamaApi($event)"
+							(keydown.enter)="onSubmitOllamaApi($event)"
+							class="p-t-2"
+						>
+							<orc-form-field-dynamic
+								[hot]="hot_ollama_api()"
+								[invalid]="invalid_ollama_api()"
+								(cancel)="onCancelOllamaApi($event)"
+								(submit)="submit.emit('ollama_api')"
+							>
+								<div class="orc-small-form-field-wrapper">
+									<mat-form-field
+										hideRequiredMarker="true"
+										class="w-full"
+										[ngClass]="hot_ollama_api() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+									>
+										<mat-label>API Endpoint</mat-label>
+										<input
+											type="text"
+											aria-label="Ollama API Endpoint"
+											matInput
+											[formControlName]="'ollama_api'"
+											(focus)="focused_ollama_api.set(true)"
+											(blur)="focused_ollama_api.set(false)"
+											#ollama_api_control
+										/>
+										<mat-error>
+											<orc-form-error [errors]="form_group().get('ollama_api')?.errors"
+												>Invalid API Endpoint</orc-form-error
+											>
+										</mat-error>
+									</mat-form-field>
+								</div>
+							</orc-form-field-dynamic>
+						</form>
+					</mat-tab>
+					<mat-tab>
+						<ng-template mat-tab-label>
+							<div class="ai-vendor-label">
+								<orc-ai-vendor-icon vendor="openrouter" [size]="'2rem'"></orc-ai-vendor-icon>
+								<div class="ai-vendor-text">
+									<span class="ai-vendor-label-name">OpenRouter</span>
+									<span class="ai-vendor-label-desc">Cloud AI routing</span>
+								</div>
+							</div>
+						</ng-template>
+						<form
+							[formGroup]="form_group()"
+							(ngSubmit)="onSubmitOpenrouterKey($event)"
+							(keydown.enter)="onSubmitOpenrouterKey($event)"
+							class="p-t-2"
+						>
+							<orc-form-field-dynamic
+								[hot]="hot_openrouter_key()"
+								[invalid]="invalid_openrouter_key()"
+								(cancel)="onCancelOpenrouterKey($event)"
+								(submit)="submit.emit('openrouter_key')"
+							>
+								<div class="orc-small-form-field-wrapper">
+									<mat-form-field
+										hideRequiredMarker="true"
+										class="w-full"
+										[ngClass]="hot_openrouter_key() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+									>
+										<mat-label>API Key</mat-label>
+										<input
+											[type]="key_view() ? 'text' : 'password'"
+											aria-label="OpenRouter API Key"
+											matInput
+											[formControlName]="'openrouter_key'"
+											(focus)="focused_openrouter_key.set(true)"
+											(blur)="focused_openrouter_key.set(false)"
+											#openrouter_key_control
+										/>
+										<button
+											type="button"
+											mat-icon-button
+											matSuffix
+											class="orc-icon-button"
+											tabindex="-1"
+											(click)="key_view() ? key_view.set(false) : key_view.set(true)"
+										>
+											<mat-icon>{{ key_view() ? 'visibility_off' : 'visibility' }}</mat-icon>
+										</button>
+										<mat-error>
+											<orc-form-error [errors]="form_group().get('openrouter_key')?.errors"
+												>Invalid API Key</orc-form-error
+											>
+										</mat-error>
+									</mat-form-field>
+								</div>
+							</orc-form-field-dynamic>
+						</form>
+					</mat-tab>
+				</mat-tab-group>
+			</div>
+		</div>
+	</div>
+
+	<div class="flex-1 flex flex-justify-center">
+		<div class="orc-high-card agent-card">
+			<div class="flex flex-items-center flex-justify-center agent-wrapper" [class.mobile-agent]="device_type() === 'mobile'">
+				<div class="agent-clamp">
+					<orc-graphic-oracle
+						class="high-bg"
+						height="18rem"
+						[active]="ai_enabled()"
+						[running]="false"
+						[status]="null"
+					></orc-graphic-oracle>
+				</div>
+			</div>
+			<div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="ai_enabled()">
+				<div class="orc-animation-expand-collapse-inner p-t-1">
+					@if (show_health()) {
+						<div animate.enter="orc-animation-fadein" class="h-3 flex flex-justify-center flex-items-center">
+							<div class="flex flex-gap-1 flex-items-center">
+								<orc-graphic-status [status]="health_status()" [size]="'1.5rem'" [glow]="true"></orc-graphic-status>
+								<div class="font-size-l font-weight-bold">{{ ai_health()?.status ? 'Connected' : 'Error' }}</div>
+							</div>
+						</div>
+					} @else {
+						<div animate.enter="orc-animation-fadein" class="h-3 flex flex-justify-center flex-items-center">
+							<button matButton="tonal" (click)="testConnection.emit()">Test connection</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

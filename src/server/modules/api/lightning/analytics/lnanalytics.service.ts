@@ -6,13 +6,14 @@ import {DateTime} from 'luxon';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
-/* Native Dependencies */
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
-import {LightningAnalyticsMetric, LightningAnalyticsInterval} from '@server/modules/lightning/analytics/lnanalytics.enums';
-import {LightningAnalyticsArgs} from '@server/modules/lightning/analytics/lnanalytics.interfaces';
+import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
 /* Local Dependencies */
-import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
+import {OrchardLightningAnalytics, OrchardLightningAnalyticsMetric, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
+import {LightningAnalyticsApiArgs, LightningAnalyticsMetricsArgs} from './lnanalytics.interfaces';
 
 @Injectable()
 export class ApiLightningAnalyticsService {
@@ -23,104 +24,193 @@ export class ApiLightningAnalyticsService {
 		private errorService: ErrorService,
 	) {}
 
-	/**
-	 * Gets analytics data
-	 */
-	async getAnalytics(tag: string, args: LightningAnalyticsArgs): Promise<OrchardLightningAnalytics[]> {
+	/* *******************************************************
+		Analytics Queries
+	******************************************************** */
+
+	/** Gets local balance analytics (channel_opens + invoices_in + forward_fees - payments_out - channel_closes) */
+	async getAnalyticsLocalBalance(tag: string, args: LightningAnalyticsApiArgs): Promise<OrchardLightningAnalytics[]> {
+		return this.getNetBalance(tag, args, {
+			positive: [LightningAnalyticsMetric.channel_opens, LightningAnalyticsMetric.invoices_in, LightningAnalyticsMetric.forward_fees],
+			negative: [LightningAnalyticsMetric.payments_out, LightningAnalyticsMetric.channel_closes],
+		});
+	}
+
+	/** Gets remote balance analytics (channel_opens_remote + payments_out - invoices_in - forward_fees - channel_closes_remote) */
+	async getAnalyticsRemoteBalance(tag: string, args: LightningAnalyticsApiArgs): Promise<OrchardLightningAnalytics[]> {
+		return this.getNetBalance(tag, args, {
+			positive: [LightningAnalyticsMetric.channel_opens_remote, LightningAnalyticsMetric.payments_out],
+			negative: [
+				LightningAnalyticsMetric.invoices_in,
+				LightningAnalyticsMetric.forward_fees,
+				LightningAnalyticsMetric.channel_closes_remote,
+			],
+		});
+	}
+
+	/** Computes net balance from positive and negative metric groups */
+	private async getNetBalance(
+		tag: string,
+		args: LightningAnalyticsApiArgs,
+		metrics: {positive: LightningAnalyticsMetric[]; negative: LightningAnalyticsMetric[]},
+	): Promise<OrchardLightningAnalytics[]> {
 		try {
-			const now = DateTime.utc().toSeconds();
-			const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
-			const interval = args.interval ?? LightningAnalyticsInterval.hour;
-			const date_start = args.date_start ?? 0;
-			const date_end = args.date_end ?? now;
-			const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
-			const cached = await this.lightningAnalyticsService.getCachedAnalytics(
-				date_start,
-				Math.min(date_end, current_hour_start - 1),
-				metrics,
-			);
-			const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
-			return this.aggregateByInterval(all_data, interval, args.timezone, date_start);
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const all_metrics = [...metrics.positive, ...metrics.negative];
+			const cached = await this.lightningAnalyticsService.getCachedAnalytics(date_start, cached_end, all_metrics);
+			const non_zero = cached.filter((d) => d.amount !== '0');
+
+			const positive_set = new Set(metrics.positive as string[]);
+			const positive = non_zero.filter((d) => positive_set.has(d.metric));
+			const negative = non_zero.filter((d) => !positive_set.has(d.metric));
+			const agg_positive = this.aggregateByIntervalSimple(positive, interval, args.timezone, date_start);
+			const agg_negative = this.aggregateByIntervalSimple(negative, interval, args.timezone, date_start);
+
+			const positive_map = new Map<string, bigint>();
+			for (const p of agg_positive) {
+				positive_map.set(`${p.unit}:${p.date}`, BigInt(p.amount));
+			}
+			const negative_map = new Map<string, bigint>();
+			for (const n of agg_negative) {
+				negative_map.set(`${n.unit}:${n.date}`, BigInt(n.amount));
+			}
+
+			const all_keys = new Set([...Array.from(positive_map.keys()), ...Array.from(negative_map.keys())]);
+			return Array.from(all_keys)
+				.map((key) => {
+					const pos = positive_map.get(key) ?? BigInt(0);
+					const neg = negative_map.get(key) ?? BigInt(0);
+					const net = pos - neg;
+					const [unit, date_str] = key.split(':');
+					return new OrchardLightningAnalytics(unit, net.toString(), Number(date_str));
+				})
+				.filter((d) => d.amount !== '0')
+				.sort((a, b) => a.date - b.date);
 		} catch (error) {
-			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.LightningRpcActionError,
-			});
-			throw new OrchardApiError(orchard_error);
+			throw this.handleError(tag, error);
 		}
 	}
 
-	/**
-	 * Gets the current backfill status
-	 */
+	/** Gets per-metric analytics (payments, invoices, forwards, channel events) */
+	async getAnalyticsMetrics(tag: string, args: LightningAnalyticsMetricsArgs): Promise<OrchardLightningAnalyticsMetric[]> {
+		try {
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
+			const cached = await this.lightningAnalyticsService.getCachedAnalytics(date_start, cached_end, metrics);
+			const all_data = cached.filter((d) => d.amount !== '0');
+			return this.aggregateByIntervalWithMetric(all_data, interval, args.timezone, date_start);
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
+	}
+
+	/* *******************************************************
+		Backfill Status
+	******************************************************** */
+
+	/** Gets the current backfill status */
 	getBackfillStatus(tag: string): OrchardLightningAnalyticsBackfillStatus {
 		try {
 			const status = this.lightningAnalyticsService.getBackfillStatus();
 			return status as OrchardLightningAnalyticsBackfillStatus;
 		} catch (error) {
-			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.LightningRpcActionError,
-			});
-			throw new OrchardApiError(orchard_error);
+			throw this.handleError(tag, error);
 		}
 	}
 
-	private aggregateByInterval(
+	/* *******************************************************
+		Helpers
+	******************************************************** */
+
+	/** Resolves common query parameters with defaults */
+	private resolveQueryParams(args: LightningAnalyticsApiArgs) {
+		const now = DateTime.utc().toUnixInteger();
+		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
+		return {
+			interval: args.interval ?? AnalyticsInterval.hour,
+			date_start: args.date_start ?? 0,
+			cached_end: Math.min(args.date_end ?? now, current_hour_start - 1),
+		};
+	}
+
+	/** Aggregates hourly data by interval, ignoring metric dimension. Returns simple type. */
+	private aggregateByIntervalSimple(
 		data: LightningAnalytics[],
-		interval: LightningAnalyticsInterval,
+		interval: AnalyticsInterval,
 		timezone?: string,
 		date_start?: number,
 	): OrchardLightningAnalytics[] {
-		if (interval === LightningAnalyticsInterval.hour) {
-			return data.map((d) => {
-				return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date);
-			});
+		if (interval === AnalyticsInterval.hour) {
+			return data.map((d) => new OrchardLightningAnalytics(d.unit, d.amount, d.date));
 		}
 
 		const tz = timezone ?? 'UTC';
-		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number};
+		type Bucket = {unit: string; amount: bigint; date: number};
 
 		const buckets = data.reduce((acc, d) => {
-			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
-			const key = interval === LightningAnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === AnalyticsInterval.custom ? d.unit : `${d.unit}:${bucket_date}`;
 			const existing = acc.get(key);
 
 			if (existing) {
 				existing.amount += BigInt(d.amount);
 			} else {
-				acc.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date});
+				acc.set(key, {unit: d.unit, amount: BigInt(d.amount), date: bucket_date});
 			}
 			return acc;
 		}, new Map<string, Bucket>());
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
-			.map((b) => {
-				return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date);
-			});
+			.map((b) => new OrchardLightningAnalytics(b.unit, b.amount.toString(), b.date));
 	}
 
-	private getBucketDate(
-		date: number,
-		interval: LightningAnalyticsInterval,
-		timezone: string,
+	/** Aggregates hourly data by interval, preserving metric dimension. Returns detailed type. */
+	private aggregateByIntervalWithMetric(
+		data: LightningAnalytics[],
+		interval: AnalyticsInterval,
+		timezone?: string,
 		date_start?: number,
-		data?: LightningAnalytics[],
-	): number {
-		if (interval === LightningAnalyticsInterval.custom) {
-			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
+	): OrchardLightningAnalyticsMetric[] {
+		if (interval === AnalyticsInterval.hour) {
+			return data.map(
+				(d) => new OrchardLightningAnalyticsMetric(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, d.count),
+			);
 		}
 
-		const dt = DateTime.fromSeconds(date, {zone: timezone});
+		const tz = timezone ?? 'UTC';
+		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number; count: number};
 
-		switch (interval) {
-			case LightningAnalyticsInterval.day:
-				return dt.startOf('day').toSeconds();
-			case LightningAnalyticsInterval.week:
-				return dt.startOf('week').toSeconds();
-			case LightningAnalyticsInterval.month:
-				return dt.startOf('month').toSeconds();
-			default:
-				return dt.startOf('hour').toSeconds();
-		}
+		const buckets = data.reduce((acc, d) => {
+			const bucket_date = getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === AnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
+			const existing = acc.get(key);
+
+			if (existing) {
+				existing.amount += BigInt(d.amount);
+				existing.count += d.count;
+			} else {
+				acc.set(key, {
+					unit: d.unit,
+					metric: d.metric as LightningAnalyticsMetric,
+					amount: BigInt(d.amount),
+					date: bucket_date,
+					count: d.count,
+				});
+			}
+			return acc;
+		}, new Map<string, Bucket>());
+
+		return Array.from(buckets.values())
+			.sort((a, b) => a.date - b.date)
+			.map((b) => new OrchardLightningAnalyticsMetric(b.unit, b.metric, b.amount.toString(), b.date, b.count));
+	}
+
+	/** Wraps errors in OrchardApiError */
+	private handleError(tag: string, error: unknown): OrchardApiError {
+		const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+			errord: OrchardErrorCode.LightningAnalyticsError,
+		});
+		return new OrchardApiError(orchard_error);
 	}
 }

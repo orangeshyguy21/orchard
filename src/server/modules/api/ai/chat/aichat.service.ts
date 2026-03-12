@@ -9,6 +9,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
+import {AiStreamChunk} from '@server/modules/ai/ai.types';
 /* Local Dependencies */
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';
 import {AiChatInput} from './aichat.input';
@@ -29,30 +30,11 @@ export class AiChatService {
 			const controller = new AbortController();
 			this.active_streams.set(ai_chat.id, controller);
 			const signal = controller.signal;
-			const body = await this.aiService.streamChat(ai_chat.model, ai_chat.agent, ai_chat.messages, signal);
-			if (!body) throw new OrchardApiError(OrchardErrorCode.AiError);
-			const reader = body.getReader();
-			const decoder = new TextDecoder();
+			const chunks = this.aiService.streamAssistant(ai_chat.model, ai_chat.assistant, ai_chat.messages, signal);
 
-			while (true) {
-				const {done, value} = await reader.read();
-				if (done) break;
-				const chunk = decoder.decode(value, {stream: true});
-				chunk
-					.split('\n')
-					.filter((str) => str.trim())
-					.map((json_str) => {
-						try {
-							return JSON.parse(json_str);
-						} catch {
-							throw new OrchardApiError(OrchardErrorCode.AiStreamParseError);
-						}
-					})
-					.filter((chunk_json) => chunk_json !== null)
-					.forEach((chunk_json) => {
-						if (chunk_json.error) chunk_json = this.getChunkErrorJSON(chunk_json.error);
-						this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(chunk_json, ai_chat.id));
-					});
+			for await (const chunk of chunks) {
+				const chunk_data = chunk.error ? this.getChunkErrorJSON(chunk.error) : chunk;
+				this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(chunk_data, ai_chat.id));
 			}
 
 			this.active_streams.delete(ai_chat.id);
@@ -68,10 +50,11 @@ export class AiChatService {
 				return false;
 			}
 			this.logger.debug(`Error streaming chat`, error);
-			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+			this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AiError,
 			});
-			throw new OrchardApiError(orchard_error);
+			const error_message = error instanceof Error ? error.message : 'An unknown error occurred';
+			this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(this.getChunkErrorJSON(error_message), ai_chat.id));
 		}
 	}
 
@@ -87,10 +70,10 @@ export class AiChatService {
 		return {id};
 	}
 
-	private getChunkErrorJSON(error: string): any {
+	private getChunkErrorJSON(error: string): AiStreamChunk {
 		return {
 			model: 'error',
-			created_at: DateTime.now().toMillis(),
+			created_at: DateTime.now().toISO(),
 			message: {
 				role: AiMessageRole.ERROR,
 				content: error,

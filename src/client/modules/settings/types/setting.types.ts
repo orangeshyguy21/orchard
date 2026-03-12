@@ -6,6 +6,7 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
+	SettingsAppSettings,
 	EventLogSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Shared Dependencies */
@@ -50,6 +51,12 @@ export type AllMintDatabaseSettings = MintDatabaseSettings & {
 export type NonNullableMintDatabaseSettings = {
 	[K in keyof Omit<AllMintDatabaseSettings, 'date_preset'>]: NonNullable<AllMintDatabaseSettings[K]>;
 } & Pick<AllMintDatabaseSettings, 'date_preset'>;
+
+/* Page: Settings App */
+export type AllSettingsAppSettings = SettingsAppSettings;
+export type NonNullableSettingsAppSettings = {
+	[K in keyof AllSettingsAppSettings]: NonNullable<AllSettingsAppSettings[K]>;
+};
 
 /* Page: Settings Device */
 export type AllSettingsDeviceSettings = SettingsDeviceSettings;

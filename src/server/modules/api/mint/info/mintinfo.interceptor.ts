@@ -1,13 +1,10 @@
 /* Core Dependencies */
 import {Injectable, Logger, CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
-import {GqlExecutionContext} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {Observable, tap, catchError} from 'rxjs';
-import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
-import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
 import {
 	EventLogActorType,
 	EventLogSection,
@@ -16,6 +13,9 @@ import {
 	EventLogStatus,
 	EventLogDetailStatus,
 } from '@server/modules/event/event.enums';
+import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
+import {EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogError} from '@server/modules/event/event.interfaces';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 
 @Injectable()
@@ -29,28 +29,20 @@ export class MintInfoInterceptor implements NestInterceptor {
 	) {}
 
 	async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-		const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
-		if (!metadata) return next.handle();
+		const event_context = extractEventContext(context, this.reflector);
+		if (!event_context) return next.handle();
+		const {metadata, args, actor_id, actor_type} = event_context;
 
-		const gql_context = GqlExecutionContext.create(context);
-		const ctx = gql_context.getContext();
-		const args = gql_context.getArgs();
-		const user_id: string = ctx.req.user?.id ?? 'unknown';
 		const arg_value = this.extractArgValue(args, metadata.arg_keys);
 		const new_value = metadata.type !== EventLogType.DELETE ? arg_value : null;
 		const old_value = metadata.type === EventLogType.DELETE ? arg_value : await this.fetchOldValue(metadata);
 
 		return next.handle().pipe(
 			tap(() => {
-				this.logEvent(metadata, user_id, old_value, new_value, EventLogStatus.SUCCESS);
+				this.logEvent(metadata, actor_type, actor_id, old_value, new_value, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
-				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
-				const error_message = error?.extensions?.details ?? error?.message ?? null;
-				this.logEvent(metadata, user_id, old_value, new_value, EventLogStatus.ERROR, {
-					error_code,
-					error_message,
-				});
+				this.logEvent(metadata, actor_type, actor_id, old_value, new_value, EventLogStatus.ERROR, extractEventError(error));
 				throw error;
 			}),
 		);
@@ -87,43 +79,43 @@ export class MintInfoInterceptor implements NestInterceptor {
 	/**
 	 * Fire-and-forget an event log to the event history
 	 * @param {EventLogMetadata} metadata - The event log configuration
-	 * @param {string} user_id - The actor ID
+	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
+	 * @param {string} actor_id - The actor ID
 	 * @param {string | null} old_value - The previous value
 	 * @param {string | null} new_value - The new value
 	 * @param {EventLogStatus} status - Success or error
-	 * @param {object} error - Optional error details
+	 * @param {EventLogError} error - Optional error details
 	 */
 	private logEvent(
 		metadata: EventLogMetadata,
-		user_id: string,
+		actor_type: EventLogActorType,
+		actor_id: string,
 		old_value: string | null,
 		new_value: string | null,
 		status: EventLogStatus,
-		error?: {error_code: string | null; error_message: string | null},
+		error?: EventLogError,
 	): void {
 		const detail_status = status === EventLogStatus.SUCCESS ? EventLogDetailStatus.SUCCESS : EventLogDetailStatus.ERROR;
-		this.eventLogService
-			.createEvent({
-				actor_type: EventLogActorType.USER,
-				actor_id: user_id,
-				timestamp: Math.floor(DateTime.now().toSeconds()),
-				section: EventLogSection.MINT,
-				section_id: '1',
-				entity_type: EventLogEntityType.INFO,
-				entity_id: null,
-				type: metadata.type,
-				status,
-				details: [
-					{
-						field: metadata.field,
-						old_value,
-						new_value,
-						status: detail_status,
-						error_code: error?.error_code ?? null,
-						error_message: error?.error_message ?? null,
-					},
-				],
-			})
-			.catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
+		this.eventLogService.logEvent({
+			actor_type,
+			actor_id,
+			timestamp: eventTimestamp(),
+			section: EventLogSection.MINT,
+			section_id: '1',
+			entity_type: EventLogEntityType.INFO,
+			entity_id: null,
+			type: metadata.type,
+			status,
+			details: [
+				{
+					field: metadata.field,
+					old_value,
+					new_value,
+					status: detail_status,
+					error_code: error?.error_code ?? null,
+					error_message: error?.error_message ?? null,
+				},
+			],
+		});
 	}
 }

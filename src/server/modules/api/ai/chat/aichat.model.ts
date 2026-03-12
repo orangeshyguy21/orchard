@@ -1,13 +1,14 @@
 /* Core Dependencies */
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import {AiToolCall, AiMessage} from '@server/modules/ai/ai.types';
-import {AiMessageRole, AiFunctionName} from '@server/modules/ai/ai.enums';
+import {AiToolCall, AiMessage, AiStreamChunk, AiStreamUsage} from '@server/modules/ai/ai.types';
+import {AiMessageRole} from '@server/modules/ai/ai.enums';
+import {AssistantToolName} from '@server/modules/ai/assistant/ai.assistant.enums';
 
 @ObjectType()
 export class OrchardAiChatFunction {
-	@Field(() => AiFunctionName)
-	name: AiFunctionName;
+	@Field(() => AssistantToolName)
+	name: string;
 
 	@Field()
 	arguments: string;
@@ -23,7 +24,7 @@ export class OrchardAiChatToolCall {
 	@Field(() => OrchardAiChatFunction)
 	function: OrchardAiChatFunction;
 
-	constructor(tool_call: any) {
+	constructor(tool_call: AiToolCall) {
 		this.function = new OrchardAiChatFunction(tool_call.function);
 	}
 }
@@ -46,7 +47,29 @@ export class OrchardAiChatMessage {
 		this.role = message.role;
 		this.content = message.content;
 		this.thinking = message.thinking;
-		this.tool_calls = message.tool_calls?.map((tool_call: any) => new OrchardAiChatToolCall(tool_call));
+		this.tool_calls = message.tool_calls?.map((tool_call) => new OrchardAiChatToolCall(tool_call));
+	}
+}
+
+@ObjectType()
+export class OrchardAiChatUsage {
+	@Field(() => Int, {nullable: true})
+	prompt_tokens?: number;
+
+	@Field(() => Int, {nullable: true})
+	completion_tokens?: number;
+
+	@Field({nullable: true})
+	total_duration?: number;
+
+	@Field({nullable: true})
+	eval_duration?: number;
+
+	constructor(usage: AiStreamUsage) {
+		this.prompt_tokens = usage.prompt_tokens;
+		this.completion_tokens = usage.completion_tokens;
+		this.total_duration = usage.total_duration;
+		this.eval_duration = usage.eval_duration;
 	}
 }
 
@@ -70,37 +93,17 @@ export class OrchardAiChatChunk {
 	@Field({nullable: true})
 	done_reason: string;
 
-	@Field({nullable: true})
-	total_duration: number;
+	@Field(() => OrchardAiChatUsage, {nullable: true})
+	usage?: OrchardAiChatUsage;
 
-	@Field({nullable: true})
-	load_duration: number;
-
-	@Field({nullable: true})
-	prompt_eval_count: number;
-
-	@Field({nullable: true})
-	prompt_eval_duration: number;
-
-	@Field({nullable: true})
-	eval_count: number;
-
-	@Field({nullable: true})
-	eval_duration: number;
-
-	constructor(chunk_json: any, id: string) {
+	constructor(chunk: AiStreamChunk, id: string) {
 		this.id = id;
-		this.model = chunk_json.model;
-		this.created_at = Math.floor(new Date(chunk_json.created_at).getTime() / 1000);
-		this.message = new OrchardAiChatMessage(chunk_json.message);
-		this.done = chunk_json.done;
-		this.done_reason = chunk_json.done_reason;
-		this.total_duration = chunk_json.total_duration;
-		this.load_duration = chunk_json.load_duration;
-		this.prompt_eval_count = chunk_json.prompt_eval_count;
-		this.prompt_eval_duration = chunk_json.prompt_eval_duration;
-		this.eval_count = chunk_json.eval_count;
-		this.eval_duration = chunk_json.eval_duration;
+		this.model = chunk.model;
+		this.created_at = Math.floor(new Date(chunk.created_at).getTime() / 1000);
+		this.message = new OrchardAiChatMessage(chunk.message);
+		this.done = chunk.done;
+		this.done_reason = chunk.done_reason;
+		this.usage = chunk.usage ? new OrchardAiChatUsage(chunk.usage) : undefined;
 	}
 }
 

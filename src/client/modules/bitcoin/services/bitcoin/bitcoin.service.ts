@@ -284,7 +284,7 @@ export class BitcoinService {
 		);
 	}
 
-	public loadBitcoinOraclePrice(): Observable<BitcoinOraclePrice> {
+	public loadBitcoinOraclePrice(): Observable<BitcoinOraclePrice | null> {
 		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY);
 
 		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
@@ -292,7 +292,7 @@ export class BitcoinService {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_oracle;
 			}),
-			map((bitcoin_oracle_prices) => new BitcoinOraclePrice(bitcoin_oracle_prices[0])),
+			map((bitcoin_oracle_prices) => (bitcoin_oracle_prices.length > 0 ? new BitcoinOraclePrice(bitcoin_oracle_prices[0]) : null)),
 			tap((bitcoin_oracle_price) => {
 				this.bitcoin_oracle_price_subject.next(bitcoin_oracle_price);
 			}),

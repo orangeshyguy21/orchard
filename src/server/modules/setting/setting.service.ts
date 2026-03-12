@@ -1,20 +1,31 @@
 /* Core Dependencies */
 import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {ConfigService} from '@nestjs/config';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 /* Local Dependencies */
 import {Setting} from './setting.entity';
 import {DEFAULT_SETTINGS} from './setting.config';
 import {SettingKey} from './setting.enums';
+import {
+	isSettingSensitive,
+	maskSensitiveValue,
+	deriveEncryptionKey,
+	encryptValue,
+	decryptValue,
+	parseSettingValue,
+} from './setting.helpers';
 
 @Injectable()
 export class SettingService implements OnModuleInit {
 	private readonly logger = new Logger(SettingService.name);
+	private encryption_key: Buffer | null = null;
 
 	constructor(
 		@InjectRepository(Setting)
 		private settingRepository: Repository<Setting>,
+		private configService: ConfigService,
 	) {}
 
 	/**
@@ -22,7 +33,25 @@ export class SettingService implements OnModuleInit {
 	 * This ensures all required settings exist in the database
 	 */
 	async onModuleInit(): Promise<void> {
+		this.initializeEncryption();
 		await this.initializeDefaults();
+	}
+
+	/* *******************************************************
+		Initialization
+	******************************************************** */
+
+	/**
+	 * Derive the encryption key from server.key
+	 */
+	private initializeEncryption(): void {
+		const base_key = this.configService.get<string>('server.key');
+		if (base_key) {
+			this.encryption_key = deriveEncryptionKey(base_key);
+			this.logger.debug('Setting encryption initialized');
+		} else {
+			this.logger.warn('No server.key configured; sensitive settings will not be encrypted at rest');
+		}
 	}
 
 	/**
@@ -46,37 +75,133 @@ export class SettingService implements OnModuleInit {
 		}
 	}
 
+	/* *******************************************************
+		Read
+	******************************************************** */
+
 	/**
 	 * Get all settings
-	 * @returns {Promise<Setting[]>} All settings
+	 * @returns {Promise<Setting[]>} All settings with decrypted values
 	 */
 	public async getSettings(): Promise<Setting[]> {
-		return this.settingRepository.find();
+		const settings = await this.settingRepository.find();
+		return settings.map((s) => this.decryptSetting(s));
 	}
 
 	/**
 	 * Get a setting by key
 	 * @param {SettingKey} key - The setting key to get
-	 * @returns {Promise<Setting>} The setting
+	 * @returns {Promise<Setting>} The setting with decrypted value
 	 */
 	public async getSetting(key: SettingKey): Promise<Setting> {
-		return this.settingRepository.findOne({where: {key}});
+		const setting = await this.settingRepository.findOne({where: {key}});
+		return setting ? this.decryptSetting(setting) : setting;
+	}
+
+	/**
+	 * Get a boolean setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<boolean>} The parsed boolean value, false if missing or empty
+	 */
+	public async getBooleanSetting(key: SettingKey): Promise<boolean> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return false;
+		return parseSettingValue(setting) === true;
+	}
+
+	/**
+	 * Get a string setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<string | null>} The string value, null if missing or empty
+	 */
+	public async getStringSetting(key: SettingKey): Promise<string | null> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return null;
+		return String(parseSettingValue(setting)) || null;
+	}
+
+	/**
+	 * Get a number setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<number | null>} The parsed number value, null if missing, empty, or NaN
+	 */
+	public async getNumberSetting(key: SettingKey): Promise<number | null> {
+		const setting = await this.getSetting(key);
+		if (!setting?.value) return null;
+		const parsed = parseSettingValue(setting);
+		return typeof parsed === 'number' && !isNaN(parsed) ? parsed : null;
+	}
+
+	/* *******************************************************
+		Write
+	******************************************************** */
+
+	/**
+	 * Update multiple settings by key
+	 * @param {SettingKey[]} keys - The setting keys to update
+	 * @param {string[]} values - The new values for the settings
+	 * @returns {Promise<Setting[]>} The updated settings with decrypted values
+	 */
+	public async updateSettings(keys: SettingKey[], values: string[]): Promise<Setting[]> {
+		const results: Setting[] = [];
+		for (let i = 0; i < keys.length; i++) {
+			results.push(await this.updateSetting(keys[i], values[i]));
+		}
+		return results;
 	}
 
 	/**
 	 * Update a setting by key
 	 * @param {SettingKey} key - The setting key to update
 	 * @param {string} value - The new value for the setting
-	 * @returns {Promise<Setting>} The updated setting
+	 * @returns {Promise<Setting>} The updated setting with decrypted value
 	 */
-	public async updateSetting(key: SettingKey, value: string): Promise<Setting> {
+	private async updateSetting(key: SettingKey, value: string): Promise<Setting> {
 		const setting = await this.settingRepository.findOne({
 			where: {key},
 		});
 		if (!setting) throw new Error(`Setting with key ${key} not found`);
-		setting.value = value;
+		setting.value = this.encryptIfSensitive(key, value);
 		const updated_setting = await this.settingRepository.save(setting);
-		this.logger.debug(`Updated setting: ${key} = ${value}`);
-		return updated_setting;
+		const log_value = isSettingSensitive(key, value) ? maskSensitiveValue(value) : value;
+		this.logger.debug(`Updated setting: ${key} = ${log_value}`);
+		return this.decryptSetting(updated_setting);
+	}
+
+	/* *******************************************************
+		Encryption
+	******************************************************** */
+
+	/**
+	 * Decrypt a setting's value if it is encrypted.
+	 * On decryption failure (e.g. key rotation), returns empty value and logs a warning.
+	 * @param {Setting} setting - The setting from the database
+	 * @returns {Setting} A copy with decrypted value
+	 */
+	private decryptSetting(setting: Setting): Setting {
+		if (!this.encryption_key) return setting;
+		try {
+			return {
+				...setting,
+				value: decryptValue(setting.value, this.encryption_key),
+			};
+		} catch (_error) {
+			this.logger.warn(`Failed to decrypt setting [${setting.key}]; value may need to be re-entered`);
+			return {...setting, value: ''};
+		}
+	}
+
+	/**
+	 * Encrypt a value if the setting is sensitive and encryption is available.
+	 * Empty values are not encrypted.
+	 * @param {SettingKey} key - The setting key
+	 * @param {string} value - The plaintext value
+	 * @returns {string} The encrypted value or the original value
+	 */
+	private encryptIfSensitive(key: SettingKey, value: string): string {
+		if (!this.encryption_key) return value;
+		if (!value) return value;
+		if (!isSettingSensitive(key, value)) return value;
+		return encryptValue(value, this.encryption_key);
 	}
 }

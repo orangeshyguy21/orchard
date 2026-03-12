@@ -280,6 +280,31 @@ export type ClnListClosedChannelsResponse = {
 	closedchannels: ClnClosedChannel[];
 };
 
+/* Node Info Types */
+
+export type ClnNode = {
+	nodeid: Buffer;
+	alias?: string;
+	color?: Buffer;
+};
+
+export type ClnListNodesResponse = {
+	nodes: ClnNode[];
+};
+
+/* Peer Types */
+
+export type ClnPeer = {
+	id: Buffer;
+	connected: boolean;
+	netaddr?: string[];
+	remote_addr?: string;
+};
+
+export type ClnListPeersResponse = {
+	peers: ClnPeer[];
+};
+
 /* Transaction Types (ListTransactions) */
 
 export type ClnTransactionInput = {

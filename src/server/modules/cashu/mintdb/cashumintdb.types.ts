@@ -84,27 +84,6 @@ export type CashuMintProofGroup = {
 	amounts: number[][];
 };
 
-export type CashuMintPromiseGroup = {
-	amount: number;
-	created_time: number;
-	keyset_ids: string[];
-	unit: MintUnit;
-	amounts: number[][];
-};
-
-export type CashuMintAnalytics = {
-	unit: string;
-	amount: number;
-	created_time: number;
-	operation_count: number;
-};
-
-export type CashuMintKeysetsAnalytics = {
-	keyset_id: string;
-	amount: number;
-	created_time: number;
-};
-
 export type CashuMintCount = {
 	count: number;
 };
@@ -117,10 +96,19 @@ export type CashuMintFee = {
 	time: number;
 };
 
-export type CashuMintKeysetCount = {
-	id: string;
-	proof_count: number;
-	promise_count: number;
+export type CashuMintProof = {
+	amount: number;
+	keyset_id: string;
+	unit: MintUnit;
+	state: MintProofState;
+	created_time: number;
+};
+
+export type CashuMintPromise = {
+	amount: number;
+	keyset_id: string;
+	unit: MintUnit;
+	created_time: number;
 };
 
 export type CashuMintDatabaseInfo = {

@@ -70,6 +70,18 @@ export class CrewUserService {
 		}
 	}
 
+	async updateUserTelegram(tag: string, id: string, telegram_chat_id: string | null): Promise<OrchardCrewUser> {
+		try {
+			const user = await this.userService.updateUser(id, {telegram_chat_id});
+			return new OrchardCrewUser(user);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.UserError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
 	async updateUser(tag: string, args: UserUpdateInput): Promise<OrchardCrewUser> {
 		try {
 			const user = await this.userService.updateUser(args.id, args);

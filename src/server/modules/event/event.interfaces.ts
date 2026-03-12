@@ -1,3 +1,5 @@
+/* Application Dependencies */
+import {EventLogMetadata} from '@server/modules/event/event.decorator';
 /* Local Dependencies */
 import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from './event.enums';
 
@@ -21,6 +23,20 @@ export interface CreateEventLogDetailInput {
 	status: EventLogDetailStatus;
 	error_code?: string | null;
 	error_message?: string | null;
+}
+
+/** Extracted context from a GraphQL execution context for event logging */
+export interface EventLogContext {
+	metadata: EventLogMetadata;
+	args: Record<string, any>;
+	actor_id: string;
+	actor_type: EventLogActorType;
+}
+
+/** Extracted error information from a GraphQL error */
+export interface EventLogError {
+	error_code: string | null;
+	error_message: string | null;
 }
 
 export interface EventLogFilters {

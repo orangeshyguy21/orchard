@@ -22,6 +22,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardValidators} from '@client/modules/form/validators';
@@ -43,7 +44,7 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {Nut15Method, Nut17Commands} from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
-import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/generated.types';
+import {OrchardNut4Method, OrchardNut5Method, AssistantToolName} from '@shared/generated.types';
 
 enum TertiaryNav {
 	Nut4 = 'nav4',
@@ -189,6 +190,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	constructor(
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public eventService: EventService,
@@ -232,8 +234,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
-			this.subscriptions.add(this.getAgentSubscription());
+		if (this.settingAppService.getSetting('ai_enabled')) {
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -392,8 +394,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			const form_value = this.form_config.value;
 			let context = `# Mint Configuration\n\n`;
 			context += `## Minting\n`;
@@ -410,13 +412,13 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				const bolt11 = form_value.melting.sat.bolt11;
 				context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
 			}
-			this.aiService.openAiSocket(agent, content, context);
+			this.aiService.openAiSocket(assistant, content, context);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -862,8 +864,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		AI                      
 	******************************************************** */
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AssistantToolName.MintEnabledUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
 			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
@@ -871,7 +873,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_group.get('enabled')?.markAsDirty();
 			form_group.get('enabled')?.setValue(enabled);
 		}
-		if (tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintQuoteTtlUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const ttl = tool_call.function.arguments.ttl;
 			const form_control = operation === 'minting' ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
@@ -879,7 +881,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(ttl);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMinUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintMethodMinUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
@@ -890,7 +892,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(min_amount);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMaxUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintMethodMaxUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
@@ -901,7 +903,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_control?.markAsDirty();
 			form_control?.setValue(max_amount);
 		}
-		if (tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintMethodDescriptionUpdate) {
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
 			const description = tool_call.function.arguments.description;

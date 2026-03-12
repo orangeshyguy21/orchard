@@ -2,11 +2,11 @@
 	<mat-accordion displayMode="flat" class="orc-low-accordion orc-fullscreen-accordion flex-grow">
 		<mat-expansion-panel [expanded]="view() === 0" (opened)="setView(0)" (closed)="setView(1)">
 			<mat-expansion-panel-header>
-				<orc-ai-agent [agent]="agent_definition()"></orc-ai-agent>
+				<orc-ai-assistant [assistant]="assistant_definition()"></orc-ai-assistant>
 			</mat-expansion-panel-header>
 			<div>
 				<div class="ai-chat-log-main">
-					<orc-ai-agent-definition [agent]="agent_definition()"></orc-ai-agent-definition>
+					<orc-ai-assistant-definition [assistant]="assistant_definition()"></orc-ai-assistant-definition>
 				</div>
 			</div>
 		</mat-expansion-panel>
@@ -29,7 +29,7 @@
 								[message]="message"
 								[revision]="revision()"
 								[active_chat]="active_chat()"
-								[agent]="agent_definition()"
+								[assistant]="assistant_definition()"
 								[index]="i"
 								[conversation_length]="conversation()?.messages?.length"
 							></orc-ai-chat-message-assistant>

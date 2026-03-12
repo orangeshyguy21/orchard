@@ -30,13 +30,16 @@ export class SettingResolver {
 	@LogEvent({
 		type: EventLogType.UPDATE,
 		field: 'setting',
-		arg_keys: ['value'],
+		arg_keys: ['values'],
 		old_value_key: 'value',
 	})
-	@Mutation(() => OrchardSetting)
-	async setting_update(@Args('key', {type: () => SettingKey}) key: SettingKey, @Args('value') value: string): Promise<OrchardSetting> {
-		const tag = 'UPDATE { setting }';
+	@Mutation(() => [OrchardSetting])
+	async settings_update(
+		@Args('keys', {type: () => [SettingKey]}) keys: SettingKey[],
+		@Args('values', {type: () => [String]}) values: string[],
+	): Promise<OrchardSetting[]> {
+		const tag = 'UPDATE { settings }';
 		this.logger.debug(tag);
-		return await this.settingService.updateSetting(tag, key, value);
+		return await this.settingService.updateSettings(tag, keys, values);
 	}
 }

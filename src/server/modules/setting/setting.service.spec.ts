@@ -2,6 +2,7 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
 import {getRepositoryToken} from '@nestjs/typeorm';
+import {ConfigService} from '@nestjs/config';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 /* Local Dependencies */
@@ -9,6 +10,7 @@ import {SettingService} from './setting.service';
 import {Setting} from './setting.entity';
 import {SettingKey, SettingValue} from './setting.enums';
 import {DEFAULT_SETTINGS} from './setting.config';
+import {isEncrypted} from './setting.helpers';
 
 /**
  * Test suite for SettingService
@@ -33,6 +35,10 @@ describe('SettingService', () => {
 		save: jest.fn(),
 	};
 
+	const mock_config_service = {
+		get: jest.fn().mockReturnValue('test-secret-key'),
+	};
+
 	beforeEach(async () => {
 		// reset all mocks before each test
 		jest.clearAllMocks();
@@ -43,6 +49,10 @@ describe('SettingService', () => {
 				{
 					provide: getRepositoryToken(Setting),
 					useValue: mock_repository,
+				},
+				{
+					provide: ConfigService,
+					useValue: mock_config_service,
 				},
 			],
 		}).compile();
@@ -172,10 +182,10 @@ describe('SettingService', () => {
 	});
 
 	/**
-	 * Test updateSetting method
+	 * Test updateSettings method
 	 */
-	describe('updateSetting', () => {
-		it('should update a setting value', async () => {
+	describe('updateSettings', () => {
+		it('should update a single setting value', async () => {
 			// arrange
 			const updated_value = 'false';
 			const updated_setting = {...mock_setting, value: updated_value};
@@ -183,10 +193,11 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue(updated_setting);
 
 			// act
-			const result = await service.updateSetting(SettingKey.BITCOIN_ORACLE, updated_value);
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE], [updated_value]);
 
 			// assert
-			expect(result.value).toBe(updated_value);
+			expect(result).toHaveLength(1);
+			expect(result[0].value).toBe(updated_value);
 			expect(mock_repository.findOne).toHaveBeenCalledWith({
 				where: {key: SettingKey.BITCOIN_ORACLE},
 			});
@@ -196,12 +207,35 @@ describe('SettingService', () => {
 			});
 		});
 
+		it('should update multiple settings', async () => {
+			// arrange
+			const mock_ai_setting: Setting = {
+				key: SettingKey.AI_ENABLED,
+				value: 'false',
+				value_type: SettingValue.BOOLEAN,
+				description: 'Whether AI is enabled',
+			};
+			mock_repository.findOne.mockResolvedValueOnce(mock_setting).mockResolvedValueOnce(mock_ai_setting);
+			mock_repository.save
+				.mockResolvedValueOnce({...mock_setting, value: 'false'})
+				.mockResolvedValueOnce({...mock_ai_setting, value: 'true'});
+
+			// act
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE, SettingKey.AI_ENABLED], ['false', 'true']);
+
+			// assert
+			expect(result).toHaveLength(2);
+			expect(result[0].value).toBe('false');
+			expect(result[1].value).toBe('true');
+			expect(mock_repository.save).toHaveBeenCalledTimes(2);
+		});
+
 		it('should throw error when setting does not exist', async () => {
 			// arrange
 			mock_repository.findOne.mockResolvedValue(null);
 
 			// act & assert
-			await expect(service.updateSetting(SettingKey.BITCOIN_ORACLE, 'false')).rejects.toThrow(
+			await expect(service.updateSettings([SettingKey.BITCOIN_ORACLE], ['false'])).rejects.toThrow(
 				`Setting with key ${SettingKey.BITCOIN_ORACLE} not found`,
 			);
 			expect(mock_repository.findOne).toHaveBeenCalledWith({
@@ -218,10 +252,10 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue(updated_setting);
 
 			// act
-			const result = await service.updateSetting(SettingKey.BITCOIN_ORACLE, updated_value);
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE], [updated_value]);
 
 			// assert
-			expect(result.value).toBe(updated_value);
+			expect(result[0].value).toBe(updated_value);
 			expect(mock_repository.save).toHaveBeenCalled();
 		});
 
@@ -232,7 +266,7 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue({...mock_setting, value: new_value});
 
 			// act
-			await service.updateSetting(SettingKey.BITCOIN_ORACLE, new_value);
+			await service.updateSettings([SettingKey.BITCOIN_ORACLE], [new_value]);
 
 			// assert
 			expect(mock_repository.save).toHaveBeenCalledTimes(1);
@@ -242,6 +276,223 @@ describe('SettingService', () => {
 					value: new_value,
 				}),
 			);
+		});
+	});
+
+	/* *******************************************************
+		Typed Accessors
+	******************************************************** */
+
+	describe('getBooleanSetting', () => {
+		it('should return true for boolean setting with value true', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: 'true', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(true);
+		});
+
+		it('should return false for boolean setting with value false', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: 'false', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+
+		it('should return false when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+
+		it('should return false when value is empty', async () => {
+			mock_repository.findOne.mockResolvedValue({...mock_setting, value: '', value_type: SettingValue.BOOLEAN});
+			expect(await service.getBooleanSetting(SettingKey.BITCOIN_ORACLE)).toBe(false);
+		});
+	});
+
+	describe('getStringSetting', () => {
+		it('should return the string value', async () => {
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.AI_VENDOR,
+				value: 'ollama',
+				value_type: SettingValue.STRING,
+				description: null,
+			});
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBe('ollama');
+		});
+
+		it('should return null when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBeNull();
+		});
+
+		it('should return null for empty string value', async () => {
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.AI_VENDOR,
+				value: '',
+				value_type: SettingValue.STRING,
+				description: null,
+			});
+			expect(await service.getStringSetting(SettingKey.AI_VENDOR)).toBeNull();
+		});
+	});
+
+	describe('getNumberSetting', () => {
+		it('should return the parsed number', async () => {
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: '42',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBe(42);
+		});
+
+		it('should return null when setting does not exist', async () => {
+			mock_repository.findOne.mockResolvedValue(null);
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+
+		it('should return null for empty value', async () => {
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: '',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+
+		it('should return null for NaN values', async () => {
+			mock_repository.findOne.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: 'abc',
+				value_type: SettingValue.NUMBER,
+				description: null,
+			});
+			expect(await service.getNumberSetting(SettingKey.BITCOIN_ORACLE)).toBeNull();
+		});
+	});
+
+	/* *******************************************************
+		Encryption
+	******************************************************** */
+
+	describe('encryption', () => {
+		it('should encrypt sensitive settings on write', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-newkey123']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(isEncrypted(saved.value)).toBe(true);
+			expect(saved.value).not.toContain('sk-or-v1-newkey123');
+		});
+
+		it('should not encrypt non-sensitive settings on write', async () => {
+			// arrange
+			mock_repository.findOne.mockResolvedValue(mock_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.BITCOIN_ORACLE], ['false']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('false');
+		});
+
+		it('should not encrypt empty values', async () => {
+			// arrange
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+			await service.onModuleInit();
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['']);
+
+			// assert
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('');
+		});
+
+		it('should decrypt sensitive settings on read', async () => {
+			// arrange
+			await service.onModuleInit();
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'old-key',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// first encrypt it
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-secret']);
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+
+			// now read it back
+			mock_repository.findOne.mockResolvedValue(saved);
+
+			// act
+			const result = await service.getSetting(SettingKey.AI_OPENROUTER_KEY);
+
+			// assert
+			expect(result.value).toBe('sk-or-v1-secret');
+		});
+
+		it('should return empty value when decryption fails (key rotation)', async () => {
+			// arrange - simulate a value encrypted with a different key
+			mock_config_service.get.mockReturnValue('different-secret-key');
+			await service.onModuleInit();
+			const encrypted_with_old_key = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'enc:AAAAAAAAAAAAAAAA:AAAAAAAAAAAAAAAAAAAAAA==:AAAA',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(encrypted_with_old_key);
+
+			// act
+			const result = await service.getSetting(SettingKey.AI_OPENROUTER_KEY);
+
+			// assert
+			expect(result.value).toBe('');
+		});
+
+		it('should skip encryption when server.key is not configured', async () => {
+			// arrange
+			mock_config_service.get.mockReturnValue(undefined);
+			await service.onModuleInit();
+			const sensitive_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: '',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(sensitive_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// act
+			await service.updateSettings([SettingKey.AI_OPENROUTER_KEY], ['sk-or-v1-plaintext']);
+
+			// assert - stored as plaintext
+			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
+			expect(saved.value).toBe('sk-or-v1-plaintext');
 		});
 	});
 });

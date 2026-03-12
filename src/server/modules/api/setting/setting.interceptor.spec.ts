@@ -73,6 +73,10 @@ describe('SettingInterceptor', () => {
 					provide: EventLogService,
 					useValue: {
 						createEvent: jest.fn().mockResolvedValue({}),
+						logEvent: jest.fn().mockImplementation(function (this: any, input: any) {
+							if (input.details.length === 0) return;
+							this.createEvent(input).catch(() => {});
+						}),
 					},
 				},
 				{
@@ -135,7 +139,7 @@ describe('SettingInterceptor', () => {
 				description: 'Whether the bitcoin oracle is enabled',
 			} as any);
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const handler = createMockCallHandler({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
 
 			// act
@@ -183,7 +187,7 @@ describe('SettingInterceptor', () => {
 			} as any);
 
 			const mock_error = {message: 'Update failed', extensions: {code: 'SETTING_ERROR', details: 'Invalid value'}};
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'invalid'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['invalid']});
 			const handler: CallHandler = {
 				handle: jest.fn().mockReturnValue(throwError(() => mock_error)),
 			};
@@ -219,7 +223,7 @@ describe('SettingInterceptor', () => {
 			reflector.get.mockReturnValue(mock_metadata);
 			settingService.getSetting.mockRejectedValue(new Error('DB error'));
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const handler = createMockCallHandler({});
 
 			// act
@@ -232,6 +236,73 @@ describe('SettingInterceptor', () => {
 					details: [
 						expect.objectContaining({
 							old_value: null,
+							new_value: 'true',
+						}),
+					],
+				}),
+			);
+		});
+	});
+
+	/**
+	 * Test sensitive value redaction in event logs
+	 */
+	describe('sensitive value redaction', () => {
+		it('should mask sensitive values in event log', async () => {
+			// arrange
+			reflector.get.mockReturnValue(mock_metadata);
+			settingService.getSetting.mockResolvedValue({
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'sk-or-v1-old-secret',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			} as any);
+
+			const context = createMockContext({keys: [SettingKey.AI_OPENROUTER_KEY], values: ['sk-or-v1-new-secret']});
+			const handler = createMockCallHandler({key: SettingKey.AI_OPENROUTER_KEY, value: 'sk-or-v1-new-secret'});
+
+			// act
+			const result = await interceptor.intercept(context, handler);
+			await lastValueFrom(result);
+
+			// assert
+			expect(eventLogService.createEvent).toHaveBeenCalledWith(
+				expect.objectContaining({
+					details: [
+						expect.objectContaining({
+							field: SettingKey.AI_OPENROUTER_KEY,
+							old_value: '\u2022\u2022\u2022\u2022cret',
+							new_value: '\u2022\u2022\u2022\u2022cret',
+							status: EventLogDetailStatus.SUCCESS,
+						}),
+					],
+				}),
+			);
+		});
+
+		it('should not mask non-sensitive values in event log', async () => {
+			// arrange
+			reflector.get.mockReturnValue(mock_metadata);
+			settingService.getSetting.mockResolvedValue({
+				key: SettingKey.BITCOIN_ORACLE,
+				value: 'false',
+				value_type: SettingValue.BOOLEAN,
+				description: 'Whether the bitcoin oracle is enabled',
+			} as any);
+
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
+			const handler = createMockCallHandler({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+
+			// act
+			const result = await interceptor.intercept(context, handler);
+			await lastValueFrom(result);
+
+			// assert
+			expect(eventLogService.createEvent).toHaveBeenCalledWith(
+				expect.objectContaining({
+					details: [
+						expect.objectContaining({
+							old_value: 'false',
 							new_value: 'true',
 						}),
 					],
@@ -255,7 +326,7 @@ describe('SettingInterceptor', () => {
 			} as any);
 			eventLogService.createEvent.mockRejectedValue(new Error('Logging failed'));
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const expected_result = {key: SettingKey.BITCOIN_ORACLE, value: 'true'};
 			const handler = createMockCallHandler(expected_result);
 

@@ -21,7 +21,7 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import {MintAnalyticsInterval} from '@shared/generated.types';
+import {AnalyticsInterval} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets-chart',
@@ -36,7 +36,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 
 	/* Inputs */
 	public readonly locale = input.required<string>();
-	public readonly interval = input.required<MintAnalyticsInterval>();
+	public readonly interval = input.required<AnalyticsInterval>();
 	public readonly keysets = input.required<MintKeyset[]>();
 	public readonly keysets_analytics = input.required<MintAnalyticKeyset[]>();
 	public readonly keysets_analytics_pre = input.required<MintAnalyticKeyset[]>();
@@ -160,7 +160,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			const timestamp_range = getAllPossibleTimestamps(min_x, timestamp_last, interval);
 			const data_keyed_by_timestamp = data.reduce(
 				(acc, item) => {
-					acc[item.created_time] = item.amount;
+					acc[item.date] = Number(item.amount);
 					return acc;
 				},
 				{} as Record<string, number>,
@@ -226,17 +226,17 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		if (preceding_data.length === 0) return analytics;
 
 		for (const preceding of preceding_data) {
-			preceding.created_time = timestamp_first;
+			preceding.date = timestamp_first;
 			const analytics_for_id = analytics[preceding.keyset_id];
 			if (!analytics_for_id) {
 				analytics[preceding.keyset_id] = [preceding];
 				continue;
 			}
-			const matching_datapoint = analytics_for_id.find((a) => a.created_time === preceding.created_time);
+			const matching_datapoint = analytics_for_id.find((a) => a.date === preceding.date);
 			if (!matching_datapoint) {
 				analytics_for_id.unshift(preceding);
 			} else {
-				matching_datapoint.amount = matching_datapoint.amount + preceding.amount;
+				matching_datapoint.amount = String(BigInt(matching_datapoint.amount) + BigInt(preceding.amount));
 			}
 		}
 		return analytics;

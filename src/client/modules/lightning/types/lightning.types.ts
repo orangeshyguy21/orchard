@@ -7,8 +7,7 @@ import {
 	OrchardLightningRequest,
 	OrchardLightningAnalytics,
 	OrchardLightningAnalyticsBackfillStatus,
-	LightningAnalyticsInterval,
-	LightningAnalyticsMetric,
+	AnalyticsInterval,
 } from '@shared/generated.types';
 
 export type LightningInfoResponse = {
@@ -35,16 +34,15 @@ export type LightningRequestResponse = {
 	lightning_request: OrchardLightningRequest;
 };
 
-export type LightningAnalyticsResponse = {
-	lightning_analytics: OrchardLightningAnalytics[];
+export type LightningAnalyticsLocalBalanceResponse = {
+	lightning_analytics_local_balance: OrchardLightningAnalytics[];
 };
 
 export type LightningAnalyticsArgs = {
 	date_start?: number;
 	date_end?: number;
-	interval?: LightningAnalyticsInterval;
+	interval?: AnalyticsInterval;
 	timezone?: string;
-	metrics?: LightningAnalyticsMetric[];
 };
 
 export type LightningAnalyticsBackfillStatusResponse = {

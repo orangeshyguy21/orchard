@@ -11,7 +11,7 @@ import {EventLogService} from '@client/modules/event/services/event-log/event-lo
 /* Local Dependencies */
 import {EventSectionComponent} from './components/event-section/event-section.component';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 
 const eventLogGenesisResolver: ResolveFn<number> = () => {
 	const eventLogService = inject(EventLogService);
@@ -42,7 +42,7 @@ const eventLogGenesisResolver: ResolveFn<number> = () => {
 						data: {
 							section: 'event',
 							sub_section: 'dashboard',
-							agent: AiAgent.EventLog,
+							assistant: AiAssistant.EventLog,
 						},
 					},
 				],

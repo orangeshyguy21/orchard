@@ -489,6 +489,34 @@ export type LndListChannelsResponse = {
 	channels: LndChannel[];
 };
 
+/* Node Info Types */
+
+export type LndNodeInfo = {
+	node: {alias: string; pub_key: string; color: string};
+	num_channels: number;
+	total_capacity: string;
+};
+
+/* Peer Types */
+
+export type LndPeer = {
+	pub_key: string;
+	address: string;
+	bytes_sent: string;
+	bytes_recv: string;
+	sat_sent: string;
+	sat_recv: string;
+	inbound: boolean;
+	ping_time: string;
+	sync_type: string;
+	flap_count: number;
+	last_flap_ns: string;
+};
+
+export type LndListPeersResponse = {
+	peers: LndPeer[];
+};
+
 /* Transaction Types */
 
 export enum LndOutputScriptType {

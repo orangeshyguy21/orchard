@@ -22,7 +22,7 @@ describe('MintMeltQuoteService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				MintMeltQuoteService,
-				{provide: CashuMintDatabaseService, useValue: {getMintMeltQuotes: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {listMeltQuotes: jest.fn()}},
 				{provide: CashuMintRpcService, useValue: {updateNut05: jest.fn()}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
@@ -40,7 +40,7 @@ describe('MintMeltQuoteService', () => {
 	});
 
 	it('getMintMeltQuotes returns OrchardMintMeltQuote[]', async () => {
-		mintDbService.getMintMeltQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
+		mintDbService.listMeltQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
 		const result = await mintMeltQuoteService.getMintMeltQuotes('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintMeltQuote);
 	});
@@ -52,7 +52,7 @@ describe('MintMeltQuoteService', () => {
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mintDbService.getMintMeltQuotes.mockRejectedValue(new Error('boom'));
+		mintDbService.listMeltQuotes.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintMeltQuoteService.getMintMeltQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 		const calls = errorService.resolveError.mock.calls;

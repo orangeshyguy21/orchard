@@ -73,7 +73,13 @@ describe('MintMintQuoteInterceptor', () => {
 				},
 				{
 					provide: EventLogService,
-					useValue: {createEvent: jest.fn().mockResolvedValue({})},
+					useValue: {
+						createEvent: jest.fn().mockResolvedValue({}),
+						logEvent: jest.fn().mockImplementation(function (this: any, input: any) {
+							if (input.details.length === 0) return;
+							this.createEvent(input).catch(() => {});
+						}),
+					},
 				},
 				{
 					provide: CashuMintApiService,
@@ -81,7 +87,7 @@ describe('MintMintQuoteInterceptor', () => {
 				},
 				{
 					provide: CashuMintDatabaseService,
-					useValue: {getMintMintQuote: jest.fn()},
+					useValue: {lookupMintQuote: jest.fn()},
 				},
 				{
 					provide: MintService,
@@ -250,7 +256,7 @@ describe('MintMintQuoteInterceptor', () => {
 		it('should log quote state change with correct entity type and id', async () => {
 			// arrange
 			reflector.get.mockReturnValue(quote_metadata);
-			cashuMintDatabaseService.getMintMintQuote.mockResolvedValue({state: 'UNPAID'} as any);
+			cashuMintDatabaseService.lookupMintQuote.mockResolvedValue({state: 'UNPAID'} as any);
 			const context = createMockContext({quote_id: 'quote-789', state: 'PAID'});
 			const handler = createMockCallHandler({});
 

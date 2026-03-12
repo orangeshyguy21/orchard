@@ -1,0 +1,24 @@
+<div class="ai-assistant-definition-container">
+	<div class="flex flex-column flex-gap-2">
+		<div class="assistant-property">
+			<div class="assistant-property-label">Description</div>
+			<div class="assistant-property-value">
+				{{ assistant?.description }}
+			</div>
+		</div>
+		<div class="assistant-property">
+			<div class="assistant-property-label">Assistant prompt</div>
+			<div class="assistant-property-value">
+				{{ assistant?.system_message?.content }}
+			</div>
+		</div>
+		<div class="assistant-property">
+			<div class="assistant-property-label">Tools</div>
+			<div class="assistant-property-value flex flex-column flex-gap-0-5">
+				@for (tool of assistant?.tools; track tool.function.name) {
+					<orc-ai-assistant-definition-tool [tool]="tool"></orc-ai-assistant-definition-tool>
+				}
+			</div>
+		</div>
+	</div>
+</div>

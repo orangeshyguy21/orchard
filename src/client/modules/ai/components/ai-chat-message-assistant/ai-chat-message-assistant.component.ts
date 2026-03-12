@@ -5,7 +5,7 @@ import {marked} from 'marked';
 import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 /* Shared Dependencies */
 import {AiMessageRole} from '@shared/generated.types';
 
@@ -19,12 +19,12 @@ import {AiMessageRole} from '@shared/generated.types';
 export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public message!: AiChatCompiledMessage;
 	@Input() public revision!: number;
-	@Input() public agent!: AiAgentDefinition | null;
+	@Input() public assistant!: AiAssistantDefinition | null;
 	@Input() public active_chat!: boolean;
 	@Input() public index!: number;
 	@Input() public conversation_length!: number | undefined;
 
-	public tool_roll = AiMessageRole.Function;
+	public tool_roll = AiMessageRole.Tool;
 	public marked_content!: string;
 	public marked_thinking_content!: string;
 	public think_duration!: number;

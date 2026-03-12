@@ -21,13 +21,14 @@ describe('PublicPortService', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('returns OrchardPublicPort[] from getPortsData', async () => {
+	it('blocks private IPs (SSRF protection)', async () => {
 		const result = await service.getPortsData([{host: '127.0.0.1', port: 99999}]);
 
 		expect(result).toHaveLength(1);
 		expect(result[0]).toBeInstanceOf(OrchardPublicPort);
 		expect(result[0].host).toBe('127.0.0.1');
-		expect(result[0].port).toBe(99999);
+		expect(result[0].reachable).toBe(false);
+		expect(result[0].error).toContain('private/reserved');
 	});
 
 	it('returns unreachable for .onion without proxy configured', async () => {

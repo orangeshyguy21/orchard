@@ -4,11 +4,12 @@ import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 /* Shared Dependencies */
 import {
 	OrchardAiChatChunk,
+	OrchardAiHealth,
 	OrchardAiModel,
-	OrchardAiAgent,
-	AiFunctionName,
+	OrchardAiAssistant,
+	AssistantToolName,
 	MintUnit,
-	MintAnalyticsInterval,
+	AnalyticsInterval,
 	OrchardAiChatStream,
 } from '@shared/generated.types';
 
@@ -20,8 +21,12 @@ export type AiModelResponse = {
 	ai_models: OrchardAiModel[];
 };
 
-export type AiAgentResponse = {
-	ai_agent: OrchardAiAgent;
+export type AiAssistantResponse = {
+	ai_assistant: OrchardAiAssistant;
+};
+
+export type AiHealthResponse = {
+	ai_health: OrchardAiHealth;
 };
 
 export type AiChatAbortResponse = {
@@ -39,7 +44,7 @@ export type AiFunction =
 	| AiFunctionUpdateCrewUserActive
 	| AiFunctionUpdateDateRange
 	| AiFunctionUpdateMintAnalyticsUnits
-	| AiFunctionUpdateMintAnalyticsInterval
+	| AiFunctionUpdateAnalyticsInterval
 	| AiFunctionUpdateMintAnalyticsType
 	| AiFunctionUpdateMintName
 	| AiFunctionUpdateMintDescription
@@ -71,63 +76,63 @@ export type AiFunction =
 	| AiFunctionResetEventLogFilters;
 
 export type AiFunctionUpdateSearch = {
-	name: AiFunctionName.UpdateSearch;
+	name: AssistantToolName.UpdateSearch;
 	arguments: {
 		search: string;
 	};
 };
 
 export type AiFunctionUpdateCrewStates = {
-	name: AiFunctionName.CrewStatesUpdate;
+	name: AssistantToolName.CrewStatesUpdate;
 	arguments: {
 		states: string[];
 	};
 };
 
 export type AiFunctionUpdateCrewRoles = {
-	name: AiFunctionName.CrewRolesUpdate;
+	name: AssistantToolName.CrewRolesUpdate;
 	arguments: {
 		roles: string[];
 	};
 };
 
 export type AiFunctionUpdateCrewInviteRole = {
-	name: AiFunctionName.CrewInviteRoleUpdate;
+	name: AssistantToolName.CrewInviteRoleUpdate;
 	arguments: {
 		role: string;
 	};
 };
 
 export type AiFunctionUpdateCrewInviteExpirationEnabled = {
-	name: AiFunctionName.CrewInviteExpirationEnabledUpdate;
+	name: AssistantToolName.CrewInviteExpirationEnabledUpdate;
 	arguments: {
 		expiration_enabled: boolean;
 	};
 };
 
 export type AiFunctionUpdateCrewInviteExpiration = {
-	name: AiFunctionName.CrewInviteExpirationUpdate;
+	name: AssistantToolName.CrewInviteExpirationUpdate;
 	arguments: {
 		expiration_datetime: string;
 	};
 };
 
 export type AiFunctionUpdateCrewLabel = {
-	name: AiFunctionName.CrewLabelUpdate;
+	name: AssistantToolName.CrewLabelUpdate;
 	arguments: {
 		label: string;
 	};
 };
 
 export type AiFunctionUpdateCrewUserActive = {
-	name: AiFunctionName.CrewUserActiveUpdate;
+	name: AssistantToolName.CrewUserActiveUpdate;
 	arguments: {
 		active: boolean;
 	};
 };
 
 export type AiFunctionUpdateDateRange = {
-	name: AiFunctionName.DateRangeUpdate;
+	name: AssistantToolName.DateRangeUpdate;
 	arguments: {
 		date_start: string;
 		date_end: string;
@@ -135,70 +140,70 @@ export type AiFunctionUpdateDateRange = {
 };
 
 export type AiFunctionUpdateMintAnalyticsUnits = {
-	name: AiFunctionName.MintAnalyticsUnitsUpdate;
+	name: AssistantToolName.MintAnalyticsUnitsUpdate;
 	arguments: {
 		units: MintUnit[];
 	};
 };
 
-export type AiFunctionUpdateMintAnalyticsInterval = {
-	name: AiFunctionName.MintAnalyticsIntervalUpdate;
+export type AiFunctionUpdateAnalyticsInterval = {
+	name: AssistantToolName.MintAnalyticsIntervalUpdate;
 	arguments: {
-		interval: MintAnalyticsInterval;
+		interval: AnalyticsInterval;
 	};
 };
 
 export type AiFunctionUpdateMintAnalyticsType = {
-	name: AiFunctionName.MintAnalyticsTypeUpdate;
+	name: AssistantToolName.MintAnalyticsTypeUpdate;
 	arguments: {
 		type: ChartType;
 	};
 };
 
 export type AiFunctionUpdateMintName = {
-	name: AiFunctionName.MintNameUpdate;
+	name: AssistantToolName.MintNameUpdate;
 	arguments: {
 		name: string;
 	};
 };
 
 export type AiFunctionUpdateMintDescription = {
-	name: AiFunctionName.MintDescriptionUpdate;
+	name: AssistantToolName.MintDescriptionUpdate;
 	arguments: {
 		description: string;
 	};
 };
 
 export type AiFunctionUpdateMintIconUrl = {
-	name: AiFunctionName.MintIconUrlUpdate;
+	name: AssistantToolName.MintIconUrlUpdate;
 	arguments: {
 		icon_url: string;
 	};
 };
 
 export type AiFunctionUpdateMintDescriptionLong = {
-	name: AiFunctionName.MintDescriptionLongUpdate;
+	name: AssistantToolName.MintDescriptionLongUpdate;
 	arguments: {
 		description_long: string;
 	};
 };
 
 export type AiFunctionUpdateMintMotd = {
-	name: AiFunctionName.MintMotdUpdate;
+	name: AssistantToolName.MintMotdUpdate;
 	arguments: {
 		motd: string;
 	};
 };
 
 export type AiFunctionUpdateMintUrlAdd = {
-	name: AiFunctionName.MintUrlAdd;
+	name: AssistantToolName.MintUrlAdd;
 	arguments: {
 		url: string;
 	};
 };
 
 export type AiFunctionUpdateMintUrlUpdate = {
-	name: AiFunctionName.MintUrlUpdate;
+	name: AssistantToolName.MintUrlUpdate;
 	arguments: {
 		old_url: string;
 		url: string;
@@ -206,14 +211,14 @@ export type AiFunctionUpdateMintUrlUpdate = {
 };
 
 export type AiFunctionUpdateMintUrlRemove = {
-	name: AiFunctionName.MintUrlRemove;
+	name: AssistantToolName.MintUrlRemove;
 	arguments: {
 		url: string;
 	};
 };
 
 export type AiFunctionAddMintContact = {
-	name: AiFunctionName.MintContactAdd;
+	name: AssistantToolName.MintContactAdd;
 	arguments: {
 		method: 'email' | 'nostr' | 'twitter';
 		info: string;
@@ -221,7 +226,7 @@ export type AiFunctionAddMintContact = {
 };
 
 export type AiFunctionUpdateMintContact = {
-	name: AiFunctionName.MintContactUpdate;
+	name: AssistantToolName.MintContactUpdate;
 	arguments: {
 		old_method: 'email' | 'nostr' | 'twitter';
 		old_info: string;
@@ -231,7 +236,7 @@ export type AiFunctionUpdateMintContact = {
 };
 
 export type AiFunctionRemoveMintContact = {
-	name: AiFunctionName.MintContactRemove;
+	name: AssistantToolName.MintContactRemove;
 	arguments: {
 		method: 'email' | 'nostr' | 'twitter';
 		info: string;
@@ -239,7 +244,7 @@ export type AiFunctionRemoveMintContact = {
 };
 
 export type AiFunctionUpdateMintEnabled = {
-	name: AiFunctionName.MintEnabledUpdate;
+	name: AssistantToolName.MintEnabledUpdate;
 	arguments: {
 		enabled: boolean;
 		operation: 'minting' | 'melting';
@@ -247,7 +252,7 @@ export type AiFunctionUpdateMintEnabled = {
 };
 
 export type AiFunctionUpdateMintQuoteTtl = {
-	name: AiFunctionName.MintQuoteTtlUpdate;
+	name: AssistantToolName.MintQuoteTtlUpdate;
 	arguments: {
 		ttl: number;
 		operation: 'minting' | 'melting';
@@ -255,7 +260,7 @@ export type AiFunctionUpdateMintQuoteTtl = {
 };
 
 export type AiFunctionUpdateMintMethodMin = {
-	name: AiFunctionName.MintMethodMinUpdate;
+	name: AssistantToolName.MintMethodMinUpdate;
 	arguments: {
 		min_amount: number;
 		operation: 'minting' | 'melting';
@@ -265,7 +270,7 @@ export type AiFunctionUpdateMintMethodMin = {
 };
 
 export type AiFunctionUpdateMintMethodMax = {
-	name: AiFunctionName.MintMethodMaxUpdate;
+	name: AssistantToolName.MintMethodMaxUpdate;
 	arguments: {
 		max_amount: number;
 		operation: 'minting' | 'melting';
@@ -275,7 +280,7 @@ export type AiFunctionUpdateMintMethodMax = {
 };
 
 export type AiFunctionUpdateMintMethodDescription = {
-	name: AiFunctionName.MintMethodDescriptionUpdate;
+	name: AssistantToolName.MintMethodDescriptionUpdate;
 	arguments: {
 		description: boolean;
 		method: string;
@@ -284,83 +289,83 @@ export type AiFunctionUpdateMintMethodDescription = {
 };
 
 export type AiFunctionUpdateMintKeysetStatus = {
-	name: AiFunctionName.MintKeysetStatusUpdate;
+	name: AssistantToolName.MintKeysetStatusUpdate;
 	arguments: {
 		statuses: string[];
 	};
 };
 
 export type AiFunctionUpdateMintKeysetRotationUnit = {
-	name: AiFunctionName.MintKeysetRotationUnitUpdate;
+	name: AssistantToolName.MintKeysetRotationUnitUpdate;
 	arguments: {
 		unit: MintUnit;
 	};
 };
 
 export type AiFunctionUpdateMintKeysetRotationInputFeePpk = {
-	name: AiFunctionName.MintKeysetRotationInputFeePpkUpdate;
+	name: AssistantToolName.MintKeysetRotationInputFeePpkUpdate;
 	arguments: {
 		input_fee_ppk: number;
 	};
 };
 
 export type AiFunctionUpdateMintKeysetRotationAmounts = {
-	name: AiFunctionName.MintKeysetRotationAmountsUpdate;
+	name: AssistantToolName.MintKeysetRotationAmountsUpdate;
 	arguments: {
 		amounts: number[];
 	};
 };
 
 export type AiFunctionUpdateMintDatabaseDataType = {
-	name: AiFunctionName.MintDatabaseDataTypeUpdate;
+	name: AssistantToolName.MintDatabaseDataTypeUpdate;
 	arguments: {
 		type: MintDataType;
 	};
 };
 
 export type AiFunctionUpdateMintDatabaseStates = {
-	name: AiFunctionName.MintDatabaseStatesUpdate;
+	name: AssistantToolName.MintDatabaseStatesUpdate;
 	arguments: {
 		states: string[];
 	};
 };
 
 export type AiFunctionUpdateMintBackupFilename = {
-	name: AiFunctionName.MintBackupFilenameUpdate;
+	name: AssistantToolName.MintBackupFilenameUpdate;
 	arguments: {
 		filename: string;
 	};
 };
 
 export type AiFunctionUpdateEventLogSections = {
-	name: AiFunctionName.EventLogSectionsUpdate;
+	name: AssistantToolName.EventLogSectionsUpdate;
 	arguments: {
 		sections: string[];
 	};
 };
 
 export type AiFunctionUpdateEventLogTypes = {
-	name: AiFunctionName.EventLogTypesUpdate;
+	name: AssistantToolName.EventLogTypesUpdate;
 	arguments: {
 		types: string[];
 	};
 };
 
 export type AiFunctionUpdateEventLogStatuses = {
-	name: AiFunctionName.EventLogStatusesUpdate;
+	name: AssistantToolName.EventLogStatusesUpdate;
 	arguments: {
 		statuses: string[];
 	};
 };
 
 export type AiFunctionUpdateEventLogActorIds = {
-	name: AiFunctionName.EventLogActorIdsUpdate;
+	name: AssistantToolName.EventLogActorIdsUpdate;
 	arguments: {
 		actor_ids: string[];
 	};
 };
 
 export type AiFunctionResetEventLogFilters = {
-	name: AiFunctionName.EventLogResetFilters;
+	name: AssistantToolName.EventLogResetFilters;
 	arguments: Record<string, never>;
 };

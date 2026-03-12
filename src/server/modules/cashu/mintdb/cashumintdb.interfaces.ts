@@ -1,9 +1,5 @@
-/* Application Dependencies */
-import {TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
 /* Native Dependencies */
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
-/* Local Dependencies */
-import {MintAnalyticsInterval} from './cashumintdb.enums';
 
 export interface CashuMintMintQuotesArgs {
 	date_start?: number;
@@ -12,6 +8,7 @@ export interface CashuMintMintQuotesArgs {
 	states?: MintQuoteState[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintMeltQuotesArgs {
@@ -21,6 +18,7 @@ export interface CashuMintMeltQuotesArgs {
 	states?: MeltQuoteState[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintSwapsArgs {
@@ -30,6 +28,7 @@ export interface CashuMintSwapsArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintPromiseArgs {
@@ -39,6 +38,7 @@ export interface CashuMintPromiseArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
+	sort_order?: 'ASC' | 'DESC';
 }
 
 export interface CashuMintProofsArgs {
@@ -49,18 +49,5 @@ export interface CashuMintProofsArgs {
 	id_keysets?: string[];
 	page?: number;
 	page_size?: number;
-}
-
-export interface CashuMintAnalyticsArgs {
-	date_start?: number;
-	date_end?: number;
-	units?: MintUnit[];
-	interval?: MintAnalyticsInterval;
-	timezone?: TimezoneType;
-}
-
-export interface CashuMintKeysetCountsArgs {
-	date_start?: number;
-	date_end?: number;
-	id_keysets?: string[];
+	sort_order?: 'ASC' | 'DESC';
 }

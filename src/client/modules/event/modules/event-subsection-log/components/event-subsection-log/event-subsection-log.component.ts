@@ -9,6 +9,7 @@ import {PageEvent} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {AllEventLogSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -22,7 +23,7 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogType, EventLogStatus, AiAgent, AiFunctionName, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus, AiAssistant, AssistantToolName, QueryEvent_LogsArgs} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-event-subsection-log',
@@ -35,6 +36,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	private readonly eventLogService = inject(EventLogService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
 	private readonly configService = inject(ConfigService);
+	private readonly settingAppService = inject(SettingAppService);
 	private readonly crewService = inject(CrewService);
 	private readonly aiService = inject(AiService);
 	private readonly breakpointObserver = inject(BreakpointObserver);
@@ -73,8 +75,8 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
-			this.subscriptions.add(this.getAgentSubscription());
+		if (this.settingAppService.getSetting('ai_enabled')) {
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -148,17 +150,17 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	/** Subscribes to agent requests from the AI input */
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent: _agent, content}) => {
-			this.hireEventLogAgent(content);
+	/** Subscribes to assistant requests from the AI input */
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant: _assistant, content}) => {
+			this.hireEventLogAssistant(content);
 		});
 	}
 
 	/** Subscribes to tool calls from the AI response */
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -288,11 +290,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-	   Agent
+	   Assistant
 	******************************************************** */
 
 	/** Opens the AI socket with current form context */
-	private hireEventLogAgent(content: string | null): void {
+	private hireEventLogAssistant(content: string | null): void {
 		const section_options = Object.values(EventLogSection);
 		const type_options = Object.values(EventLogType);
 		const status_options = Object.values(EventLogStatus);
@@ -309,40 +311,40 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		context += `* **Available Users:** ${this.users()
 			.map((u) => `${u.name} (${u.id})`)
 			.join(', ')}`;
-		this.aiService.openAiSocket(AiAgent.EventLog, content, context);
+		this.aiService.openAiSocket(AiAssistant.EventLog, content, context);
 	}
 
-	/** Executes the tool call from the AI agent */
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
+	/** Executes the tool call from the AI assistant */
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AssistantToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogSectionsUpdate) {
+		if (tool_call.function.name === AssistantToolName.EventLogSectionsUpdate) {
 			const valid = tool_call.function.arguments.sections.every((s: string) =>
 				Object.values(EventLogSection).includes(s as EventLogSection),
 			);
 			if (valid) this.onSectionsChange(tool_call.function.arguments.sections as EventLogSection[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogTypesUpdate) {
+		if (tool_call.function.name === AssistantToolName.EventLogTypesUpdate) {
 			const valid = tool_call.function.arguments.types.every((t: string) => Object.values(EventLogType).includes(t as EventLogType));
 			if (valid) this.onTypesChange(tool_call.function.arguments.types as EventLogType[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogStatusesUpdate) {
+		if (tool_call.function.name === AssistantToolName.EventLogStatusesUpdate) {
 			const valid = tool_call.function.arguments.statuses.every((s: string) =>
 				Object.values(EventLogStatus).includes(s as EventLogStatus),
 			);
 			if (valid) this.onStatusesChange(tool_call.function.arguments.statuses as EventLogStatus[]);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogActorIdsUpdate) {
+		if (tool_call.function.name === AssistantToolName.EventLogActorIdsUpdate) {
 			const available_ids = this.users().map((u) => u.id);
 			const valid = tool_call.function.arguments.actor_ids.every((id: string) => available_ids.includes(id));
 			if (valid) this.onActorIdsChange(tool_call.function.arguments.actor_ids);
 		}
-		if (tool_call.function.name === AiFunctionName.EventLogResetFilters) {
+		if (tool_call.function.name === AssistantToolName.EventLogResetFilters) {
 			this.onResetFilter();
 		}
 	}

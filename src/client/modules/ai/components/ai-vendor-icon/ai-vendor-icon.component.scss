@@ -1,0 +1,20 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.ai-vendor-icon {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	width: var(--icon-size, 2rem);
+	height: var(--icon-size, 2rem);
+	@extend %orc-corner-full;
+	@extend %orc-surface-container-bg;
+	flex-shrink: 0;
+	@extend %overflow-hidden;
+
+	img {
+		object-fit: contain;
+		width: var(--icon-size, 2rem);
+		height: var(--icon-size, 2rem);
+	}
+}

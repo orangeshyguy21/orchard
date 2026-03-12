@@ -22,22 +22,37 @@ describe('AiModelComponent', () => {
 		fixture.componentRef.setInput('model_options', [
 			new AiModel({
 				model: 'model-a',
-				modified_at: Date.now(),
 				name: 'Model A',
-				size: 0,
-				digest: 'x',
-				details: {parameter_size: '1B'} as any,
-			} as any),
+				context_length: 4096,
+				ollama: {
+					parameter_size: '1B',
+					modified_at: Date.now(),
+					size: 0,
+					digest: 'x',
+					parent_model: '',
+					format: '',
+					family: 'llama',
+					families: ['llama'],
+					quantization_level: 'Q4_0',
+				} as any,
+			}),
 			new AiModel({
 				model: 'model-b',
-				modified_at: Date.now(),
 				name: 'Model B',
-				size: 0,
-				digest: 'y',
-				details: {parameter_size: '2B'} as any,
-			} as any),
+				context_length: 4096,
+				ollama: {
+					parameter_size: '2B',
+					modified_at: Date.now(),
+					size: 0,
+					digest: 'y',
+					parent_model: '',
+					format: '',
+					family: 'llama',
+					families: ['llama'],
+					quantization_level: 'Q4_0',
+				} as any,
+			}),
 		]);
-		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

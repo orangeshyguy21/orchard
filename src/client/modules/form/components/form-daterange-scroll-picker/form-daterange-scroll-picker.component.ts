@@ -67,10 +67,6 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		this.element_ref = element_ref;
 	}
 
-	ngOnDestroy(): void {
-		this.destroyOverlay();
-	}
-
 	/** Toggles the picker panel open/closed */
 	public togglePanel(): void {
 		if (this.is_open()) {
@@ -148,5 +144,9 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 			this.overlay_ref.dispose();
 			this.overlay_ref = null;
 		}
+	}
+
+	ngOnDestroy(): void {
+		this.destroyOverlay();
 	}
 }

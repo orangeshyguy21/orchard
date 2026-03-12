@@ -45,7 +45,7 @@ export class LightningInfoService {
 		try {
 			if (!this.configService.get('cashu.type') || !this.configService.get('cashu.database')) return false;
 			return await this.mintService.withDbClient(async (client) => {
-				const quotes = await this.cashuMintDatabaseService.getMintMintQuotes(client, {page_size: 1, page: 1});
+				const quotes = await this.cashuMintDatabaseService.listMintQuotes(client, {page_size: 1, page: 1});
 				if (!quotes?.length) return false;
 				const invoice = quotes[0].request;
 				if (!invoice) return false;

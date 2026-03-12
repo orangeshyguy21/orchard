@@ -18,6 +18,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -28,7 +29,7 @@ import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
-import {AiFunctionName, OrchardContact} from '@shared/generated.types';
+import {AssistantToolName, OrchardContact} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-info',
@@ -72,6 +73,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	constructor(
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public aiService: AiService,
@@ -119,8 +121,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
-			this.subscriptions.add(this.getAgentSubscription());
+		if (this.settingAppService.getSetting('ai_enabled')) {
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -129,8 +131,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		Subscriptions                      
 	******************************************************** */
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			const form_value = this.form_info.value;
 			let context = `* **Name:** ${form_value.name || 'Not set'}\n`;
 			context += `* **Description:** ${form_value.description || 'Not set'}\n`;
@@ -153,13 +155,13 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 			} else {
 				context += `  * No contacts configured\n`;
 			}
-			this.aiService.openAiSocket(agent, content, context);
+			this.aiService.openAiSocket(assistant, content, context);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -676,51 +678,51 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		AI                    
 	******************************************************** */
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintNameUpdate) {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AssistantToolName.MintNameUpdate) {
 			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
 			this.form_info.get('name')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintDescriptionUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintDescriptionUpdate) {
 			this.form_info.get('description')?.setValue(tool_call.function.arguments.description);
 			this.form_info.get('description')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintIconUrlUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintIconUrlUpdate) {
 			this.form_info.get('icon_url')?.setValue(tool_call.function.arguments.icon_url);
 			this.form_info.get('icon_url')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintDescriptionLongUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintDescriptionLongUpdate) {
 			this.form_info.get('description_long')?.setValue(tool_call.function.arguments.description_long);
 			this.form_info.get('description_long')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintMotdUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintMotdUpdate) {
 			this.form_info.get('motd')?.setValue(tool_call.function.arguments.motd);
 			this.form_info.get('motd')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintUrlAdd) {
+		if (tool_call.function.name === AssistantToolName.MintUrlAdd) {
 			this.form_info.get('urls')?.markAsDirty();
 			this.onAddUrlControl(tool_call.function.arguments.url);
 			this.form_array_urls.at(-1).markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintUrlUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintUrlUpdate) {
 			const index = this.init_info.urls.indexOf(tool_call.function.arguments.old_url);
 			if (index === -1) return;
 			this.form_info.get('urls')?.markAsDirty();
 			this.form_array_urls.at(index).setValue(tool_call.function.arguments.url);
 			this.form_array_urls.at(index).markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintUrlRemove) {
+		if (tool_call.function.name === AssistantToolName.MintUrlRemove) {
 			const index = this.init_info.urls.indexOf(tool_call.function.arguments.url);
 			if (index === -1) return;
 			this.form_info.get('urls')?.markAsDirty();
 			this.form_array_urls.removeAt(index);
 		}
-		if (tool_call.function.name === AiFunctionName.MintContactAdd) {
+		if (tool_call.function.name === AssistantToolName.MintContactAdd) {
 			this.form_info.get('contact')?.markAsDirty();
 			this.onAddContactControl(tool_call.function.arguments.method, tool_call.function.arguments.info);
 			this.form_array_contacts.at(-1).markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintContactUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintContactUpdate) {
 			const old_method = tool_call.function.arguments.old_method;
 			const old_info = tool_call.function.arguments.old_info;
 			const index = this.init_info.contact.findIndex((contact) => contact.method === old_method && contact.info === old_info);
@@ -733,7 +735,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 			this.form_array_contacts.at(index).get('method')?.markAsDirty();
 			this.form_array_contacts.at(index).get('info')?.markAsDirty();
 		}
-		if (tool_call.function.name === AiFunctionName.MintContactRemove) {
+		if (tool_call.function.name === AssistantToolName.MintContactRemove) {
 			const method = tool_call.function.arguments.method;
 			const info = tool_call.function.arguments.info;
 			const index = this.init_info.contact.findIndex((contact) => contact.method === method && contact.info === info);

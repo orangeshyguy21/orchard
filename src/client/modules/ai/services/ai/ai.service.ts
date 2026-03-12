@@ -14,16 +14,23 @@ import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import {AiChatResponse, AiModelResponse, AiAgentResponse, AiChatAbortResponse} from '@client/modules/ai/types/ai.types';
+import {
+	AiChatResponse,
+	AiHealthResponse,
+	AiModelResponse,
+	AiAssistantResponse,
+	AiChatAbortResponse,
+} from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 /* Local Dependencies */
-import {AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY, AI_AGENT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
+import {AI_CHAT_SUBSCRIPTION, AI_HEALTH_QUERY, AI_MODELS_QUERY, AI_ASSISTANT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
 /* Shared Dependencies */
-import {AiAgent, AiMessageRole} from '@shared/generated.types';
+import {AiAssistant, AiMessageRole} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -41,8 +48,8 @@ export class AiService {
 	public get tool_calls$(): Observable<AiChatToolCall> {
 		return this.toolcall_subject.asObservable();
 	}
-	public get agent_requests$(): Observable<{agent: AiAgent; content: string | null}> {
-		return this.agent_subject.asObservable();
+	public get assistant_requests$(): Observable<{assistant: AiAssistant; content: string | null}> {
+		return this.assistant_subject.asObservable();
 	}
 
 	private subscription?: Subscription;
@@ -50,7 +57,7 @@ export class AiService {
 	private conversation_subject = new Subject<AiChatConversation | null>();
 	private message_subject = new Subject<AiChatChunk>();
 	private toolcall_subject = new Subject<AiChatToolCall>();
-	private agent_subject = new Subject<{agent: AiAgent; content: string | null}>();
+	private assistant_subject = new Subject<{assistant: AiAssistant; content: string | null}>();
 	private active_subject = new Subject<boolean>();
 	private ai_models_observable!: Observable<AiModel[]> | null;
 
@@ -69,20 +76,18 @@ export class AiService {
 		const set_model = this.settingDeviceService.getModel();
 		return this.getAiModels().pipe(
 			map((models) => {
-				if (models.find((model) => model.model === set_model)) {
-					return models.find((model) => model.model === set_model) || null;
-				}
-				const model = this.getSmallestFunctionModel(models);
-				return model;
+				const set = models.find((model) => model.model === set_model);
+				if (set) return set;
+				return this.getSmallestFunctionModel(models);
 			}),
 		);
 	}
 
-	public requestAgent(agent: AiAgent, content: string | null): void {
-		this.agent_subject.next({agent, content});
+	public requestAssistant(assistant: AiAssistant, content: string | null): void {
+		this.assistant_subject.next({assistant, content});
 	}
 
-	public openAiSocket(agent: AiAgent, content: string | null, context?: string): void {
+	public openAiSocket(assistant: AiAssistant, content: string | null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
 		const ai_model = this.settingDeviceService.getModel();
 		this.subscription_id = subscription_id;
@@ -93,7 +98,7 @@ export class AiService {
 					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
 					if (has_auth_error) {
 						this.closeAiSocket();
-						this.retryAiSocket(agent, content, context);
+						this.retryAiSocket(assistant, content, context);
 						return;
 					}
 				}
@@ -112,8 +117,8 @@ export class AiService {
 		});
 
 		const conversation = !this.conversation_cache
-			? this.createConversation(subscription_id, agent, content, context)
-			: this.continueConversation(subscription_id, agent, content, context);
+			? this.createConversation(subscription_id, assistant, content, context)
+			: this.continueConversation(subscription_id, assistant, content, context);
 		this.conversation_subject.next(conversation);
 		const messages = conversation.getMessages();
 		const auth_token = this.localStorageService.getAuthToken();
@@ -129,7 +134,7 @@ export class AiService {
 						id: subscription_id,
 						messages,
 						model: ai_model,
-						agent: agent,
+						assistant: assistant,
 						auth: auth_token,
 					},
 				},
@@ -170,6 +175,22 @@ export class AiService {
 		this.active_subject.next(false);
 	}
 
+	public getAiHealth(): Observable<AiHealth> {
+		const query = getApiQuery(AI_HEALTH_QUERY);
+
+		return this.http.post<OrchardRes<AiHealthResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_health;
+			}),
+			map((ai_health) => new AiHealth(ai_health)),
+			catchError((error) => {
+				console.error('Error loading ai health:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	public getAiModels(): Observable<AiModel[]> {
 		if (this.ai_models_observable) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
@@ -193,17 +214,17 @@ export class AiService {
 		return this.ai_models_observable;
 	}
 
-	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
-		const query = getApiQuery(AI_AGENT_QUERY, {agent});
+	public getAiAssistant(assistant: AiAssistant): Observable<AiAssistantDefinition> {
+		const query = getApiQuery(AI_ASSISTANT_QUERY, {assistant});
 
-		return this.http.post<OrchardRes<AiAgentResponse>>(this.apiService.api, query).pipe(
+		return this.http.post<OrchardRes<AiAssistantResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.ai_agent;
+				return response.data.ai_assistant;
 			}),
-			map((oaa) => new AiAgentDefinition(oaa)),
+			map((oaa) => new AiAssistantDefinition(oaa)),
 			catchError((error) => {
-				console.error('Error loading ai agent:', error);
+				console.error('Error loading ai assistant:', error);
 				return throwError(() => error);
 			}),
 		);
@@ -211,12 +232,18 @@ export class AiService {
 
 	private getSmallestFunctionModel(models: AiModel[]): AiModel | null {
 		if (models.length === 0) return null;
+		const getSize = (m: AiModel) => m.ollama?.size ?? 0;
 		const llama_models = models.filter((model) => model.model.includes('llama'));
-		if (llama_models.length > 0) return llama_models.sort((a, b) => a.size - b.size)[0];
-		return models.sort((a, b) => a.size - b.size)[0];
+		if (llama_models.length > 0) return llama_models.sort((a, b) => getSize(a) - getSize(b))[0];
+		return [...models].sort((a, b) => getSize(a) - getSize(b))[0];
 	}
 
-	private createConversation(id: string, agent: AiAgent, content: string | null, context: string | undefined): AiChatConversation {
+	private createConversation(
+		id: string,
+		assistant: AiAssistant,
+		content: string | null,
+		context: string | undefined,
+	): AiChatConversation {
 		const messages = [];
 		if (context)
 			messages.push({
@@ -228,18 +255,23 @@ export class AiService {
 			content: content || '',
 		});
 		const messages_obj = messages.map((message) => new AiChatCompiledMessage(id, message));
-		return new AiChatConversation(id, messages_obj, agent);
+		return new AiChatConversation(id, messages_obj, assistant);
 	}
 
-	private continueConversation(id: string, agent: AiAgent, content: string | null, context: string | undefined): AiChatConversation {
+	private continueConversation(
+		id: string,
+		assistant: AiAssistant,
+		content: string | null,
+		context: string | undefined,
+	): AiChatConversation {
 		if (!this.conversation_cache) throw new Error('Conversation cache not found');
 		if (context) {
 			const last_message = this.conversation_cache.messages[this.conversation_cache.messages.length - 1];
 			if (last_message.role === AiMessageRole.Assistant && last_message.tool_calls?.length) {
 				this.conversation_cache.messages.push(
 					new AiChatCompiledMessage(id, {
-						role: AiMessageRole.Function,
-						content: this.getFullContext(context, AiMessageRole.Function),
+						role: AiMessageRole.Tool,
+						content: this.getFullContext(context, AiMessageRole.Tool),
 					}),
 				);
 			}
@@ -250,7 +282,7 @@ export class AiService {
 				content: content || '',
 			}),
 		);
-		return new AiChatConversation(id, this.conversation_cache.messages, agent);
+		return new AiChatConversation(id, this.conversation_cache.messages, assistant);
 	}
 
 	private getFullContext(context: string, role: AiMessageRole): string {
@@ -258,13 +290,13 @@ export class AiService {
 		return `## Updated Form State\n\n${context}`;
 	}
 
-	private retryAiSocket(agent: AiAgent, content: string | null, context: string | undefined): void {
+	private retryAiSocket(assistant: AiAssistant, content: string | null, context: string | undefined): void {
 		this.closeAiSocket();
 		this.authService
 			.refreshToken()
 			.pipe(
 				tap(() => {
-					this.openAiSocket(agent, content, context);
+					this.openAiSocket(assistant, content, context);
 				}),
 				catchError((refresh_error) => {
 					this.authService.clearAuthCache();

@@ -18,10 +18,14 @@ export class OrchardSetting {
 	@Field(() => SettingValue)
 	value_type: SettingValue;
 
-	constructor(setting: Setting) {
+	@Field()
+	is_sensitive: boolean;
+
+	constructor(setting: Setting, is_sensitive: boolean, masked_value?: string) {
 		this.key = setting.key;
-		this.value = setting.value;
+		this.value = masked_value ?? setting.value;
 		this.description = setting.description;
 		this.value_type = setting.value_type;
+		this.is_sensitive = is_sensitive;
 	}
 }

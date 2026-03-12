@@ -1,12 +1,18 @@
-<div class="font-size-xs orc-outline-color p-b-0-5">USD Price Oracle</div>
+<div class="font-size-xs orc-outline-color p-b-0-5">Soverign USD Price Oracle using only your bitcoin node</div>
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
 		<orc-settings-subsection-app-bitcoin-oracle
 			[bitcoin_enabled]="bitcoin_enabled()"
+			[bitcoin_oracle_enabled]="bitcoin_oracle_enabled()"
 			[form_group]="form_group()"
 			[control_name]="'oracle_enabled'"
-			[oracle_price]="oracle_price()"
+			[oracle_price]="bitcoin_oracle_price()"
+			[oracle_running]="oracle_running()"
+			[oracle_progress]="oracle_progress()"
+			[oracle_status]="oracle_status()"
+			[device_type]="device_type()"
 			(update)="update_oracle.emit()"
+			(oracleAsked)="onOracleAsked()"
 		></orc-settings-subsection-app-bitcoin-oracle>
 	</mat-card-content>
 </mat-card>

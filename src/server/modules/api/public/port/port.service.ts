@@ -5,6 +5,7 @@ import * as net from 'net';
 /* Vendor Dependencies */
 import {SocksClient} from 'socks';
 /* Local Dependencies */
+import {assertPublicHost} from '../network-guard';
 import {OrchardPublicPort} from './port.model';
 import {PublicPortInput} from './port.input';
 
@@ -37,6 +38,16 @@ export class PublicPortService {
 	/** Routes to direct or SOCKS5 based on .onion detection */
 	private async testPort(host: string, port: number): Promise<OrchardPublicPort> {
 		const is_onion = host.endsWith('.onion');
+
+		/* SSRF guard: resolve DNS and reject private/reserved IPs before connecting */
+		try {
+			await assertPublicHost(host);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Blocked';
+			this.logger.warn(`SSRF blocked for ${host}:${port}: ${message}`);
+			return new OrchardPublicPort(host, port, false, message, null);
+		}
+
 		try {
 			if (is_onion && this.proxy_host && this.proxy_port) {
 				return await this.testPortViaSocks(host, port);

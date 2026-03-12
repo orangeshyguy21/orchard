@@ -1,0 +1,72 @@
+@use 'molecule/molecule';
+
+.ai-sticker {
+	@extend %absolute;
+	@extend %left-1;
+	top: 50%;
+	transform: translateY(-50%);
+	@extend %font-size-3;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	opacity: 0.1;
+
+	mat-icon {
+		scale: 1.5;
+	}
+}
+
+.ai-label {
+	@extend %h-full;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}
+
+.ai-vendor-label {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %p-b-0-5;
+	@extend %p-t-0-5;
+}
+
+.ai-vendor-text {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %text-left;
+	@extend %flex-gap-0-25;
+}
+
+.ai-vendor-label-name {
+	@extend %font-size-s;
+	@extend %font-weight-semi-bold;
+}
+
+.ai-vendor-label-desc {
+	@extend %font-size-xs;
+	@extend %orc-outline-color;
+}
+
+.agent-card {
+	@extend %flex-grow;
+	@extend %p-2;
+}
+
+.mobile-agent {
+	@extend %flex-grow;
+	@extend %flex-justify-center;
+	@extend %w-full;
+}
+
+.agent-clamp {
+	height: 12rem;
+	width: 13rem;
+	@extend %p-t-1;
+	@extend %overflow-hidden;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

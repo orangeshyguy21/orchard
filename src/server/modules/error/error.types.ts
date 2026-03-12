@@ -13,9 +13,11 @@ export enum OrchardErrorCode {
 	SignupError = 10011,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
+	BitcoinAnalyticsError = 20002,
 	// Lightning Level Errors
 	LightningRpcConnectionError = 30001,
 	LightningRpcActionError = 30002,
+	LightningAnalyticsError = 30003,
 	// what will 300003 be?
 	LightningSupportError = 30004,
 	// Mint Level Errors
@@ -30,13 +32,16 @@ export enum OrchardErrorCode {
 	MintDatabaseBackupError = 40009,
 	MintDatabaseRestoreError = 40010,
 	MintDatabaseRestoreInvalidError = 40011,
+	MintAnalyticsError = 40012,
 	// Ecash Level Errors
 
 	// AI Level Errors
 	AiError = 50001,
 	AiStreamError = 50002,
 	AiStreamParseError = 50003,
-	AiAgentNotFoundError = 50004,
+	AiAssistantNotFoundError = 50004,
+	AgentError = 50005,
+	AgentNotFoundError = 50006,
 	// Taproot Assets Level Errors
 	TaprootAssetsRpcConnectionError = 60001,
 	TaprootAssetsRpcActionError = 60002,
@@ -53,6 +58,8 @@ export enum OrchardErrorCode {
 	SettingError = 90001,
 	// Event Log Level Errors
 	EventLogError = 100001,
+	// System Metrics Level Errors
+	SystemMetricsError = 110001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -68,8 +75,10 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InitializationError]: 'InitializationError',
 	[OrchardErrorCode.SignupError]: 'SignupError',
 	[OrchardErrorCode.BitcoinRPCError]: 'BitcoinRPCError',
+	[OrchardErrorCode.BitcoinAnalyticsError]: 'BitcoinAnalyticsError',
 	[OrchardErrorCode.LightningRpcConnectionError]: 'LightningRpcConnectionError',
 	[OrchardErrorCode.LightningRpcActionError]: 'LightningRpcActionError',
+	[OrchardErrorCode.LightningAnalyticsError]: 'LightningAnalyticsError',
 	[OrchardErrorCode.LightningSupportError]: 'LightningSupportError',
 	[OrchardErrorCode.MintPublicApiError]: 'MintPublicApiError',
 	[OrchardErrorCode.MintDatabaseConnectionError]: 'MintDatabaseConnectionError',
@@ -81,10 +90,13 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.MintDatabaseBackupError]: 'MintDatabaseBackupError',
 	[OrchardErrorCode.MintDatabaseRestoreError]: 'MintDatabaseRestoreError',
 	[OrchardErrorCode.MintDatabaseRestoreInvalidError]: 'MintDatabaseRestoreInvalidError',
+	[OrchardErrorCode.MintAnalyticsError]: 'MintAnalyticsError',
 	[OrchardErrorCode.AiError]: 'AiError',
 	[OrchardErrorCode.AiStreamError]: 'AiStreamError',
 	[OrchardErrorCode.AiStreamParseError]: 'AiStreamParseError',
-	[OrchardErrorCode.AiAgentNotFoundError]: 'AiAgentNotFoundError',
+	[OrchardErrorCode.AiAssistantNotFoundError]: 'AiAssistantNotFoundError',
+	[OrchardErrorCode.AgentError]: 'AgentError',
+	[OrchardErrorCode.AgentNotFoundError]: 'AgentNotFoundError',
 	[OrchardErrorCode.TaprootAssetsRpcConnectionError]: 'TaprootAssetsRpcConnectionError',
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: 'TaprootAssetsRpcActionError',
 	[OrchardErrorCode.TaprootAssetsSupportError]: 'TaprootAssetsSupportError',
@@ -95,4 +107,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InviteInvalidError]: 'InviteInvalidError',
 	[OrchardErrorCode.SettingError]: 'SettingError',
 	[OrchardErrorCode.EventLogError]: 'EventLogError',
+	[OrchardErrorCode.SystemMetricsError]: 'SystemMetricsError',
 };

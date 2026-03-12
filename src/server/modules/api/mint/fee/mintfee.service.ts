@@ -23,7 +23,7 @@ export class MintfeeService {
 	async getMintFees(tag: string, limit?: number): Promise<OrchardMintFee[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_fees: CashuMintFee[] = await this.cashuMintDatabaseService.getMintFees(client, limit);
+				const cashu_fees: CashuMintFee[] = await this.cashuMintDatabaseService.getFees(client, limit);
 				return cashu_fees.map((cf) => new OrchardMintFee(cf));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

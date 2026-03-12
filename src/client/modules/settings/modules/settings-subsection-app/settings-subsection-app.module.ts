@@ -8,19 +8,34 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcPublicModule} from '@client/modules/public/public.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcAiModule} from '@client/modules/ai/ai.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
 import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subsection-app-bitcoin/settings-subsection-app-bitcoin.component';
 import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
+import {SettingsSubsectionAppAiComponent} from './components/settings-subsection-app-ai/settings-subsection-app-ai.component';
+import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings-subsection-app-ai-integration/settings-subsection-app-ai-integration.component';
 
 @NgModule({
-	declarations: [SettingsSubsectionAppComponent, SettingsSubsectionAppBitcoinComponent, SettingsSubsectionAppBitcoinOracleComponent],
+	declarations: [
+		SettingsSubsectionAppComponent,
+		SettingsSubsectionAppBitcoinComponent,
+		SettingsSubsectionAppBitcoinOracleComponent,
+		SettingsSubsectionAppAiComponent,
+		SettingsSubsectionAppAiIntegrationComponent,
+	],
 	imports: [
 		[
 			CoreRouterModule.forChild([
@@ -37,10 +52,17 @@ import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings
 		MatSlideToggleModule,
 		MatIconModule,
 		MatButtonModule,
+		MatMenuModule,
+		MatTabsModule,
+		MatFormFieldModule,
+		MatInputModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,
 		OrcGraphicModule,
+		OrcNavModule,
+		OrcAiModule,
+		OrcProgressModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

@@ -28,6 +28,7 @@ export class LightningChannelAsset implements OrchardLightningChannelAsset {
 }
 
 export class LightningChannel implements OrchardLightningChannel {
+	public remote_pubkey: string;
 	public channel_point: string;
 	public chan_id: string;
 	public capacity: number;
@@ -41,6 +42,7 @@ export class LightningChannel implements OrchardLightningChannel {
 	public asset: LightningChannelAsset | null;
 
 	constructor(olc: OrchardLightningChannel) {
+		this.remote_pubkey = olc.remote_pubkey;
 		this.channel_point = olc.channel_point;
 		this.chan_id = olc.chan_id;
 		this.capacity = olc.capacity;
@@ -56,6 +58,7 @@ export class LightningChannel implements OrchardLightningChannel {
 }
 
 export class LightningClosedChannel implements OrchardLightningClosedChannel {
+	public remote_pubkey: string;
 	public channel_point: string;
 	public chan_id: string;
 	public capacity: number;
@@ -69,6 +72,7 @@ export class LightningClosedChannel implements OrchardLightningClosedChannel {
 	public asset: LightningChannelAsset | null;
 
 	constructor(olcc: OrchardLightningClosedChannel) {
+		this.remote_pubkey = olcc.remote_pubkey;
 		this.channel_point = olcc.channel_point;
 		this.chan_id = olcc.chan_id;
 		this.capacity = olcc.capacity;

@@ -19,6 +19,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -36,11 +37,12 @@ import {AiChatChunk} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
+import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
-import {AiAgent, AiMessageRole} from '@shared/generated.types';
+import {AiAssistant, AiMessageRole} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-layout-interior',
@@ -62,10 +64,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_revision = signal<number>(0);
 	public ai_tool_calls = signal<number>(0);
 	public ai_model = signal<string | null>(null);
+	public ai_vendor = signal<string>('ollama');
+	public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
 	public active_chat = signal<boolean>(false);
 	public active_section = signal<string>('');
 	public active_sub_section = signal<string>('');
-	public active_agent = signal<AiAgent>(AiAgent.Default);
+	public active_assistant = signal<AiAssistant>(AiAssistant.Default);
 	public active_event = signal<EventData | null>(null);
 	public enabled_bitcoin = signal<boolean>(false);
 	public enabled_lightning = signal<boolean>(false);
@@ -77,14 +81,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_lightning = signal<boolean>(false);
 	public block_count = signal<number>(0);
 
-	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
+	public ai_assistant_definition = signal<AiAssistantDefinition | null>(null);
 	public overlayed = signal(false);
-	public show_mobile_agent = signal(false);
+	public show_mobile_assistant = signal(false);
 	public device_type = signal<DeviceType>('desktop');
 
 	public desktop_nav_open = computed(() => this.device_type() === 'desktop');
 	public ai_sidenav_mode = computed(() => (this.device_type() === 'desktop' ? 'side' : 'over'));
-	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
+	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_assistant());
 
 	public ai_actionable = computed(() => {
 		if (this.active_chat()) return true;
@@ -98,6 +102,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	constructor(
 		private configService: ConfigService,
 		private crewService: CrewService,
+		private settingAppService: SettingAppService,
 		private settingDeviceService: SettingDeviceService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
@@ -110,7 +115,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-		this.ai_enabled.set(this.configService.config.ai.enabled);
+		this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
+		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
 		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
 		this.enabled_lightning.set(this.configService.config.lightning.enabled);
 		this.enabled_mint.set(this.configService.config.mint.enabled);
@@ -147,7 +154,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		}
 		// if taproot go get the ids
 		if (this.ai_enabled()) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
@@ -171,7 +178,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			const route_data = this.getRouteData(event);
 			this.setSection(route_data);
 			this.setSubSection(route_data);
-			this.setAgent(route_data);
+			this.setAssistant(route_data);
 			this.onClearConversation();
 		});
 	}
@@ -217,7 +224,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			} else {
 				this.device_type.set('desktop');
 			}
-			if (this.desktop_nav_open()) this.show_mobile_agent.set(false);
+			if (this.desktop_nav_open()) this.show_mobile_assistant.set(false);
 		});
 	}
 
@@ -283,9 +290,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
-			if (agent === AiAgent.Default) this.aiService.openAiSocket(agent, content);
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
+			if (assistant === AiAssistant.Default) this.aiService.openAiSocket(assistant, content);
 		});
 	}
 
@@ -315,8 +322,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event.set(event_data);
-			if (this.active_section() === 'settings') this.ai_model.set(this.settingDeviceService.getModel());
-			this.cdr.detectChanges();
+			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
+				this.ai_model.set(this.settingDeviceService.getModel());
+				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+				this.getModels();
+			}
 		});
 	}
 
@@ -364,12 +374,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-	   Agent                      
+	   Assistant                      
 	******************************************************** */
 
-	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
+	private setAssistant(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if (!route_data) return;
-		this.active_agent.set(route_data['agent'] || AiAgent.Default);
+		this.active_assistant.set(route_data['assistant'] || AiAssistant.Default);
 	}
 
 	private getModels(): void {
@@ -392,8 +402,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private startChat() {
 		if (!this.ai_user_content.value) return;
-		const agent = this.active_agent() || AiAgent.Default;
-		this.aiService.requestAgent(agent, this.ai_user_content.value);
+		const assistant = this.active_assistant() || AiAssistant.Default;
+		this.aiService.requestAssistant(assistant, this.ai_user_content.value);
 		this.ai_user_content.reset();
 	}
 
@@ -413,6 +423,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				message: 'Model updated!',
 			}),
 		);
+	}
+
+	public onFavoritesChange(favorites: AiFavorites): void {
+		this.ai_favorites.set(favorites);
+		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
 	public onClearConversation(): void {
@@ -440,9 +455,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		const resolved_agent = this.ai_conversation()?.agent || this.active_agent();
-		this.aiService.getAiAgent(resolved_agent).subscribe((agent: AiAgentDefinition) => {
-			this.ai_agent_definition.set(agent);
+		const resolved_assistant = this.ai_conversation()?.assistant || this.active_assistant();
+		this.aiService.getAiAssistant(resolved_assistant).subscribe((assistant: AiAssistantDefinition) => {
+			this.ai_assistant_definition.set(assistant);
 		});
 	}
 
@@ -450,12 +465,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.sidenav.close();
 	}
 
-	public onShowAgent(): void {
-		this.show_mobile_agent.set(true);
+	public onShowAssistant(): void {
+		this.show_mobile_assistant.set(true);
 	}
 
-	public onHideAgent(): void {
-		this.show_mobile_agent.set(false);
+	public onHideAssistant(): void {
+		this.show_mobile_assistant.set(false);
 		if (this.active_event()?.type === 'PENDING') this.onCancelPendingEvent();
 	}
 

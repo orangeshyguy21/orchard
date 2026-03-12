@@ -12,7 +12,6 @@ import {
 	prependData,
 	getDataKeyedByTimestamp,
 	getAmountData,
-	getRawData,
 	getAllPossibleTimestamps,
 	getTimeInterval,
 	convertChartDataWithOracle,
@@ -25,8 +24,6 @@ import {
 	getBtcYAxisConfig,
 	getFiatYAxisConfig,
 	getTooltipTitle,
-	getTooltipLabel,
-	formatAxisValue,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
@@ -107,12 +104,6 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 				this.chart_data = this.getAmountChartData();
 				this.chart_options = this.getAmountChartOptions();
 				this.initGlowPlugin();
-				break;
-			case ChartType.Operations:
-				this.chart_type = 'bar';
-				this.chart_data = this.getOperationsChartData();
-				this.chart_options = this.getOperationsChartOptions();
-				this.chart_plugins = [];
 				break;
 			case ChartType.Volume:
 				this.chart_type = 'bar';
@@ -252,107 +243,6 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 					callbacks: {
 						title: getTooltipTitle,
 						label: (context: any) => this.chartService.formatOracleTooltipLabel(context, can_use_oracle),
-						labelColor: (context: any) => {
-							return {
-								borderColor: context.dataset.borderColor,
-								backgroundColor: context.dataset.borderColor,
-								borderWidth: 2,
-								borderRadius: 0,
-							};
-						},
-					},
-				},
-				legend: {
-					display: true,
-					position: 'top',
-				},
-			},
-			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false,
-			},
-		};
-	}
-
-	private getOperationsChartData(): ChartConfiguration['data'] {
-		if (!this.mint_analytics() || this.mint_analytics().length === 0 || !this.page_settings()) return {datasets: []};
-		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first);
-		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
-			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
-			const color = this.chartService.getAssetColor(unit, index);
-			const data_raw = getRawData(timestamp_range, data_keyed_by_timestamp);
-
-			return {
-				data: data_raw,
-				label: unit.toUpperCase(),
-				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
-				borderColor: color.border,
-				borderWidth: 1,
-				borderRadius: 0,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
-				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-				pointHoverBorderColor: color.border,
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
-				tension: 0.4,
-			};
-		});
-
-		return {datasets};
-	}
-
-	private getOperationsChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings()) return {};
-
-		return {
-			responsive: true,
-			maintainAspectRatio: false,
-			scales: {
-				x: {
-					...getXAxisConfig(this.page_settings().interval, this.locale()),
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					title: {
-						display: true,
-						text: 'Operations',
-					},
-					ticks: {
-						stepSize: 1,
-						precision: 0,
-						callback: (value: string | number) => formatAxisValue(Number(value), this.locale()),
-					},
-					grid: {
-						display: true,
-						lineWidth: (context: any) => {
-							return context.tick.value === 0 ? 2 : 1;
-						},
-						color: (context: any) => {
-							return context.tick.value === 0
-								? this.chartService.getGridColor('--mat-sys-surface-container-high')
-								: this.chartService.getGridColor();
-						},
-					},
-				},
-			},
-			plugins: {
-				tooltip: {
-					enabled: true,
-					mode: 'index',
-					intersect: false,
-					callbacks: {
-						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale()),
 						labelColor: (context: any) => {
 							return {
 								borderColor: context.dataset.borderColor,

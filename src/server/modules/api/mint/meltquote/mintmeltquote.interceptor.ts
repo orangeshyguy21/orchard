@@ -1,13 +1,11 @@
 /* Core Dependencies */
 import {Injectable, Logger, CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
-import {GqlExecutionContext} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {Observable, tap, catchError} from 'rxjs';
-import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {EventLogService} from '@server/modules/event/event.service';
-import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogMetadata} from '@server/modules/event/event.decorator';
 import {
 	EventLogActorType,
 	EventLogSection,
@@ -15,6 +13,7 @@ import {
 	EventLogStatus,
 	EventLogDetailStatus,
 } from '@server/modules/event/event.enums';
+import {extractEventContext, extractEventError, eventTimestamp} from '@server/modules/event/event.helpers';
 import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintApiService} from '@server/modules/cashu/mintapi/cashumintapi.service';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
@@ -33,30 +32,25 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	) {}
 
 	async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-		const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
-		if (!metadata) return next.handle();
-
-		const gql_context = GqlExecutionContext.create(context);
-		const ctx = gql_context.getContext();
-		const args = gql_context.getArgs();
-		const user_id: string = ctx.req.user?.id ?? 'unknown';
+		const event_context = extractEventContext(context, this.reflector);
+		if (!event_context) return next.handle();
+		const {metadata, args, actor_id, actor_type} = event_context;
 		const {entity_type, entity_id, details} = await this.buildLogPayload(metadata, args);
 
 		return next.handle().pipe(
 			tap(() => {
-				this.logEvent(metadata, user_id, entity_type, entity_id, details, EventLogStatus.SUCCESS);
+				this.logEvent(metadata, actor_type, actor_id, entity_type, entity_id, details, EventLogStatus.SUCCESS);
 			}),
 			catchError((error) => {
 				this.logger.error(`Error logging event [${metadata.field}]: ${error}`);
-				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
-				const error_message = error?.extensions?.details ?? error?.message ?? null;
+				const {error_code, error_message} = extractEventError(error);
 				const error_details = details.map((detail) => ({
 					...detail,
 					status: EventLogDetailStatus.ERROR,
 					error_code,
 					error_message,
 				}));
-				this.logEvent(metadata, user_id, entity_type, entity_id, error_details, EventLogStatus.ERROR);
+				this.logEvent(metadata, actor_type, actor_id, entity_type, entity_id, error_details, EventLogStatus.ERROR);
 				throw error;
 			}),
 		);
@@ -103,7 +97,7 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	private async fetchOldQuoteState(quote_id: string): Promise<string | null> {
 		try {
 			return await this.mintService.withDbClient(async (client) => {
-				const quote = await this.cashuMintDatabaseService.getMintMeltQuote(client, quote_id);
+				const quote = await this.cashuMintDatabaseService.lookupMeltQuote(client, quote_id);
 				return quote?.state ?? null;
 			});
 		} catch (_error) {
@@ -156,7 +150,8 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	/**
 	 * Fire-and-forget an event log to the event history
 	 * @param {EventLogMetadata} metadata - The event log configuration
-	 * @param {string} user_id - The actor ID
+	 * @param {EventLogActorType} actor_type - The actor type (user or agent)
+	 * @param {string} actor_id - The actor ID
 	 * @param {EventLogEntityType} entity_type - The entity type
 	 * @param {string | null} entity_id - The entity identifier
 	 * @param {CreateEventLogDetailInput[]} details - The event details
@@ -164,26 +159,24 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	 */
 	private logEvent(
 		metadata: EventLogMetadata,
-		user_id: string,
+		actor_type: EventLogActorType,
+		actor_id: string,
 		entity_type: EventLogEntityType,
 		entity_id: string | null,
 		details: CreateEventLogDetailInput[],
 		status: EventLogStatus,
 	): void {
-		if (details.length === 0) return;
-		this.eventLogService
-			.createEvent({
-				actor_type: EventLogActorType.USER,
-				actor_id: user_id,
-				timestamp: Math.floor(DateTime.now().toSeconds()),
-				section: EventLogSection.MINT,
-				section_id: '1',
-				entity_type,
-				entity_id,
-				type: metadata.type,
-				status,
-				details,
-			})
-			.catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
+		this.eventLogService.logEvent({
+			actor_type,
+			actor_id,
+			timestamp: eventTimestamp(),
+			section: EventLogSection.MINT,
+			section_id: '1',
+			entity_type,
+			entity_id,
+			type: metadata.type,
+			status,
+			details,
+		});
 	}
 }

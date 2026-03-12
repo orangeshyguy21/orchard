@@ -21,6 +21,7 @@ import {SettingDeviceService} from '@client/modules/settings/services/setting-de
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {
 	Locale,
@@ -93,11 +94,12 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 		private aiService: AiService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private breakpointObserver: BreakpointObserver,
 		private cdr: ChangeDetectorRef,
 	) {
 		this.version = this.configService.config.mode.version;
-		this.enabled_ai = this.configService.config.ai.enabled;
+		this.enabled_ai = this.settingAppService.getSetting('ai_enabled');
 	}
 
 	/* *******************************************************

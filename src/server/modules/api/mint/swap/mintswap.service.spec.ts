@@ -20,7 +20,7 @@ describe('MintSwapService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				MintSwapService,
-				{provide: CashuMintDatabaseService, useValue: {getMintSwaps: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {listSwaps: jest.fn()}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
@@ -36,7 +36,7 @@ describe('MintSwapService', () => {
 	});
 
 	it('getMintSwaps returns OrchardMintSwap[]', async () => {
-		mintDbService.getMintSwaps.mockResolvedValue([
+		mintDbService.listSwaps.mockResolvedValue([
 			{operation_id: 'op1', keyset_ids: ['k1'], unit: 'sat', amount: 100, created_time: 1000, fee: 1},
 		] as any);
 		const result = await mintSwapService.getMintSwaps('TAG', {} as any);
@@ -44,7 +44,7 @@ describe('MintSwapService', () => {
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mintDbService.getMintSwaps.mockRejectedValue(new Error('boom'));
+		mintDbService.listSwaps.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintSwapService.getMintSwaps('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 		const calls = errorService.resolveError.mock.calls;

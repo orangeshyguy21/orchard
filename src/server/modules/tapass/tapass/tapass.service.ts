@@ -6,7 +6,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {TaprootAssetType} from '@server/modules/tapass/tapass.enums';
 import {TapdService} from '@server/modules/tapass/tapd/tapd.service';
 /* Local Dependencies */
-import {TaprootAssetsInfo, TaprootAssetsUtxos, TaprootAssets} from './tapass.types';
+import {TaprootAssetsInfo, TaprootAssetsUtxos, TaprootAssets, AssetTransfers, AddrReceives} from './tapass.types';
 
 @Injectable()
 export class TaprootAssetsService implements OnModuleInit {
@@ -52,5 +52,25 @@ export class TaprootAssetsService implements OnModuleInit {
 
 	async getListTaprootAssetsUtxos(): Promise<TaprootAssetsUtxos> {
 		return this.makeGrpcRequest('ListUtxos', {});
+	}
+
+	/**
+	 * Lists outbound asset transfers tracked by tapd
+	 * @param anchor_txid - Optional hex-encoded txid to filter by anchor transaction
+	 */
+	async getListTransfers(anchor_txid?: string): Promise<AssetTransfers> {
+		return this.makeGrpcRequest('ListTransfers', {anchor_txid: anchor_txid || ''});
+	}
+
+	/**
+	 * Lists incoming asset transfer events for previously created addresses
+	 * @param filter_addr - Optional TAP address to filter by
+	 * @param filter_status - Optional AddrEventStatus (0=all, 1=tx_detected, 2=tx_confirmed, 3=proof_received, 4=completed)
+	 */
+	async getAddrReceives(filter_addr?: string, filter_status?: number): Promise<AddrReceives> {
+		return this.makeGrpcRequest('AddrReceives', {
+			filter_addr: filter_addr || '',
+			filter_status: filter_status ?? 0,
+		});
 	}
 }

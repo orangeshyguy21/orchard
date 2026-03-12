@@ -12,26 +12,19 @@ import {
 	prependData,
 	getDataKeyedByTimestamp,
 	getAmountData,
-	getRawData,
 	getAllPossibleTimestamps,
 	getTimeInterval,
 	convertChartDataWithOracle,
 	getYAxisIdWithOracle,
+	correctLastPointWithLiveBalance,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
 import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
-import {
-	getOutboundLiquidityData,
-	getOutboundLiquidityVolumeData,
-	getInitialOutboundMsat,
-	correctLastPointWithLiveBalance,
-} from '@client/modules/chart/helpers/lightning-chart-data.helpers';
 import {
 	getXAxisConfig,
 	getYAxis,
 	getBtcYAxisConfig,
 	getFiatYAxisConfig,
 	getTooltipTitle,
-	getTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -39,11 +32,10 @@ import {LightningBalance} from '@client/modules/lightning/classes/lightning-bala
 import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
 /* Native Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
+import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
-/* Shared Dependencies */
-import {LightningAnalyticsInterval} from '@shared/generated.types';
-
 @Component({
 	selector: 'orc-mint-subsection-dashboard-balance-chart',
 	standalone: false,
@@ -69,6 +61,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public loading = input.required<boolean>();
 	public lightning_enabled = input.required<boolean>();
 	public device_mobile = input.required<boolean>();
+	public mint_balances = input.required<MintBalance[]>();
+	public mint_keysets = input.required<MintKeyset[]>();
 
 	public chart_type!: ChartJsType;
 	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
@@ -145,12 +139,6 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				this.chart_options = this.getBalanceSheetChartOptions();
 				this.chart_plugins = [];
 				break;
-			case ChartType.Operations:
-				this.chart_type = 'bar';
-				this.chart_data.set(this.getBalanceSheetOperationsData());
-				this.chart_options = this.getBalanceSheetOperationsOptions();
-				this.chart_plugins = [];
-				break;
 		}
 
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
@@ -201,10 +189,17 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			timestamp_first,
 		);
 
+		const live_balance_by_unit = this.getLiveBalanceByUnit();
+
 		Object.entries(data_unit_groups_prepended).forEach(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const raw_liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, true);
-			const liability_data = convertChartDataWithOracle(raw_liability_data, unit, oracle_map, can_use_oracle);
+			const corrected_liability_data = correctLastPointWithLiveBalance(
+				raw_liability_data,
+				live_balance_by_unit.get(unit) ?? null,
+				this.page_settings().interval,
+			);
+			const liability_data = convertChartDataWithOracle(corrected_liability_data, unit, oracle_map, can_use_oracle);
 			const color = this.chartService.getAssetColor(unit, index);
 			const muted_color = this.chartService.getMutedColor(color.border);
 			const yAxisID = getYAxisIdWithOracle(unit, can_use_oracle);
@@ -231,13 +226,19 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			});
 		});
 
-		// Asset dataset (lightning outbound capacity)
+		// Asset dataset (lightning local balance)
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
-			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
-			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
+			const ln_groups = groupAnalyticsByUnit(this.lightning_analytics().map((a) => ({...a})));
+			const ln_prepended = prependData(
+				ln_groups,
+				this.lightning_analytics_pre().map((a) => ({...a})),
+				timestamp_first,
+			);
+			const ln_data = ln_prepended['msat'] || [];
+			const ln_keyed = getDataKeyedByTimestamp(ln_data, 'amount');
+			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', true);
 			const live_balance_sat = LocalAmountPipe.getConvertedAmount('sat', this.lightning_balance()?.open.local_balance ?? 0);
-			const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
-			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
+			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, this.page_settings().interval);
 			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
@@ -246,9 +247,10 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				data: asset_data,
 				label: 'SAT',
 				_type: 'asset',
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, asset_color.border, 0.01, 0.1),
 				borderColor: muted_asset_color,
 				borderWidth: 2,
-				borderDash: [6, 4],
+				borderDash: [15, 4, 3, 4],
 				pointBackgroundColor: muted_asset_color,
 				pointBorderColor: muted_asset_color,
 				pointBorderWidth: 2,
@@ -257,7 +259,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				pointHoverBorderWidth: 3,
 				pointRadius: 0,
 				pointHoverRadius: 4,
-				fill: false,
+				fill: true,
 				tension: 0.4,
 				yAxisID: getYAxisIdWithOracle('sat', can_use_oracle),
 			});
@@ -304,9 +306,12 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			});
 		});
 
-		// Asset dataset (lightning outbound - non cumulative) - outline style
+		// Asset dataset (lightning local balance - non cumulative) - outline style
 		if (this.lightning_enabled() && this.lightning_analytics().length > 0) {
-			const raw_asset_data = getOutboundLiquidityVolumeData(timestamp_range, this.lightning_analytics());
+			const ln_groups = groupAnalyticsByUnit(this.lightning_analytics().map((a) => ({...a})));
+			const ln_data = ln_groups['msat'] || [];
+			const ln_keyed = getDataKeyedByTimestamp(ln_data, 'amount');
+			const raw_asset_data = getAmountData(timestamp_range, ln_keyed, 'msat', false);
 			const asset_data = convertChartDataWithOracle(raw_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 
@@ -322,47 +327,6 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				yAxisID: getYAxisIdWithOracle('sat', can_use_oracle),
 			});
 		}
-
-		return {datasets};
-	}
-
-	/**
-	 * Gets the operations chart data (operation counts from mint analytics)
-	 */
-	private getBalanceSheetOperationsData(): ChartConfiguration['data'] {
-		if (!this.mint_analytics() || this.mint_analytics().length === 0 || !this.page_settings()) return {datasets: []};
-
-		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
-
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first);
-
-		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
-			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
-			const color = this.chartService.getAssetColor(unit, index);
-			const data_raw = getRawData(timestamp_range, data_keyed_by_timestamp);
-
-			return {
-				data: data_raw,
-				label: unit.toUpperCase(),
-				_type: 'liability',
-				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
-				borderColor: color.border,
-				borderWidth: 1,
-				borderRadius: 0,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
-				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-				pointHoverBorderColor: color.border,
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
-				tension: 0.4,
-			};
-		});
 
 		return {datasets};
 	}
@@ -463,68 +427,17 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	}
 
 	/**
-	 * Gets chart options for operations chart
+	 * Computes live balance per unit by joining MintBalance (keyset→balance) with MintKeyset (keyset→unit)
 	 */
-	private getBalanceSheetOperationsOptions(): ChartConfiguration['options'] {
-		const data = this.chart_data();
-		if (!data || data.datasets.length === 0 || !this.page_settings()) return {};
-
-		return {
-			responsive: true,
-			maintainAspectRatio: false,
-			scales: {
-				x: {
-					...getXAxisConfig(this.page_settings().interval, this.locale()),
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					title: {
-						display: true,
-						text: 'Operations',
-					},
-					ticks: {
-						stepSize: 1,
-						precision: 0,
-						callback: (value: string | number) => Number(value).toLocaleString(this.locale()),
-					},
-					grid: {
-						display: true,
-						lineWidth: (context: any) => (context.tick.value === 0 ? 2 : 1),
-						color: (context: any) =>
-							context.tick.value === 0
-								? this.chartService.getGridColor('--mat-sys-surface-container-high')
-								: this.chartService.getGridColor(),
-					},
-				},
-			},
-			plugins: {
-				tooltip: {
-					enabled: true,
-					mode: 'index',
-					intersect: false,
-					callbacks: {
-						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale()),
-						labelColor: (context: any) => ({
-							borderColor: context.dataset.borderColor,
-							backgroundColor: context.dataset.borderColor,
-							borderWidth: 2,
-							borderRadius: 0,
-						}),
-					},
-				},
-				legend: {
-					display: false,
-				},
-			},
-			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false,
-			},
-		};
+	private getLiveBalanceByUnit(): Map<string, number> {
+		const keyset_unit_map = new Map(this.mint_keysets().map((k) => [k.id, k.unit]));
+		const balance_by_unit = new Map<string, number>();
+		for (const mb of this.mint_balances()) {
+			const unit = keyset_unit_map.get(mb.keyset);
+			if (!unit) continue;
+			balance_by_unit.set(unit, (balance_by_unit.get(unit) ?? 0) + mb.balance);
+		}
+		return balance_by_unit;
 	}
 
 	private getAnnotations(): any {

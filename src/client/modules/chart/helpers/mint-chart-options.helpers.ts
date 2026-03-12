@@ -2,7 +2,7 @@
 import {TimeUnit} from 'chart.js';
 import {DateTime} from 'luxon';
 /* Shared Dependencies */
-import {MintAnalyticsInterval} from '@shared/generated.types';
+import {AnalyticsInterval} from '@shared/generated.types';
 
 function getFiatAxisLabel(units: (string | undefined)[]): string {
 	const lower_units = units.map((u) => u?.toLowerCase());
@@ -14,8 +14,9 @@ function getFiatAxisLabel(units: (string | undefined)[]): string {
 	return 'FIAT';
 }
 
-function convertIntervalToTimeUnit(interval: MintAnalyticsInterval): TimeUnit {
-	const interval_mapping: Record<MintAnalyticsInterval, TimeUnit> = {
+function convertIntervalToTimeUnit(interval: AnalyticsInterval): TimeUnit {
+	const interval_mapping: Record<AnalyticsInterval, TimeUnit> = {
+		hour: 'hour',
 		day: 'day',
 		week: 'week',
 		month: 'month',
@@ -94,7 +95,7 @@ export function getTooltipLabel(context: any, locale: string): string {
 	return `${label}: ${value.toLocaleString(locale)}`;
 }
 
-export function getXAxisConfig(selected_interval: MintAnalyticsInterval, locale: string): any {
+export function getXAxisConfig(selected_interval: AnalyticsInterval, locale: string): any {
 	const timeunit = convertIntervalToTimeUnit(selected_interval);
 	return {
 		type: 'time',

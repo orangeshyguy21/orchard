@@ -2,13 +2,13 @@
 import {Module} from '@nestjs/common';
 /* Application Dependencies */
 import {ErrorModule} from '@server/modules/error/error.module';
-import {AiModule} from '@server/modules/ai/ai.module';
-/* Internal Dependencies */
+import {AgentModule} from '@server/modules/ai/agent/agent.module';
+/* Local Dependencies */
 import {AiAgentResolver} from './aiagent.resolver';
 import {AiAgentService} from './aiagent.service';
 
 @Module({
-	imports: [ErrorModule, AiModule],
+	imports: [AgentModule, ErrorModule],
 	providers: [AiAgentResolver, AiAgentService],
 })
 export class AiAgentModule {}

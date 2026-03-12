@@ -4,10 +4,16 @@ import {Resolver, Query, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
-/* Internal Dependencies */
-import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics} from './mintanalytics.model';
+import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
+/* Local Dependencies */
+import {
+	OrchardMintAnalytics,
+	OrchardMintAnalyticsMetric,
+	OrchardMintKeysetsAnalytics,
+	OrchardMintAnalyticsBackfillStatus,
+} from './mintanalytics.model';
 import {MintAnalyticsService} from './mintanalytics.service';
 
 @Resolver()
@@ -21,7 +27,7 @@ export class MintAnalyticsResolver {
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_balances }';
@@ -34,7 +40,7 @@ export class MintAnalyticsResolver {
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_mints }';
@@ -47,7 +53,7 @@ export class MintAnalyticsResolver {
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_melts }';
@@ -60,7 +66,7 @@ export class MintAnalyticsResolver {
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_swaps }';
@@ -73,7 +79,7 @@ export class MintAnalyticsResolver {
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintAnalytics[]> {
 		const tag = 'GET { mint_analytics_fees }';
@@ -81,15 +87,62 @@ export class MintAnalyticsResolver {
 		return await this.mintAnalyticsService.getMintAnalyticsFees(tag, {units, date_start, date_end, interval, timezone});
 	}
 
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_proofs(
+		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+	): Promise<OrchardMintAnalytics[]> {
+		const tag = 'GET { mint_analytics_proofs }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsProofs(tag, {units, date_start, date_end, interval, timezone});
+	}
+
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_promises(
+		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+	): Promise<OrchardMintAnalytics[]> {
+		const tag = 'GET { mint_analytics_promises }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsPromises(tag, {units, date_start, date_end, interval, timezone});
+	}
+
+	@Query(() => [OrchardMintAnalyticsMetric])
+	async mint_analytics_metrics(
+		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('metrics', {type: () => [MintAnalyticsMetric], nullable: true}) metrics?: MintAnalyticsMetric[],
+	): Promise<OrchardMintAnalyticsMetric[]> {
+		const tag = 'GET { mint_analytics_metrics }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getAnalyticsMetrics(tag, {units, date_start, date_end, interval, timezone, metrics});
+	}
+
 	@Query(() => [OrchardMintKeysetsAnalytics])
 	async mint_analytics_keysets(
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardMintKeysetsAnalytics[]> {
 		const tag = 'GET { mint_analytics_keysets }';
 		this.logger.debug(tag);
 		return await this.mintAnalyticsService.getMintAnalyticsKeysets(tag, {date_start, date_end, interval, timezone});
+	}
+
+	@Query(() => OrchardMintAnalyticsBackfillStatus)
+	mint_analytics_backfill_status(): OrchardMintAnalyticsBackfillStatus {
+		const tag = 'GET { mint_analytics_backfill_status }';
+		this.logger.debug(tag);
+		return this.mintAnalyticsService.getBackfillStatus(tag);
 	}
 }

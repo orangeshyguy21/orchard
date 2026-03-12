@@ -1,8 +1,7 @@
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 /* Local Dependencies */
-import {CashuMintAnalyticsArgs} from './cashumintdb.interfaces';
-import {CashuMintDatabase, CashuMintKeysetCount} from './cashumintdb.types';
+import {CashuMintDatabase} from './cashumintdb.types';
 import {MintDatabaseType} from './cashumintdb.enums';
 
 interface BuildQueryOptions {
@@ -36,7 +35,8 @@ export function buildDynamicQuery(options: BuildQueryOptions): {sql: string; par
 
 	if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
 	if (group_by) sql += ` GROUP BY ${group_by}`;
-	sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;
+	const sort_order = args?.sort_order === 'ASC' ? 'ASC' : 'DESC';
+	sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} ${sort_order}`;
 	sql += ` LIMIT ${page_size}`;
 	if (offset > 0) sql += ` OFFSET ${offset}`;
 	return {sql: sql + ';', params};
@@ -106,163 +106,9 @@ export function processQueryArgument(
 	}
 }
 
-export function getAnalyticsConditions({
-	args,
-	time_column,
-	db_type,
-	time_is_epoch_seconds,
-}: {
-	args: CashuMintAnalyticsArgs;
-	time_column: string;
-	db_type: MintDatabaseType;
-	time_is_epoch_seconds?: boolean;
-}): {
-	where_conditions: string[];
-	params: any[];
-} {
-	const where_conditions = [];
-	const params = [];
-	if (args?.date_start) {
-		if (db_type === MintDatabaseType.sqlite) {
-			where_conditions.push(`${time_column} >= ?`);
-			params.push(convertDateArgument(args.date_start, db_type));
-		} else {
-			const time_expr = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
-			where_conditions.push(`${time_expr} >= to_timestamp(?)`);
-			params.push(args.date_start);
-		}
-	}
-	if (args?.date_end) {
-		if (db_type === MintDatabaseType.sqlite) {
-			where_conditions.push(`${time_column} <= ?`);
-			params.push(convertDateArgument(args.date_end, db_type));
-		} else {
-			const time_expr = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
-			where_conditions.push(`${time_expr} <= to_timestamp(?)`);
-			params.push(args.date_end);
-		}
-	}
-	if (args?.units && args.units.length > 0) {
-		const unit_placeholders = args.units.map(() => '?').join(',');
-		where_conditions.push(`unit IN (${unit_placeholders})`);
-		params.push(...args.units);
-	}
-	return {where_conditions, params};
-}
-
 function convertDateArgument(date_arg: number, db_type: MintDatabaseType): number | string {
 	if (db_type === MintDatabaseType.sqlite) return date_arg;
 	return DateTime.fromSeconds(date_arg).toFormat('yyyy-MM-dd HH:mm:ss');
-}
-
-export function getAnalyticsTimeGroupSql({
-	interval,
-	timezone,
-	time_column,
-	group_by,
-	db_type,
-	time_is_epoch_seconds,
-}: {
-	interval: CashuMintAnalyticsArgs['interval'];
-	timezone: CashuMintAnalyticsArgs['timezone'];
-	time_column: string;
-	group_by: string;
-	db_type: MintDatabaseType;
-	time_is_epoch_seconds?: boolean;
-}): string {
-	if (db_type === MintDatabaseType.sqlite) {
-		return getAnalyticsTimeGroupSqlSqlite({interval, time_column, group_by, timezone});
-	} else {
-		return getAnalyticsTimeGroupSqlPostgres({interval, time_column, group_by, timezone, time_is_epoch_seconds});
-	}
-}
-
-function getAnalyticsTimeGroupSqlSqlite({
-	interval,
-	time_column,
-	group_by,
-	timezone,
-}: {
-	interval: CashuMintAnalyticsArgs['interval'];
-	time_column: string;
-	group_by: string;
-	timezone: string;
-}): string {
-	const now = DateTime.now().setZone(timezone);
-	const offset_seconds = now.offset * 60; // Convert minutes to seconds
-	if (interval === 'day') {
-		return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
-	}
-	if (interval === 'week') {
-		return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds} - (strftime('%w', datetime(${time_column} + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
-	}
-	if (interval === 'month') {
-		return `strftime('%Y-%m-01', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
-	}
-	return `${group_by}`;
-}
-
-function getAnalyticsTimeGroupSqlPostgres({
-	interval,
-	time_column,
-	group_by,
-	timezone,
-	time_is_epoch_seconds,
-}: {
-	interval: CashuMintAnalyticsArgs['interval'];
-	time_column: string;
-	group_by: string;
-	timezone: string;
-	time_is_epoch_seconds?: boolean;
-}): string {
-	const base_ts = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
-	const timezone_expr = `${base_ts} AT TIME ZONE 'UTC' AT TIME ZONE '${timezone}'`;
-	if (interval === 'day') {
-		return `to_char(${timezone_expr}, 'YYYY-MM-DD')`;
-	}
-	if (interval === 'week') {
-		return `to_char(date_trunc('week', ${timezone_expr}), 'YYYY-MM-DD')`;
-	}
-	if (interval === 'month') {
-		return `to_char(date_trunc('month', ${timezone_expr}), 'YYYY-MM-01')`;
-	}
-	return `${group_by}`;
-}
-
-export function getAnalyticsTimeGroupStamp({
-	min_created_time,
-	time_group,
-	interval,
-	timezone,
-}: {
-	min_created_time: number | Date;
-	time_group: string;
-	interval: CashuMintAnalyticsArgs['interval'];
-	timezone: CashuMintAnalyticsArgs['timezone'];
-}): number {
-	if (interval === 'custom') return convertDateToUnixTimestamp(min_created_time);
-	const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
-	return Math.floor(datetime.toSeconds());
-}
-
-/**
- * Merges proof count and promise count rows by keyset ID
- * @param proof_rows - array of keyset id + count from proof query
- * @param promise_rows - array of keyset id + count from promise query
- * @returns merged CashuMintKeysetCount array
- */
-export function mergeKeysetCounts(
-	proof_rows: {id: string; count: number}[],
-	promise_rows: {id: string; count: number}[],
-): CashuMintKeysetCount[] {
-	const proof_map = new Map(proof_rows.map((r) => [r.id, r.count]));
-	const promise_map = new Map(promise_rows.map((r) => [r.id, r.count]));
-	const keyset_ids = Array.from(new Set(proof_rows.map((r) => r.id).concat(promise_rows.map((r) => r.id))));
-	return keyset_ids.map((id) => ({
-		id,
-		proof_count: proof_map.get(id) ?? 0,
-		promise_count: promise_map.get(id) ?? 0,
-	}));
 }
 
 export async function queryRows<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T[]> {

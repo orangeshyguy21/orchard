@@ -5,7 +5,7 @@ import {DateAdapter} from '@angular/material/core';
 import {Settings} from 'luxon';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
-import {ThemeType, CurrencyType, Currency} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {ThemeType, CurrencyType, Currency, AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {
 	AllBitcoinOracleSettings,
 	AllMintDashboardSettings,
@@ -13,6 +13,7 @@ import {
 	AllMintKeysetsSettings,
 	AllMintConfigSettings,
 	AllSettingsDeviceSettings,
+	AllSettingsAppSettings,
 	AllEventLogSettings,
 } from '@client/modules/settings/types/setting.types';
 
@@ -105,6 +106,14 @@ export class SettingDeviceService {
 		this.localStorageService.setModel({model: model});
 	}
 
+	/* AI Favorites */
+	public getAiFavorites(): AiFavorites {
+		return this.localStorageService.getAiFavorites();
+	}
+	public setAiFavorites(favorites: AiFavorites): void {
+		this.localStorageService.setAiFavorites(favorites);
+	}
+
 	/* Currency */
 	public getCurrency(): Currency {
 		if (this.cached_currency !== null) return this.cached_currency;
@@ -189,6 +198,14 @@ export class SettingDeviceService {
 			date_end: date_end,
 			page: page,
 		};
+	}
+
+	/* Page: Settings App */
+	public getSettingsAppSettings(): AllSettingsAppSettings {
+		return this.localStorageService.getSettingsAppSettings();
+	}
+	public setSettingsAppSettings(settings: AllSettingsAppSettings): void {
+		this.localStorageService.setSettingsAppSettings(settings);
 	}
 
 	/* Page: Settings Device */

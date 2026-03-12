@@ -24,3 +24,24 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 }
+
+.oracle-card {
+	@extend %flex-grow;
+	@extend %p-2;
+}
+
+.mobile-oracle {
+	@extend %flex-grow;
+	@extend %flex-justify-center;
+	@extend %w-full;
+}
+
+.oracle-clamp {
+	height: 12rem;
+	width: 13rem;
+	@extend %p-t-1;
+	@extend %overflow-hidden;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

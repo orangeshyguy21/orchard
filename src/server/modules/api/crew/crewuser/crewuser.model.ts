@@ -22,6 +22,9 @@ export class OrchardCrewUser {
 	@Field({nullable: true})
 	label: string | null;
 
+	@Field({nullable: true})
+	telegram_chat_id: string | null;
+
 	@Field(() => UnixTimestamp)
 	created_at: number;
 
@@ -31,6 +34,7 @@ export class OrchardCrewUser {
 		this.role = user.role;
 		this.active = user.active;
 		this.label = user.label;
+		this.telegram_chat_id = user.telegram_chat_id;
 		this.created_at = user.created_at;
 	}
 }

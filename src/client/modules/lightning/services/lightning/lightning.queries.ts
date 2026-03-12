@@ -94,11 +94,10 @@ query LightningRequest($request: String!) {
     }
 }`;
 
-export const LIGHTNING_ANALYTICS_QUERY = `
-query LightningAnalytics($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: LightningAnalyticsInterval, $timezone: Timezone, $metrics: [LightningAnalyticsMetric!]) {
-	lightning_analytics(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone, metrics: $metrics) {
+export const LIGHTNING_ANALYTICS_LOCAL_BALANCE_QUERY = `
+query LightningAnalyticsLocalBalance($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
+	lightning_analytics_local_balance(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
-		metric
 		amount
 		date
 	}

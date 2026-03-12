@@ -1,96 +1,105 @@
 /* Core Dependencies */
-import {Field, ObjectType} from '@nestjs/graphql';
+import {Field, ID, Int, ObjectType} from '@nestjs/graphql';
+/* Application Dependencies */
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {safeParse} from '@server/utils/safe-parse';
+/* Native Dependencies */
+import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
+import {Agent} from '@server/modules/ai/agent/agent.entity';
+import {AgentRun} from '@server/modules/ai/agent/agent-run.entity';
 
 @ObjectType()
-export class OrchardAiAgentSystemMessage {
-	@Field()
-	role: string;
+export class OrchardAgent {
+	@Field(() => ID)
+	id: string;
 
-	@Field()
-	content: string;
+	@Field(() => AgentKey, {nullable: true})
+	agent_key: AgentKey | null;
 
-	constructor(ai_agent_system_message: any) {
-		this.role = ai_agent_system_message.role;
-		this.content = ai_agent_system_message.content;
-	}
-}
-
-@ObjectType()
-export class OrchardAiAgentToolParameters {
-	@Field()
-	type: string;
-
-	@Field()
-	properties: string;
-
-	@Field(() => [String])
-	required: string[];
-
-	constructor(ai_agent_tool_parameters: any) {
-		this.type = ai_agent_tool_parameters.type;
-		this.properties = JSON.stringify(ai_agent_tool_parameters.properties);
-		this.required = ai_agent_tool_parameters.required;
-	}
-}
-
-@ObjectType()
-export class OrchardAiAgentToolFunction {
 	@Field()
 	name: string;
-
-	@Field()
-	description: string;
-
-	@Field(() => OrchardAiAgentToolParameters)
-	parameters: OrchardAiAgentToolParameters;
-
-	constructor(ai_agent_tool_function: any) {
-		this.name = ai_agent_tool_function.name;
-		this.description = ai_agent_tool_function.description;
-		this.parameters = new OrchardAiAgentToolParameters(ai_agent_tool_function.parameters);
-	}
-}
-
-@ObjectType()
-export class OrchardAiAgentTool {
-	@Field()
-	type: string;
-
-	@Field(() => OrchardAiAgentToolFunction)
-	function: OrchardAiAgentToolFunction;
-
-	constructor(ai_agent_tool: any) {
-		this.type = ai_agent_tool.type;
-		this.function = new OrchardAiAgentToolFunction(ai_agent_tool.function);
-	}
-}
-
-@ObjectType()
-export class OrchardAiAgent {
-	@Field()
-	name: string;
-
-	@Field()
-	description: string;
-
-	@Field()
-	icon: string;
 
 	@Field({nullable: true})
-	section: string;
+	description: string | null;
 
-	@Field(() => OrchardAiAgentSystemMessage)
-	system_message: OrchardAiAgentSystemMessage;
+	@Field()
+	active: boolean;
 
-	@Field(() => [OrchardAiAgentTool])
-	tools: OrchardAiAgentTool[];
+	@Field({nullable: true})
+	system_message: string | null;
 
-	constructor(ai_agent: any) {
-		this.name = ai_agent.name;
-		this.description = ai_agent.description;
-		this.icon = ai_agent.icon;
-		this.section = ai_agent.section;
-		this.system_message = new OrchardAiAgentSystemMessage(ai_agent.system_message);
-		this.tools = ai_agent.tools.map((tool: any) => new OrchardAiAgentTool(tool));
+	@Field(() => [String], {nullable: true})
+	tools: string[] | null;
+
+	@Field(() => [String])
+	schedules: string[];
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	last_run_at: number | null;
+
+	@Field(() => AgentRunStatus, {nullable: true})
+	last_run_status: AgentRunStatus | null;
+
+	@Field(() => UnixTimestamp)
+	created_at: number;
+
+	@Field(() => UnixTimestamp)
+	updated_at: number;
+
+	constructor(agent: Agent) {
+		this.id = agent.id;
+		this.agent_key = agent.agent_key;
+		this.name = agent.name;
+		this.description = agent.description;
+		this.active = agent.active;
+		this.system_message = agent.system_message;
+		this.tools = safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
+		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
+		this.last_run_at = agent.last_run_at;
+		this.last_run_status = agent.last_run_status as AgentRunStatus | null;
+		this.created_at = agent.created_at;
+		this.updated_at = agent.updated_at;
+	}
+}
+
+@ObjectType()
+export class OrchardAgentRun {
+	@Field(() => ID)
+	id: string;
+
+	@Field(() => AgentRunStatus)
+	status: AgentRunStatus;
+
+	@Field({nullable: true})
+	schedule_trigger: string | null;
+
+	@Field(() => UnixTimestamp)
+	started_at: number;
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	completed_at: number | null;
+
+	@Field({nullable: true})
+	result: string | null;
+
+	@Field({nullable: true})
+	error: string | null;
+
+	@Field(() => Int, {nullable: true})
+	tokens_used: number | null;
+
+	@Field()
+	notified: boolean;
+
+	constructor(run: AgentRun) {
+		this.id = run.id;
+		this.status = run.status as AgentRunStatus;
+		this.schedule_trigger = run.schedule_trigger;
+		this.started_at = run.started_at;
+		this.completed_at = run.completed_at;
+		this.result = run.result;
+		this.error = run.error;
+		this.tokens_used = run.tokens_used;
+		this.notified = run.notified;
 	}
 }

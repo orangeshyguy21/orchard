@@ -27,7 +27,7 @@ export class MintMintQuoteService {
 	async getMintMintQuotes(tag: string, args?: CashuMintMintQuotesArgs): Promise<OrchardMintMintQuote[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_quotes: CashuMintMintQuote[] = await this.cashuMintDatabaseService.getMintMintQuotes(client, args);
+				const cashu_mint_quotes: CashuMintMintQuote[] = await this.cashuMintDatabaseService.listMintQuotes(client, args);
 				return cashu_mint_quotes.map((cmq) => new OrchardMintMintQuote(cmq));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

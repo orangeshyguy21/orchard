@@ -9,6 +9,11 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {BitcoinAnalyticsService} from '@server/modules/bitcoin/analytics/btcanalytics.service';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
+import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {ConversationService} from '@server/modules/ai/conversation/conversation.service';
+import {SystemMetricsService} from '@server/modules/system/metrics/sysmetrics.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -31,6 +36,9 @@ describe('TaskService', () => {
 					provide: SettingService,
 					useValue: {
 						getSetting: jest.fn(),
+						getBooleanSetting: jest.fn(),
+						getStringSetting: jest.fn(),
+						getNumberSetting: jest.fn(),
 					},
 				},
 				{
@@ -54,9 +62,42 @@ describe('TaskService', () => {
 					},
 				},
 				{
+					provide: BitcoinAnalyticsService,
+					useValue: {
+						runStreamingBackfill: jest.fn(),
+						rescanRecentRecords: jest.fn(),
+					},
+				},
+				{
+					provide: CashuMintAnalyticsService,
+					useValue: {
+						runBackfill: jest.fn(),
+						rescanRecentRecords: jest.fn(),
+					},
+				},
+				{
 					provide: ConfigService,
 					useValue: {
 						get: jest.fn(),
+					},
+				},
+				{
+					provide: AgentService,
+					useValue: {
+						cleanupOldRuns: jest.fn(),
+					},
+				},
+				{
+					provide: ConversationService,
+					useValue: {
+						cleanupExpiredConversations: jest.fn(),
+					},
+				},
+				{
+					provide: SystemMetricsService,
+					useValue: {
+						collectAndStore: jest.fn(),
+						cleanupOldMetrics: jest.fn(),
 					},
 				},
 			],

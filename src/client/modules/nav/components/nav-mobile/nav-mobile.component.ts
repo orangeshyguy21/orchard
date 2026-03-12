@@ -47,7 +47,7 @@ export class NavMobileComponent {
 	public save = output<void>();
 	public cancel = output<void>();
 	public abort = output<void>();
-	public showAgent = output<void>();
+	public showAssistant = output<void>();
 
 	public show_oracle = signal<boolean>(false);
 
@@ -112,8 +112,8 @@ export class NavMobileComponent {
 		});
 	}
 
-	public onAgentClick() {
-		this.showAgent.emit();
+	public onAssistantClick() {
+		this.showAssistant.emit();
 	}
 
 	public onSettingsClick() {

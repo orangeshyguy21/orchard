@@ -4,6 +4,6 @@ export type SettingsResponse = {
 	settings: OrchardSetting[];
 };
 
-export type SettingUpdateResponse = {
-	setting_update: OrchardSetting;
+export type SettingsUpdateResponse = {
+	settings_update: OrchardSetting[];
 };
