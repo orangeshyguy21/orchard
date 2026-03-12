@@ -2,6 +2,7 @@
 import {Field, ID, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
 import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';
@@ -52,8 +53,8 @@ export class OrchardAgent {
 		this.description = agent.description;
 		this.active = agent.active;
 		this.system_message = agent.system_message;
-		this.tools = JSON.parse(agent.tools);
-		this.schedules = JSON.parse(agent.schedules);
+		this.tools = safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
+		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 		this.last_run_at = agent.last_run_at;
 		this.last_run_status = agent.last_run_status as AgentRunStatus | null;
 		this.created_at = agent.created_at;

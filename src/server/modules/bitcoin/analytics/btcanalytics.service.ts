@@ -292,7 +292,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 					payments_out_count++;
 				}
 
-				const fees = BigInt(tx.total_fees!);
+				const fees = BigInt(tx.total_fees ?? '0');
 				if (fees > BigInt(0)) {
 					fees_amount += fees;
 					fees_count++;

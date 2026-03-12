@@ -1,10 +1,12 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index} from 'typeorm';
 /* Local Dependencies */
 import {AgentRunStatus} from './agent.enums';
 import {Agent} from './agent.entity';
 
 @Entity('agent_runs')
+@Index('IDX_agent_runs_agent_started', ['agent', 'started_at'])
+@Index('IDX_agent_runs_notified', ['notified'])
 export class AgentRun {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;

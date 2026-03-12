@@ -1,11 +1,13 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index} from 'typeorm';
 /* Application Dependencies */
 import {Agent} from '@server/modules/ai/agent/agent.entity';
 /* Local Dependencies */
 import {ConversationStatus} from './conversation.enums';
 
 @Entity('conversations')
+@Index('IDX_conversations_chat_status', ['chat_id', 'status'])
+@Index('IDX_conversations_status_activity', ['status', 'last_activity_at'])
 export class Conversation {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;

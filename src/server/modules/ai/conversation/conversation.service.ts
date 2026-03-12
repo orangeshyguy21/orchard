@@ -14,6 +14,7 @@ import {AiMessage} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 import {MessageService} from '@server/modules/message/message.service';
+import {safeParse} from '@server/utils/safe-parse';
 import {
 	MESSAGE_INCOMING_EVENT,
 	MESSAGE_RESET_EVENT,
@@ -66,7 +67,7 @@ export class ConversationService {
 		}
 
 		/* Persist the user message immediately so it is never lost */
-		const messages: AiMessage[] = JSON.parse(conversation.messages);
+		const messages: AiMessage[] = safeParse(conversation.messages, [], `conversation.messages[${conversation.id}]`);
 		this.compressPreviousTurns(messages);
 		messages.push({role: AiMessageRole.USER, content: text});
 

@@ -15,6 +15,7 @@ import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/a
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
+import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
 import {ToolService} from '@server/modules/ai/tools/tool.service';
 import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
@@ -90,7 +91,7 @@ export class AgentService implements OnModuleInit {
 		const agents = await this.agentRepository.find();
 		for (const agent of agents) {
 			if (!agent.active) continue;
-			const schedules: string[] = JSON.parse(agent.schedules);
+			const schedules: string[] = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 			for (const cron_expression of schedules) {
 				this.registerCronJob(agent, cron_expression);
 			}
@@ -132,7 +133,7 @@ export class AgentService implements OnModuleInit {
 	public async syncAgentSchedules(agent: Agent): Promise<void> {
 		this.removeCronJobsForAgent(agent.id);
 		if (!agent.active) return;
-		const schedules: string[] = JSON.parse(agent.schedules);
+		const schedules: string[] = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 		for (const cron_expression of schedules) {
 			this.registerCronJob(agent, cron_expression);
 		}

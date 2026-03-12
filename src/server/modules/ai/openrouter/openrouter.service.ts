@@ -5,6 +5,7 @@ import {Readable} from 'stream';
 import {FetchService} from '@server/modules/fetch/fetch.service';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
+import {safeParse} from '@server/utils/safe-parse';
 /* Local Dependencies */
 import {AiVendor} from '../ai.vendor';
 import {AiModel, AiMessage, AiTool, AiStreamChunk, AiToolCall} from '../ai.types';
@@ -243,7 +244,7 @@ export class OpenRouterService implements AiVendor {
 				id: tc.id,
 				function: {
 					name: tc.name as AiToolName,
-					arguments: JSON.parse(tc.arguments || '{}'),
+					arguments: safeParse(tc.arguments || '{}', {}, 'openrouter.tool_call.arguments'),
 				},
 			}));
 		}
