@@ -20,9 +20,17 @@ export class MessageService {
 	******************************************************** */
 
 	/** Send a reply to a specific chat via the active vendor */
-	public async sendReply(chat_id: string, text: string): Promise<boolean> {
+	public async sendReply(chat_id: string, text: string): Promise<{success: boolean; message_id?: number}> {
 		if (this.telegramService.isRunning()) {
 			return this.telegramService.sendMessage(chat_id, text);
+		}
+		return {success: false};
+	}
+
+	/** Edit an existing reply message */
+	public async editReply(chat_id: string, message_id: number, text: string): Promise<boolean> {
+		if (this.telegramService.isRunning()) {
+			return this.telegramService.editMessage(chat_id, message_id, text);
 		}
 		return false;
 	}

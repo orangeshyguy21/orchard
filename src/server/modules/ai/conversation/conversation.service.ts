@@ -32,6 +32,9 @@ export class ConversationService {
 	private static readonly MAX_MESSAGES = 50;
 	private static readonly COMPRESS_THRESHOLD = 500;
 
+	/** Active abort controllers keyed by chat_id — one per chat at most */
+	private active_runs = new Map<string, AbortController>();
+
 	constructor(
 		@InjectRepository(Conversation)
 		private conversationRepository: Repository<Conversation>,
@@ -43,7 +46,7 @@ export class ConversationService {
 		Event Handlers
 	******************************************************** */
 
-	/** Handle an incoming user message: get or create conversation, run agent, reply */
+	/** Handle an incoming user message: abort any in-flight run, persist the message, then run agent */
 	@OnEvent(MESSAGE_INCOMING_EVENT, {async: true})
 	public async handleIncomingMessage(payload: IncomingMessagePayload): Promise<void> {
 		const {chat_id, user_id, text} = payload;
@@ -54,32 +57,71 @@ export class ConversationService {
 			return;
 		}
 
+		/* Abort any in-flight agent run for this chat */
+		this.active_runs.get(chat_id)?.abort();
+
 		let conversation = await this.getActiveConversation(chat_id);
 		if (!conversation) {
 			conversation = await this.createConversation(agent, user_id, chat_id);
 		}
 
+		/* Persist the user message immediately so it is never lost */
 		const messages: AiMessage[] = JSON.parse(conversation.messages);
 		this.compressPreviousTurns(messages);
 		messages.push({role: AiMessageRole.USER, content: text});
 
-		const tool_names = this.agentService.resolveToolNames(agent);
-		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
-
-		this.logger.log(`Agent ${agent.name} conversation started (chat: ${chat_id})`);
-		const loop_result = await this.agentService.runToolLoop({messages, tool_names, agent_context});
-		this.logger.log(`Agent ${agent.name} conversation completed (tokens: ${loop_result.tokens_used})`);
-
-		this.truncateHistory(loop_result.messages);
-
 		const now = DateTime.utc().toUnixInteger();
 		await this.conversationRepository.update(conversation.id, {
-			messages: JSON.stringify(loop_result.messages),
-			tokens_used: conversation.tokens_used + loop_result.tokens_used,
+			messages: JSON.stringify(messages),
 			last_activity_at: now,
 		});
 
-		await this.messageService.sendReply(chat_id, loop_result.result);
+		/* Send a thinking indicator */
+		const thinking = await this.messageService.sendReply(chat_id, '...');
+
+		/* Create an abort controller for this run */
+		const controller = new AbortController();
+		this.active_runs.set(chat_id, controller);
+
+		const tool_names = this.agentService.resolveToolNames(agent);
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
+
+		try {
+			this.logger.log(`Agent ${agent.name} conversation started (chat: ${chat_id})`);
+			const loop_result = await this.agentService.runToolLoop({messages, tool_names, agent_context, signal: controller.signal});
+
+			/* If aborted mid-run, persist token usage and exit — the new invocation handles the response */
+			if (controller.signal.aborted) {
+				this.logger.log(`Agent ${agent.name} conversation aborted (chat: ${chat_id})`);
+				if (loop_result.tokens_used > 0) {
+					await this.conversationRepository.update(conversation.id, {
+						tokens_used: conversation.tokens_used + loop_result.tokens_used,
+					});
+				}
+				return;
+			}
+
+			this.logger.log(`Agent ${agent.name} conversation completed (tokens: ${loop_result.tokens_used})`);
+			this.truncateHistory(loop_result.messages);
+
+			const completed_at = DateTime.utc().toUnixInteger();
+			await this.conversationRepository.update(conversation.id, {
+				messages: JSON.stringify(loop_result.messages),
+				tokens_used: conversation.tokens_used + loop_result.tokens_used,
+				last_activity_at: completed_at,
+			});
+
+			await this.replyOrEdit(chat_id, thinking, loop_result.result);
+		} catch (error) {
+			if (controller.signal.aborted) return;
+			this.logger.error(`Agent ${agent.name} conversation failed (chat: ${chat_id}): ${error.message}`);
+			await this.replyOrEdit(chat_id, thinking, 'Something went wrong processing your message.');
+		} finally {
+			/* Clean up only if this controller is still the active one */
+			if (this.active_runs.get(chat_id) === controller) {
+				this.active_runs.delete(chat_id);
+			}
+		}
 	}
 
 	/** Handle a /new command: expire the active conversation and confirm */
@@ -94,6 +136,15 @@ export class ConversationService {
 		}
 
 		await this.messageService.sendReply(chat_id, 'Conversation reset. Send a message to start fresh.');
+	}
+
+	/** Edit the thinking message with the final text, or send a new message if no message_id is available */
+	private async replyOrEdit(chat_id: string, thinking: {message_id?: number}, text: string): Promise<void> {
+		if (thinking.message_id) {
+			await this.messageService.editReply(chat_id, thinking.message_id, text);
+		} else {
+			await this.messageService.sendReply(chat_id, text);
+		}
 	}
 
 	/* *******************************************************

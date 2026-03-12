@@ -57,7 +57,8 @@ describe('ConversationService', () => {
 	};
 
 	const mock_message_service = {
-		sendReply: jest.fn().mockResolvedValue(true),
+		sendReply: jest.fn().mockResolvedValue({success: true, message_id: 42}),
+		editReply: jest.fn().mockResolvedValue(true),
 	};
 
 	beforeEach(async () => {
@@ -86,7 +87,9 @@ describe('ConversationService', () => {
 			expect(mock_agent_service.getAgentByKey).toHaveBeenCalledWith(AgentKey.ORCHARD);
 			expect(mock_conversation_repo.save).toHaveBeenCalled();
 			expect(mock_agent_service.runToolLoop).toHaveBeenCalled();
-			expect(mock_message_service.sendReply).toHaveBeenCalledWith('chat-123', 'Hello, operator!');
+			/* Thinking indicator sent first, then final reply edits it */
+			expect(mock_message_service.sendReply).toHaveBeenCalledWith('chat-123', '...');
+			expect(mock_message_service.editReply).toHaveBeenCalledWith('chat-123', 42, 'Hello, operator!');
 		});
 
 		it('should reuse an active conversation', async () => {
@@ -104,9 +107,10 @@ describe('ConversationService', () => {
 
 			expect(mock_conversation_repo.save).not.toHaveBeenCalled();
 			expect(mock_agent_service.runToolLoop).toHaveBeenCalled();
-			const update_call = mock_conversation_repo.update.mock.calls[0];
-			expect(update_call[0]).toBe('existing-conv');
-			expect(update_call[1].tokens_used).toBe(150);
+			/* First update persists the user message, second updates with agent response */
+			const final_update = mock_conversation_repo.update.mock.calls[1];
+			expect(final_update[0]).toBe('existing-conv');
+			expect(final_update[1].tokens_used).toBe(150);
 		});
 	});
 

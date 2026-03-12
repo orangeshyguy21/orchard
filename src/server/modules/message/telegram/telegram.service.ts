@@ -131,24 +131,45 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	******************************************************** */
 
 	/** Send a message to a specific Telegram chat, falling back to plain text if Markdown parsing fails */
-	public async sendMessage(chat_id: string, text: string): Promise<boolean> {
+	public async sendMessage(chat_id: string, text: string): Promise<{success: boolean; message_id?: number}> {
+		if (!this.bot) return {success: false};
+		try {
+			const result = await this.withMarkdownFallback(
+				(opts) => this.bot!.api.sendMessage(chat_id, text, opts),
+				`send to ${chat_id}`,
+			);
+			return {success: true, message_id: result.message_id};
+		} catch (error) {
+			this.logger.error(`Failed to send Telegram message to ${chat_id}: ${error.message}`);
+			return {success: false};
+		}
+	}
+
+	/** Edit an existing message, falling back to plain text if Markdown parsing fails */
+	public async editMessage(chat_id: string, message_id: number, text: string): Promise<boolean> {
 		if (!this.bot) return false;
 		try {
-			await this.bot.api.sendMessage(chat_id, text, {parse_mode: 'Markdown'});
+			await this.withMarkdownFallback(
+				(opts) => this.bot!.api.editMessageText(chat_id, message_id, text, opts),
+				`edit in ${chat_id}`,
+			);
 			return true;
 		} catch (error) {
-			if (error.message?.includes("can't parse entities")) {
-				this.logger.warn(`Markdown parse failed for chat ${chat_id}, retrying as plain text`);
-				try {
-					await this.bot.api.sendMessage(chat_id, text);
-					return true;
-				} catch (retryError) {
-					this.logger.error(`Failed to send plain text message to ${chat_id}: ${retryError.message}`);
-					return false;
-				}
-			}
-			this.logger.error(`Failed to send Telegram message to ${chat_id}: ${error.message}`);
+			this.logger.error(`Failed to edit Telegram message in ${chat_id}: ${error.message}`);
 			return false;
+		}
+	}
+
+	/** Try an API call with Markdown, retry as plain text if Telegram rejects the formatting */
+	private async withMarkdownFallback<T>(action: (opts?: {parse_mode: 'Markdown'}) => Promise<T>, label: string): Promise<T> {
+		try {
+			return await action({parse_mode: 'Markdown'});
+		} catch (error) {
+			if (error.message?.includes("can't parse entities")) {
+				this.logger.warn(`Markdown parse failed for ${label}, retrying as plain text`);
+				return await action();
+			}
+			throw error;
 		}
 	}
 
@@ -164,8 +185,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
 		let delivered_count = 0;
 		for (const user of users) {
-			const sent = await this.sendMessage(user.telegram_chat_id!, message);
-			if (sent) delivered_count++;
+			const {success} = await this.sendMessage(user.telegram_chat_id!, message);
+			if (success) delivered_count++;
 		}
 
 		this.logger.log(`Telegram notification broadcast: ${delivered_count}/${users.length} delivered`);

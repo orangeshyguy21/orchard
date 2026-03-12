@@ -231,21 +231,29 @@ export class AgentService implements OnModuleInit {
 		messages: AiMessage[];
 		tool_names: string[];
 		agent_context: AiAgentContext;
+		signal?: AbortSignal;
 	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
 		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
 		if (!model) throw new Error('No AI model configured (ai.server.model)');
 
-		const {messages, tool_names, agent_context} = options;
+		const {messages, tool_names, agent_context, signal} = options;
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 		let total_tokens = 0;
 
 		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
-			const response = await this.collectStreamResponse(model, messages, tool_schemas);
+			if (signal?.aborted) {
+				return {result: '', tokens_used: total_tokens, messages};
+			}
+
+			const response = await this.collectStreamResponse(model, messages, tool_schemas, signal);
 			total_tokens += (response.usage?.prompt_tokens ?? 0) + (response.usage?.completion_tokens ?? 0);
 
 			if (response.message.tool_calls?.length) {
 				messages.push(response.message);
 				for (const tool_call of response.message.tool_calls) {
+					if (signal?.aborted) {
+						return {result: '', tokens_used: total_tokens, messages};
+					}
 					const tool_result = await this.toolExecutor.executeTool(
 						tool_call.function.name,
 						tool_call.function.arguments,
@@ -290,12 +298,12 @@ export class AgentService implements OnModuleInit {
 	 * Collects a full streamed response into a single chunk with accumulated content and tool calls.
 	 * Accumulates content and tool_calls from intermediate chunks so the result is vendor-agnostic.
 	 */
-	private async collectStreamResponse(model: string, messages: AiMessage[], tools: AiTool[]): Promise<AiStreamChunk> {
+	private async collectStreamResponse(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): Promise<AiStreamChunk> {
 		let final_chunk: AiStreamChunk | null = null;
 		let accumulated_content = '';
 		const accumulated_tool_calls: AiToolCall[] = [];
 
-		for await (const chunk of this.aiService.streamAgent(model, messages, tools)) {
+		for await (const chunk of this.aiService.streamAgent(model, messages, tools, signal)) {
 			if (chunk.done) {
 				final_chunk = chunk;
 			} else {

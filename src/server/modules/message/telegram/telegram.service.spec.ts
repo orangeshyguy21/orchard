@@ -58,9 +58,9 @@ describe('TelegramService', () => {
 	});
 
 	describe('sendMessage', () => {
-		it('should return false when bot is not running', async () => {
+		it('should return unsuccessful result when bot is not running', async () => {
 			const result = await service.sendMessage('123', 'test');
-			expect(result).toBe(false);
+			expect(result).toEqual({success: false});
 		});
 	});
 
