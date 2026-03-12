@@ -40,7 +40,7 @@ import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.cla
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
-import {MintUnit, AnalyticsInterval, AiToolName, AiAssistant} from '@shared/generated.types';
+import {MintUnit, AnalyticsInterval, AssistantToolName, AiAssistant} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets',
@@ -429,34 +429,34 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiToolName.DateRangeUpdate) {
+		if (tool_call.function.name === AssistantToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiToolName.MintAnalyticsUnitsUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintAnalyticsUnitsUpdate) {
 			this.onUnitsChange(tool_call.function.arguments.units);
 		}
-		if (tool_call.function.name === AiToolName.MintKeysetStatusUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintKeysetStatusUpdate) {
 			const statuses =
 				typeof tool_call.function.arguments.statuses === 'string'
 					? JSON.parse(tool_call.function.arguments.statuses).map((status: any) => status === 'true' || status === true)
 					: tool_call.function.arguments.statuses.map((status: any) => status === 'true' || status === true);
 			this.onStatusChange(statuses);
 		}
-		if (tool_call.function.name === AiToolName.MintKeysetRotationUnitUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintKeysetRotationUnitUpdate) {
 			this.form_keyset.patchValue({
 				unit: tool_call.function.arguments.unit,
 			});
 		}
-		if (tool_call.function.name === AiToolName.MintKeysetRotationInputFeePpkUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintKeysetRotationInputFeePpkUpdate) {
 			this.form_keyset.patchValue({
 				input_fee_ppk: tool_call.function.arguments.input_fee_ppk,
 			});
 		}
-		if (tool_call.function.name === AiToolName.MintKeysetRotationAmountsUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintKeysetRotationAmountsUpdate) {
 			this.form_keyset.patchValue({
 				amounts: tool_call.function.arguments.amounts,
 			});

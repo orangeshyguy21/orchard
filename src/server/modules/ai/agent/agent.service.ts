@@ -240,7 +240,7 @@ export class AgentService implements OnModuleInit {
 		const notified = loop_result.messages.some((m) => {
 			if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
 			const is_send = loop_result.messages.some((msg) =>
-				msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && (tc.function.name as string) === AgentToolName.SEND_MESSAGE),
+				msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
 			);
 			if (!is_send) return false;
 			try {

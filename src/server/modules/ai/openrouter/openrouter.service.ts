@@ -9,7 +9,7 @@ import {safeParse} from '@server/utils/safe-parse';
 /* Local Dependencies */
 import {AiVendor} from '../ai.vendor';
 import {AiModel, AiMessage, AiTool, AiStreamChunk, AiToolCall} from '../ai.types';
-import {AiMessageRole, AiToolName} from '../ai.enums';
+import {AiMessageRole} from '../ai.enums';
 import {OpenRouterModelsResponse, OpenRouterModel, OpenRouterChatChunk, OpenRouterToolCallDelta} from './openrouter.types';
 
 @Injectable()
@@ -243,7 +243,7 @@ export class OpenRouterService implements AiVendor {
 			tool_calls = Array.from(tool_calls_acc.values()).map((tc) => ({
 				id: tc.id,
 				function: {
-					name: tc.name as AiToolName,
+					name: tc.name,
 					arguments: safeParse(tc.arguments || '{}', {}, 'openrouter.tool_call.arguments'),
 				},
 			}));

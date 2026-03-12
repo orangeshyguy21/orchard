@@ -52,7 +52,7 @@ import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiToolName, AnalyticsInterval, MintActivityPeriod, MintUnit} from '@shared/generated.types';
+import {AssistantToolName, AnalyticsInterval, MintActivityPeriod, MintUnit} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -504,17 +504,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private executeAssistantFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiToolName.DateRangeUpdate) {
+		if (tool_call.function.name === AssistantToolName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
 			];
 			this.onDateChange(range);
 		}
-		if (tool_call.function.name === AiToolName.MintAnalyticsUnitsUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintAnalyticsUnitsUpdate) {
 			this.onUnitsChange(tool_call.function.arguments.units);
 		}
-		if (tool_call.function.name === AiToolName.MintAnalyticsIntervalUpdate) {
+		if (tool_call.function.name === AssistantToolName.MintAnalyticsIntervalUpdate) {
 			this.onIntervalChange(tool_call.function.arguments.interval);
 		}
 	}
