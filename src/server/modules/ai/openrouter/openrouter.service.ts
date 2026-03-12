@@ -219,7 +219,7 @@ export class OpenRouterService implements AiVendor {
 		for (const delta of deltas) {
 			const existing = acc.get(delta.index) ?? {id: '', name: '', arguments: ''};
 			if (delta.id) existing.id = delta.id;
-			if (delta.function?.name) existing.name += delta.function.name;
+			if (delta.function?.name) existing.name = delta.function.name;
 			if (delta.function?.arguments) existing.arguments += delta.function.arguments;
 			acc.set(delta.index, existing);
 		}

@@ -31,6 +31,11 @@ export class AgentService implements OnModuleInit {
 
 	private static readonly MAX_TOOL_ITERATIONS = 25;
 	private static readonly MIN_CRON_INTERVAL_MINUTES = 5;
+	private static readonly MAX_QUEUE_DEPTH = 10;
+
+	private execution_queue: Promise<any> = Promise.resolve();
+	private queue_depth = 0;
+	private readonly pending_agents = new Set<string>();
 
 	constructor(
 		@InjectRepository(Agent)
@@ -128,11 +133,36 @@ export class AgentService implements OnModuleInit {
 		const job_name = `agent:${agent.id}:${cron_expression}`;
 		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
 		const job = new CronJob(cron_expression, async () => {
-			await this.executeAgent(agent.id, cron_expression);
+			await this.enqueueAgent(agent.id, cron_expression);
 		});
 		this.schedulerRegistry.addCronJob(job_name, job);
 		job.start();
 		this.logger.log(`Registered cron: ${job_name}`);
+	}
+
+	/**
+	 * Enqueues a scheduled agent run for sequential execution.
+	 * Deduplicates by agent_id and enforces a max queue depth to prevent unbounded growth.
+	 */
+	private async enqueueAgent(agent_id: string, schedule_trigger: string): Promise<void> {
+		if (this.pending_agents.has(agent_id)) {
+			this.logger.warn(`Agent ${agent_id} already queued, skipping duplicate`);
+			return;
+		}
+		if (this.queue_depth >= AgentService.MAX_QUEUE_DEPTH) {
+			this.logger.warn(`Execution queue full (${this.queue_depth}), dropping scheduled run for ${agent_id}`);
+			return;
+		}
+		this.pending_agents.add(agent_id);
+		this.queue_depth++;
+		const task = () =>
+			this.executeAgent(agent_id, schedule_trigger).finally(() => {
+				this.pending_agents.delete(agent_id);
+				this.queue_depth--;
+			});
+		const result = this.execution_queue.then(task, task);
+		this.execution_queue = result.catch(() => {});
+		await result;
 	}
 
 	/**

@@ -24,5 +24,6 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
   },
-  "include": ["src/server"]
+  "include": ["src/server"],
+  "exclude": ["src/server/**/*.spec.ts"]
 }

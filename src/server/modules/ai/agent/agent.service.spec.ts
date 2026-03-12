@@ -324,10 +324,146 @@ describe('AgentService', () => {
 	});
 
 	/* *******************************************************
+		Execution Queue
+	******************************************************** */
+
+	describe('enqueueAgent', () => {
+		const mock_agents: Record<string, Partial<Agent>> = {
+			'agent-1': {id: 'agent-1', agent_key: AgentKey.ACTIVITY_MONITOR, name: 'Agent 1', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
+			'agent-2': {id: 'agent-2', agent_key: AgentKey.ORCHARD, name: 'Agent 2', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
+			'agent-3': {id: 'agent-3', agent_key: AgentKey.ORCHARD, name: 'Agent 3', active: true, system_message: null, tools: null, schedules: '["10 * * * *"]'},
+		};
+
+		beforeEach(() => {
+			mock_agent_repo.findOne.mockImplementation((opts: any) => {
+				return Promise.resolve(mock_agents[opts.where.id] ?? null);
+			});
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+		});
+
+		it('should execute multiple agents sequentially', async () => {
+			const execution_order: string[] = [];
+			mock_agent_repo.findOne.mockImplementation((opts: any) => {
+				execution_order.push(opts.where.id);
+				return Promise.resolve(mock_agents[opts.where.id] ?? null);
+			});
+
+			await Promise.all([
+				(service as any).enqueueAgent('agent-1', '10 * * * *'),
+				(service as any).enqueueAgent('agent-2', '10 * * * *'),
+				(service as any).enqueueAgent('agent-3', '10 * * * *'),
+			]);
+
+			expect(execution_order).toEqual(['agent-1', 'agent-2', 'agent-3']);
+		});
+
+		it('should skip duplicate agent already in the queue', async () => {
+			let resolve_first: () => void;
+			const block = new Promise<void>((r) => (resolve_first = r));
+			let call_count = 0;
+
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				call_count++;
+				if (call_count === 1) await block;
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			const first = (service as any).enqueueAgent('agent-1', '10 * * * *');
+			const duplicate = (service as any).enqueueAgent('agent-1', '10 * * * *');
+
+			resolve_first!();
+			await Promise.all([first, duplicate]);
+
+			/* executeAgent should only have been called once for agent-1 */
+			const find_calls = mock_agent_repo.findOne.mock.calls.filter((c: any) => c[0].where.id === 'agent-1');
+			expect(find_calls).toHaveLength(1);
+		});
+
+		it('should continue queue when an agent errors', async () => {
+			let call_count = 0;
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				call_count++;
+				if (call_count === 1) throw new Error('LLM down');
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			const results = await Promise.allSettled([
+				(service as any).enqueueAgent('agent-1', '10 * * * *'),
+				(service as any).enqueueAgent('agent-2', '10 * * * *'),
+			]);
+
+			expect(results[0].status).toBe('rejected');
+			expect(results[1].status).toBe('fulfilled');
+		});
+
+		it('should drop runs when queue depth is exceeded', async () => {
+			let resolve_block: () => void;
+			const block = new Promise<void>((r) => (resolve_block = r));
+
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				await block;
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			/* Fill the queue beyond MAX_QUEUE_DEPTH (10) with unique agent ids */
+			const agents: Record<string, Partial<Agent>> = {};
+			const promises: Promise<void>[] = [];
+			for (let i = 0; i < 12; i++) {
+				const id = `agent-q-${i}`;
+				agents[id] = {id, agent_key: AgentKey.ORCHARD, name: `Agent ${i}`, active: true, system_message: null, tools: null, schedules: '[]'};
+			}
+			mock_agent_repo.findOne.mockImplementation((opts: any) => Promise.resolve(agents[opts.where.id] ?? null));
+
+			for (let i = 0; i < 12; i++) {
+				promises.push((service as any).enqueueAgent(`agent-q-${i}`, '10 * * * *'));
+			}
+
+			/* The 11th and 12th should have been dropped */
+			expect((service as any).queue_depth).toBe(10);
+
+			resolve_block!();
+			await Promise.allSettled(promises);
+		});
+	});
+
+	/* *******************************************************
 		Scheduling
 	******************************************************** */
 
 	describe('syncAgentSchedules', () => {
+		beforeEach(() => jest.useFakeTimers());
+		afterEach(() => jest.useRealTimers());
+
 		it('should register cron jobs for active agent with valid schedules', async () => {
 			const agent = {id: 'agent-1', active: true, schedules: '["10 * * * *"]'} as Agent;
 
