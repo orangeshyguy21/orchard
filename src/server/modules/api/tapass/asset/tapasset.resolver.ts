@@ -11,14 +11,14 @@ export class TaprootAssetsAssetResolver {
 
 	constructor(private taprootAssetsAssetService: TaprootAssetsAssetService) {}
 
-	@Query(() => OrchardTaprootAssets)
+	@Query(() => OrchardTaprootAssets, {description: 'Get all Taproot assets'})
 	async taproot_assets(): Promise<OrchardTaprootAssets> {
 		const tag = 'GET { taproot_assets }';
 		this.logger.debug(tag);
 		return await this.taprootAssetsAssetService.getTaprootAssets(tag);
 	}
 
-	@Query(() => [OrchardTaprootAssetsUtxo])
+	@Query(() => [OrchardTaprootAssetsUtxo], {description: 'Get all Taproot asset UTXOs'})
 	async taproot_assets_utxo(): Promise<OrchardTaprootAssetsUtxo[]> {
 		const tag = 'GET { taproot_assets_utxo }';
 		this.logger.debug(tag);

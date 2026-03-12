@@ -1,11 +1,11 @@
 /* Core Dependencies */
 import {Field, InputType, Int} from '@nestjs/graphql';
 
-@InputType()
+@InputType({description: 'Input for checking port reachability'})
 export class PublicPortInput {
-	@Field(() => String)
+	@Field(() => String, {description: 'Hostname or IP address to check'})
 	host: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Port number to check'})
 	port: number;
 }

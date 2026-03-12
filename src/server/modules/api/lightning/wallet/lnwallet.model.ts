@@ -5,21 +5,21 @@ import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
 import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Lightning wallet address'})
 export class OrchardLightningAddress {
-	@Field(() => String)
+	@Field(() => String, {description: 'On-chain wallet address'})
 	address: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Internal (change) or external (receiving) address indicator'})
 	is_internal: string;
 
-	@Field(() => Number)
+	@Field(() => Number, {description: 'Balance held at this address in satoshis'})
 	balance: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'BIP derivation path of the address'})
 	derivation_path: string;
 
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Public key associated with this address'})
 	public_key: string;
 
 	constructor(address: LightningAddresses['account_with_addresses'][number]['addresses'][number]) {
@@ -31,18 +31,18 @@ export class OrchardLightningAddress {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Lightning wallet account'})
 export class OrchardLightningAccount {
-	@Field(() => String)
+	@Field(() => String, {description: 'Account name'})
 	name: string;
 
-	@Field(() => LightningAddressType)
+	@Field(() => LightningAddressType, {description: 'Address type used by this account'})
 	address_type: LightningAddressType;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'BIP derivation path of the account'})
 	derivation_path: string;
 
-	@Field(() => [OrchardLightningAddress])
+	@Field(() => [OrchardLightningAddress], {description: 'Addresses belonging to this account'})
 	addresses: OrchardLightningAddress[];
 
 	constructor(account: LightningAddresses['account_with_addresses'][number]) {

@@ -5,21 +5,21 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 /* Native Dependencies */
 import {SystemMetric} from '@server/modules/system/metrics/sysmetrics.enums';
 
-@ObjectType()
+@ObjectType({description: 'System performance metric'})
 export class OrchardSystemMetrics {
-	@Field(() => SystemMetric)
+	@Field(() => SystemMetric, {description: 'Type of system metric'})
 	metric: SystemMetric;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Metric value'})
 	value: number;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Minimum observed value in the interval'})
 	min: number | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Maximum observed value in the interval'})
 	max: number | null;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the metric measurement'})
 	date: number;
 
 	constructor(metric: SystemMetric, value: number, date: number, min?: number | null, max?: number | null) {

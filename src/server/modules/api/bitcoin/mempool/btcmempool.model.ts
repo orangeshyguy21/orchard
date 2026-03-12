@@ -4,18 +4,18 @@ import {Field, ID, Int, Float, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {BitcoinTransaction} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin mempool transaction fee breakdown'})
 export class OrchardBitcoinMempoolFees {
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Base transaction fee in BTC'})
 	base: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Modified fee with fee deltas in BTC'})
 	modified: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Fee including ancestor transactions in BTC'})
 	ancestor: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Fee including descendant transactions in BTC'})
 	descendant: number;
 
 	constructor(fees: BitcoinTransaction['fees']) {
@@ -26,51 +26,51 @@ export class OrchardBitcoinMempoolFees {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin mempool transaction data'})
 export class OrchardBitcoinMempoolTransaction {
-	@Field(() => ID)
+	@Field(() => ID, {description: 'Transaction identifier'})
 	txid: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Virtual transaction size in vbytes'})
 	vsize: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Transaction weight in weight units'})
 	weight: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Time the transaction entered the mempool'})
 	time: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Block height when the transaction entered the mempool'})
 	height: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of descendant transactions in the mempool'})
 	descendantcount: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Total size of descendant transactions in bytes'})
 	descendantsize: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of ancestor transactions in the mempool'})
 	ancestorcount: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Total size of ancestor transactions in bytes'})
 	ancestorsize: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Witness transaction identifier'})
 	wtxid: string;
 
-	@Field(() => OrchardBitcoinMempoolFees)
+	@Field(() => OrchardBitcoinMempoolFees, {description: 'Fee breakdown for this transaction'})
 	fees: OrchardBitcoinMempoolFees;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Transaction IDs this transaction depends on'})
 	depends: string[];
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Transaction IDs that spend outputs of this transaction'})
 	spentby: string[];
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the transaction is BIP125 replaceable'})
 	bip125_replaceable: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the transaction has not yet been broadcast'})
 	unbroadcast: boolean;
 
 	constructor(tx: BitcoinTransaction, txid: string) {

@@ -18,8 +18,8 @@ export class AuthSignupResolver {
 
 	@Public()
 	@Throttle({default: {limit: 4, ttl: seconds(10)}})
-	@Mutation(() => OrchardAuthentication)
-	async auth_signup(@Args('signup') signup: AuthSignupInput) {
+	@Mutation(() => OrchardAuthentication, {description: 'Register a new user account'})
+	async auth_signup(@Args('signup', {description: 'New user registration details'}) signup: AuthSignupInput) {
 		const tag = 'MUTATION { signup }';
 		this.logger.debug(tag);
 		return await this.signupService.signup(tag, signup);

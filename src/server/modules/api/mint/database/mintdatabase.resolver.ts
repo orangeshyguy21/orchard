@@ -15,7 +15,7 @@ export class MintDatabaseResolver {
 
 	constructor(private mintDatabaseService: MintDatabaseService) {}
 
-	@Query(() => OrchardMintDatabaseInfo)
+	@Query(() => OrchardMintDatabaseInfo, {description: 'Get mint database information'})
 	async mint_database_info(): Promise<OrchardMintDatabaseInfo> {
 		const tag = 'GET { mint_database_info }';
 		this.logger.debug(tag);
@@ -23,7 +23,7 @@ export class MintDatabaseResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
-	@Mutation(() => OrchardMintDatabaseBackup)
+	@Mutation(() => OrchardMintDatabaseBackup, {description: 'Create a backup of the mint database'})
 	async mint_database_backup(): Promise<OrchardMintDatabaseBackup> {
 		const tag = 'POST { mint_database_backup }';
 		this.logger.debug(tag);
@@ -31,8 +31,10 @@ export class MintDatabaseResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
-	@Mutation(() => OrchardMintDatabaseRestore)
-	async mint_database_restore(@Args('filebase64', {type: () => Base64}) filebase64: string): Promise<OrchardMintDatabaseRestore> {
+	@Mutation(() => OrchardMintDatabaseRestore, {description: 'Restore the mint database from a backup'})
+	async mint_database_restore(
+		@Args('filebase64', {type: () => Base64, description: 'Base64-encoded database backup file'}) filebase64: string,
+	): Promise<OrchardMintDatabaseRestore> {
 		const tag = 'POST { mint_database_restore }';
 		this.logger.debug(tag);
 		return await this.mintDatabaseService.restoreMintDatabaseBackup(tag, filebase64);

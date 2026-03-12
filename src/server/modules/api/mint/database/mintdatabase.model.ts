@@ -5,9 +5,9 @@ import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 /* Native Dependencies */
 import {CashuMintDatabaseInfo} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint database backup'})
 export class OrchardMintDatabaseBackup {
-	@Field(() => Base64)
+	@Field(() => Base64, {description: 'Base64-encoded database backup file'})
 	filebase64: string;
 
 	constructor(filebase64: string) {
@@ -15,9 +15,9 @@ export class OrchardMintDatabaseBackup {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint database restore result'})
 export class OrchardMintDatabaseRestore {
-	@Field()
+	@Field({description: 'Whether the restore completed successfully'})
 	success: boolean;
 
 	constructor(success: boolean) {
@@ -25,12 +25,12 @@ export class OrchardMintDatabaseRestore {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint database information'})
 export class OrchardMintDatabaseInfo {
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Database file size in bytes'})
 	size: number;
 
-	@Field()
+	@Field({description: 'Database engine type'})
 	type: string;
 
 	constructor(info: CashuMintDatabaseInfo) {

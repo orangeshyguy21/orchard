@@ -5,12 +5,12 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {UTXOracle} from '@server/modules/bitcoin/utxoracle/utxoracle.entity';
 import {UTXOracleProgressStatus} from '@server/modules/bitcoin/utxoracle/utxoracle.enums';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin oracle price data point'})
 export class OrchardBitcoinOraclePrice {
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Date of the price data point'})
 	date: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Bitcoin price in USD'})
 	price: number;
 
 	constructor(data: UTXOracle) {
@@ -19,57 +19,57 @@ export class OrchardBitcoinOraclePrice {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin oracle backfill stream reference'})
 export class OrchardBitcoinOracleBackfillStream {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unique backfill stream identifier'})
 	id: string;
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin oracle backfill progress status'})
 export class OrchardBitcoinOracleBackfillProgress {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unique backfill stream identifier'})
 	id: string;
 
-	@Field(() => UTXOracleProgressStatus)
+	@Field(() => UTXOracleProgressStatus, {description: 'Current status of the backfill process'})
 	status: UTXOracleProgressStatus;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Start date of the backfill range'})
 	start_date?: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'End date of the backfill range'})
 	end_date?: number;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Date currently being processed'})
 	date?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Price retrieved for the current date'})
 	price?: number;
 
-	@Field(() => Boolean, {nullable: true})
+	@Field(() => Boolean, {nullable: true, description: 'Whether the current date was processed successfully'})
 	success?: boolean;
 
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Error message if processing failed'})
 	error?: string;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Total number of days in the backfill range'})
 	total_days?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of days processed so far'})
 	processed?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of days processed successfully'})
 	successful?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of days that failed processing'})
 	failed?: number;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Progress percentage for the current date (0-100)'})
 	date_progress?: number; // 0-100
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Overall backfill progress percentage (0-100)'})
 	overall_progress?: number; // 0-100
 
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Human-readable progress message'})
 	message?: string;
 
 	constructor(data: Partial<OrchardBitcoinOracleBackfillProgress>) {

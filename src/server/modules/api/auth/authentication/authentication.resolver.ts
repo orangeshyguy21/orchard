@@ -21,14 +21,14 @@ export class AuthAuthenticationResolver {
 
 	@Public()
 	@Throttle({default: {limit: 4, ttl: seconds(10)}})
-	@Mutation(() => OrchardAuthentication)
-	async auth_authentication(@Args('authentication') authentication: AuthenticationInput) {
+	@Mutation(() => OrchardAuthentication, {description: 'Authenticate a user with credentials'})
+	async auth_authentication(@Args('authentication', {description: 'User login credentials'}) authentication: AuthenticationInput) {
 		const tag = 'MUTATION { authentication }';
 		this.logger.debug(tag);
 		return await this.authenticationService.authenticate(tag, authentication);
 	}
 
-	@Mutation(() => OrchardAuthentication)
+	@Mutation(() => OrchardAuthentication, {description: 'Refresh an expired access token using a refresh token'})
 	@UseGuards(GqlRefreshGuard)
 	async auth_authentication_refresh(@Context() context: any) {
 		const tag = 'MUTATION { refresh_authentication }';
@@ -40,7 +40,7 @@ export class AuthAuthenticationResolver {
 		return await this.authenticationService.refreshAuthentication(tag, user.refresh_token);
 	}
 
-	@Mutation(() => Boolean)
+	@Mutation(() => Boolean, {description: 'Revoke a refresh token to log out'})
 	@UseGuards(GqlRefreshGuard)
 	async auth_authentication_revoke(@Context() context: any) {
 		const tag = 'MUTATION { revoke_authentication }';

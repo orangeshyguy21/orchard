@@ -5,27 +5,27 @@ import {User} from '@server/modules/user/user.entity';
 import {UserRole} from '@server/modules/user/user.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
-@ObjectType()
+@ObjectType({description: 'Crew user account'})
 export class OrchardCrewUser {
-	@Field()
+	@Field({description: 'Unique user identifier'})
 	id: string;
 
-	@Field()
+	@Field({description: 'Username'})
 	name: string;
 
-	@Field(() => UserRole)
+	@Field(() => UserRole, {description: 'User role determining permissions'})
 	role: UserRole;
 
-	@Field()
+	@Field({description: 'Whether the user account is active'})
 	active: boolean;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Optional display label for the user'})
 	label: string | null;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Telegram chat ID for notifications'})
 	telegram_chat_id: string | null;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Account creation timestamp'})
 	created_at: number;
 
 	constructor(user: User) {

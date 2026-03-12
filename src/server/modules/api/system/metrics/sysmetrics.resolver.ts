@@ -16,13 +16,15 @@ export class SystemMetricsResolver {
 
 	constructor(private apiSystemMetricsService: ApiSystemMetricsService) {}
 
-	@Query(() => [OrchardSystemMetrics])
+	@Query(() => [OrchardSystemMetrics], {description: 'Get system performance metrics'})
 	async system_metrics(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => SystemMetricsInterval, nullable: true}) interval?: SystemMetricsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
-		@Args('metrics', {type: () => [SystemMetric], nullable: true}) metrics?: SystemMetric[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => SystemMetricsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: SystemMetricsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
+		@Args('metrics', {type: () => [SystemMetric], nullable: true, description: 'List of specific metrics to retrieve'})
+		metrics?: SystemMetric[],
 	): Promise<OrchardSystemMetrics[]> {
 		const tag = 'GET { system_metrics }';
 		this.logger.debug(tag);

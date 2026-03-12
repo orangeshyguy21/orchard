@@ -1,12 +1,12 @@
 /* Core Dependencies */
 import {Field, ObjectType} from '@nestjs/graphql';
 
-@ObjectType()
+@ObjectType({description: 'AI assistant system message'})
 export class OrchardAiAssistantSystemMessage {
-	@Field()
+	@Field({description: 'Message role'})
 	role: string;
 
-	@Field()
+	@Field({description: 'Message content'})
 	content: string;
 
 	constructor(ai_assistant_system_message: any) {
@@ -15,15 +15,15 @@ export class OrchardAiAssistantSystemMessage {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI assistant tool function parameters'})
 export class OrchardAiAssistantToolParameters {
-	@Field()
+	@Field({description: 'Parameter schema type'})
 	type: string;
 
-	@Field()
+	@Field({description: 'JSON-encoded parameter properties'})
 	properties: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'List of required parameter names'})
 	required: string[];
 
 	constructor(ai_assistant_tool_parameters: any) {
@@ -33,15 +33,15 @@ export class OrchardAiAssistantToolParameters {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI assistant tool function definition'})
 export class OrchardAiAssistantToolFunction {
-	@Field()
+	@Field({description: 'Function name'})
 	name: string;
 
-	@Field()
+	@Field({description: 'Function description'})
 	description: string;
 
-	@Field(() => OrchardAiAssistantToolParameters)
+	@Field(() => OrchardAiAssistantToolParameters, {description: 'Function parameters schema'})
 	parameters: OrchardAiAssistantToolParameters;
 
 	constructor(ai_assistant_tool_function: any) {
@@ -51,12 +51,12 @@ export class OrchardAiAssistantToolFunction {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI assistant tool'})
 export class OrchardAiAssistantTool {
-	@Field()
+	@Field({description: 'Tool type'})
 	type: string;
 
-	@Field(() => OrchardAiAssistantToolFunction)
+	@Field(() => OrchardAiAssistantToolFunction, {description: 'Tool function definition'})
 	function: OrchardAiAssistantToolFunction;
 
 	constructor(ai_assistant_tool: any) {
@@ -65,24 +65,24 @@ export class OrchardAiAssistantTool {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'AI assistant configuration'})
 export class OrchardAiAssistant {
-	@Field()
+	@Field({description: 'Assistant name'})
 	name: string;
 
-	@Field()
+	@Field({description: 'Assistant description'})
 	description: string;
 
-	@Field()
+	@Field({description: 'Display icon identifier'})
 	icon: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'UI section grouping'})
 	section: string;
 
-	@Field(() => OrchardAiAssistantSystemMessage)
+	@Field(() => OrchardAiAssistantSystemMessage, {description: 'System message configuration'})
 	system_message: OrchardAiAssistantSystemMessage;
 
-	@Field(() => [OrchardAiAssistantTool])
+	@Field(() => [OrchardAiAssistantTool], {description: 'Tools available to the assistant'})
 	tools: OrchardAiAssistantTool[];
 
 	constructor(ai_assistant: any) {

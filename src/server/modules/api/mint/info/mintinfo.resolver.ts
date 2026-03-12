@@ -26,14 +26,14 @@ export class MintInfoResolver {
 
 	constructor(private mintInfoService: MintInfoService) {}
 
-	@Query(() => OrchardMintInfo)
+	@Query(() => OrchardMintInfo, {description: 'Get mint info'})
 	async mint_info(): Promise<OrchardMintInfo> {
 		const tag = 'GET { mint_info }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.getMintInfo(tag);
 	}
 
-	@Query(() => OrchardMintInfoRpc)
+	@Query(() => OrchardMintInfoRpc, {description: 'Get mint info from RPC'})
 	async mint_info_rpc(): Promise<OrchardMintInfoRpc> {
 		const tag = 'GET { mint_info_rpc }';
 		this.logger.debug(tag);
@@ -48,8 +48,8 @@ export class MintInfoResolver {
 		arg_keys: ['name'],
 		old_value_key: 'name',
 	})
-	@Mutation(() => OrchardMintNameUpdate)
-	async mint_name_update(@Args('name', {nullable: true}) name: string): Promise<OrchardMintNameUpdate> {
+	@Mutation(() => OrchardMintNameUpdate, {description: 'Update mint name'})
+	async mint_name_update(@Args('name', {nullable: true, description: 'New mint name'}) name: string): Promise<OrchardMintNameUpdate> {
 		const tag = 'MUTATION { mint_name_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintName(tag, name);
@@ -63,8 +63,8 @@ export class MintInfoResolver {
 		arg_keys: ['icon_url'],
 		old_value_key: 'icon_url',
 	})
-	@Mutation(() => OrchardMintIconUpdate)
-	async mint_icon_update(@Args('icon_url') icon_url: string): Promise<OrchardMintIconUpdate> {
+	@Mutation(() => OrchardMintIconUpdate, {description: 'Update mint icon URL'})
+	async mint_icon_update(@Args('icon_url', {description: 'New icon URL'}) icon_url: string): Promise<OrchardMintIconUpdate> {
 		const tag = 'MUTATION { mint_icon_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintIcon(tag, icon_url);
@@ -78,8 +78,10 @@ export class MintInfoResolver {
 		arg_keys: ['description'],
 		old_value_key: 'description',
 	})
-	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_short_description_update(@Args('description') description: string): Promise<OrchardMintDescriptionUpdate> {
+	@Mutation(() => OrchardMintDescriptionUpdate, {description: 'Update mint short description'})
+	async mint_short_description_update(
+		@Args('description', {description: 'New short description'}) description: string,
+	): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_short_description_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintShortDescription(tag, description);
@@ -93,8 +95,10 @@ export class MintInfoResolver {
 		arg_keys: ['description'],
 		old_value_key: 'description_long',
 	})
-	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_long_description_update(@Args('description') description: string): Promise<OrchardMintDescriptionUpdate> {
+	@Mutation(() => OrchardMintDescriptionUpdate, {description: 'Update mint long description'})
+	async mint_long_description_update(
+		@Args('description', {description: 'New long description'}) description: string,
+	): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_long_description_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintLongDescription(tag, description);
@@ -108,8 +112,10 @@ export class MintInfoResolver {
 		arg_keys: ['motd'],
 		old_value_key: 'motd',
 	})
-	@Mutation(() => OrchardMintMotdUpdate)
-	async mint_motd_update(@Args('motd', {nullable: true}) motd: string): Promise<OrchardMintMotdUpdate> {
+	@Mutation(() => OrchardMintMotdUpdate, {description: 'Update mint message of the day'})
+	async mint_motd_update(
+		@Args('motd', {nullable: true, description: 'New message of the day'}) motd: string,
+	): Promise<OrchardMintMotdUpdate> {
 		const tag = 'MUTATION { mint_motd_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintMotd(tag, motd);
@@ -122,8 +128,8 @@ export class MintInfoResolver {
 		field: 'url',
 		arg_keys: ['url'],
 	})
-	@Mutation(() => OrchardMintUrlUpdate)
-	async mint_url_add(@Args('url') url: string): Promise<OrchardMintUrlUpdate> {
+	@Mutation(() => OrchardMintUrlUpdate, {description: 'Add a mint URL'})
+	async mint_url_add(@Args('url', {description: 'URL to add'}) url: string): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_add }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.addMintUrl(tag, url);
@@ -136,8 +142,8 @@ export class MintInfoResolver {
 		field: 'url',
 		arg_keys: ['url'],
 	})
-	@Mutation(() => OrchardMintUrlUpdate)
-	async mint_url_remove(@Args('url') url: string): Promise<OrchardMintUrlUpdate> {
+	@Mutation(() => OrchardMintUrlUpdate, {description: 'Remove a mint URL'})
+	async mint_url_remove(@Args('url', {description: 'URL to remove'}) url: string): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_remove }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.removeMintUrl(tag, url);
@@ -150,8 +156,11 @@ export class MintInfoResolver {
 		field: 'contact',
 		arg_keys: ['method', 'info'],
 	})
-	@Mutation(() => OrchardMintContactUpdate)
-	async mint_contact_add(@Args('method') method: string, @Args('info') info: string): Promise<OrchardMintContactUpdate> {
+	@Mutation(() => OrchardMintContactUpdate, {description: 'Add a mint contact method'})
+	async mint_contact_add(
+		@Args('method', {description: 'Contact method type'}) method: string,
+		@Args('info', {description: 'Contact information'}) info: string,
+	): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_add }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.addMintContact(tag, method, info);
@@ -164,8 +173,11 @@ export class MintInfoResolver {
 		field: 'contact',
 		arg_keys: ['method', 'info'],
 	})
-	@Mutation(() => OrchardMintContactUpdate)
-	async mint_contact_remove(@Args('method') method: string, @Args('info') info: string): Promise<OrchardMintContactUpdate> {
+	@Mutation(() => OrchardMintContactUpdate, {description: 'Remove a mint contact method'})
+	async mint_contact_remove(
+		@Args('method', {description: 'Contact method type'}) method: string,
+		@Args('info', {description: 'Contact information'}) info: string,
+	): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_remove }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.removeMintContact(tag, method, info);

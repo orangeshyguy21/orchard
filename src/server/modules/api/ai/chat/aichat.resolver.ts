@@ -32,10 +32,11 @@ export class AiChatResolver implements OnModuleInit {
 	}
 
 	@Subscription(() => OrchardAiChatChunk, {
+		description: 'Subscribe to AI chat streaming chunks',
 		filter: (payload: {ai_chat: OrchardAiChatChunk}, variables: {ai_chat: AiChatInput}) => payload.ai_chat.id === variables.ai_chat.id,
 	})
 	@NoHeaders()
-	async ai_chat(@Args('ai_chat') ai_chat: AiChatInput) {
+	async ai_chat(@Args('ai_chat', {description: 'Chat input with model, messages, and authentication'}) ai_chat: AiChatInput) {
 		const tag = `SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`;
 		this.logger.debug(tag);
 		try {
@@ -47,8 +48,10 @@ export class AiChatResolver implements OnModuleInit {
 		return pubSub.asyncIterableIterator('ai_chat');
 	}
 
-	@Mutation(() => OrchardAiChatStream)
-	async ai_chat_abort(@Args('id', {type: () => String}) id: string): Promise<OrchardAiChatStream> {
+	@Mutation(() => OrchardAiChatStream, {description: 'Abort an active AI chat stream'})
+	async ai_chat_abort(
+		@Args('id', {type: () => String, description: 'Stream identifier to abort'}) id: string,
+	): Promise<OrchardAiChatStream> {
 		const tag = `MUTATION { ai_chat_abort } for stream ${id}`;
 		this.logger.debug(tag);
 		return this.aiChatService.abortStream(id);

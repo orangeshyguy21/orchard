@@ -11,8 +11,10 @@ export class LightningRequestResolver {
 
 	constructor(private lightningRequestService: LightningRequestService) {}
 
-	@Query(() => OrchardLightningRequest)
-	async lightning_request(@Args('request', {type: () => String}) request: string): Promise<OrchardLightningRequest> {
+	@Query(() => OrchardLightningRequest, {description: 'Look up and decode a lightning payment request'})
+	async lightning_request(
+		@Args('request', {type: () => String, description: 'Encoded lightning payment request string'}) request: string,
+	): Promise<OrchardLightningRequest> {
 		const tag = 'GET { lightning_request }';
 		this.logger.debug(tag);
 		return await this.lightningRequestService.getLightningRequest(tag, request);

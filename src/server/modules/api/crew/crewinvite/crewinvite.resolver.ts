@@ -19,7 +19,7 @@ export class CrewInviteResolver {
 	constructor(private crewInviteService: CrewInviteService) {}
 
 	@Roles(UserRole.ADMIN)
-	@Query(() => [OrchardCrewInvite])
+	@Query(() => [OrchardCrewInvite], {description: 'Get all crew invites'})
 	async crew_invites(@Context() context: any): Promise<OrchardCrewInvite[]> {
 		const tag = 'GET { crew_invites }';
 		this.logger.debug(tag);
@@ -30,8 +30,11 @@ export class CrewInviteResolver {
 
 	@Roles(UserRole.ADMIN)
 	@Throttle({default: {limit: 10, ttl: minutes(1)}})
-	@Mutation(() => OrchardCrewInvite)
-	async crew_invite_create(@Context() context: any, @Args('createInvite') createInvite: InviteCreateInput): Promise<OrchardCrewInvite> {
+	@Mutation(() => OrchardCrewInvite, {description: 'Create a new crew invite'})
+	async crew_invite_create(
+		@Context() context: any,
+		@Args('createInvite', {description: 'Invite creation details'}) createInvite: InviteCreateInput,
+	): Promise<OrchardCrewInvite> {
 		const tag = 'MUTATION { crew_invite_create }';
 		this.logger.debug(tag);
 		const user = context.req.user;
@@ -41,8 +44,10 @@ export class CrewInviteResolver {
 	}
 
 	@Roles(UserRole.ADMIN)
-	@Mutation(() => OrchardCrewInvite)
-	async crew_invite_update(@Args('updateInvite') updateInvite: InviteUpdateInput): Promise<OrchardCrewInvite> {
+	@Mutation(() => OrchardCrewInvite, {description: 'Update an existing crew invite'})
+	async crew_invite_update(
+		@Args('updateInvite', {description: 'Invite fields to update'}) updateInvite: InviteUpdateInput,
+	): Promise<OrchardCrewInvite> {
 		const tag = 'MUTATION { crew_invite_update }';
 		if (updateInvite.role === UserRole.ADMIN) throw new OrchardApiError(OrchardErrorCode.InviteNoAdminError);
 		this.logger.debug(tag);
@@ -50,8 +55,8 @@ export class CrewInviteResolver {
 	}
 
 	@Roles(UserRole.ADMIN)
-	@Mutation(() => Boolean)
-	async crew_invite_delete(@Args('id') id: string): Promise<boolean> {
+	@Mutation(() => Boolean, {description: 'Delete a crew invite'})
+	async crew_invite_delete(@Args('id', {description: 'ID of the invite to delete'}) id: string): Promise<boolean> {
 		const tag = 'MUTATION { crew_invite_delete }';
 		this.logger.debug(tag);
 		await this.crewInviteService.deleteInvite(tag, id);

@@ -20,14 +20,14 @@ export class MintMintQuoteResolver {
 
 	constructor(private mintMintQuoteService: MintMintQuoteService) {}
 
-	@Query(() => [OrchardMintMintQuote])
+	@Query(() => [OrchardMintMintQuote], {description: 'List mint quotes with optional filters'})
 	async mint_mint_quotes(
-		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
-		@Args('states', {type: () => [MintQuoteState], nullable: true}) states?: MintQuoteState[],
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('page', {type: () => Int, nullable: true}) page?: number,
-		@Args('page_size', {type: () => Int, nullable: true}) page_size?: number,
+		@Args('units', {type: () => [MintUnit], nullable: true, description: 'Filter by unit types'}) units?: MintUnit[],
+		@Args('states', {type: () => [MintQuoteState], nullable: true, description: 'Filter by quote states'}) states?: MintQuoteState[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('page', {type: () => Int, nullable: true, description: 'Page number for pagination'}) page?: number,
+		@Args('page_size', {type: () => Int, nullable: true, description: 'Number of results per page'}) page_size?: number,
 	): Promise<OrchardMintMintQuote[]> {
 		const tag = 'GET { mint_mint_quotes }';
 		this.logger.debug(tag);
@@ -40,14 +40,14 @@ export class MintMintQuoteResolver {
 		type: EventLogType.UPDATE,
 		field: 'nut04',
 	})
-	@Mutation(() => OrchardMintNut04Update)
+	@Mutation(() => OrchardMintNut04Update, {description: 'Update NUT-04 mint quote settings for a unit and method'})
 	async mint_nut04_update(
-		@Args('unit') unit: string,
-		@Args('method') method: string,
-		@Args('disabled', {nullable: true}) disabled: boolean,
-		@Args('min_amount', {type: () => Int, nullable: true}) min_amount: number,
-		@Args('max_amount', {type: () => Int, nullable: true}) max_amount: number,
-		@Args('description', {nullable: true}) description: boolean,
+		@Args('unit', {description: 'Unit to update settings for'}) unit: string,
+		@Args('method', {description: 'Payment method to update settings for'}) method: string,
+		@Args('disabled', {nullable: true, description: 'Whether to disable minting for this method'}) disabled: boolean,
+		@Args('min_amount', {type: () => Int, nullable: true, description: 'Minimum allowed mint amount'}) min_amount: number,
+		@Args('max_amount', {type: () => Int, nullable: true, description: 'Maximum allowed mint amount'}) max_amount: number,
+		@Args('description', {nullable: true, description: 'Whether to enable descriptions for mint quotes'}) description: boolean,
 	): Promise<OrchardMintNut04Update> {
 		const tag = 'MUTATION { mint_nut04_update }';
 		this.logger.debug(tag);
@@ -60,8 +60,11 @@ export class MintMintQuoteResolver {
 		type: EventLogType.UPDATE,
 		field: 'nut04_quote',
 	})
-	@Mutation(() => OrchardMintNut04QuoteUpdate)
-	async mint_nut04_quote_update(@Args('quote_id') quote_id: string, @Args('state') state: string): Promise<OrchardMintNut04QuoteUpdate> {
+	@Mutation(() => OrchardMintNut04QuoteUpdate, {description: 'Update the state of an individual mint quote'})
+	async mint_nut04_quote_update(
+		@Args('quote_id', {description: 'Identifier of the quote to update'}) quote_id: string,
+		@Args('state', {description: 'New state to set on the quote'}) state: string,
+	): Promise<OrchardMintNut04QuoteUpdate> {
 		const tag = 'MUTATION { mint_nut04_quote_update }';
 		this.logger.debug(tag);
 		return await this.mintMintQuoteService.updateMintNut04Quote(tag, quote_id, state);

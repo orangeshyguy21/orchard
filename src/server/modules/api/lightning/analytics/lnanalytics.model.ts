@@ -5,18 +5,18 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 /* Native Dependencies */
 import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 
-@ObjectType()
+@ObjectType({description: 'Lightning analytics data point'})
 export class OrchardLightningAnalytics {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unit of measurement for the amount'})
 	unit: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Analytics value for the data point'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of samples aggregated into this data point'})
 	count?: number;
 
 	constructor(unit: string, amount: string, date: number, count?: number) {
@@ -27,21 +27,21 @@ export class OrchardLightningAnalytics {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Lightning analytics metric data point'})
 export class OrchardLightningAnalyticsMetric {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unit of measurement for the amount'})
 	unit: string;
 
-	@Field(() => LightningAnalyticsMetric)
+	@Field(() => LightningAnalyticsMetric, {description: 'Type of analytics metric'})
 	metric: LightningAnalyticsMetric;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Analytics value for the data point'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of samples aggregated into this data point'})
 	count?: number;
 
 	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number, count?: number) {
@@ -53,17 +53,17 @@ export class OrchardLightningAnalyticsMetric {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Lightning analytics backfill job status'})
 export class OrchardLightningAnalyticsBackfillStatus {
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the backfill job is currently running'})
 	is_running: boolean;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill job started'})
 	started_at?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
 	errors?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of hours of data successfully backfilled'})
 	hours_completed?: number;
 }

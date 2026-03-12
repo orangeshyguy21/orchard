@@ -3,33 +3,33 @@ import {Field, ObjectType, Float} from '@nestjs/graphql';
 /* Application Dependencies */
 import {LightningPeer} from '@server/modules/lightning/lightning/lightning.types';
 
-@ObjectType()
+@ObjectType({description: 'Lightning network peer information'})
 export class OrchardLightningPeer {
-	@Field(() => String)
+	@Field(() => String, {description: 'Public key of the peer'})
 	pubkey: string;
 
-	@Field(() => String, {nullable: true})
+	@Field(() => String, {nullable: true, description: 'Alias of the peer'})
 	alias: string | null;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Network address of the peer'})
 	address: string;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Total bytes sent to this peer'})
 	bytes_sent: number | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Total bytes received from this peer'})
 	bytes_recv: number | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Total satoshis sent to this peer'})
 	sat_sent: number | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Total satoshis received from this peer'})
 	sat_recv: number | null;
 
-	@Field(() => Boolean, {nullable: true})
+	@Field(() => Boolean, {nullable: true, description: 'Whether the peer connection was inbound'})
 	inbound: boolean | null;
 
-	@Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true, description: 'Last measured ping time in microseconds'})
 	ping_time: number | null;
 
 	constructor(peer: LightningPeer) {

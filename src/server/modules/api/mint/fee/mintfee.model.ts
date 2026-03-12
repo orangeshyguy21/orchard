@@ -5,21 +5,21 @@ import {MintUnit} from '@server/modules/cashu/cashu.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {CashuMintFee} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-@ObjectType()
+@ObjectType({description: 'Cashu mint fee snapshot'})
 export class OrchardMintFee {
-	@Field(() => MintUnit)
+	@Field(() => MintUnit, {description: 'Currency unit'})
 	unit: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Keyset balance in unit'})
 	keyset_balance: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Total fees paid by keyset'})
 	keyset_fees_paid: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Backend balance in unit'})
 	backend_balance: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Snapshot timestamp'})
 	time: number;
 
 	constructor(cashu_mint_fee: CashuMintFee) {

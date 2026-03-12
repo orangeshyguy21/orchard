@@ -11,8 +11,8 @@ export class PublicUrlResolver {
 
 	constructor(private publicUrlService: PublicUrlService) {}
 
-	@Query(() => [OrchardPublicUrl])
-	async public_urls(@Args('urls', {type: () => [String]}) urls: string[]): Promise<OrchardPublicUrl[]> {
+	@Query(() => [OrchardPublicUrl], {description: 'List URL reachability results'})
+	async public_urls(@Args('urls', {type: () => [String], description: 'URLs to check'}) urls: string[]): Promise<OrchardPublicUrl[]> {
 		this.logger.debug('GET { public_urls }');
 		return await this.publicUrlService.getUrlsData(urls);
 	}

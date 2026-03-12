@@ -1,12 +1,12 @@
 /* Core Dependencies */
 import {Field, ObjectType} from '@nestjs/graphql';
 
-@ObjectType()
+@ObjectType({description: 'Application status information'})
 export class OrchardStatus {
-	@Field()
+	@Field({description: 'Application title'})
 	title: string;
 
-	@Field()
+	@Field({description: 'Whether the application is online'})
 	online: boolean;
 
 	constructor(status: OrchardStatus) {

@@ -11,8 +11,8 @@ export class PublicImageResolver {
 
 	constructor(private publicImageService: PublicImageService) {}
 
-	@Query(() => OrchardPublicImage)
-	async public_image(@Args('url') url: string): Promise<OrchardPublicImage> {
+	@Query(() => OrchardPublicImage, {description: 'Get image data from a URL'})
+	async public_image(@Args('url', {description: 'URL of the image to fetch'}) url: string): Promise<OrchardPublicImage> {
 		const tag = 'GET { image }';
 		this.logger.debug(tag);
 		return await this.publicImageService.getImageData(tag, url);

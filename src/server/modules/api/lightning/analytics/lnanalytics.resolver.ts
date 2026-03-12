@@ -21,37 +21,41 @@ export class LightningAnalyticsResolver {
 		Analytics Queries
 	******************************************************** */
 
-	@Query(() => [OrchardLightningAnalytics])
+	@Query(() => [OrchardLightningAnalytics], {description: 'Get lightning channel local balance analytics'})
 	async lightning_analytics_local_balance(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
 	): Promise<OrchardLightningAnalytics[]> {
 		const tag = 'GET { lightning_analytics_local_balance }';
 		this.logger.debug(tag);
 		return await this.apiLightningAnalyticsService.getAnalyticsLocalBalance(tag, {date_start, date_end, interval, timezone});
 	}
 
-	@Query(() => [OrchardLightningAnalytics])
+	@Query(() => [OrchardLightningAnalytics], {description: 'Get lightning channel remote balance analytics'})
 	async lightning_analytics_remote_balance(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
 	): Promise<OrchardLightningAnalytics[]> {
 		const tag = 'GET { lightning_analytics_remote_balance }';
 		this.logger.debug(tag);
 		return await this.apiLightningAnalyticsService.getAnalyticsRemoteBalance(tag, {date_start, date_end, interval, timezone});
 	}
 
-	@Query(() => [OrchardLightningAnalyticsMetric])
+	@Query(() => [OrchardLightningAnalyticsMetric], {description: 'Get lightning analytics metrics'})
 	async lightning_analytics_metrics(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
-		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
-		@Args('metrics', {type: () => [LightningAnalyticsMetric], nullable: true}) metrics?: LightningAnalyticsMetric[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true, description: 'Time interval for data aggregation'})
+		interval?: AnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true, description: 'Timezone for date calculations'}) timezone?: TimezoneType,
+		@Args('metrics', {type: () => [LightningAnalyticsMetric], nullable: true, description: 'List of specific metrics to retrieve'})
+		metrics?: LightningAnalyticsMetric[],
 	): Promise<OrchardLightningAnalyticsMetric[]> {
 		const tag = 'GET { lightning_analytics_metrics }';
 		this.logger.debug(tag);
@@ -62,7 +66,7 @@ export class LightningAnalyticsResolver {
 		Backfill Status
 	******************************************************** */
 
-	@Query(() => OrchardLightningAnalyticsBackfillStatus)
+	@Query(() => OrchardLightningAnalyticsBackfillStatus, {description: 'Get lightning analytics backfill job status'})
 	lightning_analytics_backfill_status(): OrchardLightningAnalyticsBackfillStatus {
 		const tag = 'GET { lightning_analytics_backfill_status }';
 		this.logger.debug(tag);

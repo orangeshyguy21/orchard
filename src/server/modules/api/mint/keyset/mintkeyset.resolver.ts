@@ -18,18 +18,19 @@ export class MintKeysetResolver {
 
 	constructor(private mintKeysetService: MintKeysetService) {}
 
-	@Query(() => [OrchardMintKeyset])
+	@Query(() => [OrchardMintKeyset], {description: 'Get all mint keysets'})
 	async mint_keysets(): Promise<OrchardMintKeyset[]> {
 		const tag = 'GET { mint_keysets }';
 		this.logger.debug(tag);
 		return await this.mintKeysetService.getMintKeysets(tag);
 	}
 
-	@Query(() => [OrchardMintKeysetCount])
+	@Query(() => [OrchardMintKeysetCount], {description: 'Get mint keyset proof and promise counts'})
 	async mint_keyset_counts(
-		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
-		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('id_keysets', {type: () => [String], nullable: true}) id_keysets?: string[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true, description: 'Start of date range filter'})
+		date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true, description: 'End of date range filter'}) date_end?: number,
+		@Args('id_keysets', {type: () => [String], nullable: true, description: 'Keyset IDs to filter by'}) id_keysets?: string[],
 	): Promise<OrchardMintKeysetCount[]> {
 		const tag = 'GET { mint_keyset_counts }';
 		this.logger.debug(tag);
@@ -39,12 +40,12 @@ export class MintKeysetResolver {
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintKeysetInterceptor)
 	@LogEvent({field: 'keyset', type: EventLogType.CREATE})
-	@Mutation(() => OrchardMintKeysetRotation)
+	@Mutation(() => OrchardMintKeysetRotation, {description: 'Rotate a mint keyset'})
 	async mint_rotate_keyset(
-		@Args('unit') unit: string,
-		@Args('amounts', {type: () => [Float], nullable: true}) amounts?: number[],
-		@Args('input_fee_ppk', {type: () => Int, nullable: true}) input_fee_ppk?: number,
-		@Args('keyset_v2', {nullable: true}) keyset_v2?: boolean,
+		@Args('unit', {description: 'Currency unit for the new keyset'}) unit: string,
+		@Args('amounts', {type: () => [Float], nullable: true, description: 'Denomination amounts for the keyset'}) amounts?: number[],
+		@Args('input_fee_ppk', {type: () => Int, nullable: true, description: 'Input fee in parts per thousand'}) input_fee_ppk?: number,
+		@Args('keyset_v2', {nullable: true, description: 'Whether to create a v2 keyset'}) keyset_v2?: boolean,
 	): Promise<OrchardMintKeysetRotation> {
 		const tag = 'MUTATION { mint_rotate_keyset }';
 		this.logger.debug(tag);

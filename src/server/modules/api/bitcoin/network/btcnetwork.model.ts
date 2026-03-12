@@ -3,21 +3,21 @@ import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {BitcoinNetworkInfo} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin network type configuration'})
 export class OrchardBitcoinNetwork {
-	@Field(() => String)
+	@Field(() => String, {description: 'Network name (ipv4, ipv6, onion, i2p, cjdns)'})
 	name: string;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the network is limited'})
 	limited: boolean;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the network is reachable'})
 	reachable: boolean;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Proxy address for this network'})
 	proxy: string;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether proxy credentials are randomized per connection'})
 	proxy_randomize_credentials: boolean;
 
 	constructor(bn: BitcoinNetworkInfo['networks'][number]) {
@@ -29,15 +29,15 @@ export class OrchardBitcoinNetwork {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin local network address'})
 export class OrchardBitcoinNetworkAddress {
-	@Field(() => String)
+	@Field(() => String, {description: 'Local network address'})
 	address: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Listening port number'})
 	port: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Address score'})
 	score: number;
 
 	constructor(ban: BitcoinNetworkInfo['localaddresses'][number]) {
@@ -47,57 +47,57 @@ export class OrchardBitcoinNetworkAddress {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin peer-to-peer network information'})
 export class OrchardBitcoinNetworkInfo {
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Node software version as an integer'})
 	version: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Node user agent string'})
 	subversion: string;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Protocol version number'})
 	protocolversion: number;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Services offered by this node in hex'})
 	localservices: string;
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Names of services offered by this node'})
 	localservicesnames: string[];
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether transaction relay is enabled'})
 	localrelay: boolean;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Time offset from network-adjusted time in seconds'})
 	timeoffset: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Total number of peer connections'})
 	connections: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of inbound peer connections'})
 	connections_in: number;
 
-	@Field(() => Int)
+	@Field(() => Int, {description: 'Number of outbound peer connections'})
 	connections_out: number;
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the network is active'})
 	networkactive: boolean;
 
-	@Field(() => [OrchardBitcoinNetwork])
+	@Field(() => [OrchardBitcoinNetwork], {description: 'Available network types and their status'})
 	networks: OrchardBitcoinNetwork[];
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Minimum relay fee in BTC/kB'})
 	relayfee: number;
 
-	@Field(() => Float)
+	@Field(() => Float, {description: 'Minimum incremental fee for mempool limiting in BTC/kB'})
 	incrementalfee: number;
 
-	@Field(() => [OrchardBitcoinNetworkAddress])
+	@Field(() => [OrchardBitcoinNetworkAddress], {description: 'Local addresses being listened on'})
 	localaddresses: OrchardBitcoinNetworkAddress[];
 
-	@Field(() => [String])
+	@Field(() => [String], {description: 'Active network warnings'})
 	warnings: string[];
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether this node is a backend connection'})
 	backend: boolean;
 
 	constructor(bni: BitcoinNetworkInfo, backend: boolean = false) {

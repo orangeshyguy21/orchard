@@ -5,18 +5,18 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 /* Native Dependencies */
 import {BitcoinAnalyticsMetric} from '@server/modules/bitcoin/analytics/btcanalytics.enums';
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin analytics balance data'})
 export class OrchardBitcoinAnalytics {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unit of measurement for the balance'})
 	unit: string;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Balance amount as a string'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the analytics data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of entries aggregated'})
 	count?: number;
 
 	constructor(unit: string, amount: string, date: number, count?: number) {
@@ -27,21 +27,21 @@ export class OrchardBitcoinAnalytics {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin analytics metric data'})
 export class OrchardBitcoinAnalyticsMetric {
-	@Field(() => String)
+	@Field(() => String, {description: 'Unit of measurement for the metric'})
 	unit: string;
 
-	@Field(() => BitcoinAnalyticsMetric)
+	@Field(() => BitcoinAnalyticsMetric, {description: 'Type of analytics metric'})
 	metric: BitcoinAnalyticsMetric;
 
-	@Field(() => String)
+	@Field(() => String, {description: 'Metric amount as a string'})
 	amount: string;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {description: 'Timestamp of the metric data point'})
 	date: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of entries aggregated'})
 	count?: number;
 
 	constructor(unit: string, metric: BitcoinAnalyticsMetric, amount: string, date: number, count?: number) {
@@ -53,17 +53,17 @@ export class OrchardBitcoinAnalyticsMetric {
 	}
 }
 
-@ObjectType()
+@ObjectType({description: 'Bitcoin analytics backfill status'})
 export class OrchardBitcoinAnalyticsBackfillStatus {
-	@Field(() => Boolean)
+	@Field(() => Boolean, {description: 'Whether the backfill process is currently running'})
 	is_running: boolean;
 
-	@Field(() => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill started'})
 	started_at?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
 	errors?: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int, {nullable: true, description: 'Number of hours completed in the backfill'})
 	hours_completed?: number;
 }

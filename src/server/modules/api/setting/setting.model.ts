@@ -4,21 +4,21 @@ import {Field, ObjectType} from '@nestjs/graphql';
 import {Setting} from '@server/modules/setting/setting.entity';
 import {SettingValue, SettingKey} from '@server/modules/setting/setting.enums';
 
-@ObjectType()
+@ObjectType({description: 'Application configuration setting'})
 export class OrchardSetting {
-	@Field(() => SettingKey)
+	@Field(() => SettingKey, {description: 'Unique key identifying the setting'})
 	key: SettingKey;
 
-	@Field()
+	@Field({description: 'Current value of the setting'})
 	value: string;
 
-	@Field({nullable: true})
+	@Field({nullable: true, description: 'Human-readable description of the setting'})
 	description: string | null;
 
-	@Field(() => SettingValue)
+	@Field(() => SettingValue, {description: 'Data type of the setting value'})
 	value_type: SettingValue;
 
-	@Field()
+	@Field({description: 'Whether the setting contains sensitive data'})
 	is_sensitive: boolean;
 
 	constructor(setting: Setting, is_sensitive: boolean, masked_value?: string) {

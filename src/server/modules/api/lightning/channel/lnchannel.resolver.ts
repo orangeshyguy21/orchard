@@ -11,14 +11,14 @@ export class LightningChannelResolver {
 
 	constructor(private lightningChannelService: LightningChannelService) {}
 
-	@Query(() => [OrchardLightningChannel])
+	@Query(() => [OrchardLightningChannel], {description: 'Get all open lightning channels'})
 	async lightning_channels(): Promise<OrchardLightningChannel[]> {
 		const tag = 'GET { lightning_channels }';
 		this.logger.debug(tag);
 		return await this.lightningChannelService.getLightningChannels(tag);
 	}
 
-	@Query(() => [OrchardLightningClosedChannel])
+	@Query(() => [OrchardLightningClosedChannel], {description: 'Get all closed lightning channels'})
 	async lightning_closed_channels(): Promise<OrchardLightningClosedChannel[]> {
 		const tag = 'GET { lightning_closed_channels }';
 		this.logger.debug(tag);

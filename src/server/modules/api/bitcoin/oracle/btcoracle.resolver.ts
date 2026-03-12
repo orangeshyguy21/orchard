@@ -33,24 +33,25 @@ export class BitcoinOracleResolver implements OnModuleInit {
 		});
 	}
 
-	@Query(() => [OrchardBitcoinOraclePrice])
+	@Query(() => [OrchardBitcoinOraclePrice], {description: 'Get Bitcoin oracle price history'})
 	async bitcoin_oracle(
-		@Args('start_date', {type: () => UnixTimestamp, nullable: true}) start_date?: number,
-		@Args('end_date', {type: () => UnixTimestamp, nullable: true}) end_date?: number,
+		@Args('start_date', {type: () => UnixTimestamp, nullable: true, description: 'Start date filter for price history'})
+		start_date?: number,
+		@Args('end_date', {type: () => UnixTimestamp, nullable: true, description: 'End date filter for price history'}) end_date?: number,
 	): Promise<OrchardBitcoinOraclePrice[]> {
 		const tag = 'GET { bitcoin_oracle }';
 		this.logger.debug(tag);
 		return await this.bitcoinOracleService.getOracle(tag, start_date, end_date);
 	}
 
-	@Subscription(() => OrchardBitcoinOracleBackfillProgress)
+	@Subscription(() => OrchardBitcoinOracleBackfillProgress, {description: 'Subscribe to Bitcoin oracle backfill progress updates'})
 	@Throttle({default: {limit: 3, ttl: minutes(1)}})
 	@NoHeaders()
 	async bitcoin_oracle_backfill(
-		@Args('id', {type: () => String}) id: string,
-		@Args('auth', {type: () => String}) auth: string,
-		@Args('start_date', {type: () => UnixTimestamp}) start_date: number,
-		@Args('end_date', {type: () => UnixTimestamp, nullable: true}) end_date?: number,
+		@Args('id', {type: () => String, description: 'Unique backfill stream identifier'}) id: string,
+		@Args('auth', {type: () => String, description: 'Access token for authentication'}) auth: string,
+		@Args('start_date', {type: () => UnixTimestamp, description: 'Start date for the backfill range'}) start_date: number,
+		@Args('end_date', {type: () => UnixTimestamp, nullable: true, description: 'End date for the backfill range'}) end_date?: number,
 	) {
 		const tag = `SUBSCRIPTION { bitcoin_oracle_backfill } stream ${id}`;
 		this.logger.debug(tag);
@@ -66,9 +67,11 @@ export class BitcoinOracleResolver implements OnModuleInit {
 		return pubSub.asyncIterableIterator('bitcoin_oracle_backfill');
 	}
 
-	@Mutation(() => OrchardBitcoinOracleBackfillStream)
+	@Mutation(() => OrchardBitcoinOracleBackfillStream, {description: 'Abort a Bitcoin oracle backfill stream'})
 	@Roles(UserRole.ADMIN)
-	async bitcoin_oracle_backfill_abort(@Args('id', {type: () => String}) id: string): Promise<OrchardBitcoinOracleBackfillStream> {
+	async bitcoin_oracle_backfill_abort(
+		@Args('id', {type: () => String, description: 'Backfill stream identifier to abort'}) id: string,
+	): Promise<OrchardBitcoinOracleBackfillStream> {
 		const tag = `MUTATION { bitcoin_oracle_backfill_abort } for stream ${id}`;
 		this.logger.debug(tag);
 		return this.bitcoinOracleService.abortBackfillStream(id);
