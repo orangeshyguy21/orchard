@@ -31,7 +31,10 @@ export class AiChatResolver implements OnModuleInit {
 		});
 	}
 
-	@Subscription(() => OrchardAiChatChunk)
+	@Subscription(() => OrchardAiChatChunk, {
+		filter: (payload: {ai_chat: OrchardAiChatChunk}, variables: {ai_chat: AiChatInput}) =>
+			payload.ai_chat.id === variables.ai_chat.id,
+	})
 	@NoHeaders()
 	async ai_chat(@Args('ai_chat') ai_chat: AiChatInput) {
 		const tag = `SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`;
