@@ -1,10 +1,9 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
-import {promises as dns} from 'dns';
-import {URL} from 'url';
 /* Application Dependencies */
 import {FetchService} from '@server/modules/fetch/fetch.service';
 /* Local Dependencies */
+import {assertPublicUrl} from '../network-guard';
 import {OrchardPublicUrl} from './url.model';
 
 @Injectable()
@@ -21,29 +20,22 @@ export class PublicUrlService {
 	}
 
 	private async getUrlData(url: string): Promise<OrchardPublicUrl> {
-		let response: any;
-		let parsed_url: URL;
 		let ip_address: string | null;
 		let has_data: boolean = false;
 
+		/* SSRF guard: resolve DNS and reject private/reserved IPs before fetching */
+		try {
+			ip_address = await assertPublicUrl(url);
+		} catch (error) {
+			this.logger.warn(`SSRF blocked: ${error instanceof Error ? error.message : error}`);
+			return new OrchardPublicUrl(url, null, null, has_data);
+		}
+
+		let response: any;
 		try {
 			response = await this.fetchService.fetchWithProxy(url, {signal: AbortSignal.timeout(this.FETCH_TIMEOUT)});
 		} catch {
-			return new OrchardPublicUrl(url, null, null, has_data);
-		}
-
-		try {
-			parsed_url = new URL(url);
-		} catch {
-			return new OrchardPublicUrl(url, null, null, has_data);
-		}
-
-		try {
-			const addresses = await dns.resolve4(parsed_url.hostname);
-			ip_address = addresses[0];
-		} catch (error) {
-			this.logger.warn('DNS resolution failed:', error);
-			ip_address = null;
+			return new OrchardPublicUrl(url, null, ip_address, has_data);
 		}
 
 		try {

@@ -68,7 +68,7 @@ export const GetUrlHealthTool: AiToolEntry = {
 		},
 	},
 	query: GET_PUBLIC_URLS_QUERY,
-	throttle_max_calls: 10,
+	throttle_max_calls: 2,
 	throttle_window_seconds: 60,
 };
 
@@ -120,6 +120,6 @@ export const GetPortHealthTool: AiToolEntry = {
 		},
 	},
 	query: GET_PUBLIC_PORTS_QUERY,
-	throttle_max_calls: 10,
+	throttle_max_calls: 2,
 	throttle_window_seconds: 60,
 };
