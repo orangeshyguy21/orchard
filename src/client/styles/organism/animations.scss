@@ -117,6 +117,21 @@
     @extend %overflow-hidden;
 }
 
+.orc-animation-expand-collapse-horizontal {
+    @extend %grid;
+	@extend %cols-0;
+    @extend %opacity-0;
+    transition: grid-template-columns 300ms ease-in-out, opacity 300ms ease-in-out;
+
+    &.animation-expanded {
+        @extend %cols-1;
+        @extend %opacity-1;
+    }
+}
+.orc-animation-expand-collapse-horizontal > .orc-animation-expand-collapse-horizontal-inner {
+    @extend %overflow-hidden;
+}
+
 /* Feedback */
 
 .orc-animation-feedback {

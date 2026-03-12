@@ -28,13 +28,24 @@
 .oracle-card {
 	@extend %flex-grow;
 	@extend %p-2;
+     
+    &.oracle-card-gap{
+        @extend %flex-gap-2;
+    }
+
+    &.tablet-oracle-card{
+        &.oracle-card-gap{
+            @extend %flex-gap-1;
+        }
+
+        .oracle-clamp{
+            height: 9rem;
+            width: 11rem;
+        }
+    }
 }
 
-.mobile-oracle {
-	@extend %flex-grow;
-	@extend %flex-justify-center;
-	@extend %w-full;
-}
+
 
 .oracle-clamp {
 	height: 12rem;
