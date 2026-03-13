@@ -51,6 +51,9 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 		if (!ai_health) return 'inactive';
 		return ai_health.status ? 'active' : 'inactive';
 	});
+    public graphic_height = computed(() => {
+        return this.device_type() === 'desktop' ? '18rem' : '15rem';
+    });
 
 	public hot_ollama_api = computed(() => {
 		return this.focused_ollama_api() || this.dirty_ollama_api();

@@ -164,6 +164,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private getFormChangesSubscription(): Subscription {
 		return this.form_app_settings.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
+            this.toggleAiControls(this.form_ai.get('enabled')?.value ?? false);
 		});
 	}
 
@@ -189,6 +190,20 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			ollama_api: settings.ai_ollama_api,
 			openrouter_key: settings.ai_openrouter_key,
 		});
+        this.toggleAiControls(settings.ai_enabled);
+	}
+
+    /** Enables or disables AI vendor controls based on the enabled state */
+	private toggleAiControls(enabled: boolean): void {
+		const ollama_api = this.form_ai.get('ollama_api');
+		const openrouter_key = this.form_ai.get('openrouter_key');
+		if (enabled) {
+			ollama_api?.enable({emitEvent: false});
+			openrouter_key?.enable({emitEvent: false});
+		} else {
+			ollama_api?.disable({emitEvent: false});
+			openrouter_key?.disable({emitEvent: false});
+		}
 	}
 
 	public onUpdate(): void {

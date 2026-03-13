@@ -50,18 +50,27 @@
 	@extend %orc-outline-color;
 }
 
-.agent-card {
+.groundskeeper-card {
 	@extend %flex-grow;
 	@extend %p-2;
+
+    &.groundskeeper-card-gap{
+        @extend %flex-gap-2;
+    }
+
+    &.tablet-groundskeeper-card{
+        &.groundskeeper-card-gap{
+            @extend %flex-gap-1;
+        }
+
+        .groundskeeper-clamp{
+            height: 9rem;
+            width: 11rem;
+        }
+    }
 }
 
-.mobile-agent {
-	@extend %flex-grow;
-	@extend %flex-justify-center;
-	@extend %w-full;
-}
-
-.agent-clamp {
+.groundskeeper-clamp {
 	height: 12rem;
 	width: 13rem;
 	@extend %p-t-1;
