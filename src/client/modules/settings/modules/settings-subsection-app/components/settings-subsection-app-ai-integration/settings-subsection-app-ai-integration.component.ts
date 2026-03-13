@@ -13,6 +13,7 @@ import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppAiIntegrationComponent {
+	public loading = input<boolean>(false);
 	public ai_enabled = input.required<boolean>();
 	public ai_health = input.required<AiHealth | null>();
 	public form_group = input.required<FormGroup>();
@@ -20,6 +21,7 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 	public device_type = input.required<DeviceType>();
 	public invalid_ollama_api = input<boolean>(false);
 	public invalid_openrouter_key = input<boolean>(false);
+    public dirty_form = input<boolean>(false);
 	public dirty_ollama_api = input<boolean>(false);
 	public dirty_openrouter_key = input<boolean>(false);
 
@@ -41,12 +43,21 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 		return vendor === 'openrouter' ? 1 : 0;
 	});
 	public readonly show_health = computed(() => {
+        const loading = this.loading();
+        if (loading) return true;
 		const ai_health = this.ai_health();
 		if (!ai_health) return false;
 		if (ai_health.vendor === this.selected_vendor()) return true;
 		return false;
 	});
+    public readonly disable_test = computed(() => {
+        const dirty_form = this.dirty_form();
+        if(dirty_form) return true;
+        return false;
+    });
 	public readonly health_status = computed(() => {
+        const loading = this.loading();
+        if (loading) return 'loading';
 		const ai_health = this.ai_health();
 		if (!ai_health) return 'inactive';
 		return ai_health.status ? 'active' : 'inactive';

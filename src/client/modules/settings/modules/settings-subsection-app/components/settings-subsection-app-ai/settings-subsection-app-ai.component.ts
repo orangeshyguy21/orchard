@@ -27,22 +27,37 @@ export class SettingsSubsectionAppAiComponent {
 	public cancel = output<string>();
 
 	public ai_health = signal<AiHealth | null>(null);
+    public loading_health = signal<boolean>(false);
+
+    private initialized_health: boolean = false;
 
 	constructor() {
 		effect(() => {
+            if (this.initialized_health) return;
 			const ai_enabled = this.ai_enabled();
 			if (ai_enabled) this.getAiHealth();
 		});
 	}
 
 	private getAiHealth(): void {
+        this.initialized_health = true;
+        this.loading_health.set(true);
 		this.aiService
 			.getAiHealth()
 			.pipe(takeUntilDestroyed(this.destroyRef))
 			.subscribe({
 				next: (health: AiHealth) => {
 					this.ai_health.set(health);
+					this.loading_health.set(false);
+				},
+				error: () => {
+					this.ai_health.set(null);
+					this.loading_health.set(false);
 				},
 			});
 	}
+
+    public onTestConnection(): void {
+        this.getAiHealth();
+    }
 }

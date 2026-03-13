@@ -235,19 +235,19 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private onConfirmedEvent(): void {
-		if (this.form_app_settings.invalid) {
-			return this.eventService.registerEvent(
-				new EventData({
-					type: 'WARNING',
-					message: 'Invalid info',
-				}),
-			);
-		}
 		const keys: SettingKey[] = [];
 		const values: string[] = [];
 		for (const [path, setting_key] of Object.entries(this.setting_key_map)) {
 			const control = this.form_app_settings.get(path);
 			if (control?.dirty) {
+				if (control.invalid) {
+					return this.eventService.registerEvent(
+						new EventData({
+							type: 'WARNING',
+							message: 'Invalid info',
+						}),
+					);
+				}
 				keys.push(setting_key);
 				values.push(control.value.toString());
 			}

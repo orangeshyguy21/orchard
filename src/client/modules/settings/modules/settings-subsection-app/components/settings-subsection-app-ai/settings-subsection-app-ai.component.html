@@ -2,11 +2,13 @@
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
 		<orc-settings-subsection-app-ai-integration
+            [loading]="loading_health()"
 			[ai_enabled]="ai_enabled()"
 			[ai_health]="ai_health()"
 			[form_group]="form_group()"
 			[selected_vendor]="form_group().get('vendor')?.value"
 			[device_type]="device_type()"
+            [dirty_form]="form_group().dirty || false"
 			[invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
 			[dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
 			[invalid_openrouter_key]="form_group().get('openrouter_key')?.invalid || false"
@@ -14,6 +16,7 @@
 			(update)="update.emit()"
 			(submit)="submit.emit($event)"
 			(cancel)="cancel.emit($event)"
+			(testConnection)="onTestConnection()"
 		></orc-settings-subsection-app-ai-integration>
 	</mat-card-content>
 </mat-card>

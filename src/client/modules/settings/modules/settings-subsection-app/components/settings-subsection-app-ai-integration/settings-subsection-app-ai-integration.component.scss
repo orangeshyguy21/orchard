@@ -79,3 +79,8 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 }
+
+.health-container{
+    width: 11rem;
+    @extend %flex;
+}
