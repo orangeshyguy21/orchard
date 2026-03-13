@@ -196,7 +196,7 @@ registerEnumType(AgentKey, {
 	name: 'AgentKey',
 	description: 'AI agent identifiers',
 	valuesMap: {
-		ORCHARD: {description: 'Main Orchard assistant agent'},
+		GROUNDSKEEPER: {description: 'Main Groundskeeper agent'},
 		ACTIVITY_MONITOR: {description: 'Automated activity monitoring agent'},
 	},
 });

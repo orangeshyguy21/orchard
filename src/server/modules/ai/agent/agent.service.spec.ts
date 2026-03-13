@@ -344,7 +344,7 @@ describe('AgentService', () => {
 			},
 			'agent-2': {
 				id: 'agent-2',
-				agent_key: AgentKey.ORCHARD,
+				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 2',
 				active: true,
 				system_message: null,
@@ -353,7 +353,7 @@ describe('AgentService', () => {
 			},
 			'agent-3': {
 				id: 'agent-3',
-				agent_key: AgentKey.ORCHARD,
+				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 3',
 				active: true,
 				system_message: null,
@@ -470,7 +470,7 @@ describe('AgentService', () => {
 				const id = `agent-q-${i}`;
 				agents[id] = {
 					id,
-					agent_key: AgentKey.ORCHARD,
+					agent_key: AgentKey.GROUNDSKEEPER,
 					name: `Agent ${i}`,
 					active: true,
 					system_message: null,
@@ -537,15 +537,15 @@ describe('AgentService', () => {
 
 	describe('resolveToolNames', () => {
 		it('should return parsed tools when agent has custom tools', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, tools: '["GET_MINT_INFO"]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: '["GET_MINT_INFO"]'} as Agent;
 
 			expect(service.resolveToolNames(agent)).toEqual(['GET_MINT_INFO']);
 		});
 
 		it('should fall back to built-in tools when agent.tools is null', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, tools: null} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: null} as Agent;
 
-			expect(service.resolveToolNames(agent)).toEqual(AGENTS[AgentKey.ORCHARD].tools);
+			expect(service.resolveToolNames(agent)).toEqual(AGENTS[AgentKey.GROUNDSKEEPER].tools);
 		});
 
 		it('should return empty array for non-built-in agent with no tools', () => {
@@ -557,7 +557,7 @@ describe('AgentService', () => {
 
 	describe('buildSystemMessage', () => {
 		it('should use custom system_message when set', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, system_message: 'Custom prompt', schedules: '[]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: 'Custom prompt', schedules: '[]'} as Agent;
 
 			const result = service.buildSystemMessage(agent);
 
@@ -566,7 +566,7 @@ describe('AgentService', () => {
 		});
 
 		it('should fall back to built-in system_message when agent has none', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, system_message: null, schedules: '[]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: null, schedules: '[]'} as Agent;
 
 			const result = service.buildSystemMessage(agent);
 

@@ -29,8 +29,8 @@ describe('ConversationService', () => {
 
 	const mock_agent = {
 		id: 'agent-uuid',
-		agent_key: AgentKey.ORCHARD,
-		name: 'Orchard',
+		agent_key: AgentKey.GROUNDSKEEPER,
+		name: 'Groundskeeper',
 		active: true,
 		system_message: null,
 		tools: null,
@@ -84,7 +84,7 @@ describe('ConversationService', () => {
 
 			await service.handleIncomingMessage({chat_id: 'chat-123', user_id: 'user-456', text: 'hello'});
 
-			expect(mock_agent_service.getAgentByKey).toHaveBeenCalledWith(AgentKey.ORCHARD);
+			expect(mock_agent_service.getAgentByKey).toHaveBeenCalledWith(AgentKey.GROUNDSKEEPER);
 			expect(mock_conversation_repo.save).toHaveBeenCalled();
 			expect(mock_agent_service.runToolLoop).toHaveBeenCalled();
 			/* Thinking indicator sent first, then final reply edits it */

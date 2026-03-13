@@ -52,9 +52,9 @@ export class ConversationService {
 	public async handleIncomingMessage(payload: IncomingMessagePayload): Promise<void> {
 		const {chat_id, user_id, text} = payload;
 
-		const agent = await this.agentService.getAgentByKey(AgentKey.ORCHARD);
+		const agent = await this.agentService.getAgentByKey(AgentKey.GROUNDSKEEPER);
 		if (!agent) {
-			this.logger.warn('ORCHARD agent not found — cannot start conversation');
+			this.logger.warn('GROUNDSKEEPER agent not found — cannot start conversation');
 			return;
 		}
 
