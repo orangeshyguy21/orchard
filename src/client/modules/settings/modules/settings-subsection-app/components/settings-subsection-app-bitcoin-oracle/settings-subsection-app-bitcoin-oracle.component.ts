@@ -34,7 +34,7 @@ export class SettingsSubsectionAppBitcoinOracleComponent {
 	public update = output<void>();
 	public oracleAsked = output<void>();
 
-	public help_status = signal<boolean>(false);
+	public help_status = signal<boolean>(true);
 
 	public derived_status = computed(() => {
 		if (!this.oracle_running()) return null;

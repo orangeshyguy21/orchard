@@ -71,7 +71,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		}),
         form_ai_messaging: new FormGroup({
             enabled: new FormControl(false, [Validators.required]),
-            telegram_bot_token: new FormControl(),
+            telegram_bot_token: new FormControl('', [OrchardValidators.telegramBotToken]),
         }),
 	});
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;

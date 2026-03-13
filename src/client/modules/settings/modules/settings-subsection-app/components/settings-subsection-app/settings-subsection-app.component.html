@@ -46,8 +46,8 @@
 					[form_group_messaging]="form_ai_messaging"
 					[device_type]="device_type()"
 					(update)="onUpdate()"
-					(submit)="onSubmit(form_ai, $event)"
-					(cancel)="onCancel(form_ai, $event)"
+					(submit)="onSubmit($event.form, $event.control)"
+					(cancel)="onCancel($event.form, $event.control)"
 				></orc-settings-subsection-app-ai>
 			</div>
 		</div>

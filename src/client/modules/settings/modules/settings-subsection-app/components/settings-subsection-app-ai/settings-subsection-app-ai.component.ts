@@ -24,8 +24,8 @@ export class SettingsSubsectionAppAiComponent {
 	public device_type = input.required<DeviceType>();
 
 	public update = output<void>();
-	public submit = output<string>();
-	public cancel = output<string>();
+	public submit = output<{form: FormGroup; control: string}>();
+	public cancel = output<{form: FormGroup; control: string}>();
 
 	public ai_health = signal<AiHealth | null>(null);
     public loading_health = signal<boolean>(false);

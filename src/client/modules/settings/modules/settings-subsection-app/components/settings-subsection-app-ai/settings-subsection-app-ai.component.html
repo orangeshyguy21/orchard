@@ -16,8 +16,8 @@
                     [invalid_openrouter_key]="form_group_ai().get('openrouter_key')?.invalid || false"
                     [dirty_openrouter_key]="form_group_ai().get('openrouter_key')?.dirty || false"
                     (update)="update.emit()"
-                    (submit)="submit.emit($event)"
-                    (cancel)="cancel.emit($event)"
+                    (submit)="submit.emit({form: form_group_ai(), control: $event})"
+                    (cancel)="cancel.emit({form: form_group_ai(), control: $event})"
                     (testConnection)="onTestConnection()"
                 ></orc-settings-subsection-app-ai-integration>
             </mat-card-content>
@@ -36,8 +36,8 @@
                                 [invalid]="form_group_messaging().get('telegram_bot_token')?.invalid || false"
                                 [dirty]="form_group_messaging().get('telegram_bot_token')?.dirty || false"
                                 (update)="update.emit()"
-                                (cancel)="cancel.emit($event)"
-                                (submit)="submit.emit($event)"
+                                (cancel)="cancel.emit({form: form_group_messaging(), control: $event})"
+                                (submit)="submit.emit({form: form_group_messaging(), control: $event})"
                             ></orc-settings-subsection-app-ai-messaging>
                         </mat-card-content>
                     </mat-card>
