@@ -24,6 +24,8 @@ export class FormErrorComponent {
 		if (errors['orchardInteger']) return 'Must be a whole number';
 		if (errors['orchardCents']) return 'Must have 2 decimals';
 		if (errors['orchardMicros']) return 'Invalid format';
+		if (errors['orchardUrl']) return 'Must be a valid URL';
+		if (errors['orchardOpenrouterKey']) return 'Invalid API key format';
 		return '';
 	});
 }

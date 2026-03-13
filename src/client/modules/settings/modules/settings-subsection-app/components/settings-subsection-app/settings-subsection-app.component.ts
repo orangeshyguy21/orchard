@@ -28,6 +28,7 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
+import {OrchardValidators} from '@client/modules/form/validators';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
 
@@ -65,8 +66,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		form_ai: new FormGroup({
 			enabled: new FormControl(false, [Validators.required]),
 			vendor: new FormControl('ollama'),
-			ollama_api: new FormControl('http://localhost:11434'),
-			openrouter_key: new FormControl(''),
+			ollama_api: new FormControl('http://localhost:11434', [OrchardValidators.url]),
+			openrouter_key: new FormControl('', [OrchardValidators.openrouterKey]),
 		}),
 	});
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
