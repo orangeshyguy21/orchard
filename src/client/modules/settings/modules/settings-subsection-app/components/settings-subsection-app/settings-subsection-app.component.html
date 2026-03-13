@@ -42,14 +42,13 @@
 			<div class="settings-box">
 				<orc-settings-subsection-app-ai
 					[ai_enabled]="initial_settings()?.ai_enabled ?? false"
-					[form_group]="form_ai"
+					[form_group_ai]="form_ai"
+					[form_group_messaging]="form_ai_messaging"
 					[device_type]="device_type()"
 					(update)="onUpdate()"
 					(submit)="onSubmit(form_ai, $event)"
 					(cancel)="onCancel(form_ai, $event)"
-				>
-					></orc-settings-subsection-app-ai
-				>
+				></orc-settings-subsection-app-ai>
 			</div>
 		</div>
 	</div>

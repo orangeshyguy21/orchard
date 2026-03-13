@@ -17,13 +17,13 @@ export class AiVendorIconComponent {
 	public size = input<string>('2rem');
 
 	/* ── Public computed signals ── */
-	public readonly src = computed(() => `vendor/${this.vendor()}.png`);
+	public readonly src = computed(() => `ai-vendor/${this.vendor()}.png`);
 
 	/** Falls back to the OpenRouter logo when the vendor image is missing */
 	public onImageError(event: Event): void {
 		const img = event.target as HTMLImageElement;
-		if (!img.src.endsWith('vendor/openrouter.png')) {
-			img.src = 'vendor/openrouter.png';
+		if (!img.src.endsWith('ai-vendor/openrouter.png')) {
+			img.src = 'ai-vendor/openrouter.png';
 		}
 	}
 }

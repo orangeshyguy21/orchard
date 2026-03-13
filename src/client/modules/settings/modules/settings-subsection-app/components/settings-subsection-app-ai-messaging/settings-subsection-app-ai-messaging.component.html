@@ -1,0 +1,123 @@
+<div class="ai-messaging-container">
+    <div [formGroup]="form_group()" class="flex-1 flex flex-column">
+		<div class="flex flex-items-center flex-gap-1">
+            <orc-form-toggle-group>
+                <orc-form-toggle
+                    [selected]="!form_group().get('enabled')?.value"
+                    (click)="toggleAIEnabled(false)"
+                >
+                    <div class="flex flex-items-center flex-justify-center flex-gap-0-5">
+                        <mat-icon class="mat-symbol-outline">block</mat-icon>
+                        <div class="font-size-s">Disabled</div>
+                    </div>
+                </orc-form-toggle>
+                <orc-form-toggle
+                    [selected]="form_group().get('enabled')?.value"
+                    (click)="toggleAIEnabled(true)"
+                >
+                    <div class="flex flex-items-center flex-justify-center flex-gap-0-5">
+                        <mat-icon class="mat-symbol-outline">check</mat-icon>
+                        <div class="font-size-s">Enabled</div>
+                    </div>
+                </orc-form-toggle>
+            </orc-form-toggle-group>
+			<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+				<mat-icon class="orc-outline-color">info</mat-icon>
+			</button>
+		</div>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-1 w-max-36">
+					<orc-form-help-text class="orc-surface-container-high-bg"> help text </orc-form-help-text>
+				</div>
+			</div>
+		</div>
+        <mat-tab-group [selectedIndex]="0" class="p-t-2">
+            <mat-tab [disabled]="!form_group().get('enabled')?.value">
+                <ng-template mat-tab-label>
+                    <div class="ai-messaging-label">
+                        <div class="messaging-vendor-icon">
+                            <img src="message-vendor/telegram.png" alt="Telegram" />
+                        </div>
+                        <div class="ai-messaging-text">
+                            <span class="ai-messaging-label-name">Telegram</span>
+                            <span class="ai-messaging-label-desc">Mobile agent messages</span>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <!-- <div>HOT: {{ hot() }}</div>
+                <div>INVALID: {{ invalid() }}</div>
+                <div>DIRTY: {{ dirty() }}</div>
+                <div>FOCUSED: {{ focused() }}</div> -->
+    
+                <form
+                    [formGroup]="form_group()"
+                    (ngSubmit)="onSubmit($event)"
+                    (keydown.enter)="onSubmit($event)"
+                    class="p-t-2"
+                >
+                    <orc-form-field-dynamic
+                        [hot]="hot()"
+                        [info]="true"
+                        [invalid]="invalid()"
+                        (cancel)="onCancel($event)"
+                        (submit)="submit.emit('telegram_bot_token')"
+                        (inform)="bot_help_status.set(!bot_help_status())"
+                    >
+                        <div class="orc-small-form-field-wrapper">
+                            <mat-form-field
+                                hideRequiredMarker="true"
+                                class="w-full"
+                                [ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+                            >
+                                <mat-label>Telegram Bot Token</mat-label>
+                                <input
+                                    [type]="key_view() ? 'text' : 'password'"
+                                    aria-label="Telegram Bot Token"
+                                    matInput
+                                    [formControlName]="'telegram_bot_token'"
+                                    (focus)="focused.set(true)"
+                                    (blur)="focused.set(false)"
+                                    #telegram_bot_token_control
+                                />
+                                <button
+                                    type="button"
+                                    mat-icon-button
+                                    matSuffix
+                                    class="orc-icon-button"
+                                    tabindex="-1"
+                                    (click)="key_view() ? key_view.set(false) : key_view.set(true)"
+                                >
+                                    <mat-icon>{{ key_view() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
+                                <mat-error>
+                                    <orc-form-error [errors]="form_group().get('telegram_bot_token')?.errors"
+                                        >Invalid Telegram Bot Token</orc-form-error
+                                    >
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </orc-form-field-dynamic>
+                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="bot_help_status()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex p-t-0-5 p-b-1">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    <span
+                                        >To connect a Telegram bot, open
+                                        <span class="orc-text-button" (click)="onExternalLink('https://t.me/BotFather')">&#64;BotFather</span>
+                                        in Telegram and send <strong>/newbot</strong> to create a new bot.</span
+                                    >
+                                    <br /><br />
+                                    <span
+                                        >Copy the API token it provides and paste it here. Your bot will then be able to receive and respond to messages through Orchard's AI agent.</span
+                                    >
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </mat-tab>
+        </mat-tab-group>
+	</div>
+</div>

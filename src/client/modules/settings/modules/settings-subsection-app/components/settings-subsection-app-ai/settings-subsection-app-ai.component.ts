@@ -19,7 +19,8 @@ export class SettingsSubsectionAppAiComponent {
 	private readonly destroyRef = inject(DestroyRef);
 
 	public ai_enabled = input.required<boolean>();
-	public form_group = input.required<FormGroup>();
+	public form_group_ai = input.required<FormGroup>();
+	public form_group_messaging = input.required<FormGroup>();
 	public device_type = input.required<DeviceType>();
 
 	public update = output<void>();

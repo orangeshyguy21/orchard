@@ -27,6 +27,8 @@ import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subse
 import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
 import {SettingsSubsectionAppAiComponent} from './components/settings-subsection-app-ai/settings-subsection-app-ai.component';
 import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings-subsection-app-ai-integration/settings-subsection-app-ai-integration.component';
+import {SettingsSubsectionAppAiAgentComponent} from './components/settings-subsection-app-ai-agent/settings-subsection-app-ai-agent.component';
+import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-subsection-app-ai-messaging/settings-subsection-app-ai-messaging.component';
 
 @NgModule({
 	declarations: [
@@ -35,6 +37,8 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		SettingsSubsectionAppBitcoinOracleComponent,
 		SettingsSubsectionAppAiComponent,
 		SettingsSubsectionAppAiIntegrationComponent,
+		SettingsSubsectionAppAiAgentComponent,
+		SettingsSubsectionAppAiMessagingComponent,
 	],
 	imports: [
 		[

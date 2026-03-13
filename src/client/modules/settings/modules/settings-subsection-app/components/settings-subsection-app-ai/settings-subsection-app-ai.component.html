@@ -1,22 +1,56 @@
-<div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
-<mat-card appearance="outlined" class="relative overflow-hidden">
-	<mat-card-content class="orc-surface-container-low-bg">
-		<orc-settings-subsection-app-ai-integration
-            [loading]="loading_health()"
-			[ai_enabled]="ai_enabled()"
-			[ai_health]="ai_health()"
-			[form_group]="form_group()"
-			[selected_vendor]="form_group().get('vendor')?.value"
-			[device_type]="device_type()"
-            [dirty_form]="form_group().dirty || false"
-			[invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
-			[dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
-			[invalid_openrouter_key]="form_group().get('openrouter_key')?.invalid || false"
-			[dirty_openrouter_key]="form_group().get('openrouter_key')?.dirty || false"
-			(update)="update.emit()"
-			(submit)="submit.emit($event)"
-			(cancel)="cancel.emit($event)"
-			(testConnection)="onTestConnection()"
-		></orc-settings-subsection-app-ai-integration>
-	</mat-card-content>
-</mat-card>
+<div class="flex flex-column flex-gap-2">
+    <div>
+        <div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
+        <mat-card appearance="outlined" class="relative overflow-hidden">
+            <mat-card-content class="orc-surface-container-low-bg">
+                <orc-settings-subsection-app-ai-integration
+                    [loading]="loading_health()"
+                    [ai_enabled]="ai_enabled()"
+                    [ai_health]="ai_health()"
+                    [form_group]="form_group_ai()"
+                    [selected_vendor]="form_group_ai().get('vendor')?.value"
+                    [device_type]="device_type()"
+                    [dirty_form]="form_group_ai().dirty || false"
+                    [invalid_ollama_api]="form_group_ai().get('ollama_api')?.invalid || false"
+                    [dirty_ollama_api]="form_group_ai().get('ollama_api')?.dirty || false"
+                    [invalid_openrouter_key]="form_group_ai().get('openrouter_key')?.invalid || false"
+                    [dirty_openrouter_key]="form_group_ai().get('openrouter_key')?.dirty || false"
+                    (update)="update.emit()"
+                    (submit)="submit.emit($event)"
+                    (cancel)="cancel.emit($event)"
+                    (testConnection)="onTestConnection()"
+                ></orc-settings-subsection-app-ai-integration>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <div class="orc-animation-expand-collapse" [class.animation-expanded]="form_group_ai().get('enabled')?.value">
+        <div class="orc-animation-expand-collapse-inner">
+            <div class="flex flex-row flex-gap-2 flex-wrap">
+                <div class="flex-1">
+                    <div class="font-size-xs orc-outline-color p-b-0-5">Messaging client</div>
+                    <mat-card appearance="outlined" class="relative overflow-hidden">
+                        <mat-card-content class="orc-surface-container-low-bg">
+                            <orc-settings-subsection-app-ai-messaging 
+                                [form_group]="form_group_messaging()"
+                                [invalid]="form_group_messaging().get('telegram_bot_token')?.invalid || false"
+                                [dirty]="form_group_messaging().get('telegram_bot_token')?.dirty || false"
+                                (update)="update.emit()"
+                                (cancel)="cancel.emit($event)"
+                                (submit)="submit.emit($event)"
+                            ></orc-settings-subsection-app-ai-messaging>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="flex-1">
+                    <div class="font-size-xs orc-outline-color p-b-0-5">AI agent</div>
+                    <mat-card appearance="outlined" class="relative overflow-hidden">
+                        <mat-card-content class="orc-surface-container-low-bg">
+                            <orc-settings-subsection-app-ai-agent></orc-settings-subsection-app-ai-agent>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

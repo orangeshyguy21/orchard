@@ -22,6 +22,9 @@ export interface ParsedAppSettings {
 	ai_vendor: string;
 	ai_ollama_api: string;
 	ai_openrouter_key: string;
+    messages_enabled: boolean;
+    messages_vendor: string;
+    messages_telegram_bot_token: string;
 }
 
 @Injectable({
@@ -34,6 +37,9 @@ export class SettingAppService {
 		ai_vendor: 'ollama',
 		ai_ollama_api: 'http://localhost:11434',
 		ai_openrouter_key: '',
+        messages_enabled: false,
+        messages_vendor: 'telegram',
+        messages_telegram_bot_token: '',
 	};
 
 	constructor(
@@ -129,11 +135,17 @@ export class SettingAppService {
 		const ai_vendor = settings.find((s) => s.key === SettingKey.AiVendor);
 		const ai_ollama_api = settings.find((s) => s.key === SettingKey.AiOllamaApi);
 		const ai_openrouter_key = settings.find((s) => s.key === SettingKey.AiOpenrouterKey);
+        const messages_enabled = settings.find((s) => s.key === SettingKey.MessagesEnabled);
+        const messages_vendor = settings.find((s) => s.key === SettingKey.MessagesVendor);
+        const messages_telegram_bot_token = settings.find((s) => s.key === SettingKey.MessagesTelegramBotToken);
 
 		if (bitcoin_oracle) this.parsed_settings.bitcoin_oracle = this.parseSettingValue(bitcoin_oracle);
 		if (ai_enabled) this.parsed_settings.ai_enabled = this.parseSettingValue(ai_enabled);
 		if (ai_vendor) this.parsed_settings.ai_vendor = this.parseSettingValue(ai_vendor);
 		if (ai_ollama_api) this.parsed_settings.ai_ollama_api = this.parseSettingValue(ai_ollama_api);
 		if (ai_openrouter_key) this.parsed_settings.ai_openrouter_key = this.parseSettingValue(ai_openrouter_key);
+        if (messages_enabled) this.parsed_settings.messages_enabled = this.parseSettingValue(messages_enabled);
+        if (messages_vendor) this.parsed_settings.messages_vendor = this.parseSettingValue(messages_vendor);
+        if (messages_telegram_bot_token) this.parsed_settings.messages_telegram_bot_token = this.parseSettingValue(messages_telegram_bot_token);
 	}
 }
