@@ -6,8 +6,10 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Native Dependencies */
 import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {AgentKey} from '@server/modules/ai/agent/agent.enums';
+import {AGENTS} from '@server/modules/ai/agent/agent.agents';
 /* Local Dependencies */
-import {OrchardAgent, OrchardAgentRun} from './aiagent.model';
+import {OrchardAgent, OrchardAgentDefault, OrchardAgentRun} from './aiagent.model';
 
 @Injectable()
 export class AiAgentService {
@@ -17,6 +19,12 @@ export class AiAgentService {
 		private agentService: AgentService,
 		private errorService: ErrorService,
 	) {}
+
+	/** Retrieves default configuration for an agent key */
+	getAgentDefaults(agent_key: AgentKey): OrchardAgentDefault {
+		const agent = AGENTS[agent_key];
+		return new OrchardAgentDefault(agent_key, agent.system_message, agent.tools);
+	}
 
 	/** Retrieves all agents */
 	async getAgents(tag: string): Promise<OrchardAgent[]> {

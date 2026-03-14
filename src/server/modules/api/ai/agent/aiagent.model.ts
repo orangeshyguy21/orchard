@@ -8,6 +8,24 @@ import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';
 import {AgentRun} from '@server/modules/ai/agent/agent-run.entity';
 
+@ObjectType({description: 'Default configuration for an AI agent'})
+export class OrchardAgentDefault {
+	@Field(() => AgentKey, {description: 'Predefined agent key'})
+	agent_key: AgentKey;
+
+	@Field({description: 'Default system message for the agent'})
+	system_message: string;
+
+	@Field(() => [String], {description: 'Default tools available to the agent'})
+	tools: string[];
+
+	constructor(agent_key: AgentKey, system_message: string, tools: string[]) {
+		this.agent_key = agent_key;
+		this.system_message = system_message;
+		this.tools = tools;
+	}
+}
+
 @ObjectType({description: 'AI agent configuration'})
 export class OrchardAgent {
 	@Field(() => ID, {description: 'Unique agent identifier'})

@@ -4,9 +4,10 @@ import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {AgentKey} from '@server/modules/ai/agent/agent.enums';
 /* Local Dependencies */
 import {AiAgentService} from './aiagent.service';
-import {OrchardAgent, OrchardAgentRun} from './aiagent.model';
+import {OrchardAgent, OrchardAgentDefault, OrchardAgentRun} from './aiagent.model';
 
 @Resolver(() => [OrchardAgent])
 export class AiAgentResolver {
@@ -17,6 +18,13 @@ export class AiAgentResolver {
 	/* *******************************************************
 		Queries
 	******************************************************** */
+
+	@Query(() => OrchardAgentDefault, {description: 'Get default configuration for an AI agent'})
+	ai_agent_defaults(@Args('agent_key', {type: () => AgentKey, description: 'Agent key to get defaults for'}) agent_key: AgentKey): OrchardAgentDefault {
+		const tag = 'GET { ai_agent_defaults }';
+		this.logger.debug(tag);
+		return this.aiAgentService.getAgentDefaults(agent_key);
+	}
 
 	@Query(() => [OrchardAgent], {description: 'Get all AI agents'})
 	async ai_agents(): Promise<OrchardAgent[]> {
