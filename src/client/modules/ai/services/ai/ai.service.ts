@@ -23,6 +23,7 @@ import {
 	AiAgentsResponse,
 	AiAgentResponse,
 	AiAgentUpdateResponse,
+	AiAgentBatchUpdateResponse,
 } from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
@@ -41,6 +42,7 @@ import {
 	AI_AGENTS_QUERY,
 	AI_AGENT_QUERY,
 	AI_AGENT_UPDATE_MUTATION,
+	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
 import {AiAssistant, AiMessageRole} from '@shared/generated.types';
@@ -304,6 +306,22 @@ export class AiService {
 			map((agent) => new AiAgent(agent)),
 			catchError((error) => {
 				console.error('Error updating ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Updates multiple AI agents in a single batched request */
+	public updateAiAgentsBatch(agents: {id: string; updates: Record<string, unknown>}[]): Observable<AiAgent[]> {
+		const {query, variables} = buildAgentBatchMutation(agents);
+
+		return this.http.post<OrchardRes<AiAgentBatchUpdateResponse>>(this.apiService.api, {query, variables}).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return Object.values(response.data).map((agent) => new AiAgent(agent));
+			}),
+			catchError((error) => {
+				console.error('Error batch updating ai agents:', error);
 				return throwError(() => error);
 			}),
 		);

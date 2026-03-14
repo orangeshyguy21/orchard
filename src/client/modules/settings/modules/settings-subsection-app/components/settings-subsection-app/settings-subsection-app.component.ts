@@ -17,7 +17,7 @@ import {
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
-import {Subscription} from 'rxjs';
+import {Subscription, forkJoin, of} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
@@ -30,8 +30,9 @@ import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type'
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
 import {OrchardValidators} from '@client/modules/form/validators';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
 /* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
+import {AgentKey, SettingKey} from '@shared/generated.types';
 
 enum NavTertiary {
 	Bitcoin = 'nav1',
@@ -46,11 +47,12 @@ enum NavTertiary {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, OnDestroy {
-	private configService = inject(ConfigService);
-	private settingAppService = inject(SettingAppService);
-	private settingDeviceService = inject(SettingDeviceService);
-	private eventService = inject(EventService);
-	private breakpointObserver = inject(BreakpointObserver);
+	private readonly configService = inject(ConfigService);
+	private readonly settingAppService = inject(SettingAppService);
+	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly eventService = inject(EventService);
+	private readonly breakpointObserver = inject(BreakpointObserver);
+	private readonly aiService = inject(AiService);
 
 	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2');
 	readonly settings_container = viewChild<ElementRef>('settings_container');
@@ -79,6 +81,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	public device_type = signal<DeviceType>('desktop');
 	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
 	public initial_settings = signal<ParsedAppSettings | null>(null);
+	public initial_agents = signal<Map<string, AiAgent>>(new Map());
+	public agent_form_groups = signal<Map<string, FormGroup>>(new Map());
 
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Bitcoin]: {title: 'Bitcoin'},
@@ -247,6 +251,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 				.filter((key) => group.get(key) instanceof FormControl)
 				.filter((key) => group.get(key)?.dirty).length;
 		});
+		for (const [_id, group] of this.agent_form_groups()) {
+			control_count += Object.keys(group.controls).filter((key) => group.get(key)?.dirty).length;
+		}
 		this.dirty_count.set(control_count);
 	}
 
@@ -280,10 +287,14 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 				values.push(control.value.toString());
 			}
 		}
-		if (keys.length === 0) return;
+		const dirty_agents = this.getDirtyAgentUpdates();
+		if (keys.length === 0 && dirty_agents.length === 0) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.settingAppService.updateSettings(keys, values).subscribe({
-			next: () => {
+		const settings$ = keys.length > 0 ? this.settingAppService.updateSettings(keys, values) : of(null);
+		const agents$ = dirty_agents.length > 0 ? this.aiService.updateAiAgentsBatch(dirty_agents) : of(null);
+		forkJoin([settings$, agents$]).subscribe({
+			next: ([_settings, agents]) => {
+				if (agents) this.updateInitialAgents(agents);
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
@@ -291,6 +302,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 					}),
 				);
 				this.form_app_settings.markAsPristine();
+				this.markAgentFormsPristine();
 				this.evaluateDirtyCount();
 				this.getSettings();
 			},
@@ -308,8 +320,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private onUnconfirmedEvent(): void {
 		const initial_settings = this.initial_settings();
 		if (initial_settings) this.initSettingForms(initial_settings);
+		this.resetAgentForms();
 		setTimeout(() => {
 			this.form_app_settings.markAsPristine();
+			this.markAgentFormsPristine();
 			this.form_app_settings.markAsUntouched();
 			this.evaluateDirtyCount();
 		}, 100);
@@ -370,10 +384,80 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		return null;
 	}
 
-    public onRequestAgentForms(event: {agent: AiAgent | null, jobs: AiAgent[]}): void {
-        // this.requestAgentForms.emit(event);
-        console.log(event);
-    }
+	/* *******************************************************
+		Agent Forms
+	******************************************************** */
+
+	/** Builds form groups for agents received from the AI child component */
+	public onRequestAgentForms(agents: AiAgent[]): void {
+		const form_map = new Map<string, FormGroup>();
+		const initial_map = new Map<string, AiAgent>();
+
+		for (const agent of agents) {
+			const is_primary = agent.agent_key === AgentKey.Groundskeeper;
+			const controls: Record<string, FormControl> = {
+				model: new FormControl(agent.model),
+			};
+			if (!is_primary) {
+				controls['active'] = new FormControl(agent.active);
+			}
+			const group = new FormGroup(controls);
+			this.subscriptions.add(group.valueChanges.subscribe(() => this.evaluateDirtyCount()));
+			form_map.set(agent.id, group);
+			initial_map.set(agent.id, agent);
+		}
+
+		this.agent_form_groups.set(form_map);
+		this.initial_agents.set(initial_map);
+	}
+
+	/** Collects dirty agent form controls into batch update payloads */
+	private getDirtyAgentUpdates(): {id: string; updates: Record<string, unknown>}[] {
+		const dirty_agents: {id: string; updates: Record<string, unknown>}[] = [];
+		for (const [id, group] of this.agent_form_groups()) {
+			const updates: Record<string, unknown> = {};
+			for (const key of Object.keys(group.controls)) {
+				const control = group.get(key);
+				if (control?.dirty) {
+					updates[key] = control.value;
+				}
+			}
+			if (Object.keys(updates).length > 0) {
+				dirty_agents.push({id, updates});
+			}
+		}
+		return dirty_agents;
+	}
+
+	/** Updates the initial agents cache after a successful save */
+	private updateInitialAgents(agents: AiAgent[]): void {
+		const map = this.initial_agents();
+		for (const agent of agents) {
+			map.set(agent.id, agent);
+		}
+		this.initial_agents.set(new Map(map));
+	}
+
+	/** Marks all agent form groups as pristine */
+	private markAgentFormsPristine(): void {
+		for (const [_id, group] of this.agent_form_groups()) {
+			group.markAsPristine();
+		}
+	}
+
+	/** Resets all agent form controls to their initial values */
+	private resetAgentForms(): void {
+		for (const [id, group] of this.agent_form_groups()) {
+			const initial_agent = this.initial_agents().get(id);
+			if (!initial_agent) continue;
+			for (const key of Object.keys(group.controls)) {
+				const control = group.get(key);
+				if (control) {
+					control.setValue(initial_agent[key as keyof AiAgent], {emitEvent: false});
+				}
+			}
+		}
+	}
 
 	/* *******************************************************
 		Tertiary Nav

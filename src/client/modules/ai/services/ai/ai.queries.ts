@@ -100,62 +100,76 @@ export const AI_CHAT_ABORT_MUTATION = `
     }
 `;
 
+const AI_AGENT_FIELDS = `
+    id
+    agent_key
+    name
+    description
+    active
+    model
+    system_message
+    tools
+    schedules
+    last_run_at
+    last_run_status
+    created_at
+    updated_at
+`;
+
 export const AI_AGENTS_QUERY = `
     query AiAgents {
-        ai_agents {
-            id
-            agent_key
-            name
-            description
-            active
-            model
-            system_message
-            tools
-            schedules
-            last_run_at
-            last_run_status
-            created_at
-            updated_at
-        }
+        ai_agents { ${AI_AGENT_FIELDS} }
     }
 `;
 
 export const AI_AGENT_QUERY = `
     query AiAgent($id: String!) {
-        ai_agent(id: $id) {
-            id
-            agent_key
-            name
-            description
-            active
-            model
-            system_message
-            tools
-            schedules
-            last_run_at
-            last_run_status
-            created_at
-            updated_at
-        }
+        ai_agent(id: $id) { ${AI_AGENT_FIELDS} }
     }
 `;
 
 export const AI_AGENT_UPDATE_MUTATION = `
     mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
-        ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) {
-            id
-            agent_key
-            name
-            description
-            active
-            model
-            system_message
-            tools
-            schedules
-            last_run_at
-            last_run_status
-            created_at
-            updated_at
-        }
+        ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) { ${AI_AGENT_FIELDS} }
     }
 `;
+
+/** GQL type map for building dynamic variable definitions */
+const GQL_TYPE_MAP: Record<string, string> = {
+	name: 'String',
+	description: 'String',
+	active: 'Boolean',
+	model: 'String',
+	system_message: 'String',
+	tools: '[String!]',
+	schedules: '[String!]',
+};
+
+/** Builds a dynamic batch mutation for updating multiple agents in a single request */
+export function buildAgentBatchMutation(
+	agents: {id: string; updates: Record<string, unknown>}[],
+): {query: string; variables: Record<string, unknown>} {
+	const variable_defs: string[] = [];
+	const mutations: string[] = [];
+	const variables: Record<string, unknown> = {};
+
+	agents.forEach((agent, index) => {
+		const prefix = `a${index}`;
+		variable_defs.push(`$${prefix}_id: String!`);
+		variables[`${prefix}_id`] = agent.id;
+
+		const args: string[] = [`id: $${prefix}_id`];
+		for (const [key, value] of Object.entries(agent.updates)) {
+			const var_name = `${prefix}_${key}`;
+			const gql_type = GQL_TYPE_MAP[key] ?? 'String';
+			variable_defs.push(`$${var_name}: ${gql_type}`);
+			variables[var_name] = value;
+			args.push(`${key}: $${var_name}`);
+		}
+
+		mutations.push(`${prefix}: ai_agent_update(${args.join(', ')}) { ${AI_AGENT_FIELDS} }`);
+	});
+
+	const query = `mutation AgentBatchUpdate(${variable_defs.join(', ')}) { ${mutations.join(' ')} }`;
+	return {query, variables};
+}

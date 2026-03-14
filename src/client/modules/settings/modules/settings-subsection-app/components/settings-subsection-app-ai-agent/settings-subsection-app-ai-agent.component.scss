@@ -1,0 +1,9 @@
+.system-message {
+	background: var(--mat-sys-surface-container);
+	border-radius: 8px;
+	padding: 0.75rem;
+	max-height: 6rem;
+	overflow-y: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
+}

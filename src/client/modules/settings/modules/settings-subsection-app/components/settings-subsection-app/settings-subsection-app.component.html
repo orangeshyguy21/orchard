@@ -44,11 +44,13 @@
 					[ai_enabled]="initial_settings()?.ai_enabled ?? false"
 					[form_group_ai]="form_ai"
 					[form_group_messaging]="form_ai_messaging"
+					[agents]="initial_agents()"
+					[agent_form_groups]="agent_form_groups()"
 					[device_type]="device_type()"
 					(update)="onUpdate()"
 					(submit)="onSubmit($event.form, $event.control)"
 					(cancel)="onCancel($event.form, $event.control)"
-                    (requestAgentForms)="onRequestAgentForms($event)"
+					(requestAgentForms)="onRequestAgentForms($event)"
 				></orc-settings-subsection-app-ai>
 			</div>
 		</div>

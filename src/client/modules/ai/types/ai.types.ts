@@ -46,6 +46,8 @@ export type AiAgentUpdateResponse = {
 	ai_agent_update: OrchardAgent;
 };
 
+export type AiAgentBatchUpdateResponse = Record<string, OrchardAgent>;
+
 export type AiFunction =
 	| AiFunctionUpdateSearch
 	| AiFunctionUpdateCrewStates
