@@ -48,12 +48,12 @@
                         <mat-card-content class="orc-surface-container-low-bg">
                             <orc-settings-subsection-app-ai-agent
                                 [agent]="groundskeeper()"
+                                [loading]="loading_agents()"
                                 [form_group]="groundskeeper_form()"
                                 [ai_models]="ai_models()"
                                 [ai_favorites]="ai_favorites()"
                                 [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
                                 [device_type]="device_type()"
-                                [loading]="loading_agents()"
                                 (update)="update.emit()"
                                 (favoritesChange)="onFavoritesChange($event)"
                             ></orc-settings-subsection-app-ai-agent>

@@ -1,3 +1,12 @@
+@use 'molecule/molecule';
+
+.ai-agent-contaienr {
+    min-height: 20rem;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+}
+
 .system-message {
 	background: var(--mat-sys-surface-container);
 	border-radius: 8px;
