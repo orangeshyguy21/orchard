@@ -20,6 +20,9 @@ import {
 	AiModelResponse,
 	AiAssistantResponse,
 	AiChatAbortResponse,
+	AiAgentsResponse,
+	AiAgentResponse,
+	AiAgentUpdateResponse,
 } from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
@@ -27,8 +30,18 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
+import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 /* Local Dependencies */
-import {AI_CHAT_SUBSCRIPTION, AI_HEALTH_QUERY, AI_MODELS_QUERY, AI_ASSISTANT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
+import {
+	AI_CHAT_SUBSCRIPTION,
+	AI_HEALTH_QUERY,
+	AI_MODELS_QUERY,
+	AI_ASSISTANT_QUERY,
+	AI_CHAT_ABORT_MUTATION,
+	AI_AGENTS_QUERY,
+	AI_AGENT_QUERY,
+	AI_AGENT_UPDATE_MUTATION,
+} from './ai.queries';
 /* Shared Dependencies */
 import {AiAssistant, AiMessageRole} from '@shared/generated.types';
 
@@ -225,6 +238,71 @@ export class AiService {
 			map((oaa) => new AiAssistantDefinition(oaa)),
 			catchError((error) => {
 				console.error('Error loading ai assistant:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/* *******************************************************
+		Agents
+	******************************************************** */
+
+	/** Fetches all AI agents */
+	public getAiAgents(): Observable<AiAgent[]> {
+		const query = getApiQuery(AI_AGENTS_QUERY);
+
+		return this.http.post<OrchardRes<AiAgentsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agents;
+			}),
+			map((agents) => agents.map((agent) => new AiAgent(agent))),
+			catchError((error) => {
+				console.error('Error loading ai agents:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches a single AI agent by ID */
+	public getAiAgent(id: string): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_QUERY, {id});
+
+		return this.http.post<OrchardRes<AiAgentResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error loading ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Updates an AI agent configuration */
+	public updateAiAgent(
+		id: string,
+		updates: Partial<{
+			name: string;
+			description: string;
+			active: boolean;
+			system_message: string;
+			tools: string[];
+			schedules: string[];
+		}>,
+	): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_UPDATE_MUTATION, {id, ...updates});
+
+		return this.http.post<OrchardRes<AiAgentUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_update;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error updating ai agent:', error);
 				return throwError(() => error);
 			}),
 		);

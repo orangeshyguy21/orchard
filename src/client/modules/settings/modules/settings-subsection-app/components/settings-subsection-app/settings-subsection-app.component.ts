@@ -29,6 +29,7 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
 import {OrchardValidators} from '@client/modules/form/validators';
+import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
 
@@ -367,6 +368,11 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		}
 		return null;
 	}
+
+    public onRequestAgentForms(event: {agent: AiAgent | null, jobs: AiAgent[]}): void {
+        // this.requestAgentForms.emit(event);
+        console.log(event);
+    }
 
 	/* *******************************************************
 		Tertiary Nav

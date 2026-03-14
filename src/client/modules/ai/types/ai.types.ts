@@ -7,6 +7,7 @@ import {
 	OrchardAiHealth,
 	OrchardAiModel,
 	OrchardAiAssistant,
+	OrchardAgent,
 	AssistantToolName,
 	MintUnit,
 	AnalyticsInterval,
@@ -31,6 +32,18 @@ export type AiHealthResponse = {
 
 export type AiChatAbortResponse = {
 	ai_chat_abort: OrchardAiChatStream;
+};
+
+export type AiAgentsResponse = {
+	ai_agents: OrchardAgent[];
+};
+
+export type AiAgentResponse = {
+	ai_agent: OrchardAgent;
+};
+
+export type AiAgentUpdateResponse = {
+	ai_agent_update: OrchardAgent;
 };
 
 export type AiFunction =

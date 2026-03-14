@@ -99,3 +99,60 @@ export const AI_CHAT_ABORT_MUTATION = `
         }
     }
 `;
+
+export const AI_AGENTS_QUERY = `
+    query AiAgents {
+        ai_agents {
+            id
+            agent_key
+            name
+            description
+            active
+            system_message
+            tools
+            schedules
+            last_run_at
+            last_run_status
+            created_at
+            updated_at
+        }
+    }
+`;
+
+export const AI_AGENT_QUERY = `
+    query AiAgent($id: String!) {
+        ai_agent(id: $id) {
+            id
+            agent_key
+            name
+            description
+            active
+            system_message
+            tools
+            schedules
+            last_run_at
+            last_run_status
+            created_at
+            updated_at
+        }
+    }
+`;
+
+export const AI_AGENT_UPDATE_MUTATION = `
+    mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $system_message: String, $tools: [String!], $schedules: [String!]) {
+        ai_agent_update(id: $id, name: $name, description: $description, active: $active, system_message: $system_message, tools: $tools, schedules: $schedules) {
+            id
+            agent_key
+            name
+            description
+            active
+            system_message
+            tools
+            schedules
+            last_run_at
+            last_run_status
+            created_at
+            updated_at
+        }
+    }
+`;
