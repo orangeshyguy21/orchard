@@ -67,11 +67,11 @@ export class AgentService implements OnModuleInit {
 			if (existing) continue;
 			const agent = this.agentRepository.create({
 				agent_key,
-				name: definition.name,
-				description: definition.description,
+				name: null,
+				description: null,
 				active: false,
-				system_message: definition.system_message ?? '',
-				tools: JSON.stringify(definition.tools ?? []),
+				system_message: null,
+				tools: null,
 				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
@@ -79,7 +79,7 @@ export class AgentService implements OnModuleInit {
 				updated_at: now,
 			});
 			await this.agentRepository.save(agent);
-			this.logger.log(`Seeded agent: ${definition.name} (${agent_key})`);
+			this.logger.log(`Seeded agent: ${agent_key}`);
 		}
 	}
 
@@ -232,7 +232,7 @@ export class AgentService implements OnModuleInit {
 				last_run_status: AgentRunStatus.SUCCESS,
 				updated_at: completed_at,
 			});
-			this.logger.log(`Agent ${agent.name} completed successfully`);
+			this.logger.log(`Agent ${this.resolveName(agent)} completed successfully`);
 			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used, notified};
 		} catch (error) {
 			const completed_at = DateTime.utc().toUnixInteger();
@@ -245,7 +245,7 @@ export class AgentService implements OnModuleInit {
 				last_run_status: AgentRunStatus.ERROR,
 				updated_at: completed_at,
 			});
-			this.logger.error(`Agent ${agent.name} failed: ${error.message}`);
+			this.logger.error(`Agent ${this.resolveName(agent)} failed: ${error.message}`);
 			throw error;
 		}
 	}
@@ -260,9 +260,10 @@ export class AgentService implements OnModuleInit {
 		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
 
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
-		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
+		const resolved_name = this.resolveName(agent);
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: resolved_name};
 
-		if (!agent.model) throw new Error(`Agent "${agent.name}" has no model configured`);
+		if (!agent.model) throw new Error(`Agent "${resolved_name}" has no model configured`);
 		const loop_result = await this.runToolLoop({model: agent.model, messages, tool_names, agent_context});
 
 		const notified = loop_result.messages.some((m) => {
@@ -334,12 +335,13 @@ export class AgentService implements OnModuleInit {
 	private dumpAgentTrace(agent: Agent, messages: AiMessage[], tokens_used: number, result: string, tool_names: string[] = []): void {
 		try {
 			const timestamp = DateTime.utc().toFormat('yyyyMMdd-HHmmss');
-			const safe_name = agent.name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+			const resolved_name = this.resolveName(agent);
+			const safe_name = resolved_name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
 			const dir = join(process.cwd(), 'data', 'tmp');
 			mkdirSync(dir, {recursive: true});
 			const file_path = join(dir, `agent-${safe_name}-${timestamp}.json`);
 			const trace = {
-				agent: {id: agent.id, name: agent.name, agent_key: agent.agent_key},
+				agent: {id: agent.id, name: resolved_name, agent_key: agent.agent_key},
 				timestamp: DateTime.utc().toISO(),
 				tokens_used,
 				tool_names,
@@ -397,14 +399,29 @@ export class AgentService implements OnModuleInit {
 		Agent Resolution Helpers
 	******************************************************** */
 
-	/** Parse the tool names from the agent's stored JSON */
-	public resolveToolNames(agent: Agent): string[] {
-		return safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
+	/** Resolve the effective name for an agent, falling back to built-in default */
+	public resolveName(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.name : undefined;
+		return agent.name ?? built_in ?? 'Unnamed Agent';
 	}
 
-	/** Build the full system message with runtime context appended */
+	/** Resolve the effective description for an agent, falling back to built-in default */
+	public resolveDescription(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.description : undefined;
+		return agent.description ?? built_in ?? '';
+	}
+
+	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
+	public resolveToolNames(agent: Agent): string[] {
+		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
+		return agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
+	}
+
+	/** Build a system message from agent config + runtime context */
 	public buildSystemMessage(agent: Agent): string {
-		return `${agent.system_message}\n\n${this.buildRuntimeContext(agent)}`;
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
+		const base_message = agent.system_message ?? built_in ?? '';
+		return `${base_message}\n\n${this.buildRuntimeContext(agent)}`;
 	}
 
 	/* *******************************************************
@@ -554,7 +571,7 @@ export class AgentService implements OnModuleInit {
 				.delete()
 				.where('agent_id = :agent_id AND started_at <= :cutoff', {agent_id: agent.id, cutoff})
 				.execute();
-			this.logger.log(`Cleaned up old runs for agent ${agent.name}`);
+			this.logger.log(`Cleaned up old runs for agent ${this.resolveName(agent)}`);
 		}
 	}
 }

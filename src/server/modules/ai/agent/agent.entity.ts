@@ -12,11 +12,11 @@ export class Agent {
 	@Column({type: 'text', nullable: true, unique: true})
 	agent_key: AgentKey | null;
 
-	@Column({type: 'text'})
-	name: string;
+	@Column({type: 'text', nullable: true})
+	name: string | null;
 
-	@Column({type: 'text'})
-	description: string;
+	@Column({type: 'text', nullable: true})
+	description: string | null;
 
 	@Column({default: false})
 	active: boolean;
@@ -24,11 +24,11 @@ export class Agent {
 	@Column({type: 'text', nullable: true})
 	model: string | null;
 
-	@Column({type: 'text'})
-	system_message: string;
+	@Column({type: 'text', nullable: true})
+	system_message: string | null;
 
-	@Column({type: 'text', default: '[]'})
-	tools: string;
+	@Column({type: 'text', nullable: true})
+	tools: string | null;
 
 	@Column({type: 'text', default: '[]'})
 	schedules: string;

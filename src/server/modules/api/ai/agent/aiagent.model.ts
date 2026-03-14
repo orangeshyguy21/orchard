@@ -7,6 +7,7 @@ import {safeParse} from '@server/utils/safe-parse';
 import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';
 import {AgentRun} from '@server/modules/ai/agent/agent-run.entity';
+import {AGENTS} from '@server/modules/ai/agent/agent.agents';
 
 @ObjectType({description: 'Default configuration for an AI agent'})
 export class OrchardAgentDefault {
@@ -37,8 +38,8 @@ export class OrchardAgent {
 	@Field({description: 'Agent name'})
 	name: string;
 
-	@Field({description: 'Agent description'})
-	description: string;
+	@Field({nullable: true, description: 'Agent description'})
+	description: string | null;
 
 	@Field({description: 'Whether the agent is active'})
 	active: boolean;
@@ -46,11 +47,11 @@ export class OrchardAgent {
 	@Field({nullable: true, description: 'LLM model identifier'})
 	model: string | null;
 
-	@Field({description: 'System message used to instruct the agent'})
-	system_message: string;
+	@Field({nullable: true, description: 'System message used to instruct the agent'})
+	system_message: string | null;
 
-	@Field(() => [String], {description: 'List of tool identifiers available to the agent'})
-	tools: string[];
+	@Field(() => [String], {nullable: true, description: 'List of tool identifiers available to the agent'})
+	tools: string[] | null;
 
 	@Field(() => [String], {description: 'Cron schedules for automatic execution'})
 	schedules: string[];
@@ -68,14 +69,15 @@ export class OrchardAgent {
 	updated_at: number;
 
 	constructor(agent: Agent) {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key] : undefined;
 		this.id = agent.id;
 		this.agent_key = agent.agent_key;
-		this.name = agent.name;
-		this.description = agent.description;
+		this.name = agent.name ?? built_in?.name ?? 'Unnamed Agent';
+		this.description = agent.description ?? built_in?.description ?? null;
 		this.active = agent.active;
 		this.model = agent.model;
-		this.system_message = agent.system_message;
-		this.tools = safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
+		this.system_message = agent.system_message ?? built_in?.system_message ?? null;
+		this.tools = agent.tools ? JSON.parse(agent.tools) : (built_in?.tools ?? null);
 		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 		this.last_run_at = agent.last_run_at;
 		this.last_run_status = agent.last_run_status as AgentRunStatus | null;

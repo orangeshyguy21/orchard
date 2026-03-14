@@ -85,16 +85,17 @@ export class ConversationService {
 		this.active_runs.set(chat_id, controller);
 
 		const tool_names = this.agentService.resolveToolNames(agent);
-		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
+		const resolved_name = this.agentService.resolveName(agent);
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: resolved_name};
 
 		try {
-			this.logger.log(`Agent ${agent.name} conversation started (chat: ${chat_id})`);
-			if (!agent.model) throw new Error(`Agent "${agent.name}" has no model configured`);
+			this.logger.log(`Agent ${resolved_name} conversation started (chat: ${chat_id})`);
+			if (!agent.model) throw new Error(`Agent "${resolved_name}" has no model configured`);
 			const loop_result = await this.agentService.runToolLoop({model: agent.model, messages, tool_names, agent_context, signal: controller.signal});
 
 			/* If aborted mid-run, persist token usage and exit — the new invocation handles the response */
 			if (controller.signal.aborted) {
-				this.logger.log(`Agent ${agent.name} conversation aborted (chat: ${chat_id})`);
+				this.logger.log(`Agent ${resolved_name} conversation aborted (chat: ${chat_id})`);
 				if (loop_result.tokens_used > 0) {
 					await this.conversationRepository.update(conversation.id, {
 						tokens_used: conversation.tokens_used + loop_result.tokens_used,
@@ -103,7 +104,7 @@ export class ConversationService {
 				return;
 			}
 
-			this.logger.log(`Agent ${agent.name} conversation completed (tokens: ${loop_result.tokens_used})`);
+			this.logger.log(`Agent ${resolved_name} conversation completed (tokens: ${loop_result.tokens_used})`);
 			this.truncateHistory(loop_result.messages);
 
 			const completed_at = DateTime.utc().toUnixInteger();
@@ -116,7 +117,7 @@ export class ConversationService {
 			await this.replyOrEdit(chat_id, thinking, loop_result.result);
 		} catch (error) {
 			if (controller.signal.aborted) return;
-			this.logger.error(`Agent ${agent.name} conversation failed (chat: ${chat_id}): ${error.message}`);
+			this.logger.error(`Agent ${resolved_name} conversation failed (chat: ${chat_id}): ${error.message}`);
 			await this.replyOrEdit(chat_id, thinking, 'Something went wrong processing your message.');
 		} finally {
 			/* Clean up only if this controller is still the active one */
@@ -240,7 +241,7 @@ export class ConversationService {
 			for (const run of runs) {
 				if (run.status === AgentRunStatus.SUCCESS && run.result) {
 					const summary = run.result.length > 300 ? run.result.slice(0, 300) + '...' : run.result;
-					recent_summaries.push(`[${a.name}] ${summary}`);
+					recent_summaries.push(`[${this.agentService.resolveName(a)}] ${summary}`);
 				}
 			}
 		}

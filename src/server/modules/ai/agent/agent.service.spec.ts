@@ -11,7 +11,7 @@ import {AgentService} from './agent.service';
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
 import {AgentKey, AgentRunStatus, AgentToolName} from './agent.enums';
-
+import {AGENTS} from './agent.agents';
 import {ToolService} from '@server/modules/ai/tools/tool.service';
 
 describe('AgentService', () => {
@@ -526,26 +526,41 @@ describe('AgentService', () => {
 	******************************************************** */
 
 	describe('resolveToolNames', () => {
-		it('should return parsed tools from agent', () => {
+		it('should return parsed tools when agent has custom tools', () => {
 			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: '["GET_MINT_INFO"]'} as Agent;
 
 			expect(service.resolveToolNames(agent)).toEqual(['GET_MINT_INFO']);
 		});
 
-		it('should return empty array when tools is empty JSON array', () => {
-			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: '[]'} as Agent;
+		it('should fall back to built-in tools when agent.tools is null', () => {
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: null} as Agent;
+
+			expect(service.resolveToolNames(agent)).toEqual(AGENTS[AgentKey.GROUNDSKEEPER].tools);
+		});
+
+		it('should return empty array for non-built-in agent with no tools', () => {
+			const agent = {agent_key: null, tools: null} as Agent;
 
 			expect(service.resolveToolNames(agent)).toEqual([]);
 		});
 	});
 
 	describe('buildSystemMessage', () => {
-		it('should append runtime context to system_message', () => {
+		it('should use custom system_message when set', () => {
 			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: 'Custom prompt', schedules: '[]'} as Agent;
 
 			const result = service.buildSystemMessage(agent);
 
 			expect(result).toContain('Custom prompt');
+			expect(result).toContain('[Runtime Context]');
+		});
+
+		it('should fall back to built-in system_message when agent has none', () => {
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: null, schedules: '[]'} as Agent;
+
+			const result = service.buildSystemMessage(agent);
+
+			expect(result).toContain('Groundskeeper');
 			expect(result).toContain('[Runtime Context]');
 		});
 	});

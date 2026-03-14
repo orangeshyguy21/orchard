@@ -55,6 +55,7 @@ describe('ConversationService', () => {
 		buildRuntimeContext: jest.fn().mockReturnValue('[Runtime Context]\nAgent ID: agent-uuid'),
 		buildSystemMessage: jest.fn().mockReturnValue('System message'),
 		resolveToolNames: jest.fn().mockReturnValue([]),
+		resolveName: jest.fn().mockReturnValue('Groundskeeper'),
 	};
 
 	const mock_message_service = {
