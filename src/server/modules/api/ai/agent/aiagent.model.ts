@@ -19,8 +19,8 @@ export class OrchardAgent {
 	@Field({description: 'Agent name'})
 	name: string;
 
-	@Field({nullable: true, description: 'Agent description'})
-	description: string | null;
+	@Field({description: 'Agent description'})
+	description: string;
 
 	@Field({description: 'Whether the agent is active'})
 	active: boolean;
@@ -28,11 +28,11 @@ export class OrchardAgent {
 	@Field({nullable: true, description: 'LLM model identifier'})
 	model: string | null;
 
-	@Field({nullable: true, description: 'System message used to instruct the agent'})
-	system_message: string | null;
+	@Field({description: 'System message used to instruct the agent'})
+	system_message: string;
 
-	@Field(() => [String], {nullable: true, description: 'List of tool identifiers available to the agent'})
-	tools: string[] | null;
+	@Field(() => [String], {description: 'List of tool identifiers available to the agent'})
+	tools: string[];
 
 	@Field(() => [String], {description: 'Cron schedules for automatic execution'})
 	schedules: string[];

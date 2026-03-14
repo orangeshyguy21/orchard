@@ -70,8 +70,8 @@ export class AgentService implements OnModuleInit {
 				name: definition.name,
 				description: definition.description,
 				active: false,
-				system_message: null,
-				tools: null,
+				system_message: definition.system_message ?? '',
+				tools: JSON.stringify(definition.tools ?? []),
 				schedules: JSON.stringify(definition.schedules ?? []),
 				last_run_at: null,
 				last_run_status: null,
@@ -397,17 +397,14 @@ export class AgentService implements OnModuleInit {
 		Agent Resolution Helpers
 	******************************************************** */
 
-	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
+	/** Parse the tool names from the agent's stored JSON */
 	public resolveToolNames(agent: Agent): string[] {
-		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
-		return agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
+		return safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
 	}
 
-	/** Build a system message from agent config + runtime context */
+	/** Build the full system message with runtime context appended */
 	public buildSystemMessage(agent: Agent): string {
-		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.system_message : undefined;
-		const base_message = agent.system_message ?? built_in ?? '';
-		return `${base_message}\n\n${this.buildRuntimeContext(agent)}`;
+		return `${agent.system_message}\n\n${this.buildRuntimeContext(agent)}`;
 	}
 
 	/* *******************************************************
