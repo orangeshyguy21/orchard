@@ -55,6 +55,7 @@ export class AiAgentResolver {
 		@Args('name', {nullable: true, description: 'New agent name'}) name: string,
 		@Args('description', {nullable: true, description: 'New agent description'}) description: string,
 		@Args('active', {nullable: true, description: 'Whether the agent should be active'}) active: boolean,
+		@Args('model', {nullable: true, description: 'LLM model identifier'}) model: string,
 		@Args('system_message', {nullable: true, description: 'New system message for the agent'}) system_message: string,
 		@Args('tools', {type: () => [String], nullable: true, description: 'List of tool identifiers to assign'}) tools: string[],
 		@Args('schedules', {type: () => [String], nullable: true, description: 'Cron schedules for automatic execution'})
@@ -62,7 +63,7 @@ export class AiAgentResolver {
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_update }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, system_message, tools, schedules});
+		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, model, system_message, tools, schedules});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)

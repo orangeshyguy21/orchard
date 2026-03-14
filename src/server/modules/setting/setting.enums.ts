@@ -24,7 +24,6 @@ export enum SettingKey {
 	AI_VENDOR = 'ai.vendor',
 	AI_OLLAMA_API = 'ai.ollama.api',
 	AI_OPENROUTER_KEY = 'ai.openrouter.key',
-	AI_SERVER_MODEL = 'ai.server.model',
 	MESSAGES_ENABLED = 'messages.enabled',
 	MESSAGES_VENDOR = 'messages.vendor',
 	MESSAGES_TELEGRAM_BOT_TOKEN = 'messages.telegram.bot.token',

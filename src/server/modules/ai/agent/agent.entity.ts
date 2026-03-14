@@ -22,6 +22,9 @@ export class Agent {
 	active: boolean;
 
 	@Column({type: 'text', nullable: true})
+	model: string | null;
+
+	@Column({type: 'text', nullable: true})
 	system_message: string | null;
 
 	@Column({type: 'text', nullable: true})

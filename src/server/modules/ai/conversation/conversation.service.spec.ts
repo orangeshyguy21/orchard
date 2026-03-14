@@ -32,6 +32,7 @@ describe('ConversationService', () => {
 		agent_key: AgentKey.GROUNDSKEEPER,
 		name: 'Groundskeeper',
 		active: true,
+		model: 'test-model',
 		system_message: null,
 		tools: null,
 		schedules: '[]',

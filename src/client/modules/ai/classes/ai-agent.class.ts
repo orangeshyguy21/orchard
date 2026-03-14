@@ -7,6 +7,7 @@ export class AiAgent implements OrchardAgent {
 	name: string;
 	description: string | null;
 	active: boolean;
+	model: string | null;
 	system_message: string | null;
 	tools: string[];
 	schedules: string[];
@@ -21,6 +22,7 @@ export class AiAgent implements OrchardAgent {
 		this.name = agent.name;
 		this.description = agent.description ?? null;
 		this.active = agent.active;
+		this.model = agent.model ?? null;
 		this.system_message = agent.system_message ?? null;
 		this.tools = agent.tools ?? [];
 		this.schedules = agent.schedules;

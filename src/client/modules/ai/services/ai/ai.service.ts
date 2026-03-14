@@ -288,6 +288,7 @@ export class AiService {
 			name: string;
 			description: string;
 			active: boolean;
+			model: string;
 			system_message: string;
 			tools: string[];
 			schedules: string[];

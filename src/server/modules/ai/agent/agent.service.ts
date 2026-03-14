@@ -13,8 +13,6 @@ import {DateTime} from 'luxon';
 import {AiService} from '@server/modules/ai/ai.service';
 import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
-import {SettingService} from '@server/modules/setting/setting.service';
-import {SettingKey} from '@server/modules/setting/setting.enums';
 import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
 import {ToolService} from '@server/modules/ai/tools/tool.service';
@@ -45,7 +43,6 @@ export class AgentService implements OnModuleInit {
 		private schedulerRegistry: SchedulerRegistry,
 		private aiService: AiService,
 		private configService: ConfigService,
-		private settingService: SettingService,
 		private toolExecutor: ToolService,
 	) {}
 
@@ -265,7 +262,8 @@ export class AgentService implements OnModuleInit {
 		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
 		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
 
-		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
+		if (!agent.model) throw new Error(`Agent "${agent.name}" has no model configured`);
+		const loop_result = await this.runToolLoop({model: agent.model, messages, tool_names, agent_context});
 
 		const notified = loop_result.messages.some((m) => {
 			if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
@@ -291,15 +289,13 @@ export class AgentService implements OnModuleInit {
 	 * Used by both scheduled agent runs and conversational flows.
 	 */
 	public async runToolLoop(options: {
+		model: string;
 		messages: AiMessage[];
 		tool_names: string[];
 		agent_context: AiAgentContext;
 		signal?: AbortSignal;
 	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
-		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
-		if (!model) throw new Error('No AI model configured (ai.server.model)');
-
-		const {messages, tool_names, agent_context, signal} = options;
+		const {model, messages, tool_names, agent_context, signal} = options;
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 		let total_tokens = 0;
 
@@ -522,7 +518,7 @@ export class AgentService implements OnModuleInit {
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,
-		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'system_message' | 'tools' | 'schedules'>>,
+		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules'>>,
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);

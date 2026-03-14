@@ -108,6 +108,7 @@ export const AI_AGENTS_QUERY = `
             name
             description
             active
+            model
             system_message
             tools
             schedules
@@ -127,6 +128,7 @@ export const AI_AGENT_QUERY = `
             name
             description
             active
+            model
             system_message
             tools
             schedules
@@ -139,13 +141,14 @@ export const AI_AGENT_QUERY = `
 `;
 
 export const AI_AGENT_UPDATE_MUTATION = `
-    mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $system_message: String, $tools: [String!], $schedules: [String!]) {
-        ai_agent_update(id: $id, name: $name, description: $description, active: $active, system_message: $system_message, tools: $tools, schedules: $schedules) {
+    mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
+        ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) {
             id
             agent_key
             name
             description
             active
+            model
             system_message
             tools
             schedules

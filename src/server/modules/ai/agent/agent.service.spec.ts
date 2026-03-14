@@ -6,7 +6,6 @@ import {SchedulerRegistry} from '@nestjs/schedule';
 /* Application Dependencies */
 import {AiService} from '@server/modules/ai/ai.service';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
-import {SettingService} from '@server/modules/setting/setting.service';
 /* Local Dependencies */
 import {AgentService} from './agent.service';
 import {Agent} from './agent.entity';
@@ -49,11 +48,6 @@ describe('AgentService', () => {
 		streamAgent: jest.fn(),
 	};
 
-	const mock_setting_service = {
-		getSetting: jest.fn().mockResolvedValue({value: 'test-model'}),
-		getStringSetting: jest.fn().mockResolvedValue('test-model'),
-	};
-
 	const mock_tool_executor = {
 		getToolSchemas: jest.fn().mockReturnValue([]),
 		executeTool: jest.fn().mockResolvedValue({success: true, data: {}}),
@@ -73,8 +67,7 @@ describe('AgentService', () => {
 				{provide: SchedulerRegistry, useValue: mock_scheduler_registry},
 				{provide: AiService, useValue: mock_ai_service},
 				{provide: ConfigService, useValue: mock_config_service},
-				{provide: SettingService, useValue: mock_setting_service},
-				{provide: ToolService, useValue: mock_tool_executor},
+					{provide: ToolService, useValue: mock_tool_executor},
 			],
 		}).compile();
 		service = module.get<AgentService>(AgentService);
@@ -94,6 +87,7 @@ describe('AgentService', () => {
 			agent_key: AgentKey.ACTIVITY_MONITOR,
 			name: 'Activity Monitor',
 			active: true,
+			model: 'test-model',
 			system_message: null,
 			tools: null,
 			schedules: '["10 * * * *"]',
@@ -218,6 +212,7 @@ describe('AgentService', () => {
 			});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [
 					{role: AiMessageRole.SYSTEM, content: 'sys'},
 					{role: AiMessageRole.USER, content: 'hi'},
@@ -260,6 +255,7 @@ describe('AgentService', () => {
 			mock_tool_executor.executeTool.mockResolvedValueOnce({cpu: 0.5});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [
 					{role: AiMessageRole.SYSTEM, content: 'sys'},
 					{role: AiMessageRole.USER, content: 'check cpu'},
@@ -273,23 +269,12 @@ describe('AgentService', () => {
 			expect(result.tokens_used).toBe(45);
 		});
 
-		it('should throw when no AI model is configured', async () => {
-			mock_setting_service.getStringSetting.mockResolvedValueOnce(null);
-
-			await expect(
-				service.runToolLoop({
-					messages: [{role: AiMessageRole.USER, content: 'hi'}],
-					tool_names: [],
-					agent_context: {agent_id: 'a1', agent_name: 'Test'},
-				}),
-			).rejects.toThrow('No AI model configured');
-		});
-
 		it('should respect abort signal', async () => {
 			const controller = new AbortController();
 			controller.abort();
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [{role: AiMessageRole.USER, content: 'hi'}],
 				tool_names: [],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
@@ -317,6 +302,7 @@ describe('AgentService', () => {
 			});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [{role: AiMessageRole.USER, content: 'loop'}],
 				tool_names: ['GET_SYSTEM_METRICS'],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
@@ -338,6 +324,7 @@ describe('AgentService', () => {
 				agent_key: AgentKey.ACTIVITY_MONITOR,
 				name: 'Agent 1',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
@@ -347,6 +334,7 @@ describe('AgentService', () => {
 				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 2',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
@@ -356,6 +344,7 @@ describe('AgentService', () => {
 				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 3',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
@@ -473,6 +462,7 @@ describe('AgentService', () => {
 					agent_key: AgentKey.GROUNDSKEEPER,
 					name: `Agent ${i}`,
 					active: true,
+					model: 'test-model',
 					system_message: null,
 					tools: null,
 					schedules: '[]',
@@ -570,7 +560,7 @@ describe('AgentService', () => {
 
 			const result = service.buildSystemMessage(agent);
 
-			expect(result).toContain('Orchard');
+			expect(result).toContain('Groundskeeper');
 			expect(result).toContain('[Runtime Context]');
 		});
 	});

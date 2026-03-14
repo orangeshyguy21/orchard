@@ -261,7 +261,6 @@ registerEnumType(SettingKey, {
 		AI_VENDOR: {description: 'AI vendor selection'},
 		AI_OLLAMA_API: {description: 'Ollama API endpoint'},
 		AI_OPENROUTER_KEY: {description: 'OpenRouter API key'},
-		AI_SERVER_MODEL: {description: 'Server-side AI model'},
 		MESSAGES_ENABLED: {description: 'Messaging notifications toggle'},
 		MESSAGES_VENDOR: {description: 'Messaging vendor selection'},
 		MESSAGES_TELEGRAM_BOT_TOKEN: {description: 'Telegram bot token'},

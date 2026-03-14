@@ -89,7 +89,8 @@ export class ConversationService {
 
 		try {
 			this.logger.log(`Agent ${agent.name} conversation started (chat: ${chat_id})`);
-			const loop_result = await this.agentService.runToolLoop({messages, tool_names, agent_context, signal: controller.signal});
+			if (!agent.model) throw new Error(`Agent "${agent.name}" has no model configured`);
+			const loop_result = await this.agentService.runToolLoop({model: agent.model, messages, tool_names, agent_context, signal: controller.signal});
 
 			/* If aborted mid-run, persist token usage and exit — the new invocation handles the response */
 			if (controller.signal.aborted) {

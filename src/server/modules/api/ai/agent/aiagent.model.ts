@@ -25,6 +25,9 @@ export class OrchardAgent {
 	@Field({description: 'Whether the agent is active'})
 	active: boolean;
 
+	@Field({nullable: true, description: 'LLM model identifier'})
+	model: string | null;
+
 	@Field({nullable: true, description: 'System message used to instruct the agent'})
 	system_message: string | null;
 
@@ -52,6 +55,7 @@ export class OrchardAgent {
 		this.name = agent.name;
 		this.description = agent.description;
 		this.active = agent.active;
+		this.model = agent.model;
 		this.system_message = agent.system_message;
 		this.tools = safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
 		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);

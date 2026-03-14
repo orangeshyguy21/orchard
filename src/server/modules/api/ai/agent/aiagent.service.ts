@@ -69,6 +69,7 @@ export class AiAgentService {
 			name?: string;
 			description?: string;
 			active?: boolean;
+			model?: string;
 			system_message?: string;
 			tools?: string[];
 			schedules?: string[];
@@ -79,6 +80,7 @@ export class AiAgentService {
 			if (updates.name !== undefined) serialized.name = updates.name;
 			if (updates.description !== undefined) serialized.description = updates.description;
 			if (updates.active !== undefined) serialized.active = updates.active;
+			if (updates.model !== undefined) serialized.model = updates.model;
 			if (updates.system_message !== undefined) serialized.system_message = updates.system_message;
 			if (updates.tools !== undefined) serialized.tools = JSON.stringify(updates.tools);
 			if (updates.schedules !== undefined) serialized.schedules = JSON.stringify(updates.schedules);
