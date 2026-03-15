@@ -17,7 +17,8 @@ import {AiFavorites} from '@client/modules/cache/services/local-storage/local-st
 export class SettingsSubsectionAppAiAgentComponent {
 	/* ── Inputs ── */
 	public agent = input<AiAgent | null>(null);
-	public form_group = input<FormGroup | null>(null);
+    public form_group = input<FormGroup | null>(null);
+	public model = input<string | null>(null);
 	public ai_models = input<AiModel[]>([]);
 	public ai_favorites = input<AiFavorites>({ollama: [], openrouter: []});
 	public ai_vendor = input<string>('ollama');

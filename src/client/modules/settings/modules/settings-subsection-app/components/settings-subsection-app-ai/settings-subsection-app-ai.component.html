@@ -50,6 +50,7 @@
                                 [agent]="groundskeeper()"
                                 [loading]="loading_agents()"
                                 [form_group]="groundskeeper_form()"
+                                [model]="groundskeeper_form()?.get('model')?.value ?? null"
                                 [ai_models]="ai_models()"
                                 [ai_favorites]="ai_favorites()"
                                 [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"

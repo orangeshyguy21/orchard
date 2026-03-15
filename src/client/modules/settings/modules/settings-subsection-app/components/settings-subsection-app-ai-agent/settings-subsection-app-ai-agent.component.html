@@ -6,16 +6,19 @@
     } @else if (agent(); as agent) {
         <div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein">
             <div class="flex flex-items-center flex-gap-1">
-                <div class="flex-grow font-weight-bold">{{ agent.name }}</div>
-                <orc-ai-model
-                    [model]="form_group()?.get('model')?.value ?? agent.model"
-                    [model_options]="ai_models()"
-                    [device_type]="device_type()"
-                    [vendor]="ai_vendor()"
-                    [favorites]="ai_favorites()"
-                    (modelChange)="onModelChange($event)"
-                    (favoritesChange)="onFavoritesChange($event)"
-                ></orc-ai-model>
+                <div class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
+                    <div class="title-l">{{ agent.name }}</div>
+                    <orc-ai-model
+                        [model]="model()"
+                        [model_options]="ai_models()"
+                        [device_type]="device_type()"
+                        [vendor]="ai_vendor()"
+                        [favorites]="ai_favorites()"
+                        (modelChange)="onModelChange($event)"
+                        (favoritesChange)="onFavoritesChange($event)"
+                    ></orc-ai-model>
+                </div>
+                
                 <button mat-icon-button type="button" class="orc-icon-button">
                     <mat-icon class="orc-outline-color">settings</mat-icon>
                 </button>
