@@ -5,7 +5,7 @@ import {Logger} from '@nestjs/common';
 import {MessageService} from '@server/modules/message/message.service';
 
 /* Local Dependencies */
-import {AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -21,6 +21,8 @@ const logger = new Logger('AgentMessage');
 /** Creates a message tool with optional vendor delivery via MessageService */
 export function createSendMessageTool(messageService?: MessageService): AiToolEntry {
 	return {
+		category: AgentToolCategory.MESSAGE,
+		description: 'Send a notification message to the operator via Telegram.',
 		tool: {
 			type: 'function',
 			function: {

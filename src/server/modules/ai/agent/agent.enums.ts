@@ -9,6 +9,16 @@ export enum AgentRunStatus {
 	ERROR = 'error',
 }
 
+export enum AgentToolCategory {
+	BITCOIN = 'bitcoin',
+	HEALTH = 'health',
+	LIGHTNING = 'lightning',
+	MEMORY = 'memory',
+	MESSAGE = 'message',
+	MINT = 'mint',
+	SYSTEM = 'system',
+}
+
 export enum AgentToolName {
 	GET_BITCOIN_ANALYTICS_METRICS = 'GET_BITCOIN_ANALYTICS_METRICS',
 	GET_BITCOIN_BLOCKCHAIN_INFO = 'GET_BITCOIN_BLOCKCHAIN_INFO',

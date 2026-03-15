@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -155,6 +155,8 @@ const GET_LIGHTNING_PEERS_QUERY = `
 
 /** Fetches all open Lightning channels with balances and peer info */
 export const GetLightningChannelsTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'List all open Lightning channels with balances and peer info.',
 	tool: {
 		type: 'function',
 		function: {
@@ -186,6 +188,8 @@ export const GetLightningChannelsTool: AiToolEntry = {
 
 /** Fetches all closed Lightning channels with close details and peer info */
 export const GetLightningClosedChannelsTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'List all closed Lightning channels with close details.',
 	tool: {
 		type: 'function',
 		function: {
@@ -218,6 +222,8 @@ export const GetLightningClosedChannelsTool: AiToolEntry = {
 
 /** Fetches all connected Lightning peers */
 export const GetLightningPeersTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'List all connected Lightning peers with traffic stats.',
 	tool: {
 		type: 'function',
 		function: {
@@ -249,6 +255,8 @@ export const GetLightningPeersTool: AiToolEntry = {
 
 /** Fetches lightning balance analytics (local + remote) */
 export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'Query Lightning channel balance trends over time.',
 	tool: {
 		type: 'function',
 		function: {
@@ -294,6 +302,8 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 
 /** Fetches lightning per-metric analytics with optional filters */
 export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'Query Lightning payment, routing, and channel analytics over time.',
 	tool: {
 		type: 'function',
 		function: {
@@ -360,6 +370,8 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 
 /** Fetches lightning node identity and status information */
 export const GetLightningInfoTool: AiToolEntry = {
+	category: AgentToolCategory.LIGHTNING,
+	description: 'Get Lightning node identity, sync status, and channel counts.',
 	tool: {
 		type: 'function',
 		function: {

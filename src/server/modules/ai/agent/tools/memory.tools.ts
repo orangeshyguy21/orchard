@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -23,6 +23,8 @@ const GET_PAST_RUNS_QUERY = `
 
 /** Retrieves past run results so the agent can avoid repeating messages */
 export const GetPastRunsTool: AiToolEntry = {
+	category: AgentToolCategory.MEMORY,
+	description: 'Retrieve past agent run results to avoid duplicate messages.',
 	tool: {
 		type: 'function',
 		function: {

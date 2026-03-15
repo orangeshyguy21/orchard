@@ -41,6 +41,8 @@ export type AiToolHandler = (args: Record<string, unknown>) => Promise<AiToolRes
  */
 export type AiToolEntry = {
 	tool: AiTool;
+	category: string;
+	description: string;
 	throttle_max_calls: number;
 	throttle_window_seconds: number;
 	query?: string;
