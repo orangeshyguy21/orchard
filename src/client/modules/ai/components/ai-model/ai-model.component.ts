@@ -54,7 +54,6 @@ export class AiModelComponent implements OnDestroy {
 	public search_control = new FormControl('');
 
 	/* ── Public signals ── */
-	public is_open = signal(false);
 	public search_term = signal('');
 
 	/* ── Public computed signals ── */
@@ -89,6 +88,7 @@ export class AiModelComponent implements OnDestroy {
 	private overlay_ref: OverlayRef | null = null;
 	private overlay_subs: Subscription[] = [];
 	private search_sub: Subscription;
+    private is_open = false;
 
 	constructor(element_ref: ElementRef, overlay: Overlay, view_container_ref: ViewContainerRef) {
 		this.element_ref = element_ref;
@@ -105,7 +105,7 @@ export class AiModelComponent implements OnDestroy {
 
 	/** Toggles the model picker panel open/closed */
 	public togglePanel(): void {
-		if (this.is_open()) {
+		if (this.is_open) {
 			this.closePanel();
 		} else {
 			this.openPanel();
@@ -139,7 +139,7 @@ export class AiModelComponent implements OnDestroy {
 
 		const portal = new TemplatePortal(this.panel_template(), this.view_container_ref);
 		this.overlay_ref.attach(portal);
-		this.is_open.set(true);
+		this.is_open = true;
 
 		this.overlay_subs.push(
 			this.overlay_ref.backdropClick().subscribe(() => this.closePanel()),
@@ -156,7 +156,7 @@ export class AiModelComponent implements OnDestroy {
 		this.search_control.reset('', {emitEvent: false});
 		this.search_term.set('');
 		this.destroyOverlay();
-		this.is_open.set(false);
+		this.is_open = false;
 	}
 
 	/* *******************************************************

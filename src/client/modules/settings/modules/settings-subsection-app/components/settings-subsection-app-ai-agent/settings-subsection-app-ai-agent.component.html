@@ -16,7 +16,11 @@
                         [favorites]="ai_favorites()"
                         (modelChange)="onModelChange($event)"
                         (favoritesChange)="onFavoritesChange($event)"
-                    ></orc-ai-model>
+                    >
+                        <button mat-button type="button">
+                            <div class="font-size-xs" [class.orc-outline-color]="model()" [class.orc-status-warning-color]="!model()">{{ model() ?? 'missing model' }}</div>
+                        </button>
+                    </orc-ai-model>
                 </div>
                 
                 <button mat-icon-button type="button" class="orc-icon-button">
@@ -41,6 +45,6 @@
             }
         </div>
     } @else {
-        <div class="font-size-xs orc-outline-color">No agent configured</div>
+        <div class="orc-outline-color">No agent configured</div>
     }
 </div>
