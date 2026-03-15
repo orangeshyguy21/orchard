@@ -103,6 +103,8 @@ const ICONS = [
   'monitor_heart',
   'health_cross',
   'network_intelligence',
+  'schedule',
+  'work',
 ];
 
 // Sort alphabetically and remove duplicates

@@ -3,7 +3,7 @@
         <mat-card-content class="orc-surface-container-low-bg">
             @if (loading()) {
                 <div class="flex-grow flex flex-items-center flex-justify-center p-2">
-                    <mat-icon class="orc-outline-color icon-lg">spa</mat-icon>
+                    <mat-icon class="orc-outline-color icon-lg">work</mat-icon>
                 </div>
             } @else if (agent(); as agent) {
                 <div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein">
@@ -66,7 +66,10 @@
                                         </mat-chip-set>
                                     </div>
                                     @if (next_run(); as next) {
-                                        <div class="orc-outline-color font-size-xs text-nowrap">{{ next.toRelative() }}</div>
+                                        <div class="flex flex-items-center flex-gap-0-25">
+                                            <mat-icon class="orc-outline-color icon-sm mat-symbol-outline">schedule</mat-icon>
+                                            <div class="orc-outline-color font-size-xs text-nowrap">{{ next.toRelative() }}</div>
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -74,7 +77,7 @@
                     </div>
                 </div>
             } @else {
-                <div class="orc-outline-color">No agent configured</div>
+                <div class="orc-outline-color" animate.enter="orc-animation-fadein">No agent configured</div>
             }
         </mat-card-content>
     </mat-card>
