@@ -35,44 +35,43 @@
                     <div class="flex">
                         <orc-form-toggle-group>
                             <orc-form-toggle
-                                [selected]="!enabled()"
+                                [selected]="!active()"
                                 (click)="onEnabledChange(false)"
                             >
-                                <div class="flex flex-items-center flex-justify-center flex-gap-0-5">
-                                    <mat-icon class="mat-symbol-outline">block</mat-icon>
-                                    <div class="font-size-s">Disabled</div>
-                                </div>
+                                <div class="font-size-s">Inactive</div>
                             </orc-form-toggle>
                             <orc-form-toggle
-                                [selected]="enabled()"
+                                [selected]="active()"
                                 (click)="onEnabledChange(true)"
                             >
-                                <div class="flex flex-items-center flex-justify-center flex-gap-0-5">
-                                    <mat-icon class="mat-symbol-outline">check</mat-icon>
-                                    <div class="font-size-s">Enabled</div>
-                                </div>
+                                <div class="font-size-s">Active</div>
                             </orc-form-toggle>
                         </orc-form-toggle-group>
                     </div>
                                 
-                    <orc-settings-subsection-app-ai-tool-chips
-                        [tools]="tools()"
-                    ></orc-settings-subsection-app-ai-tool-chips>
+                    
 
-                    @if(enabled()) {
-                        <div class="flex flex-items-center flex-justify-between flex-gap-1">
-                            <div class="flex flex-column flex-gap-0-25">
-                                <mat-chip-set>
-                                    @for (schedule of agent.schedules; track schedule) {
-                                        <mat-chip><span class="font-size-s">{{ schedule | localCron | titlecase }}</span></mat-chip>
+                    <div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="active()">
+						<div class="orc-animation-expand-collapse-inner">
+                            <div class="flex flex-column flex-gap-1">
+                                <orc-settings-subsection-app-ai-tool-chips
+                                    [tools]="tools()"
+                                ></orc-settings-subsection-app-ai-tool-chips>
+                                <div class="flex flex-items-center flex-justify-between flex-gap-1">
+                                    <div class="flex flex-column flex-gap-0-25">
+                                        <mat-chip-set>
+                                            @for (schedule of agent.schedules; track schedule) {
+                                                <mat-chip><span class="font-size-s">{{ schedule | localCron | titlecase }}</span></mat-chip>
+                                            }
+                                        </mat-chip-set>
+                                    </div>
+                                    @if (next_run(); as next) {
+                                        <div class="orc-outline-color font-size-xs text-nowrap">{{ next.toRelative() }}</div>
                                     }
-                                </mat-chip-set>
+                                </div>
                             </div>
-                            @if (next_run(); as next) {
-                                <div class="orc-outline-color font-size-xs text-nowrap">{{ next.toRelative() }}</div>
-                            }
                         </div>
-                    }
+                    </div>
                 </div>
             } @else {
                 <div class="orc-outline-color">No agent configured</div>

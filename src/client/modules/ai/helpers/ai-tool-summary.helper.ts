@@ -12,8 +12,8 @@ const TOOL_ICONS: Record<string, string> = {
 	mint: 'account_balance',
 	message: 'send',
 	system: 'monitor_heart',
-	health: 'health_and_safety',
-	memory: 'psychology',
+	health: 'health_cross',
+	memory: 'network_intelligence',
 };
 
 const TOOL_REASONS: Record<string, string> = {

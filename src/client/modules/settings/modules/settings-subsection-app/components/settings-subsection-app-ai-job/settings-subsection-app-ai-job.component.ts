@@ -24,7 +24,7 @@ export class SettingsSubsectionAppAiJobComponent {
     public tools = input<ToolSummary[]>([]);
     public form_group = input<FormGroup | null>(null);
     public model = input<string | null>(null);
-    public enabled = input<boolean>(false);
+    public active = input<boolean>(false);
     public ai_models = input<AiModel[]>([]);
     public ai_favorites = input<AiFavorites>({ollama: [], openrouter: []});
     public ai_vendor = input<string>('ollama');
@@ -68,9 +68,9 @@ export class SettingsSubsectionAppAiJobComponent {
 	public onEnabledChange(status: boolean): void {
         const form = this.form_group();
 		if (!form) return;
-		form.get('enabled')?.setValue(status);
-		form.get('enabled')?.markAsDirty();
-		form.get('enabled')?.markAsTouched();
+		form.get('active')?.setValue(status);
+		form.get('active')?.markAsDirty();
+		form.get('active')?.markAsTouched();
         console.log('onEnabledChange', status);
 		this.update.emit();
 	}

@@ -100,6 +100,9 @@ const ICONS = [
   'file_save_off',
   'calendar_today',
   'swap_calls',
+  'monitor_heart',
+  'health_cross',
+  'network_intelligence',
 ];
 
 // Sort alphabetically and remove duplicates
