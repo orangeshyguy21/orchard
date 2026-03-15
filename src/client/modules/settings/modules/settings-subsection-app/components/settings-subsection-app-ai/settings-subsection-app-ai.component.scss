@@ -1,0 +1,8 @@
+@use 'molecule/molecule';
+
+.agent-jobs-grid {
+    @extend %grid;
+	grid-template-columns: repeat(3, 1fr);
+    @extend %flex-gap-2;
+    @extend %w-full;
+}

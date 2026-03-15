@@ -9,10 +9,13 @@ import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
+import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {Config} from '@client/modules/config/types/config';
+/* Native Dependencies */
+import {ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
 /* Shared Dependencies */
 import {AgentKey} from '@shared/generated.types';
 
@@ -57,13 +60,31 @@ export class SettingsSubsectionAppAiComponent {
 	});
 
     public readonly agent_jobs = computed<AiAgent[]>(() => {
-        return Array.from(this.agents().values()).filter((agent) => agent.agent_key === AgentKey.Groundskeeper);
+        return Array.from(this.agents().values()).filter((agent) => agent.agent_key !== AgentKey.Groundskeeper);
     });
 
 	public readonly groundskeeper_form = computed<FormGroup | null>(() => {
 		const agent = this.groundskeeper();
 		if (!agent) return null;
 		return this.agent_form_groups().get(agent.id) ?? null;
+	});
+
+	public readonly tool_summaries = computed<Map<string, ToolSummary[]>>(() => {
+		const agents = this.agents();
+		const tools = this.ai_agent_tools();
+		const settings = this.app_settings();
+		const config = this.config();
+		const result = new Map<string, ToolSummary[]>();
+		for (const agent of agents.values()) {
+			result.set(agent.id, buildToolSummary(agent, tools, settings, config));
+		}
+		return result;
+	});
+
+	public readonly groundskeeper_tool_summary = computed<ToolSummary[]>(() => {
+		const gk = this.groundskeeper();
+		if (!gk) return [];
+		return this.tool_summaries().get(gk.id) ?? [];
 	});
 
 	private initialized_health: boolean = false;

@@ -1,0 +1,36 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.tool-chip {
+	@extend %orc-surface-container-high-bg;
+	@extend %orc-corner-full;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %p-l-0-25;
+	@extend %p-r-1;
+	@extend %p-v-0-25;
+}
+
+.category-circle {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-corner-full;
+	background: color-mix(in srgb, var(--orc-status-active) 10%, transparent);
+	@extend %p-0-25;
+
+	mat-icon {
+		@extend %orc-status-active-color;
+	}
+}
+
+.tool-unavailable {
+	.category-circle {
+		background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
+
+		mat-icon {
+			@extend %orc-status-inactive-color;
+		}
+	}
+}

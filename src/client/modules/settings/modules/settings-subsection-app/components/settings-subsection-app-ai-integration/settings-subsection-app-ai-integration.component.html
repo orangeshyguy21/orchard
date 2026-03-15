@@ -41,7 +41,7 @@
 				</div>
 			</div>
 		</div>
-        <mat-tab-group class="p-t-2" [selectedIndex]="selected_tab_index()" (selectedIndexChange)="onVendorTabChange($event)">
+        <mat-tab-group class="p-t-2 z-index-0" [selectedIndex]="selected_tab_index()" (selectedIndexChange)="onVendorTabChange($event)">
             <mat-tab [disabled]="!form_group().get('enabled')?.value">
                 <ng-template mat-tab-label>
                     <div class="ai-vendor-label">

@@ -49,9 +49,7 @@
                             <mat-card-content class="orc-surface-container-low-bg">
                                 <orc-settings-subsection-app-ai-agent
                                     [agent]="groundskeeper()"
-                                    [tools]="ai_agent_tools()"
-                                    [app_settings]="app_settings()"
-                                    [config]="config()"
+                                    [tools]="groundskeeper_tool_summary()"
                                     [loading]="loading_agents()"
                                     [form_group]="groundskeeper_form()"
                                     [model]="groundskeeper_form()?.get('model')?.value ?? null"
@@ -68,10 +66,54 @@
                 </div>
                 <div>
                     <div class="font-size-xs orc-outline-color p-b-0-5">Agent jobs</div>
-                    <div class="flex flex-gap-2 flex-wrap">
+                    <div class="agent-jobs-grid">
                         @for (job of agent_jobs(); track job.id) {
-                            <orc-settings-subsection-app-ai-job></orc-settings-subsection-app-ai-job> 
+                            <orc-settings-subsection-app-ai-job
+                                [agent]="job"
+                                [tools]="tool_summaries().get(job.id) ?? []"
+                                [form_group]="agent_form_groups().get(job.id) ?? null"
+                                [model]="agent_form_groups().get(job.id)?.get('model')?.value ?? null"
+                                [enabled]="agent_form_groups().get(job.id)?.get('enabled')?.value ?? false"
+                                [ai_models]="ai_models()"
+                                [ai_favorites]="ai_favorites()"
+                                [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+                                [device_type]="device_type()"
+                                [loading]="loading_agents()"
+                                (update)="update.emit()"
+                                (favoritesChange)="onFavoritesChange($event)"
+                            ></orc-settings-subsection-app-ai-job>
                         }
+                        @for (job of agent_jobs(); track job.id) {
+                            <orc-settings-subsection-app-ai-job
+                                [agent]="job"
+                                [tools]="tool_summaries().get(job.id) ?? []"
+                                [form_group]="agent_form_groups().get(job.id) ?? null"
+                                [model]="agent_form_groups().get(job.id)?.get('model')?.value ?? null"
+                                [enabled]="agent_form_groups().get(job.id)?.get('enabled')?.value ?? false"
+                                [ai_models]="ai_models()"
+                                [ai_favorites]="ai_favorites()"
+                                [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+                                [device_type]="device_type()"
+                                [loading]="loading_agents()"
+                                (update)="update.emit()"
+                                (favoritesChange)="onFavoritesChange($event)"
+                            ></orc-settings-subsection-app-ai-job>
+                        }
+                        <!-- @for (job of agent_jobs(); track job.id) {
+                            <orc-settings-subsection-app-ai-job
+                                [agent]="job"
+                                [tools]="tool_summaries().get(job.id) ?? []"
+                                [form_group]="agent_form_groups().get(job.id) ?? null"
+                                [model]="agent_form_groups().get(job.id)?.get('model')?.value ?? null"
+                                [ai_models]="ai_models()"
+                                [ai_favorites]="ai_favorites()"
+                                [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+                                [device_type]="device_type()"
+                                [loading]="loading_agents()"
+                                (update)="update.emit()"
+                                (favoritesChange)="onFavoritesChange($event)"
+                            ></orc-settings-subsection-app-ai-job>
+                        } -->
                     </div>
                 </div>
             </div>

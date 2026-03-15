@@ -7,10 +7,11 @@ import {LocalTimePipe} from './pipes/local-time/local-time.pipe';
 import {LocalTimeAgoPipe} from './pipes/local-time-ago/local-time-ago.pipe';
 import {LocalTimeDeltaPipe} from './pipes/local-time-delta/local-time-delta.pipe';
 import {LocalUnitPipe} from './pipes/local-unit/local-unit.pipe';
+import {LocalCronPipe} from './pipes/local-cron/local-cron.pipe';
 
 @NgModule({
-	declarations: [LocalTimePipe, LocalAmountPipe, LocalTimeDeltaPipe, LocalTimeAgoPipe, LocalUnitPipe],
+	declarations: [LocalTimePipe, LocalAmountPipe, LocalTimeDeltaPipe, LocalTimeAgoPipe, LocalUnitPipe, LocalCronPipe],
 	imports: [CommonModule],
-	exports: [LocalTimePipe, LocalAmountPipe, LocalTimeDeltaPipe, LocalTimeAgoPipe, LocalUnitPipe],
+	exports: [LocalTimePipe, LocalAmountPipe, LocalTimeDeltaPipe, LocalTimeAgoPipe, LocalUnitPipe, LocalCronPipe],
 })
 export class OrcLocalModule {}

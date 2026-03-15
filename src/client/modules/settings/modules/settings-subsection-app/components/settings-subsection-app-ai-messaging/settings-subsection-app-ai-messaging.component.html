@@ -32,7 +32,7 @@
 				</div>
 			</div>
 		</div>
-        <mat-tab-group [selectedIndex]="0" class="p-t-2">
+        <mat-tab-group [selectedIndex]="0" class="p-t-2 z-index-0">
             <mat-tab [disabled]="!form_group().get('enabled')?.value">
                 <ng-template mat-tab-label>
                     <div class="ai-messaging-label">
@@ -45,11 +45,6 @@
                         </div>
                     </div>
                 </ng-template>
-
-                <!-- <div>HOT: {{ hot() }}</div>
-                <div>INVALID: {{ invalid() }}</div>
-                <div>DIRTY: {{ dirty() }}</div>
-                <div>FOCUSED: {{ focused() }}</div> -->
     
                 <form
                     [formGroup]="form_group()"

@@ -13,6 +13,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatChipsModule} from '@angular/material/chips';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -21,6 +22,7 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -31,6 +33,7 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 import {SettingsSubsectionAppAiAgentComponent} from './components/settings-subsection-app-ai-agent/settings-subsection-app-ai-agent.component';
 import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-subsection-app-ai-messaging/settings-subsection-app-ai-messaging.component';
 import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsection-app-ai-job/settings-subsection-app-ai-job.component';
+import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-subsection-app-ai-tool-chips/settings-subsection-app-ai-tool-chips.component';
 
 @NgModule({
 	declarations: [
@@ -42,6 +45,7 @@ import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsect
 		SettingsSubsectionAppAiAgentComponent,
 		SettingsSubsectionAppAiMessagingComponent,
 		SettingsSubsectionAppAiJobComponent,
+		SettingsSubsectionAppAiToolChipsComponent,
 	],
 	imports: [
 		[
@@ -64,6 +68,7 @@ import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsect
 		MatFormFieldModule,
 		MatInputModule,
 		MatTooltipModule,
+		MatChipsModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,
@@ -71,6 +76,7 @@ import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsect
 		OrcNavModule,
 		OrcAiModule,
 		OrcProgressModule,
+		OrcLocalModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}
