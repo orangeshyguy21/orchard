@@ -56,6 +56,10 @@ export class SettingsSubsectionAppAiComponent {
 		return null;
 	});
 
+    public readonly agent_jobs = computed<AiAgent[]>(() => {
+        return Array.from(this.agents().values()).filter((agent) => agent.agent_key === AgentKey.Groundskeeper);
+    });
+
 	public readonly groundskeeper_form = computed<FormGroup | null>(() => {
 		const agent = this.groundskeeper();
 		if (!agent) return null;

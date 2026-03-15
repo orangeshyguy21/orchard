@@ -30,6 +30,7 @@ import {SettingsSubsectionAppAiComponent} from './components/settings-subsection
 import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings-subsection-app-ai-integration/settings-subsection-app-ai-integration.component';
 import {SettingsSubsectionAppAiAgentComponent} from './components/settings-subsection-app-ai-agent/settings-subsection-app-ai-agent.component';
 import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-subsection-app-ai-messaging/settings-subsection-app-ai-messaging.component';
+import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsection-app-ai-job/settings-subsection-app-ai-job.component';
 
 @NgModule({
 	declarations: [
@@ -40,6 +41,7 @@ import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-s
 		SettingsSubsectionAppAiIntegrationComponent,
 		SettingsSubsectionAppAiAgentComponent,
 		SettingsSubsectionAppAiMessagingComponent,
+		SettingsSubsectionAppAiJobComponent,
 	],
 	imports: [
 		[
