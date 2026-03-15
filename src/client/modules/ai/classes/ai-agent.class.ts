@@ -5,10 +5,10 @@ export class AiAgent implements OrchardAgent {
 	id: string;
 	agent_key: AgentKey | null;
 	name: string;
-	description: string;
+	description: string | null;
 	active: boolean;
 	model: string | null;
-	system_message: string;
+	system_message: string | null;
 	tools: string[];
 	schedules: string[];
 	last_run_at: number | null;
@@ -20,10 +20,10 @@ export class AiAgent implements OrchardAgent {
 		this.id = agent.id;
 		this.agent_key = agent.agent_key ?? null;
 		this.name = agent.name;
-		this.description = agent.description;
+		this.description = agent.description ?? null;
 		this.active = agent.active;
 		this.model = agent.model ?? null;
-		this.system_message = agent.system_message;
+		this.system_message = agent.system_message ?? null;
 		this.tools = agent.tools ?? [];
 		this.schedules = agent.schedules;
 		this.last_run_at = agent.last_run_at ?? null;

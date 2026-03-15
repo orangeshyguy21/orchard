@@ -3,8 +3,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay, finalize} from 'rxjs';
+import {Observable, catchError, Subscription, Subject, BehaviorSubject, of, map, tap, throwError, shareReplay, finalize} from 'rxjs';
 /* Application Dependencies */
+import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
@@ -24,6 +25,7 @@ import {
 	AiAgentResponse,
 	AiAgentUpdateResponse,
 	AiAgentBatchUpdateResponse,
+	AiAgentToolsResponse,
 } from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
@@ -32,6 +34,7 @@ import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
+import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 /* Local Dependencies */
 import {
 	AI_CHAT_SUBSCRIPTION,
@@ -39,13 +42,14 @@ import {
 	AI_MODELS_QUERY,
 	AI_ASSISTANT_QUERY,
 	AI_CHAT_ABORT_MUTATION,
+	AI_AGENT_TOOLS_QUERY,
 	AI_AGENTS_QUERY,
 	AI_AGENT_QUERY,
 	AI_AGENT_UPDATE_MUTATION,
 	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
-import {AiAssistant, AiMessageRole} from '@shared/generated.types';
+import {AiAssistant, AiMessageRole, OrchardAgentTool} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -76,16 +80,26 @@ export class AiService {
 	private active_subject = new Subject<boolean>();
 	private ai_models_observable!: Observable<AiModel[]> | null;
 
+	private readonly CACHE_KEYS = {AI_AGENT_TOOLS: 'AI_AGENT_TOOLS'};
+	private readonly CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
+	private agent_tools_subject: BehaviorSubject<OrchardAgentTool[] | null>;
+
 	private conversation_cache: AiChatConversation | null = null;
 
 	constructor(
+		private cacheService: CacheService,
 		private apiService: ApiService,
 		private settingDeviceService: SettingDeviceService,
 		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
 		private http: HttpClient,
-	) {}
+	) {
+		this.agent_tools_subject = this.cacheService.createCache<OrchardAgentTool[]>(
+			this.CACHE_KEYS.AI_AGENT_TOOLS,
+			this.CACHE_DURATION,
+		);
+	}
 
 	public getFunctionModel(): Observable<AiModel | null> {
 		const set_model = this.settingDeviceService.getModel();
@@ -248,6 +262,31 @@ export class AiService {
 	/* *******************************************************
 		Agents
 	******************************************************** */
+
+	/** Fetches all available AI agent tools (cached for 60 minutes) */
+	public getAiAgentTools(): Observable<AiAgentTool[]> {
+		if (this.agent_tools_subject.value && this.cacheService.isCacheValid(this.CACHE_KEYS.AI_AGENT_TOOLS)) {
+			return of(this.agent_tools_subject.value as AiAgentTool[]);
+		}
+
+		const query = getApiQuery(AI_AGENT_TOOLS_QUERY);
+
+		return this.http.post<OrchardRes<AiAgentToolsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_tools;
+			}),
+			map((tools) => tools.map((tool) => new AiAgentTool(tool))),
+			tap((tools) => {
+				this.cacheService.updateCache(this.CACHE_KEYS.AI_AGENT_TOOLS, tools);
+			}),
+			shareReplay(1),
+			catchError((error) => {
+				console.error('Error loading ai agent tools:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
 
 	/** Fetches all AI agents */
 	public getAiAgents(): Observable<AiAgent[]> {

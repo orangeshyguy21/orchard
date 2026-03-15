@@ -12,6 +12,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatTooltipModule} from '@angular/material/tooltip';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -60,6 +61,7 @@ import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-s
 		MatTabsModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatTooltipModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,

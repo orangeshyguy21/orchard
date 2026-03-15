@@ -77,7 +77,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
             telegram_bot_token: new FormControl('', [OrchardValidators.telegramBotToken]),
         }),
 	});
-	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
+	public config = this.configService.config;
+	public bitcoin_enabled = this.config.bitcoin.enabled;
 	public device_type = signal<DeviceType>('desktop');
 	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
 	public initial_settings = signal<ParsedAppSettings | null>(null);
@@ -143,7 +144,6 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private getSettings(): void {
-        console.log('getSettings', this.settingAppService.getParsedSettings());
 		this.initial_settings.set(this.settingAppService.getParsedSettings());
 		const initial_settings = this.initial_settings();
 		if (!initial_settings) return;

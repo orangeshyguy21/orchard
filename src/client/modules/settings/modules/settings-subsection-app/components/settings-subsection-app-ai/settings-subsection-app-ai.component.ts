@@ -8,8 +8,11 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
+import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {Config} from '@client/modules/config/types/config';
 /* Shared Dependencies */
 import {AgentKey} from '@shared/generated.types';
 
@@ -26,6 +29,8 @@ export class SettingsSubsectionAppAiComponent {
 	private readonly destroyRef = inject(DestroyRef);
 
 	public ai_enabled = input.required<boolean>();
+	public app_settings = input<ParsedAppSettings | null>(null);
+	public config = input<Config | null>(null);
 	public form_group_ai = input.required<FormGroup>();
 	public form_group_messaging = input.required<FormGroup>();
 	public agents = input<Map<string, AiAgent>>(new Map());
@@ -39,6 +44,7 @@ export class SettingsSubsectionAppAiComponent {
 
 	public ai_health = signal<AiHealth | null>(null);
 	public ai_models = signal<AiModel[]>([]);
+    public ai_agent_tools = signal<AiAgentTool[]>([]);
 	public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
 	public loading_health = signal<boolean>(false);
 	public loading_agents = signal<boolean>(false);
@@ -62,7 +68,7 @@ export class SettingsSubsectionAppAiComponent {
 	constructor() {
 		effect(() => {
 			const ai_enabled = this.ai_enabled();
-			if (ai_enabled && !this.initialized_agents) this.getAiAgents();
+			if (ai_enabled && !this.initialized_agents) this.getAiDatas();
 			if (ai_enabled && !this.initialized_health) this.getAiHealth();
 		});
 	}
@@ -85,6 +91,13 @@ export class SettingsSubsectionAppAiComponent {
 			});
 	}
 
+    private getAiDatas(): void {
+        this.getAiAgents();
+        this.getAiAgentTools();
+        this.getAiModels();
+        this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
+    }
+
 	private getAiAgents(): void {
 		this.initialized_agents = true;
 		this.loading_agents.set(true);
@@ -100,15 +113,29 @@ export class SettingsSubsectionAppAiComponent {
 					this.loading_agents.set(false);
 				},
 			});
-		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
-		this.aiService
-			.getAiModels()
-			.pipe(takeUntilDestroyed(this.destroyRef))
-			.subscribe({
-				next: (models: AiModel[]) => this.ai_models.set(models),
-				error: () => this.ai_models.set([]),
-			});
 	}
+
+    private getAiModels(): void {
+        this.aiService
+            .getAiModels()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (models: AiModel[]) => this.ai_models.set(models),
+                error: () => this.ai_models.set([]),
+            });
+    }
+
+    private getAiAgentTools(): void {
+        this.aiService
+            .getAiAgentTools()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (tools: AiAgentTool[]) => this.ai_agent_tools.set(tools),
+                error: () => this.ai_agent_tools.set([]),
+            });
+    }
+
+
 
 	public onTestConnection(): void {
 		this.getAiHealth();

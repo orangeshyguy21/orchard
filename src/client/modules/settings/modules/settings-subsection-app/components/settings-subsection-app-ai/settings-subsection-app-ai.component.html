@@ -48,6 +48,9 @@
                         <mat-card-content class="orc-surface-container-low-bg">
                             <orc-settings-subsection-app-ai-agent
                                 [agent]="groundskeeper()"
+                                [tools]="ai_agent_tools()"
+                                [app_settings]="app_settings()"
+                                [config]="config()"
                                 [loading]="loading_agents()"
                                 [form_group]="groundskeeper_form()"
                                 [model]="groundskeeper_form()?.get('model')?.value ?? null"

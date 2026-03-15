@@ -8,6 +8,7 @@ import {
 	OrchardAiModel,
 	OrchardAiAssistant,
 	OrchardAgent,
+	OrchardAgentTool,
 	AssistantToolName,
 	MintUnit,
 	AnalyticsInterval,
@@ -47,6 +48,10 @@ export type AiAgentUpdateResponse = {
 };
 
 export type AiAgentBatchUpdateResponse = Record<string, OrchardAgent>;
+
+export type AiAgentToolsResponse = {
+	ai_agent_tools: OrchardAgentTool[];
+};
 
 export type AiFunction =
 	| AiFunctionUpdateSearch

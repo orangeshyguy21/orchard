@@ -42,6 +42,8 @@
 			<div class="settings-box">
 				<orc-settings-subsection-app-ai
 					[ai_enabled]="initial_settings()?.ai_enabled ?? false"
+					[app_settings]="initial_settings()"
+					[config]="config"
 					[form_group_ai]="form_ai"
 					[form_group_messaging]="form_ai_messaging"
 					[agents]="initial_agents()"

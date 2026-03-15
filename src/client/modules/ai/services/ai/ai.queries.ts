@@ -116,6 +116,18 @@ const AI_AGENT_FIELDS = `
     updated_at
 `;
 
+export const AI_AGENT_TOOLS_QUERY = `
+    query AiAgentTools {
+        ai_agent_tools {
+            name
+            description
+            category
+            throttle_max_calls
+            throttle_window_seconds
+        }
+    }
+`;
+
 export const AI_AGENTS_QUERY = `
     query AiAgents {
         ai_agents { ${AI_AGENT_FIELDS} }
