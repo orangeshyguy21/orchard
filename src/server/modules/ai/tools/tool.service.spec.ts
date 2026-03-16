@@ -3,7 +3,7 @@ import {Test, TestingModule} from '@nestjs/testing';
 import {GraphQLSchemaHost} from '@nestjs/graphql';
 import {makeExecutableSchema} from '@graphql-tools/schema';
 /* Application Dependencies */
-import {AgentToolName} from '@server/modules/ai/agent/agent.enums';
+import {AgentToolCategory, AgentToolName} from '@server/modules/ai/agent/agent.enums';
 /* Local Dependencies */
 import {ToolService} from './tool.service';
 
@@ -183,6 +183,46 @@ describe('ToolService', () => {
 			const result = await service.executeTool(AgentToolName.GET_MINT_ANALYTICS_METRICS, {});
 			expect(result.success).toBe(true);
 			expect(result.data).toBeDefined();
+		});
+	});
+
+	describe('getToolNamesByCategory', () => {
+		it('returns only tools matching the given category', () => {
+			const all_tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.SEND_MESSAGE, AgentToolName.GET_MINT_INFO];
+			const result = service.getToolNamesByCategory(all_tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual([AgentToolName.SEND_MESSAGE]);
+		});
+
+		it('returns empty array when no tools match', () => {
+			const tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.GET_MINT_INFO];
+			const result = service.getToolNamesByCategory(tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual([]);
+		});
+
+		it('ignores unknown tool names', () => {
+			const tools = ['UNKNOWN_TOOL', AgentToolName.SEND_MESSAGE];
+			const result = service.getToolNamesByCategory(tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual([AgentToolName.SEND_MESSAGE]);
+		});
+	});
+
+	describe('getToolNamesExcludingCategory', () => {
+		it('returns tools not matching the given category', () => {
+			const all_tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.SEND_MESSAGE, AgentToolName.GET_MINT_INFO];
+			const result = service.getToolNamesExcludingCategory(all_tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual([AgentToolName.GET_LIGHTNING_INFO, AgentToolName.GET_MINT_INFO]);
+		});
+
+		it('returns all tools when none match the excluded category', () => {
+			const tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.GET_MINT_INFO];
+			const result = service.getToolNamesExcludingCategory(tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual(tools);
+		});
+
+		it('excludes unknown tool names (category is undefined)', () => {
+			const tools = ['UNKNOWN_TOOL', AgentToolName.GET_MINT_INFO];
+			const result = service.getToolNamesExcludingCategory(tools, AgentToolCategory.MESSAGE);
+			expect(result).toEqual(tools);
 		});
 	});
 

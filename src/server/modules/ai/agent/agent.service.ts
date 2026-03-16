@@ -20,7 +20,7 @@ import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
-import {AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
+import {AgentToolCategory, AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
 
 @Injectable()
@@ -28,8 +28,21 @@ export class AgentService implements OnModuleInit {
 	private readonly logger = new Logger(AgentService.name);
 
 	private static readonly MAX_TOOL_ITERATIONS = 25;
+	private static readonly MAX_DELIBERATION_ITERATIONS = 3;
 	private static readonly MIN_CRON_INTERVAL_MINUTES = 5;
 	private static readonly MAX_QUEUE_DEPTH = 10;
+
+	private static readonly GATHER_PROMPT = [
+		'Run your analysis now.',
+		'Message tools are not available in this phase — a deliberation step follows where you can notify the operator.',
+		'Write a thorough analysis as your final response.',
+	].join('\n');
+
+	private static readonly DELIBERATION_PROMPT = [
+		'Based on your analysis above, decide whether the operator should be notified.',
+		'You have one tool available: SEND_MESSAGE. You may call it once or not at all.',
+		'Then write brief internal notes for your next run: what you checked, what you found, and whether you notified.',
+	].join('\n');
 
 	private execution_queue: Promise<any> = Promise.resolve();
 	private queue_depth = 0;
@@ -251,37 +264,63 @@ export class AgentService implements OnModuleInit {
 	}
 
 	/**
-	 * Runs the LLM tool-call loop for an agent.
-	 * Sends the system message and tools to the LLM, processes tool calls,
-	 * and iterates until the LLM returns content or the iteration cap is hit.
+	 * Runs the LLM tool-call loop for an agent using a two-phase architecture:
+	 * 1. Gather — data collection with all tools except message tools
+	 * 2. Deliberation — notification decision with only message tools
+	 * The deliberation phase is skipped when the agent has no message tools.
 	 */
 	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
 		const tool_names = this.resolveToolNames(agent);
-		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
+		const message_tools = this.toolExecutor.getToolNamesByCategory(tool_names, AgentToolCategory.MESSAGE);
+		const primary_tools = this.toolExecutor.getToolNamesExcludingCategory(tool_names, AgentToolCategory.MESSAGE);
+		const has_deliberation = message_tools.length > 0;
 
-		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
 		const resolved_name = this.resolveName(agent);
+		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
+		const user_prompt = has_deliberation ? AgentService.GATHER_PROMPT : 'Run your analysis now.';
+		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: user_prompt}];
 		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: resolved_name};
 
 		if (!agent.model) throw new Error(`Agent "${resolved_name}" has no model configured`);
-		const loop_result = await this.runToolLoop({model: agent.model, messages, tool_names, agent_context});
 
-		const notified = loop_result.messages.some((m) => {
-			if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
-			const is_send = loop_result.messages.some((msg) =>
-				msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
-			);
-			if (!is_send) return false;
-			try {
-				const result = JSON.parse(m.content);
-				return result?.success === true && result?.data?.delivered === true;
-			} catch {
-				return false;
-			}
-		});
+		/* Phase 1: Gather */
+		const gather_result = await this.runToolLoop({model: agent.model, messages, tool_names: primary_tools, agent_context});
+		let total_tokens = gather_result.tokens_used;
+		let result = gather_result.result;
+		let notified = false;
 
-		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);
-		return {result: loop_result.result, tokens_used: loop_result.tokens_used, notified};
+		/* Phase 2: Deliberation */
+		if (has_deliberation) {
+			gather_result.messages.push({role: AiMessageRole.USER, content: AgentService.DELIBERATION_PROMPT});
+
+			const deliberation_result = await this.runToolLoop({
+				model: agent.model,
+				messages: gather_result.messages,
+				tool_names: message_tools,
+				agent_context,
+				max_iterations: AgentService.MAX_DELIBERATION_ITERATIONS,
+			});
+
+			total_tokens += deliberation_result.tokens_used;
+			result = deliberation_result.result;
+
+			notified = deliberation_result.messages.some((m) => {
+				if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
+				const is_send = deliberation_result.messages.some((msg) =>
+					msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
+				);
+				if (!is_send) return false;
+				try {
+					const parsed = JSON.parse(m.content);
+					return parsed?.success === true && parsed?.data?.delivered === true;
+				} catch {
+					return false;
+				}
+			});
+		}
+
+		this.dumpAgentTrace(agent, gather_result.messages, total_tokens, result, tool_names);
+		return {result, tokens_used: total_tokens, notified};
 	}
 
 	/**
@@ -295,12 +334,14 @@ export class AgentService implements OnModuleInit {
 		tool_names: string[];
 		agent_context: AiAgentContext;
 		signal?: AbortSignal;
+		max_iterations?: number;
 	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
 		const {model, messages, tool_names, agent_context, signal} = options;
+		const max_iterations = options.max_iterations ?? AgentService.MAX_TOOL_ITERATIONS;
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 		let total_tokens = 0;
 
-		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
+		for (let iteration = 0; iteration < max_iterations; iteration++) {
 			if (signal?.aborted) {
 				return {result: '', tokens_used: total_tokens, messages};
 			}
@@ -322,6 +363,7 @@ export class AgentService implements OnModuleInit {
 					messages.push({role: AiMessageRole.TOOL, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
+				messages.push(response.message);
 				return {result: response.message.content, tokens_used: total_tokens, messages};
 			}
 		}

@@ -51,6 +51,8 @@ describe('AgentService', () => {
 	const mock_tool_executor = {
 		getToolSchemas: jest.fn().mockReturnValue([]),
 		executeTool: jest.fn().mockResolvedValue({success: true, data: {}}),
+		getToolNamesByCategory: jest.fn().mockReturnValue([]),
+		getToolNamesExcludingCategory: jest.fn().mockImplementation((tool_names: string[]) => tool_names),
 	};
 
 	const mock_config_service = {
@@ -95,7 +97,12 @@ describe('AgentService', () => {
 
 		beforeEach(() => {
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent);
-			/* Stream that returns a simple text response */
+			/* Activity Monitor has SEND_MESSAGE — enable deliberation */
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) =>
+				names.filter((n) => n !== AgentToolName.SEND_MESSAGE),
+			);
+			/* Stream returns a simple text response for both gather and deliberation phases */
 			mock_ai_service.streamAgent.mockImplementation(async function* () {
 				yield {
 					model: 'test-model',
@@ -133,7 +140,8 @@ describe('AgentService', () => {
 
 			expect(result.status).toBe(AgentRunStatus.SUCCESS);
 			expect(result.result).toBe('All systems nominal.');
-			expect(result.tokens_used).toBe(70);
+			/* 70 tokens per phase (gather + deliberation) */
+			expect(result.tokens_used).toBe(140);
 		});
 
 		it('should record schedule_trigger when provided', async () => {
@@ -161,9 +169,20 @@ describe('AgentService', () => {
 			expect(error_update[1].error).toBe('LLM unavailable');
 		});
 
-		it('should detect notified flag when SEND_MESSAGE tool result indicates delivery', async () => {
+		it('should detect notified flag when SEND_MESSAGE is called in deliberation phase', async () => {
 			const tool_call_id = 'tc-send-1';
 			mock_ai_service.streamAgent
+				/* Phase 1: Gather — returns text analysis */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Issues found.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — calls SEND_MESSAGE */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
@@ -177,11 +196,12 @@ describe('AgentService', () => {
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
 				})
+				/* Phase 2: Deliberation — final text after tool call */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
 						created_at: new Date().toISOString(),
-						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+						message: {role: AiMessageRole.ASSISTANT, content: 'Notified operator.'},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
@@ -192,6 +212,124 @@ describe('AgentService', () => {
 			const result = await service.executeAgent('agent-1');
 
 			expect(result.notified).toBe(true);
+		});
+	});
+
+	/* *******************************************************
+		Deliberation
+	******************************************************** */
+
+	describe('deliberation', () => {
+		const mock_agent_with_message: Partial<Agent> = {
+			id: 'agent-delib',
+			agent_key: AgentKey.ACTIVITY_MONITOR,
+			name: 'Activity Monitor',
+			active: true,
+			model: 'test-model',
+			system_message: null,
+			tools: null,
+			schedules: '["10 * * * *"]',
+		};
+
+		const mock_agent_without_message: Partial<Agent> = {
+			id: 'agent-no-delib',
+			agent_key: AgentKey.GROUNDSKEEPER,
+			name: 'Groundskeeper',
+			active: true,
+			model: 'test-model',
+			system_message: null,
+			tools: null,
+			schedules: '[]',
+		};
+
+		it('should run two phases when agent has message tools', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Response.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			await service.executeAgent('agent-delib');
+
+			/* streamAgent called twice: once for gather, once for deliberation */
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(2);
+		});
+
+		it('should skip deliberation when agent has no message tools', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_without_message);
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) => names);
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Response.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			await service.executeAgent('agent-no-delib');
+
+			/* streamAgent called once: gather only */
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(1);
+		});
+
+		it('should use deliberation result as the stored run result', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			mock_ai_service.streamAgent
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Gather analysis.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Deliberation notes.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.result).toBe('Deliberation notes.');
+		});
+
+		it('should set notified to false when deliberation does not call SEND_MESSAGE', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'All clear.'},
+					done: true,
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.notified).toBe(false);
 		});
 	});
 
@@ -311,6 +449,33 @@ describe('AgentService', () => {
 			expect(result.result).toContain('maximum tool iterations');
 			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(25);
 		}, 15000);
+
+		it('should respect custom max_iterations parameter', async () => {
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {
+						role: AiMessageRole.ASSISTANT,
+						content: '',
+						tool_calls: [{id: `tc-${Date.now()}`, function: {name: 'GET_SYSTEM_METRICS', arguments: {}}}],
+					},
+					done: true,
+					usage: {prompt_tokens: 1, completion_tokens: 1},
+				};
+			});
+
+			const result = await service.runToolLoop({
+				model: 'test-model',
+				messages: [{role: AiMessageRole.USER, content: 'loop'}],
+				tool_names: ['GET_SYSTEM_METRICS'],
+				agent_context: {agent_id: 'a1', agent_name: 'Test'},
+				max_iterations: 3,
+			});
+
+			expect(result.result).toContain('maximum tool iterations');
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	/* *******************************************************
