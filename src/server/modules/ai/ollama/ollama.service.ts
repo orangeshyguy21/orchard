@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {Injectable} from '@nestjs/common';
 import {Readable} from 'stream';
+import {randomUUID} from 'crypto';
 /* Application Dependencies */
 import {FetchService} from '@server/modules/fetch/fetch.service';
 import {SettingService} from '@server/modules/setting/setting.service';
@@ -147,6 +148,7 @@ export class OllamaService implements AiVendor {
 				content: chunk.message.content,
 				thinking: chunk.message.thinking,
 				tool_calls: chunk.message.tool_calls?.map((tc) => ({
+					id: randomUUID(),
 					function: {
 						name: tc.function.name,
 						arguments: tc.function.arguments,
