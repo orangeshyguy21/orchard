@@ -26,11 +26,17 @@
 		</div>
 	</orc-nav-secondary>
 	<div class="subsection-container">
-		@if (overlayed()) {
-			<div class="orc-route-overlay" animate.enter="orc-route-animation-overlay-in" animate.leave="orc-route-animation-overlay">
-				<mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
-			</div>
-		}
-		<router-outlet></router-outlet>
+		<mat-sidenav-container [hasBackdrop]="true">
+			@if (overlayed()) {
+				<div class="orc-route-overlay" animate.enter="orc-route-animation-overlay-in" animate.leave="orc-route-animation-overlay">
+					<mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+				</div>
+			}
+			<router-outlet></router-outlet>
+			<mat-sidenav #formSidenav mode="over" position="end" class="primary-sidenav" (closed)="onSidenavClosed()">
+				<ng-container #formPanelHost></ng-container>
+			</mat-sidenav>
+		</mat-sidenav-container>
 	</div>
 </section>
+

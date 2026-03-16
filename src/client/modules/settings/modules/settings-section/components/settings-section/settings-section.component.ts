@@ -1,10 +1,12 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit, OnDestroy, AfterViewInit, ViewContainerRef, viewChild, inject} from '@angular/core';
 import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
+import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {FormPanelService} from '@client/modules/form/services/form-panel';
 
 @Component({
 	selector: 'orc-settings-section',
@@ -13,25 +15,45 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 	styleUrl: './settings-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSectionComponent implements OnInit {
+export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestroy {
+	/* ── Injected dependencies ── */
+	private readonly configService = inject(ConfigService);
+	private readonly router = inject(Router);
+	private readonly route = inject(ActivatedRoute);
+	private readonly formPanelService = inject(FormPanelService);
+
+	/* ── ViewChild references ── */
+	private readonly formSidenav = viewChild<MatSidenav>('formSidenav');
+	private readonly formPanelHost = viewChild('formPanelHost', {read: ViewContainerRef});
+
+	/* ── Public signals ── */
 	public version: WritableSignal<string> = signal('');
 	public active_sub_section: WritableSignal<string> = signal('');
 	public overlayed: WritableSignal<boolean> = signal(false);
 
+	/* ── Private fields ── */
 	private subscriptions: Subscription = new Subscription();
 
-	constructor(
-		private configService: ConfigService,
-		private router: Router,
-		private route: ActivatedRoute,
-	) {
+	constructor() {
 		this.version.set(this.configService.config.mode.version);
 	}
 
 	ngOnInit(): void {
 		this.subscriptions.add(this.getRouterSubscription());
 		this.subscriptions.add(this.getOverlaySubscription());
+		this.subscriptions.add(this.getPanelSubscription());
 	}
+
+	ngAfterViewInit(): void {
+		const host = this.formPanelHost();
+		if (host) {
+			this.formPanelService.registerContainer(host);
+		}
+	}
+
+	/* *******************************************************
+		Subscriptions
+	******************************************************** */
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
@@ -42,7 +64,6 @@ export class SettingsSectionComponent implements OnInit {
 	/**
 	 * Subscribes to router events to control overlay visibility
 	 * Shows overlay on navigation start, hides on end/cancel/error
-	 * @returns {Subscription} router events subscription
 	 */
 	private getOverlaySubscription(): Subscription {
 		return this.router.events.subscribe((event) => {
@@ -54,6 +75,22 @@ export class SettingsSectionComponent implements OnInit {
 				this.overlayed.set(false);
 			}
 		});
+	}
+
+	/** Syncs the sidenav open/close state with the FormPanelService */
+	private getPanelSubscription(): Subscription {
+		const sub = new Subscription();
+		sub.add(
+			this.formPanelService.afterOpened().subscribe(() => {
+				this.formSidenav()?.open();
+			}),
+		);
+		sub.add(
+			this.formPanelService.afterClosed().subscribe(() => {
+				this.formSidenav()?.close();
+			}),
+		);
+		return sub;
 	}
 
 	private getSubSection(event: Event): string {
@@ -71,5 +108,18 @@ export class SettingsSectionComponent implements OnInit {
 		}
 		if (route.snapshot.data['sub_section'] === 'error') return route.snapshot.data['origin'] || '';
 		return route.snapshot.data['sub_section'] || '';
+	}
+
+	/** Handle sidenav close via backdrop click or escape */
+	public onSidenavClosed(): void {
+		this.formPanelService.close();
+	}
+
+	/* *******************************************************
+		Destroy
+	******************************************************** */
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

@@ -5,3 +5,5 @@ export interface ToolSummary {
 	icon: string;
 	reason: string | null;
 }
+
+export type AgentFormMode = 'groundskeeper' | 'jobedit' | 'jobcreate';

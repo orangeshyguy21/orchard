@@ -33,6 +33,7 @@
 
 ::ng-deep [nav-secondary-header] {
 	@extend %w-min-18;
+    
 }
 
 .nav-secondary-items {
@@ -44,4 +45,12 @@
 	@extend %flex;
 	@extend %flex-row;
 	@extend %h-full;
+}
+
+.nav-secondary-divider{
+    @extend %orc-surface-bg;
+    @extend %w-full;
+    @extend %relative;
+    height: 1px;
+    top: -1px;
 }

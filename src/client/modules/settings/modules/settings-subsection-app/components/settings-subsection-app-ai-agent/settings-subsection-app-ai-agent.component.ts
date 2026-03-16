@@ -31,6 +31,7 @@ export class SettingsSubsectionAppAiAgentComponent {
 	/* ── Outputs ── */
 	public update = output<void>();
 	public favoritesChange = output<AiFavorites>();
+	public openSettings = output<AiAgent>();
 
 	/* *******************************************************
 		Actions
@@ -49,4 +50,6 @@ export class SettingsSubsectionAppAiAgentComponent {
 	public onFavoritesChange(favorites: AiFavorites): void {
 		this.favoritesChange.emit(favorites);
 	}
+
+
 }

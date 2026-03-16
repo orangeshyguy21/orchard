@@ -11,11 +11,13 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
-import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {FormPanelService} from '@client/modules/form/services/form-panel/form-panel.service';
 import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {Config} from '@client/modules/config/types/config';
 /* Native Dependencies */
-import {ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
+import {ToolSummary, AgentFormMode} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
+import {SettingsSubsectionAppAiAgentFormComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
 /* Shared Dependencies */
 import {AgentKey} from '@shared/generated.types';
 
@@ -29,6 +31,7 @@ import {AgentKey} from '@shared/generated.types';
 export class SettingsSubsectionAppAiComponent {
 	private readonly aiService = inject(AiService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly formPanelService = inject(FormPanelService);
 	private readonly destroyRef = inject(DestroyRef);
 
 	public ai_enabled = input.required<boolean>();
@@ -171,4 +174,14 @@ export class SettingsSubsectionAppAiComponent {
 		this.ai_favorites.set(favorites);
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
+
+    /** Opens the settings panel for the agent */   
+    public onOpenAgentSettings(agent: AiAgent, mode: AgentFormMode): void {
+        this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
+            data: {
+                mode: mode,
+                agent: agent,
+            },
+        });
+    }
 }

@@ -283,6 +283,9 @@
 		border-top-right-radius: 0rem;
 		border-bottom-right-radius: 0rem;
 	}
+	.mat-drawer-backdrop.mat-drawer-shown{
+		background-color: rgba(0, 0, 0, 0.32);
+	}
 }
 
 /* Specific Accordion Overrides */

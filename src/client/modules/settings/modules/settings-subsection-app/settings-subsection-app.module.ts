@@ -34,6 +34,7 @@ import {SettingsSubsectionAppAiAgentComponent} from './components/settings-subse
 import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-subsection-app-ai-messaging/settings-subsection-app-ai-messaging.component';
 import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsection-app-ai-job/settings-subsection-app-ai-job.component';
 import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-subsection-app-ai-tool-chips/settings-subsection-app-ai-tool-chips.component';
+import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
 
 @NgModule({
 	declarations: [
@@ -46,6 +47,7 @@ import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-s
 		SettingsSubsectionAppAiMessagingComponent,
 		SettingsSubsectionAppAiJobComponent,
 		SettingsSubsectionAppAiToolChipsComponent,
+		SettingsSubsectionAppAiAgentFormComponent,
 	],
 	imports: [
 		[
