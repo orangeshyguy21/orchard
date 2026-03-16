@@ -38,10 +38,15 @@ export class AgentService implements OnModuleInit {
 		'Write a thorough analysis as your final response.',
 	].join('\n');
 
-	private static readonly DELIBERATION_PROMPT = [
-		'Based on your analysis above, decide whether the operator should be notified.',
-		'You have one tool available: SEND_MESSAGE. You may call it once or not at all.',
-		'Then write brief internal notes for your next run: what you checked, what you found, and whether you notified.',
+	private static readonly DELIBERATION_PROMPT_DUAL = [
+		'Based on your analysis above, decide whether the operator needs to be notified.',
+		'Apply the notification criteria defined in your system prompt to make this decision.',
+		'Call exactly one tool: SEND_MESSAGE to notify, or SKIP_MESSAGE to stay silent.',
+	].join('\n');
+
+	private static readonly DELIBERATION_PROMPT_SEND_ONLY = [
+		'Based on your analysis above, compile your findings into a message for the operator.',
+		'Call SEND_MESSAGE with a summary of your analysis.',
 	].join('\n');
 
 	private execution_queue: Promise<any> = Promise.resolve();
@@ -291,7 +296,12 @@ export class AgentService implements OnModuleInit {
 
 		/* Phase 2: Deliberation */
 		if (has_deliberation) {
-			gather_result.messages.push({role: AiMessageRole.USER, content: AgentService.DELIBERATION_PROMPT});
+			const has_skip = message_tools.includes(AgentToolName.SKIP_MESSAGE);
+			const deliberation_prompt = has_skip
+				? AgentService.DELIBERATION_PROMPT_DUAL
+				: AgentService.DELIBERATION_PROMPT_SEND_ONLY;
+
+			gather_result.messages.push({role: AiMessageRole.USER, content: deliberation_prompt});
 
 			const deliberation_result = await this.runToolLoop({
 				model: agent.model,
@@ -302,21 +312,11 @@ export class AgentService implements OnModuleInit {
 			});
 
 			total_tokens += deliberation_result.tokens_used;
-			result = deliberation_result.result;
 
-			notified = deliberation_result.messages.some((m) => {
-				if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
-				const is_send = deliberation_result.messages.some((msg) =>
-					msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
-				);
-				if (!is_send) return false;
-				try {
-					const parsed = JSON.parse(m.content);
-					return parsed?.success === true && parsed?.data?.delivered === true;
-				} catch {
-					return false;
-				}
-			});
+			/* Extract result from the deliberation tool call */
+			const {deliberation_result: extracted_result, was_notified} = this.extractDeliberationResult(deliberation_result.messages);
+			result = extracted_result ?? deliberation_result.result;
+			notified = was_notified;
 		}
 
 		this.dumpAgentTrace(agent, gather_result.messages, total_tokens, result, tool_names);
@@ -435,6 +435,47 @@ export class AgentService implements OnModuleInit {
 		}
 
 		return final_chunk;
+	}
+
+	/**
+	 * Extracts the run result and notification status from the deliberation phase messages.
+	 * For SEND_MESSAGE: the message body becomes the result, notified is true if delivered.
+	 * For SKIP_MESSAGE: the skip reason becomes the result, notified is false.
+	 * Falls back to null if no deliberation tool call is found.
+	 */
+	private extractDeliberationResult(messages: AiMessage[]): {deliberation_result: string | null; was_notified: boolean} {
+		for (let i = messages.length - 1; i >= 0; i--) {
+			const msg = messages[i];
+			if (msg.role !== AiMessageRole.TOOL || !msg.tool_call_id) continue;
+
+			/* Find the matching assistant tool_call */
+			const tool_call = messages.flatMap((m) => m.tool_calls ?? []).find((tc) => tc.id === msg.tool_call_id);
+			const tool_name = tool_call?.function.name;
+
+			if (tool_name === AgentToolName.SEND_MESSAGE) {
+				try {
+					const parsed = JSON.parse(msg.content);
+					const delivered = parsed?.success === true && parsed?.data?.delivered === true;
+					const args = tool_call?.function.arguments ?? {};
+					const body = `[${args.severity ?? 'info'}] ${args.title ?? ''}\n${args.body ?? ''}`.trim();
+					return {deliberation_result: body, was_notified: delivered};
+				} catch {
+					return {deliberation_result: null, was_notified: false};
+				}
+			}
+
+			if (tool_name === AgentToolName.SKIP_MESSAGE) {
+				try {
+					const parsed = JSON.parse(msg.content);
+					const reason = parsed?.data?.reason ?? 'No reason provided';
+					return {deliberation_result: reason, was_notified: false};
+				} catch {
+					return {deliberation_result: null, was_notified: false};
+				}
+			}
+		}
+
+		return {deliberation_result: null, was_notified: false};
 	}
 
 	/* *******************************************************

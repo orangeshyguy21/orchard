@@ -26,6 +26,7 @@ import {
 	GetPastRunsTool,
 	GetSystemMetricsTool,
 	createSendMessageTool,
+	SkipMessageTool,
 } from '@server/modules/ai/agent/tools';
 import {MessageService} from '@server/modules/message/message.service';
 import {UserRole} from '@server/modules/user/user.enums';
@@ -61,6 +62,7 @@ export class ToolService {
 		this.register(AgentToolName.GET_PAST_RUNS, GetPastRunsTool);
 		this.register(AgentToolName.GET_SYSTEM_METRICS, GetSystemMetricsTool);
 		this.register(AgentToolName.SEND_MESSAGE, createSendMessageTool(this.messageService));
+		this.register(AgentToolName.SKIP_MESSAGE, SkipMessageTool);
 	}
 
 	/* *******************************************************
@@ -88,6 +90,11 @@ export class ToolService {
 	/** Get all registered tool names */
 	public getRegisteredTools(): string[] {
 		return Array.from(this.registry.keys());
+	}
+
+	/** Get all registered tool entries */
+	public getRegisteredToolEntries(): AiToolEntry[] {
+		return Array.from(this.registry.values());
 	}
 
 	/** Filter tool names to only those matching a specific category */

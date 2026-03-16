@@ -1,10 +1,12 @@
+import {ToolService} from '@server/modules/ai/tools/tool.service';
 import {AiToolsService} from './aitools.service';
 
 describe('AiToolsService', () => {
 	let service: AiToolsService;
 
 	beforeEach(() => {
-		service = new AiToolsService();
+		const toolService = new ToolService({} as any);
+		service = new AiToolsService(toolService);
 	});
 
 	describe('getTools', () => {

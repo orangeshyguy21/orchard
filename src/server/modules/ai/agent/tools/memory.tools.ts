@@ -7,8 +7,8 @@ import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 ******************************************************** */
 
 const GET_PAST_RUNS_QUERY = `
-	query GetPastRuns($agent_id: String!, $page: Int, $page_size: Int) {
-		ai_agent_runs(agent_id: $agent_id, page: $page, page_size: $page_size, notified: true) {
+	query GetPastRuns($agent_id: String!, $page: Int, $page_size: Int, $notified: Boolean) {
+		ai_agent_runs(agent_id: $agent_id, page: $page, page_size: $page_size, notified: $notified) {
 			status
 			started_at
 			completed_at
@@ -24,17 +24,17 @@ const GET_PAST_RUNS_QUERY = `
 /** Retrieves past run results so the agent can avoid repeating messages */
 export const GetPastRunsTool: AiToolEntry = {
 	category: AgentToolCategory.MEMORY,
-	description: 'Retrieve past agent run results to avoid duplicate messages.',
+	description: 'Retrieve past agent run results to review history and avoid duplicate messages.',
 	tool: {
 		type: 'function',
 		function: {
 			name: AgentToolName.GET_PAST_RUNS,
 			description: [
-				'Retrieve past runs where you sent messages.',
+				'Retrieve past runs to review your history.',
 				'',
-				'Call this **first** at the start of every run to review what you previously notified about.',
+				'Call this **first** at the start of every run to review what you previously did.',
 				'Use the `agent_id` from your runtime context.',
-				'Only runs that triggered at least one message are returned.',
+				'By default returns all runs unfiltered. Use `notified` to filter.',
 				'',
 				'**Returns** (most recent first):',
 				'- `status` — run outcome (`success` or `error`)',
@@ -56,7 +56,11 @@ export const GetPastRunsTool: AiToolEntry = {
 					},
 					page_size: {
 						type: 'integer',
-						description: 'Number of runs per page (default: 20).',
+						description: 'Number of runs per page (default: 10).',
+					},
+					notified: {
+						type: 'boolean',
+						description: 'Filter by notification status. true = only runs where messages were sent, false = only runs with no messages. Omit for all runs.',
 					},
 				},
 				required: ['agent_id'],

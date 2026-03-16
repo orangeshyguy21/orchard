@@ -140,6 +140,7 @@ export const AGENTS = {
 			AgentToolName.GET_BITCOIN_NETWORK_INFO,
 			AgentToolName.GET_SYSTEM_METRICS,
 			AgentToolName.SEND_MESSAGE,
+			AgentToolName.SKIP_MESSAGE,
 		],
 		schedules: ['10 * * * *'],
 	},

@@ -44,7 +44,7 @@ export class AiAgentResolver {
 	async ai_agent_runs(
 		@Args('agent_id', {description: 'Agent identifier to filter runs'}) agent_id: string,
 		@Args('page', {type: () => Int, nullable: true, defaultValue: 0, description: 'Page number for pagination'}) page: number,
-		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 20, description: 'Number of runs per page'}) page_size: number,
+		@Args('page_size', {type: () => Int, nullable: true, defaultValue: 10, description: 'Number of runs per page'}) page_size: number,
 		@Args('notified', {nullable: true, description: 'Filter by notification status'}) notified?: boolean,
 	): Promise<OrchardAgentRun[]> {
 		const tag = 'GET { ai_agent_runs }';

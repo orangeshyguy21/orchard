@@ -1,9 +1,7 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-
 /* Application Dependencies */
 import {MessageService} from '@server/modules/message/message.service';
-
 /* Local Dependencies */
 import {AgentToolCategory, AgentToolName} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
@@ -17,6 +15,36 @@ const logger = new Logger('AgentMessage');
 /* *******************************************************
 	Tool Definitions
 ******************************************************** */
+
+/** No-op tool that lets the agent explicitly decide not to notify the operator */
+export const SkipMessageTool: AiToolEntry = {
+	category: AgentToolCategory.MESSAGE,
+	description: 'Explicitly skip sending a message to the operator for this run.',
+	tool: {
+		type: 'function',
+		function: {
+			name: AgentToolName.SKIP_MESSAGE,
+			description: 'Skip sending a message. Call this when nothing warrants operator attention.',
+			parameters: {
+				type: 'object',
+				properties: {
+					reason: {
+						type: 'string',
+						description: 'Brief explanation of why no notification is needed (e.g. "no changes since last run", "all services healthy").',
+					},
+				},
+				required: ['reason'],
+			},
+		},
+	},
+	handler: async (args: Record<string, unknown>) => {
+		const reason = args.reason as string;
+		logger.log(`Notification skipped: ${reason}`);
+		return {success: true, data: {skipped: true, reason}};
+	},
+	throttle_max_calls: 1,
+	throttle_window_seconds: 60,
+};
 
 /** Creates a message tool with optional vendor delivery via MessageService */
 export function createSendMessageTool(messageService?: MessageService): AiToolEntry {

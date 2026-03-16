@@ -55,6 +55,14 @@ describe('AgentService', () => {
 		getToolNamesExcludingCategory: jest.fn().mockImplementation((tool_names: string[]) => tool_names),
 	};
 
+	/** Helper to configure mocks for agents with deliberation (SEND_MESSAGE + SKIP_MESSAGE) */
+	const setupDeliberationMocks = () => {
+		mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE, AgentToolName.SKIP_MESSAGE]);
+		mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) =>
+			names.filter((n) => n !== AgentToolName.SEND_MESSAGE && n !== AgentToolName.SKIP_MESSAGE),
+		);
+	};
+
 	const mock_config_service = {
 		get: jest.fn().mockReturnValue(null),
 	};
@@ -97,11 +105,7 @@ describe('AgentService', () => {
 
 		beforeEach(() => {
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent);
-			/* Activity Monitor has SEND_MESSAGE — enable deliberation */
-			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
-			mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) =>
-				names.filter((n) => n !== AgentToolName.SEND_MESSAGE),
-			);
+			setupDeliberationMocks();
 			/* Stream returns a simple text response for both gather and deliberation phases */
 			mock_ai_service.streamAgent.mockImplementation(async function* () {
 				yield {
@@ -190,7 +194,7 @@ describe('AgentService', () => {
 						message: {
 							role: AiMessageRole.ASSISTANT,
 							content: '',
-							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {text: 'Alert'}}}],
+							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {title: 'Alert', body: 'Details', severity: 'warning'}}}],
 						},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
@@ -201,7 +205,7 @@ describe('AgentService', () => {
 					yield {
 						model: 'test-model',
 						created_at: new Date().toISOString(),
-						message: {role: AiMessageRole.ASSISTANT, content: 'Notified operator.'},
+						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
@@ -212,6 +216,8 @@ describe('AgentService', () => {
 			const result = await service.executeAgent('agent-1');
 
 			expect(result.notified).toBe(true);
+			expect(result.result).toContain('[warning] Alert');
+			expect(result.result).toContain('Details');
 		});
 	});
 
@@ -244,8 +250,7 @@ describe('AgentService', () => {
 
 		it('should run two phases when agent has message tools', async () => {
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
-			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
-			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			setupDeliberationMocks();
 			mock_ai_service.streamAgent.mockImplementation(async function* () {
 				yield {
 					model: 'test-model',
@@ -284,11 +289,12 @@ describe('AgentService', () => {
 			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(1);
 		});
 
-		it('should use deliberation result as the stored run result', async () => {
+		it('should extract SKIP_MESSAGE reason as the stored run result', async () => {
+			const tool_call_id = 'tc-skip-1';
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
-			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
-			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			setupDeliberationMocks();
 			mock_ai_service.streamAgent
+				/* Phase 1: Gather */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
@@ -298,25 +304,90 @@ describe('AgentService', () => {
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
 				})
+				/* Phase 2: Deliberation — calls SKIP_MESSAGE */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
 						created_at: new Date().toISOString(),
-						message: {role: AiMessageRole.ASSISTANT, content: 'Deliberation notes.'},
+						message: {
+							role: AiMessageRole.ASSISTANT,
+							content: '',
+							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SKIP_MESSAGE, arguments: {reason: 'No changes since last run'}}}],
+						},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — final text after tool call */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
 				});
 
+			mock_tool_executor.executeTool.mockResolvedValueOnce({success: true, data: {skipped: true, reason: 'No changes since last run'}});
+
 			const run = await service.executeAgent('agent-delib');
 
-			expect(run.result).toBe('Deliberation notes.');
+			expect(run.result).toBe('No changes since last run');
+			expect(run.notified).toBe(false);
 		});
 
-		it('should set notified to false when deliberation does not call SEND_MESSAGE', async () => {
+		it('should extract SEND_MESSAGE body as the stored run result', async () => {
+			const tool_call_id = 'tc-send-1';
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
-			mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE]);
-			mock_tool_executor.getToolNamesExcludingCategory.mockReturnValue([AgentToolName.GET_SYSTEM_METRICS]);
+			setupDeliberationMocks();
+			mock_ai_service.streamAgent
+				/* Phase 1: Gather */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Gather analysis.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — calls SEND_MESSAGE */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {
+							role: AiMessageRole.ASSISTANT,
+							content: '',
+							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {title: 'Memory High', body: 'Memory at 96%', severity: 'warning'}}}],
+						},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — final text after tool call */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				});
+
+			mock_tool_executor.executeTool.mockResolvedValueOnce({success: true, data: {delivered: true}});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.result).toBe('[warning] Memory High\nMemory at 96%');
+			expect(run.notified).toBe(true);
+		});
+
+		it('should set notified to false when deliberation produces no tool call', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			setupDeliberationMocks();
 			mock_ai_service.streamAgent.mockImplementation(async function* () {
 				yield {
 					model: 'test-model',
