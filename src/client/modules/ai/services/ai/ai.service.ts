@@ -26,6 +26,7 @@ import {
 	AiAgentUpdateResponse,
 	AiAgentBatchUpdateResponse,
 	AiAgentToolsResponse,
+	AiAgentDefaultsResponse,
 } from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
@@ -35,6 +36,7 @@ import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversatio
 import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
+import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class';
 /* Local Dependencies */
 import {
 	AI_CHAT_SUBSCRIPTION,
@@ -43,13 +45,14 @@ import {
 	AI_ASSISTANT_QUERY,
 	AI_CHAT_ABORT_MUTATION,
 	AI_AGENT_TOOLS_QUERY,
+	AI_AGENT_DEFAULTS_QUERY,
 	AI_AGENTS_QUERY,
 	AI_AGENT_QUERY,
 	AI_AGENT_UPDATE_MUTATION,
 	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
-import {AiAssistant, AiMessageRole, OrchardAgentTool} from '@shared/generated.types';
+import {AgentKey, AiAssistant, AiMessageRole, OrchardAgentDefault, OrchardAgentTool} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -264,7 +267,7 @@ export class AiService {
 	******************************************************** */
 
 	/** Fetches all available AI agent tools (cached for 60 minutes) */
-	public getAiAgentTools(): Observable<AiAgentTool[]> {
+	public loadAiAgentTools(): Observable<AiAgentTool[]> {
 		if (this.agent_tools_subject.value && this.cacheService.isCacheValid(this.CACHE_KEYS.AI_AGENT_TOOLS)) {
 			return of(this.agent_tools_subject.value as AiAgentTool[]);
 		}
@@ -283,6 +286,23 @@ export class AiService {
 			shareReplay(1),
 			catchError((error) => {
 				console.error('Error loading ai agent tools:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches default configuration for an AI agent */
+	public getAiAgentDefaults(agent_key: AgentKey): Observable<AiAgentDefault> {
+		const query = getApiQuery(AI_AGENT_DEFAULTS_QUERY, {agent_key});
+
+		return this.http.post<OrchardRes<AiAgentDefaultsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_defaults;
+			}),
+			map((defaults) => new AiAgentDefault(defaults)),
+			catchError((error) => {
+				console.error('Error loading ai agent defaults:', error);
 				return throwError(() => error);
 			}),
 		);

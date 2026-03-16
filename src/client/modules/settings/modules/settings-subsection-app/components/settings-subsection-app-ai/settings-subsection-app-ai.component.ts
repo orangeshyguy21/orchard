@@ -155,7 +155,7 @@ export class SettingsSubsectionAppAiComponent {
 
     private getAiAgentTools(): void {
         this.aiService
-            .getAiAgentTools()
+            .loadAiAgentTools()
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: (tools: AiAgentTool[]) => this.ai_agent_tools.set(tools),
@@ -176,11 +176,13 @@ export class SettingsSubsectionAppAiComponent {
 	}
 
     /** Opens the settings panel for the agent */   
-    public onOpenAgentSettings(agent: AiAgent, mode: AgentFormMode): void {
+    public onOpenAgentSettings(agent_id: string, mode: AgentFormMode): void {
+        const agent = this.agents().get(agent_id);
         this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
             data: {
                 mode: mode,
                 agent: agent,
+                tools: this.ai_agent_tools(),
             },
         });
     }

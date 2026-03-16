@@ -128,6 +128,16 @@ export const AI_AGENT_TOOLS_QUERY = `
     }
 `;
 
+export const AI_AGENT_DEFAULTS_QUERY = `
+    query AiAgentDefaults($agent_key: AgentKey!) {
+        ai_agent_defaults(agent_key: $agent_key) {
+            agent_key
+            system_message
+            tools
+        }
+    }
+`;
+
 export const AI_AGENTS_QUERY = `
     query AiAgents {
         ai_agents { ${AI_AGENT_FIELDS} }

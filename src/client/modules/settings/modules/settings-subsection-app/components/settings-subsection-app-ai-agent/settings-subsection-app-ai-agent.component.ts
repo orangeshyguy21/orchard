@@ -31,7 +31,7 @@ export class SettingsSubsectionAppAiAgentComponent {
 	/* ── Outputs ── */
 	public update = output<void>();
 	public favoritesChange = output<AiFavorites>();
-	public openSettings = output<AiAgent>();
+	public openSettings = output<string>();
 
 	/* *******************************************************
 		Actions

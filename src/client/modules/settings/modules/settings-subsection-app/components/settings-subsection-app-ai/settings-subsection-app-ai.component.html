@@ -82,6 +82,7 @@
                                 [loading]="loading_agents()"
                                 (update)="update.emit()"
                                 (favoritesChange)="onFavoritesChange($event)"
+                                (openSettings)="onOpenAgentSettings($event, 'jobedit')"
                             ></orc-settings-subsection-app-ai-job>
                         }
                     </div>

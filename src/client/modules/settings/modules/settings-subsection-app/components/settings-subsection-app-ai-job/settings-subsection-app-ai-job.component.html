@@ -25,7 +25,7 @@
                             </orc-ai-model>
                         </div>
                         
-                        <button mat-icon-button type="button" class="orc-icon-button">
+                        <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit(agent.id)">
                             <mat-icon class="orc-outline-color">settings</mat-icon>
                         </button>
                     </div>

@@ -1,1 +1,14 @@
-<p>settings-subsection-app-ai-agent-form works!</p>
+<div class="agent-form-container">
+    <div class="agent-form-header">
+        <div class="p-l-0-5">{{ form.get('name')?.value }}</div>
+        <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="category-rule"></div>
+    <div class="agent-form-content">
+        <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+            blah
+        </form>
+    </div>
+</div>

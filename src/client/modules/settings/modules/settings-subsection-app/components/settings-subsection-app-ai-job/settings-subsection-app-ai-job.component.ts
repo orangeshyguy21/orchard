@@ -45,6 +45,7 @@ export class SettingsSubsectionAppAiJobComponent {
     /* ── Outputs ── */
     public update = output<void>();
     public favoritesChange = output<AiFavorites>();
+    public openSettings = output<string>();
 
     /* *******************************************************
 		Actions

@@ -1,12 +1,14 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit, OnDestroy, AfterViewInit, ViewContainerRef, viewChild, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal, OnInit, OnDestroy, AfterViewInit, ViewContainerRef, viewChild, inject} from '@angular/core';
 import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {filter, Subscription} from 'rxjs';
 import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {FormPanelService} from '@client/modules/form/services/form-panel';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 @Component({
 	selector: 'orc-settings-section',
@@ -20,6 +22,7 @@ export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestro
 	private readonly configService = inject(ConfigService);
 	private readonly router = inject(Router);
 	private readonly route = inject(ActivatedRoute);
+	private readonly breakpointObserver = inject(BreakpointObserver);
 	private readonly formPanelService = inject(FormPanelService);
 
 	/* ── ViewChild references ── */
@@ -27,9 +30,10 @@ export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestro
 	private readonly formPanelHost = viewChild('formPanelHost', {read: ViewContainerRef});
 
 	/* ── Public signals ── */
-	public version: WritableSignal<string> = signal('');
-	public active_sub_section: WritableSignal<string> = signal('');
-	public overlayed: WritableSignal<boolean> = signal(false);
+	public version = signal<string>('');
+	public active_sub_section = signal<string>('');
+	public overlayed = signal<boolean>(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	/* ── Private fields ── */
 	private subscriptions: Subscription = new Subscription();
@@ -41,6 +45,7 @@ export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestro
 	ngOnInit(): void {
 		this.subscriptions.add(this.getRouterSubscription());
 		this.subscriptions.add(this.getOverlaySubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.subscriptions.add(this.getPanelSubscription());
 	}
 
@@ -57,6 +62,9 @@ export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestro
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
+			if (event instanceof NavigationStart && this.formPanelService.opened()) {
+				this.formPanelService.close();
+			}
 			this.active_sub_section.set(this.getSubSection(event));
 		});
 	}
@@ -73,6 +81,19 @@ export class SettingsSectionComponent implements OnInit, AfterViewInit, OnDestro
 			}
 			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
 				this.overlayed.set(false);
+			}
+		});
+	}
+
+	/** Observes viewport breakpoints and updates device_type signal */
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
 			}
 		});
 	}
