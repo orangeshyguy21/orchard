@@ -31,7 +31,12 @@
             <div class="font-size-xs orc-outline-color">{{ agent.description }}</div>
     
             <div class="p-t-1">
-                <div class="system-message font-size-xs">{{ agent.system_message }}</div>
+                <div class="system-message font-size-xs">
+                    <div class="system-message-content">{{ agent.system_message }}</div>
+                    <button mat-icon-button type="button" class="expand-button">
+                        <mat-icon>open_with</mat-icon>
+                    </button>
+                </div>
             </div>
             
             <div class="p-t-1">

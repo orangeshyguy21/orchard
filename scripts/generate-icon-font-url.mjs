@@ -105,6 +105,7 @@ const ICONS = [
   'network_intelligence',
   'schedule',
   'work',
+  'open_with',
 ];
 
 // Sort alphabetically and remove duplicates

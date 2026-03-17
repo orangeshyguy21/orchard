@@ -9,11 +9,33 @@
 }
 
 .system-message {
-	background: var(--mat-sys-surface-container);
-	border-radius: 8px;
-	padding: 0.75rem;
-	max-height: 6rem;
-	overflow-y: auto;
-	white-space: pre-wrap;
+    @extend %relative;
+	@extend %orc-surface-container-lowest-bg;
+	@extend %orc-corner-small;
+	@extend %p-1;
+    @extend %overflow-hidden;
+    max-height: 8rem;
+
+    &:hover {
+        .expand-button {
+            @extend %opacity-1;
+        }
+    }
+}
+
+.system-message-content {
+    color: #bbb963;
+    white-space: pre-wrap;
 	word-break: break-word;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
+.expand-button {
+    rotate: 45deg;
+    @extend %opacity-0;
+    @extend %orc-outline-color;
+    @extend %trans-opacity-fast;
+    @extend %absolute;
+    @extend %top-0-5;
+    @extend %right-0-5;
 }
