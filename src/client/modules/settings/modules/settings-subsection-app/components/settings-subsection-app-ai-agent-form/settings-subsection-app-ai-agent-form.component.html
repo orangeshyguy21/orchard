@@ -1,14 +1,191 @@
 <div class="agent-form-container">
     <div class="agent-form-header">
-        <div class="p-l-0-5">{{ form.get('name')?.value }}</div>
+        <div class="p-l-0-5">{{ form.get('name')?.value }} settings</div>
         <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
             <mat-icon>close</mat-icon>
         </button>
     </div>
     <div class="category-rule"></div>
     <div class="agent-form-content">
-        <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
-            blah
+        <form [formGroup]="form" (ngSubmit)="$event.preventDefault()" class="flex flex-column flex-gap-1">
+            <div class="flex flex-row flex-gap-1">
+                <div class="flex-1">
+                    <orc-form-field-dynamic
+  
+                        [hot]="focused_name() || form.get('name')?.dirty || false"
+                        [invalid]="form.get('name')?.invalid || false"
+                        [info]="true"
+                        [standalone]="false"
+                        (inform)="help_name.set(!help_name())"
+                        (cancel)="onCancel($event)"
+                    >
+                        <mat-form-field
+                            appearance="fill"
+                            hideRequiredMarker="true"
+                            [ngClass]="
+                                focused_name() || form.get('name')?.dirty || false
+                                    ? 'orc-hot-form-field'
+                                    : 'orc-cold-form-field'
+                            "
+                            class="orc-dynamic-form-field w-full"
+                        >
+                            <mat-label>Name</mat-label>
+                            <input type="text" matInput formControlName="name" (focus)="focused_name.set(true)" (blur)="focused_name.set(false)" />
+                            <mat-error>
+                                <orc-form-error [errors]="form.get('name')?.errors">Invalid name</orc-form-error>
+                            </mat-error>
+                        </mat-form-field>
+                    </orc-form-field-dynamic>
+                </div>
+                <div class="flex-1">
+                    <div class="orc-animation-expand-collapse p-b-1" [class.animation-expanded]="help_name()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    Your primary agent's name.
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row flex-gap-1">
+                <div class="flex-1">
+                    <orc-form-field-dynamic
+  
+                        [hot]="focused_description() || form.get('description')?.dirty || false"
+                        [invalid]="form.get('description')?.invalid || false"
+                        [info]="true"
+                        [standalone]="false"
+                        (inform)="help_description.set(!help_description())"
+                        (cancel)="onCancel($event)"
+                    >
+                        <mat-form-field
+                            appearance="fill"
+                            hideRequiredMarker="true"
+                            [ngClass]="
+                                focused_description() || form.get('description')?.dirty || false
+                                    ? 'orc-hot-form-field'
+                                    : 'orc-cold-form-field'
+                            "
+                            class="orc-dynamic-form-field w-full"
+                        >
+                            <mat-label>Description</mat-label>
+                            <textarea 
+                                rows="4"
+                                matInput
+                                [formAutogrow]="true"
+                                formControlName="description"
+                                placeholder="Ex. Describe your agent"
+                                (focus)="focused_description.set(true)"
+                                (blur)="focused_description.set(false)">
+                            </textarea>
+                            <mat-error>
+                                <orc-form-error [errors]="form.get('description')?.errors">Invalid description</orc-form-error>
+                            </mat-error>
+                        </mat-form-field>
+                    </orc-form-field-dynamic>
+                </div>
+                <div class="flex-1">
+                    <div class="orc-animation-expand-collapse p-b-1" [class.animation-expanded]="help_description()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    Your primary agent's description.
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row flex-gap-1">
+                <div class="flex-1">
+                    <div class="title-form-section p-b-0-5 p-l-1">
+                        <span>Model</span>
+                    </div>
+                    <div class="flex flex-items-center flex-gap-1">
+                        <orc-ai-model
+                            [model]="form.get('model')?.value ?? null"
+                            [model_options]="data.models"
+                            [device_type]="data.device_type"
+                            [vendor]="data.vendor"
+                            [favorites]="ai_favorites()"
+                            (modelChange)="onModelChange($event)"
+                            (favoritesChange)="onFavoritesChange($event)"
+                        >
+                            <button matButton="outlined" type="button" [class.orc-status-warning-color]="!form.get('model')?.value">
+                                <div class="font-size-s">{{ form.get('model')?.value ?? 'missing model' }}</div>
+                            </button>
+                        </orc-ai-model>
+                        <button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_model.set(!help_model())">
+                            <mat-icon class="orc-outline-color">info</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <div class="orc-animation-expand-collapse p-b-1" [class.animation-expanded]="help_model()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    Your primary agent's model.
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="title-form-section p-b-0-5 p-l-1">
+                    <span>System Prompt</span>
+                </div>
+                system prompt
+            </div>
         </form>
     </div>
 </div>
+
+<!-- 
+<div class="mint-info-form-description-long-container">
+	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+		<orc-form-field-dynamic
+			[hot]="focused_description_long() || form_group().get(control_name())?.dirty || false"
+			[invalid]="form_group().get(control_name())?.invalid || false"
+			[info]="true"
+			(submit)="onSubmit($event)"
+			(cancel)="onCancel($event)"
+			(inform)="help_status.set(!help_status())"
+		>
+			<mat-form-field
+				appearance="fill"
+				[ngClass]="
+					focused_description_long() || form_group().get(control_name())?.dirty || false
+						? 'orc-hot-form-field'
+						: 'orc-cold-form-field'
+				"
+				class="w-full orc-dynamic-form-field"
+			>
+				<mat-label>Long description</mat-label>
+				<textarea
+					rows="1"
+					#element_description_long
+					matInput
+					[formControlName]="control_name()"
+					[formAutogrow]="true"
+					placeholder="Ex. Describe your mint in more detail"
+					(focus)="focused_description_long.set(true)"
+					(blur)="focused_description_long.set(false)"
+				></textarea>
+			</mat-form-field>
+		</orc-form-field-dynamic>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-0-5">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						<div class="p-b-1">Updates the long description for this mint.</div>
+						<div>A long description provides extended details about your mint in wallet interfaces.</div>
+					</orc-form-help-text>
+				</div>
+			</div>
+		</div>
+	</form>
+</div> -->

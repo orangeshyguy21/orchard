@@ -182,7 +182,11 @@ export class SettingsSubsectionAppAiComponent {
             data: {
                 mode: mode,
                 agent: agent,
+                models: this.ai_models(),
                 tools: this.ai_agent_tools(),
+                device_type: this.device_type(),
+                vendor: this.app_settings()?.ai_enabled,
+                favorites: this.ai_favorites(),
             },
         });
     }
