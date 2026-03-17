@@ -111,7 +111,11 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		this.logger.log('Starting cashu mint analytics backfill');
 
 		try {
-			await this.getMintPubkey();
+			await this.getMintPubkey().catch(() => null);
+			if (!this.mint_pubkey) {
+				this.logger.warn('Mint not reachable, skipping analytics backfill');
+				return;
+			}
 			const current_hour = DateTime.utc().startOf('hour').toSeconds();
 
 			await this.streamAndBucket<CashuMintMintQuote>(
