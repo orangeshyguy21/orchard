@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+/* Vendor Dependencies */
+import {firstValueFrom, Subscription} from 'rxjs';
 /* Application Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
@@ -21,7 +23,7 @@ import {AgentFormMode} from '@client/modules/settings/modules/settings-subsectio
 	styleUrl: './settings-subsection-app-ai-agent-form.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
+export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDestroy {
 	/* ── Injected dependencies ── */
 	private readonly panelRef = inject(FormPanelRef);
 	private readonly aiService = inject(AiService);
@@ -36,6 +38,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
         favorites: AiFavorites;
     } = inject(FORM_PANEL_DATA);
 
+    /* ── Public signals ── */
     public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
     public focused_name = signal<boolean>(false);
     public focused_description = signal<boolean>(false);
@@ -43,15 +46,21 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
     public help_name = signal<boolean>(true);
     public help_description = signal<boolean>(true);
     public help_model = signal<boolean>(true);
+    public is_keyed_agent = signal<boolean>(false);
+    public is_default_system_message = signal<boolean>(false);
+    public is_default_tools = signal<boolean>(false);
+    public fullscreen_system_message = signal<boolean>(false);
 
     /* -- Public properties ── */
     public form: FormGroup;
 
     /* ── Private fields ── */
     private defaults: AiAgentDefault | null = null;
+    private subscriptions = new Subscription();
 
     constructor() {
         this.ai_favorites.set(this.data.favorites);
+        this.is_keyed_agent.set(this.data.agent !== null && this.data.agent.agent_key !== null);
         switch (this.data.mode) {
             case 'groundskeeper':
                 this.form = this.getAgentForm();
@@ -63,17 +72,20 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
                 this.form = this.getJobCreateForm();
                 break;
         }
+        if (this.is_keyed_agent()) {
+            this.subscriptions.add(this.subSystemMessage());
+            this.subscriptions.add(this.subTools());
+        }
     }
 
     /* *******************************************************
 		Initialize
 	******************************************************** */
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (!this.data.agent || !this.data.agent.agent_key) return;
-        this.aiService.getAiAgentDefaults(this.data.agent.agent_key).subscribe((defaults) => {
-            this.defaults = defaults;
-        });
+        await this.getAiDefaults();
+        this.is_default_system_message.set(this.defaults?.system_message === this.form.get('system_message')?.value);
     }
 
     private getAgentForm(): FormGroup {
@@ -112,7 +124,34 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
         });
     }
 
-     /* *******************************************************
+    /* *******************************************************
+		Data
+	******************************************************** */
+
+    private async getAiDefaults(): Promise<void> {
+        if (!this.data.agent || !this.data.agent.agent_key) return;
+        this.defaults = await firstValueFrom(this.aiService.getAiAgentDefaults(this.data.agent.agent_key));
+    }
+
+    /* *******************************************************
+		Subscriptions
+	******************************************************** */
+
+    /** Watches system_message control and updates is_default signal */
+    private subSystemMessage(): Subscription | undefined {
+        return this.form.get('system_message')?.valueChanges.subscribe((value) => {
+            this.is_default_system_message.set(value === this.defaults?.system_message);
+        });
+    }
+
+    /** Watches tools control and updates is_default signal */
+    private subTools(): Subscription | undefined {
+        return this.form.get('tools')?.valueChanges.subscribe((value) => {
+            this.is_default_tools.set(JSON.stringify(value) === JSON.stringify(this.defaults?.tools));
+        });
+    }
+
+    /* *******************************************************
 		Actions
 	******************************************************** */
     
@@ -126,6 +165,15 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
         // this.form.reset();
     }
 
+    public onResetSystemMessage(): void {
+        this.form.get('system_message')?.setValue(this.defaults?.system_message ?? '');
+        this.form.get('system_message')?.markAsDirty();
+    }
+
+    public onFullscreenSystemMessage(): void {
+        // this.panelRef.close();
+    }
+
     /** Persists updated AI model favorites to local storage */
 	public onFavoritesChange(favorites: AiFavorites): void {
 		this.ai_favorites.set(favorites);
@@ -137,40 +185,12 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
         this.form.get('model')?.markAsDirty();
     }
 
+    /* *******************************************************
+		Destroy
+	******************************************************** */
+
+    ngOnDestroy(): void {
+        this.subscriptions.unsubscribe();
+    }
+
 }
-
-
-// /* Shared Dependencies */
-// import {OrchardAgent, AgentKey, AgentRunStatus} from '@shared/generated.types';
-
-// export class AiAgent implements OrchardAgent {
-// 	id: string;
-// 	agent_key: AgentKey | null;
-// 	name: string;
-// 	description: string | null;
-// 	active: boolean;
-// 	model: string | null;
-// 	system_message: string | null;
-// 	tools: string[];
-// 	schedules: string[];
-// 	last_run_at: number | null;
-// 	last_run_status: AgentRunStatus | null;
-// 	created_at: number;
-// 	updated_at: number;
-
-// 	constructor(agent: OrchardAgent) {
-// 		this.id = agent.id;
-// 		this.agent_key = agent.agent_key ?? null;
-// 		this.name = agent.name;
-// 		this.description = agent.description ?? null;
-// 		this.active = agent.active;
-// 		this.model = agent.model ?? null;
-// 		this.system_message = agent.system_message ?? null;
-// 		this.tools = agent.tools ?? [];
-// 		this.schedules = agent.schedules;
-// 		this.last_run_at = agent.last_run_at ?? null;
-// 		this.last_run_status = agent.last_run_status ?? null;
-// 		this.created_at = agent.created_at;
-// 		this.updated_at = agent.updated_at;
-// 	}
-// }

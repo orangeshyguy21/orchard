@@ -24,6 +24,7 @@ import {FormToggleComponent} from './components/form-toggle/form-toggle.componen
 import {FormToggleGroupComponent} from './components/form-toggle-group/form-toggle-group.component';
 import {FormScrollCalendarComponent} from './components/form-scroll-calendar/form-scroll-calendar.component';
 import {FormDaterangeScrollPickerComponent} from './components/form-daterange-scroll-picker/form-daterange-scroll-picker.component';
+import {FormMarkdownEditorComponent} from './components/form-markdown-editor/form-markdown-editor.component';
 
 @NgModule({
 	declarations: [
@@ -38,6 +39,7 @@ import {FormDaterangeScrollPickerComponent} from './components/form-daterange-sc
 		FormToggleGroupComponent,
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
+		FormMarkdownEditorComponent,
 	],
 	imports: [
 		CommonModule,
@@ -64,6 +66,7 @@ import {FormDaterangeScrollPickerComponent} from './components/form-daterange-sc
 		FormToggleGroupComponent,
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
+		FormMarkdownEditorComponent,
 	],
 })
 export class OrcFormModule {}

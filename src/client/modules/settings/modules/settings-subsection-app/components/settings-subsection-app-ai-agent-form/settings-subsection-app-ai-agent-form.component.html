@@ -113,7 +113,7 @@
                             (modelChange)="onModelChange($event)"
                             (favoritesChange)="onFavoritesChange($event)"
                         >
-                            <button matButton="outlined" type="button" [class.orc-status-warning-color]="!form.get('model')?.value">
+                            <button class="z-index-0" matButton="outlined" type="button" [class.orc-status-warning-color]="!form.get('model')?.value">
                                 <div class="font-size-s">{{ form.get('model')?.value ?? 'missing model' }}</div>
                             </button>
                         </orc-ai-model>
@@ -134,18 +134,36 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-column flex-gap-0-5">
-                <div class="title-form-section p-l-1">
-                    <span>System Prompt</span>
-                </div>
+            <div class="flex flex-column">
                 <orc-form-markdown-editor
+                    [class.fullscreen-system-message]="fullscreen_system_message()"
                     formControlName="system_message"
                     [hot]="focused_system_message() || form.get('system_message')?.dirty || false"
                     [invalid]="form.get('system_message')?.invalid || false"
                     placeholder="Enter system prompt..."
-                    height="20rem"
+                    [height]="fullscreen_system_message() ? '100%' : '20rem'"
                     (focusChange)="focused_system_message.set($event)"
-                ></orc-form-markdown-editor>
+                >
+                    <div class="flex flex-justify-between flex-items-center orc-surface-container-high-bg p-0-25">
+                        <div class="title-form-section p-l-1">
+                            <span>System Prompt</span>
+                        </div>
+                        <div class="flex flex-items-center flex-gap-0-5">
+                            <button matButton [disabled]="is_default_system_message()" (click)="onResetSystemMessage()">
+                                <span class="font-size-xs">Default Prompt</span>
+                            </button>
+                            <orc-button-copy [text]="form.get('system_message')?.value ?? ''" size="icon" />
+                            <button 
+                                mat-icon-button 
+                                type="button" 
+                                class="orc-icon-button fullscreen-button"
+                                
+                                (click)="fullscreen_system_message.set(!fullscreen_system_message())">
+                                <mat-icon>open_with</mat-icon>
+                            </button>
+                        </div>
+                    </div>    
+                </orc-form-markdown-editor>
             </div>
         </form>
     </div>

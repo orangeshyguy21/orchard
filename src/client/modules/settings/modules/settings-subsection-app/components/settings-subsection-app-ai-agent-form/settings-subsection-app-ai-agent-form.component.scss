@@ -16,7 +16,20 @@
 }
 
 .agent-form-content {
+    @extend %relative;
     @extend %p-1;
     flex: 1;
     @extend %overflow-y-auto;
+}
+
+.fullscreen-button {
+    rotate: 45deg;
+}
+
+.fullscreen-system-message {
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %right-0;
+    @extend %bottom-0;
 }

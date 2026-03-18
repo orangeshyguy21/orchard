@@ -23,6 +23,7 @@ import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcButtonModule} from '@client/modules/button/button.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -79,6 +80,7 @@ import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-s
 		OrcAiModule,
 		OrcProgressModule,
 		OrcLocalModule,
+        OrcButtonModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

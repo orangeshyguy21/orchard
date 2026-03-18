@@ -1,0 +1,122 @@
+@use 'molecule/molecule';
+
+:host {
+	display: block;
+}
+
+.editor-container {
+	@extend %relative;
+	@extend %orc-surface-container-lowest-bg;
+	@extend %orc-corner-small;
+    // border-bottom-left-radius: var(--mat-sys-corner-small);
+    // border-bottom-right-radius: var(--mat-sys-corner-small);
+	@extend %overflow-hidden;
+	@extend %trans-bg-border-color-fast;
+	border: 1px solid transparent;
+
+	&.editor-hot {
+		border-color: var(--orc-status-active);
+	}
+
+	&.editor-invalid {
+		border-color: var(--mat-sys-error);
+	}
+
+	&.editor-focused {
+		box-shadow: 0 0 0 1px var(--orc-status-active);
+	}
+
+	&.editor-focused.editor-invalid {
+		box-shadow: 0 0 0 1px var(--mat-sys-error);
+	}
+}
+
+.editor-content {
+	@extend %font-size-xs;
+	@extend %p-1;
+	font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+	white-space: pre-wrap;
+	word-break: break-word;
+	outline: none;
+	overflow-y: hidden;
+
+	.editor-focused & {
+		overflow-y: auto;
+	}
+	color: var(--mat-sys-on-surface);
+	caret-color: rgb(186, 203, 102);
+	caret-shape: block;
+	line-height: 1.5;
+
+	&:empty::before {
+		content: attr(data-placeholder);
+		color: var(--mat-sys-outline);
+		pointer-events: none;
+	}
+}
+
+/* ── Markdown token highlights ── */
+
+:host ::ng-deep {
+	.md-header-marker {
+		color: rgb(186, 203, 102);
+		font-weight: 700;
+	}
+
+	.md-header {
+		color: rgb(186, 203, 102);
+		font-weight: 700;
+	}
+
+	.md-bold-marker {
+		color: var(--mat-sys-outline);
+	}
+
+	.md-bold {
+		font-weight: 700;
+		color: rgb(220, 176, 114);
+	}
+
+	.md-italic-marker {
+		color: var(--mat-sys-outline);
+	}
+
+	.md-italic {
+		font-style: italic;
+		color: rgb(220, 176, 114);
+	}
+
+	.md-code {
+		color: rgb(220, 176, 114);
+		background-color: color-mix(in srgb, rgb(220, 176, 114), transparent 90%);
+		// border-radius: 3px;
+        border-bottom-right-radius: var(--mat-sys-corner-small);
+        border-bottom-left-radius: var(--mat-sys-corner-small);
+		padding: 0.1rem 0.25rem;
+	}
+
+	.md-blockquote {
+		color: var(--mat-sys-outline);
+	}
+
+	.md-list-marker {
+		color: rgb(186, 203, 102);
+		font-weight: 700;
+	}
+
+	.md-hr {
+		color: var(--mat-sys-outline);
+	}
+
+	.md-link-bracket {
+		color: var(--mat-sys-outline);
+	}
+
+	.md-link-text {
+		color: var(--mat-sys-primary);
+	}
+
+	.md-link-url {
+		color: var(--mat-sys-outline);
+	}
+}
