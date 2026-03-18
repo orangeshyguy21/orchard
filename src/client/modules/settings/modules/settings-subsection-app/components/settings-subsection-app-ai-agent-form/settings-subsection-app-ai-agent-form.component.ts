@@ -39,6 +39,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit {
     public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
     public focused_name = signal<boolean>(false);
     public focused_description = signal<boolean>(false);
+    public focused_system_message = signal<boolean>(false);
     public help_name = signal<boolean>(true);
     public help_description = signal<boolean>(true);
     public help_model = signal<boolean>(true);

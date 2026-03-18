@@ -33,6 +33,13 @@ export class SettingsSubsectionAppAiJobComponent {
 
     /* ── Public computed signals ── */
 
+    /** Whether the selected model is missing or not in the available models list */
+    public readonly model_warning = computed(() => {
+        const m = this.model();
+        if (!m) return true;
+        return !this.ai_models().some((am) => am.model === m);
+    });
+
     /** Calculates the nearest next run time across all agent schedules */
     public readonly next_run = computed<DateTime | null>(() => {
         const schedules = this.agent()?.schedules ?? [];

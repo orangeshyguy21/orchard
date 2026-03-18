@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -27,6 +27,13 @@ export class SettingsSubsectionAppAiAgentComponent {
 	public ai_vendor = input<string>('ollama');
 	public device_type = input<DeviceType>('desktop');
 	public loading = input<boolean>(false);
+
+	/* ── Public computed signals ── */
+	public readonly model_warning = computed(() => {
+		const m = this.model();
+		if (!m) return true;
+		return !this.ai_models().some((am) => am.model === m);
+	});
 
 	/* ── Outputs ── */
 	public update = output<void>();

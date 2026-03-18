@@ -49,7 +49,7 @@ export class SettingsSubsectionAppAiComponent {
 	public requestAgentForms = output<AiAgent[]>();
 
 	public ai_health = signal<AiHealth | null>(null);
-	public ai_models = signal<AiModel[]>([]);
+	public ai_models = signal<AiModel[] | null>(null);
     public ai_agent_tools = signal<AiAgentTool[]>([]);
 	public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
 	public loading_health = signal<boolean>(false);
@@ -92,12 +92,20 @@ export class SettingsSubsectionAppAiComponent {
 
 	private initialized_health: boolean = false;
 	private initialized_agents: boolean = false;
+    private set_vendor: string|undefined;
 
 	constructor() {
 		effect(() => {
 			const ai_enabled = this.ai_enabled();
 			if (ai_enabled && !this.initialized_agents) this.getAiDatas();
 			if (ai_enabled && !this.initialized_health) this.getAiHealth();
+		});
+        effect(() => {
+            const ai_vendor = this.app_settings()?.ai_vendor;
+            if(ai_vendor === this.set_vendor) return;
+            this.set_vendor = ai_vendor;
+            if(!ai_vendor || ai_vendor === '') return;
+            this.getAiModels();
 		});
 	}
 

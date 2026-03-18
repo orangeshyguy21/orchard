@@ -20,7 +20,7 @@
                                 (favoritesChange)="onFavoritesChange($event)"
                             >
                                 <button mat-button type="button">
-                                    <div class="font-size-xs" [class.orc-status-warning-color]="!model()">{{ model() ?? 'missing model' }}</div>
+                                    <div class="font-size-xs" [class.orc-status-warning-color]="model_warning()">{{ model() ?? 'missing model' }}</div>
                                 </button>
                             </orc-ai-model>
                         </div>

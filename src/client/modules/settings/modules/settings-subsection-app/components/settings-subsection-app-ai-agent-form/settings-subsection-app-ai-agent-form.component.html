@@ -134,58 +134,19 @@
                     </div>
                 </div>
             </div>
-            <div class="flex">
-                <div class="title-form-section p-b-0-5 p-l-1">
+            <div class="flex flex-column flex-gap-0-5">
+                <div class="title-form-section p-l-1">
                     <span>System Prompt</span>
                 </div>
-                system prompt
+                <orc-form-markdown-editor
+                    formControlName="system_message"
+                    [hot]="focused_system_message() || form.get('system_message')?.dirty || false"
+                    [invalid]="form.get('system_message')?.invalid || false"
+                    placeholder="Enter system prompt..."
+                    height="20rem"
+                    (focusChange)="focused_system_message.set($event)"
+                ></orc-form-markdown-editor>
             </div>
         </form>
     </div>
 </div>
-
-<!-- 
-<div class="mint-info-form-description-long-container">
-	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<orc-form-field-dynamic
-			[hot]="focused_description_long() || form_group().get(control_name())?.dirty || false"
-			[invalid]="form_group().get(control_name())?.invalid || false"
-			[info]="true"
-			(submit)="onSubmit($event)"
-			(cancel)="onCancel($event)"
-			(inform)="help_status.set(!help_status())"
-		>
-			<mat-form-field
-				appearance="fill"
-				[ngClass]="
-					focused_description_long() || form_group().get(control_name())?.dirty || false
-						? 'orc-hot-form-field'
-						: 'orc-cold-form-field'
-				"
-				class="w-full orc-dynamic-form-field"
-			>
-				<mat-label>Long description</mat-label>
-				<textarea
-					rows="1"
-					#element_description_long
-					matInput
-					[formControlName]="control_name()"
-					[formAutogrow]="true"
-					placeholder="Ex. Describe your mint in more detail"
-					(focus)="focused_description_long.set(true)"
-					(blur)="focused_description_long.set(false)"
-				></textarea>
-			</mat-form-field>
-		</orc-form-field-dynamic>
-		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
-			<div class="orc-animation-expand-collapse-inner">
-				<div class="flex p-t-0-5">
-					<orc-form-help-text class="orc-surface-container-high-bg">
-						<div class="p-b-1">Updates the long description for this mint.</div>
-						<div>A long description provides extended details about your mint in wallet interfaces.</div>
-					</orc-form-help-text>
-				</div>
-			</div>
-		</div>
-	</form>
-</div> -->
