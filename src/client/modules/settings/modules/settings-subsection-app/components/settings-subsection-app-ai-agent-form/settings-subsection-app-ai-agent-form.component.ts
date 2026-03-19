@@ -223,6 +223,11 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         // this.form.reset();
     }
 
+    public onActiveChange(active: boolean): void {
+        this.form.get('active')?.setValue(active);
+        this.form.get('active')?.markAsDirty();
+    }
+
     public onResetSystemMessage(): void {
         this.form.get('system_message')?.setValue(this.defaults?.system_message ?? '');
         this.form.get('system_message')?.markAsDirty();

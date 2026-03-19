@@ -98,3 +98,12 @@
     @extend %right-0;
     @extend %bottom-0;
 }
+
+.cron-card {
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-small;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-between;
+    @extend %p-0-5;
+}
