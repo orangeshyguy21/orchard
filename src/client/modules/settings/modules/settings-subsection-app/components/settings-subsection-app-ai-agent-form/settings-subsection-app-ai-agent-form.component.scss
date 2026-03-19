@@ -2,6 +2,7 @@
 @use 'nucleus/nucleus';
 
 .agent-form-container {
+    @extend %relative;
     @extend %flex;
     @extend %flex-column;
     @extend %h-full;
@@ -17,7 +18,7 @@
 }
 
 .agent-form-content {
-    @extend %relative;
+
     @extend %p-1;
     flex: 1;
     @extend %overflow-y-auto;
@@ -93,10 +94,11 @@
 
 .fullscreen-system-message {
     @extend %absolute;
-    @extend %top-0;
+    top: 3rem;
     @extend %left-0;
     @extend %right-0;
     @extend %bottom-0;
+    @extend %z-index-2;
 }
 
 .cron-card {
