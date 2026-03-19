@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import {firstValueFrom, Subscription} from 'rxjs';
@@ -36,6 +36,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         device_type: DeviceType;
         vendor: string;
         favorites: AiFavorites;
+        fullscreen_system_message: boolean;
     } = inject(FORM_PANEL_DATA);
 
     /* ── Public signals ── */
@@ -51,6 +52,11 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public is_default_tools = signal<boolean>(false);
     public fullscreen_system_message = signal<boolean>(false);
 
+    /* ── Public computed signals ── */
+    public readonly tool_map = computed(() => {
+        return new Map(this.data.tools.map((tool) => [tool.name, tool]));
+    });
+
     /* -- Public properties ── */
     public form: FormGroup;
 
@@ -59,7 +65,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     private subscriptions = new Subscription();
 
     constructor() {
+        console.log('agent form data', this.data);
         this.ai_favorites.set(this.data.favorites);
+        this.fullscreen_system_message.set(this.data.fullscreen_system_message);
         this.is_keyed_agent.set(this.data.agent !== null && this.data.agent.agent_key !== null);
         switch (this.data.mode) {
             case 'groundskeeper':
@@ -171,8 +179,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     }
 
     public onFullscreenSystemMessage(): void {
-        // this.panelRef.close();
+        this.fullscreen_system_message.set(!this.fullscreen_system_message());
     }
+
 
     /** Persists updated AI model favorites to local storage */
 	public onFavoritesChange(favorites: AiFavorites): void {

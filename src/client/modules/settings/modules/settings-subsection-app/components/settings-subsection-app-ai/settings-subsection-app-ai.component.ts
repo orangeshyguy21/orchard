@@ -184,8 +184,8 @@ export class SettingsSubsectionAppAiComponent {
 	}
 
     /** Opens the settings panel for the agent */   
-    public onOpenAgentSettings(agent_id: string, mode: AgentFormMode): void {
-        const agent = this.agents().get(agent_id);
+    public onOpenAgentSettings(event: {id: string, fullscreen_system_message?: boolean}, mode: AgentFormMode): void {
+        const agent = this.agents().get(event.id);
         this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
             data: {
                 mode: mode,
@@ -195,6 +195,7 @@ export class SettingsSubsectionAppAiComponent {
                 device_type: this.device_type(),
                 vendor: this.app_settings()?.ai_enabled,
                 favorites: this.ai_favorites(),
+                fullscreen_system_message: event.fullscreen_system_message ?? false,
             },
         });
     }

@@ -38,7 +38,7 @@ export class SettingsSubsectionAppAiAgentComponent {
 	/* ── Outputs ── */
 	public update = output<void>();
 	public favoritesChange = output<AiFavorites>();
-	public openSettings = output<string>();
+	public openSettings = output<{id: string, fullscreen_system_message?: boolean}>();
 
 	/* *******************************************************
 		Actions

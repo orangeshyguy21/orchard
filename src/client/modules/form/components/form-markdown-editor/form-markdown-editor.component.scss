@@ -1,11 +1,16 @@
 @use 'molecule/molecule';
 
 :host {
-	display: block;
+	display: flex;
+	flex-direction: column;
 }
 
 .editor-container {
 	@extend %relative;
+	@extend %flex;
+	@extend %flex-column;
+	flex: 1;
+	min-height: 0;
 	@extend %orc-surface-container-lowest-bg;
 	@extend %orc-corner-small;
     // border-bottom-left-radius: var(--mat-sys-corner-small);
@@ -29,18 +34,25 @@
 	&.editor-focused.editor-invalid {
 		box-shadow: 0 0 0 1px var(--mat-sys-error);
 	}
+
+	&.editor-fullscreen {
+		border-radius: 0;
+	}
 }
 
 .editor-content {
 	@extend %font-size-xs;
 	@extend %p-1;
+	flex: 1;
+	min-height: 0;
 	font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 	white-space: pre-wrap;
 	word-break: break-word;
 	outline: none;
 	overflow-y: hidden;
 
-	.editor-focused & {
+	.editor-focused &,
+	.editor-fullscreen & {
 		overflow-y: auto;
 	}
 	color: var(--mat-sys-on-surface);

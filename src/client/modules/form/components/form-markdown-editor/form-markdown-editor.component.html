@@ -3,6 +3,7 @@
 	[class.editor-focused]="focused()"
 	[class.editor-hot]="hot()"
 	[class.editor-invalid]="invalid()"
+	[class.editor-fullscreen]="fullscreen()"
 >
 	<ng-content></ng-content>
 	<div
@@ -10,7 +11,6 @@
 		class="editor-content"
 		[attr.contenteditable]="!disabled()"
 		[attr.data-placeholder]="placeholder()"
-		[style.height]="height()"
 		spellcheck="false"
 		(input)="onInput()"
 		(focus)="onFocus()"

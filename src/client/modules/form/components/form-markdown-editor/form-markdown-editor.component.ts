@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, ElementRef, forwardRef, input, output, signal, viewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, ElementRef, forwardRef, input, output, signal, viewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
@@ -8,6 +8,9 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 	templateUrl: './form-markdown-editor.component.html',
 	styleUrl: './form-markdown-editor.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[style.height]': 'height()',
+	},
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -22,6 +25,9 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 	public readonly invalid = input<boolean>(false);
 	public readonly placeholder = input<string>('');
 	public readonly height = input<string>('12rem');
+
+	/* ── Public computed signals ── */
+	public readonly fullscreen = computed(() => this.height() === '100%');
 
 	/* ── Outputs ── */
 	public readonly focusChange = output<boolean>();

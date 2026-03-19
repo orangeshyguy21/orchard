@@ -23,8 +23,8 @@
                     </orc-ai-model>
                 </div>
                 
-                <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit(agent.id)">
-                    <mat-icon class="orc-outline-color">settings</mat-icon>
+                <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit({id: agent.id})">
+                    <mat-icon>settings</mat-icon>
                 </button>
             </div>
     
@@ -33,7 +33,7 @@
             <div class="p-t-1">
                 <div class="system-message font-size-xs">
                     <div class="system-message-content">{{ agent.system_message }}</div>
-                    <button mat-icon-button type="button" class="expand-button">
+                    <button mat-icon-button type="button" class="expand-button" (click)="openSettings.emit({id: agent.id, fullscreen_system_message: true})">
                         <mat-icon>open_with</mat-icon>
                     </button>
                 </div>

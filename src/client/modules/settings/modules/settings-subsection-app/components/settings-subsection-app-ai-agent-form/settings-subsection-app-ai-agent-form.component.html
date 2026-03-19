@@ -134,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-column">
+            <div class="flex flex-column p-t-1">
                 <orc-form-markdown-editor
                     [class.fullscreen-system-message]="fullscreen_system_message()"
                     formControlName="system_message"
@@ -157,13 +157,25 @@
                                 mat-icon-button 
                                 type="button" 
                                 class="orc-icon-button fullscreen-button"
-                                
-                                (click)="fullscreen_system_message.set(!fullscreen_system_message())">
+                                (click)="onFullscreenSystemMessage()">
                                 <mat-icon>open_with</mat-icon>
                             </button>
                         </div>
                     </div>    
                 </orc-form-markdown-editor>
+            </div>
+            <div class="flex">
+                <div class="title-form-section p-b-0-5 p-l-1">
+                    <span>Tools</span>
+                </div>
+                <div class="flex flex-items-center flex-gap-1">
+                    @for (tool of data.agent?.tools ?? []; track tool) {
+                        <div class="flex flex-items-center flex-gap-0-5">
+                            <div class="font-size-s">{{ tool_map().get(tool)?.name }}</div>
+                            <div>{{ tool_map().get(tool)?.description }}</div>
+                        </div>
+                    }
+                </div>
             </div>
         </form>
     </div>
