@@ -208,23 +208,21 @@
                         </div>
                     </div>
 
-
                     <div class="flex flex-row flex-gap-0-5">
                         @for (schedule of form.get('schedules')?.value ?? []; track schedule) {
                             <div class="cron-card flex-grow">
                                 <span class="font-size-s p-l-1">{{ schedule | localCron | titlecase }}</span>
                                 <div class="flex flex-items-center flex-gap-0-5">
-                                    <button mat-icon-button type="button" class="orc-icon-button">
+                                    <button mat-icon-button type="button" class="orc-icon-button" (click)="onEditSchedule($index)">
                                         <mat-icon>edit</mat-icon>
                                     </button>
-                                    <button mat-icon-button type="button" class="orc-icon-button">
+                                    <button mat-icon-button type="button" class="orc-icon-button" (click)="onDeleteSchedule($index)">
                                         <mat-icon>delete_forever</mat-icon>
                                     </button>
                                 </div>
                             </div>
                         }
                     </div>
-
                 </div>
             }
 

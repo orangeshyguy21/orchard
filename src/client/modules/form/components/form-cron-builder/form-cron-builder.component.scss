@@ -1,0 +1,84 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.cron-builder-container {
+	@extend %flex;
+	@extend %flex-column;
+	min-width: 30rem;
+}
+
+.cron-builder-header {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-between;
+	@extend %p-h-1;
+	@extend %p-v-0-5;
+}
+
+.cron-tabs {
+	@extend %p-h-0-5;
+}
+
+.cron-tab-content {
+    margin-top: 1rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+	@extend %p-1;
+	@extend %orc-surface-container-high-bg;
+	@extend %orc-corner-small;
+}
+
+.cron-row {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %flex-wrap;
+}
+
+.cron-select {
+	width: 5rem;
+
+	&.cron-select-wide {
+		width: 8rem;
+	}
+
+	&.cron-select-small {
+		width: 4rem;
+	}
+}
+
+.cron-tab-modes {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+	@extend %p-t-1;
+}
+
+.cron-mode-card {
+	@extend %p-1;
+	@extend %orc-surface-container-high-bg;
+	@extend %orc-corner-small;
+}
+
+.day-checkboxes {
+	@extend %flex;
+	@extend %flex-wrap;
+	@extend %flex-gap-1;
+}
+
+.cron-builder-preview {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %p-1;
+}
+
+.cron-builder-actions {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-end;
+	@extend %flex-gap-0-5;
+	@extend %p-h-1;
+	@extend %p-b-1;
+}

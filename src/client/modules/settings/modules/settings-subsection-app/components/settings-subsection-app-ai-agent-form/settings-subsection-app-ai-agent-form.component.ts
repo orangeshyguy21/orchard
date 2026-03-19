@@ -2,6 +2,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 /* Vendor Dependencies */
+import {MatDialog} from '@angular/material/dialog';
 import {firstValueFrom, Subscription} from 'rxjs';
 /* Application Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -12,6 +13,7 @@ import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class'
 import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {FormPanelRef, FORM_PANEL_DATA} from '@client/modules/form/services/form-panel';
+import {FormCronBuilderComponent} from '@client/modules/form/components/form-cron-builder/form-cron-builder.component';
 import {Config} from '@client/modules/config/types/config';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
@@ -30,6 +32,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	/* ── Injected dependencies ── */
 	private readonly panelRef = inject(FormPanelRef);
 	private readonly aiService = inject(AiService);
+	private readonly dialog = inject(MatDialog);
     private readonly settingDeviceService = inject(SettingDeviceService);
 	public readonly data: {
         mode: AgentFormMode;
@@ -253,11 +256,43 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
+    /** Opens the cron builder dialog to add a new schedule */
     public onAddSchedule(): void {
-        console.log('onAddSchedule');
-        // const schedules: string[] = this.form.get('schedules')?.value ?? [];
-        // this.form.get('schedules')?.setValue([...schedules, '']);
-        // this.form.get('schedules')?.markAsDirty();
+        const ref = this.dialog.open(FormCronBuilderComponent, {
+            data: {cron: null},
+        });
+        this.subscriptions.add(
+            ref.afterClosed().subscribe((cron: string | undefined) => {
+                if (!cron) return;
+                const schedules: string[] = this.form.get('schedules')?.value ?? [];
+                this.form.get('schedules')?.setValue([...schedules, cron]);
+                this.form.get('schedules')?.markAsDirty();
+            })
+        );
+    }
+
+    /** Opens the cron builder dialog to edit an existing schedule */
+    public onEditSchedule(index: number): void {
+        const schedules: string[] = this.form.get('schedules')?.value ?? [];
+        const ref = this.dialog.open(FormCronBuilderComponent, {
+            data: {cron: schedules[index]},
+        });
+        this.subscriptions.add(
+            ref.afterClosed().subscribe((cron: string | undefined) => {
+                if (!cron) return;
+                const updated = [...schedules];
+                updated[index] = cron;
+                this.form.get('schedules')?.setValue(updated);
+                this.form.get('schedules')?.markAsDirty();
+            })
+        );
+    }
+
+    /** Removes a schedule at the given index */
+    public onDeleteSchedule(index: number): void {
+        const schedules: string[] = this.form.get('schedules')?.value ?? [];
+        this.form.get('schedules')?.setValue(schedules.filter((_: string, i: number) => i !== index));
+        this.form.get('schedules')?.markAsDirty();
     }
 
     /** Removes a tool from the selected tools list */

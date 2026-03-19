@@ -12,6 +12,12 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatRippleModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatListModule} from '@angular/material/list';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
 /* Native Dependencies */
 import {FormAutogrowDirective} from '@client/modules/form/directives/form-autogrow/form-autogrow.directive';
 import {FormNumberSeparatorDirective} from './directives/form-number-separator/form-number-separator.directive';
@@ -25,6 +31,7 @@ import {FormToggleGroupComponent} from './components/form-toggle-group/form-togg
 import {FormScrollCalendarComponent} from './components/form-scroll-calendar/form-scroll-calendar.component';
 import {FormDaterangeScrollPickerComponent} from './components/form-daterange-scroll-picker/form-daterange-scroll-picker.component';
 import {FormMarkdownEditorComponent} from './components/form-markdown-editor/form-markdown-editor.component';
+import {FormCronBuilderComponent} from './components/form-cron-builder/form-cron-builder.component';
 
 @NgModule({
 	declarations: [
@@ -40,6 +47,7 @@ import {FormMarkdownEditorComponent} from './components/form-markdown-editor/for
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
 		FormMarkdownEditorComponent,
+		FormCronBuilderComponent,
 	],
 	imports: [
 		CommonModule,
@@ -53,6 +61,12 @@ import {FormMarkdownEditorComponent} from './components/form-markdown-editor/for
 		MatRippleModule,
 		MatDatepickerModule,
 		MatListModule,
+		MatTabsModule,
+		MatSelectModule,
+		MatCheckboxModule,
+		MatRadioModule,
+		MatDialogModule,
+		MatInputModule,
 	],
 	exports: [
 		FormAutogrowDirective,
@@ -67,6 +81,7 @@ import {FormMarkdownEditorComponent} from './components/form-markdown-editor/for
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
 		FormMarkdownEditorComponent,
+		FormCronBuilderComponent,
 	],
 })
 export class OrcFormModule {}
