@@ -175,7 +175,7 @@
                         </button>
                         <button matButton="tonal" (click)="onToggleToolsAvailable()">
                             <mat-icon>{{ tools_available() ? 'visibility_off' : 'visibility' }}</mat-icon>
-                            <span class="font-size-s">{{ tools_available() ? 'Hide Available Tools' : 'Show Available Tools' }}</span>
+                            <span class="font-size-s">{{ tools_available() ? 'Hide Available Tools' : 'Show Available Tools (' + available_tool_count() + ')' }}</span>
                         </button>
                     </div>
                     
