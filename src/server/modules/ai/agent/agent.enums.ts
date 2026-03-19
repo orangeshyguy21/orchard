@@ -9,6 +9,11 @@ export enum AgentRunStatus {
 	ERROR = 'error',
 }
 
+export enum AgentToolRole {
+	READ = 'read',
+	WRITE = 'write',
+}
+
 export enum AgentToolCategory {
 	BITCOIN = 'bitcoin',
 	HEALTH = 'health',

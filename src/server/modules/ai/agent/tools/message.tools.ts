@@ -3,7 +3,7 @@ import {Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {MessageService} from '@server/modules/message/message.service';
 /* Local Dependencies */
-import {AgentToolCategory, AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -19,6 +19,8 @@ const logger = new Logger('AgentMessage');
 /** No-op tool that lets the agent explicitly decide not to notify the operator */
 export const SkipMessageTool: AiToolEntry = {
 	category: AgentToolCategory.MESSAGE,
+	role: AgentToolRole.WRITE,
+	title: 'Skip Message',
 	description: 'Explicitly skip sending a message to the operator for this run.',
 	tool: {
 		type: 'function',
@@ -50,6 +52,8 @@ export const SkipMessageTool: AiToolEntry = {
 export function createSendMessageTool(messageService?: MessageService): AiToolEntry {
 	return {
 		category: AgentToolCategory.MESSAGE,
+		role: AgentToolRole.WRITE,
+		title: 'Send Message',
 		description: 'Send a notification message to the operator via Telegram.',
 		tool: {
 			type: 'function',

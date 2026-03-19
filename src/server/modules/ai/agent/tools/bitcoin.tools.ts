@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolCategory, AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -75,6 +75,8 @@ const GET_BITCOIN_ANALYTICS_METRICS_QUERY = `
 /** Fetches bitcoin network peer and connectivity information */
 export const GetBitcoinNetworkInfoTool: AiToolEntry = {
 	category: AgentToolCategory.BITCOIN,
+	role: AgentToolRole.READ,
+	title: 'Network Info',
 	description: 'Check Bitcoin node peer connections and network status.',
 	tool: {
 		type: 'function',
@@ -104,6 +106,8 @@ export const GetBitcoinNetworkInfoTool: AiToolEntry = {
 /** Fetches bitcoin blockchain sync and chain state information */
 export const GetBitcoinBlockchainInfoTool: AiToolEntry = {
 	category: AgentToolCategory.BITCOIN,
+	role: AgentToolRole.READ,
+	title: 'Blockchain Info',
 	description: 'Check Bitcoin blockchain sync progress and chain state.',
 	tool: {
 		type: 'function',
@@ -135,6 +139,8 @@ export const GetBitcoinBlockchainInfoTool: AiToolEntry = {
 /** Fetches bitcoin per-metric analytics with optional filters */
 export const GetBitcoinAnalyticsMetricsTool: AiToolEntry = {
 	category: AgentToolCategory.BITCOIN,
+	role: AgentToolRole.READ,
+	title: 'Bitcoin Analytics',
 	description: 'Track on-chain payment activity and fees over time.',
 	tool: {
 		type: 'function',

@@ -1,6 +1,6 @@
 /* Local Dependencies */
 import {AiTool} from '../ai.types';
-import {AgentToolCategory} from '../agent/agent.enums';
+import {AgentToolCategory, AgentToolRole} from '../agent/agent.enums';
 
 /* *******************************************************
 	Agent Context
@@ -43,6 +43,8 @@ export type AiToolHandler = (args: Record<string, unknown>) => Promise<AiToolRes
 export type AiToolEntry = {
 	tool: AiTool;
 	category: AgentToolCategory;
+	role: AgentToolRole;
+	title: string;
 	description: string;
 	throttle_max_calls: number;
 	throttle_window_seconds: number;

@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolCategory, AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -83,6 +83,8 @@ const GET_MINT_INFO_QUERY = `
 /** Fetches cashu mint identity and configuration information */
 export const GetMintInfoTool: AiToolEntry = {
 	category: AgentToolCategory.MINT,
+	role: AgentToolRole.READ,
+	title: 'Mint Info',
 	description: 'Get Cashu mint identity, version, and contact info.',
 	tool: {
 		type: 'function',
@@ -113,6 +115,8 @@ export const GetMintInfoTool: AiToolEntry = {
 /** Fetches per-metric mint analytics with optional metric filtering */
 export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 	category: AgentToolCategory.MINT,
+	role: AgentToolRole.READ,
+	title: 'Mint Metrics',
 	description: 'Analyze mint and melt volumes, swap fees, and issuance over time.',
 	tool: {
 		type: 'function',
@@ -195,6 +199,8 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 /** Fetches mint analytics for balances, mints, melts, and fees */
 export const GetMintAnalyticsTool: AiToolEntry = {
 	category: AgentToolCategory.MINT,
+	role: AgentToolRole.READ,
+	title: 'Mint Analytics',
 	description: 'Track mint activity including balances, mints, melts, and fees.',
 	tool: {
 		type: 'function',

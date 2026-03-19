@@ -120,8 +120,10 @@ export const AI_AGENT_TOOLS_QUERY = `
     query AiAgentTools {
         ai_agent_tools {
             name
+            title
             description
             category
+            role
             throttle_max_calls
             throttle_window_seconds
         }

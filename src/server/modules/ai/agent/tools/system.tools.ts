@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolCategory, AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -37,6 +37,8 @@ const GET_SYSTEM_METRICS_QUERY = `
 /** Fetches host system resource metrics (CPU, memory, disk, load, heap, uptime) */
 export const GetSystemMetricsTool: AiToolEntry = {
 	category: AgentToolCategory.SYSTEM,
+	role: AgentToolRole.READ,
+	title: 'System Metrics',
 	description: 'Query host system CPU, memory, disk, and load metrics over time.',
 	tool: {
 		type: 'function',

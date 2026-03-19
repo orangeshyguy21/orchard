@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AgentToolCategory, AgentToolName} from '../agent.enums';
+import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
 import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
@@ -36,6 +36,8 @@ const GET_PUBLIC_PORTS_QUERY = `
 /** Checks liveness of public HTTP endpoints by URL */
 export const GetUrlHealthTool: AiToolEntry = {
 	category: AgentToolCategory.HEALTH,
+	role: AgentToolRole.READ,
+	title: 'URL Health',
 	description: 'Check liveness of public HTTP endpoints by URL.',
 	tool: {
 		type: 'function',
@@ -77,6 +79,8 @@ export const GetUrlHealthTool: AiToolEntry = {
 /** Checks TCP port reachability for host:port targets */
 export const GetPortHealthTool: AiToolEntry = {
 	category: AgentToolCategory.HEALTH,
+	role: AgentToolRole.READ,
+	title: 'Port Health',
 	description: 'Check TCP port reachability for host:port targets.',
 	tool: {
 		type: 'function',

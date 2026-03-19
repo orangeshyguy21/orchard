@@ -3,15 +3,19 @@ import {OrchardAgentTool} from '@shared/generated.types';
 
 export class AiAgentTool implements OrchardAgentTool {
 	name: string;
+	title: string;
 	description: string;
 	category: string;
+	role: string;
 	throttle_max_calls: number;
 	throttle_window_seconds: number;
 
 	constructor(tool: OrchardAgentTool) {
 		this.name = tool.name;
+		this.title = tool.title;
 		this.description = tool.description;
 		this.category = tool.category;
+		this.role = tool.role;
 		this.throttle_max_calls = tool.throttle_max_calls;
 		this.throttle_window_seconds = tool.throttle_window_seconds;
 	}
