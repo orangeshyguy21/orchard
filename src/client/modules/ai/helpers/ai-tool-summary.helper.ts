@@ -24,6 +24,8 @@ const TOOL_REASONS: Record<string, string> = {
 	system: 'System metrics not enabled in settings',
 };
 
+const CATEGORY_ORDER = ['bitcoin', 'lightning', 'mint', 'system', 'health', 'memory', 'message'];
+
 /** Builds a tool summary chip array from an agent's tools, grouped by category */
 export function buildToolSummary(
 	agent: AiAgent,
@@ -50,14 +52,20 @@ export function buildToolSummary(
 		category_map.set(tool.category, (category_map.get(tool.category) ?? 0) + 1);
 	}
 
-	return Array.from(category_map.entries()).map(([category, count]) => {
-		const available = availability[category] ?? false;
-		return {
-			category,
-			count,
-			available,
-			icon: TOOL_ICONS[category] ?? 'build',
-			reason: available ? null : (TOOL_REASONS[category] ?? null),
-		};
-	});
+	return Array.from(category_map.entries())
+		.sort(([a], [b]) => {
+			const idx_a = CATEGORY_ORDER.indexOf(a);
+			const idx_b = CATEGORY_ORDER.indexOf(b);
+			return (idx_a === -1 ? CATEGORY_ORDER.length : idx_a) - (idx_b === -1 ? CATEGORY_ORDER.length : idx_b);
+		})
+		.map(([category, count]) => {
+			const available = availability[category] ?? false;
+			return {
+				category,
+				count,
+				available,
+				icon: TOOL_ICONS[category] ?? 'build',
+				reason: available ? null : (TOOL_REASONS[category] ?? null),
+			};
+		});
 }

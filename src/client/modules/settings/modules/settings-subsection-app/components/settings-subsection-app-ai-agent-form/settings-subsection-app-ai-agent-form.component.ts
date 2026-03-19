@@ -9,12 +9,15 @@ import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class';
+import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {FormPanelRef, FORM_PANEL_DATA} from '@client/modules/form/services/form-panel';
+import {Config} from '@client/modules/config/types/config';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 /* Native Dependencies */
-import {AgentFormMode} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
+import {AgentFormMode, ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai-agent-form',
@@ -37,6 +40,8 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         vendor: string;
         favorites: AiFavorites;
         fullscreen_system_message: boolean;
+        app_settings: ParsedAppSettings | null;
+        config: Config | null;
     } = inject(FORM_PANEL_DATA);
 
     /* ── Public signals ── */
@@ -51,12 +56,12 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public is_default_system_message = signal<boolean>(false);
     public is_default_tools = signal<boolean>(false);
     public fullscreen_system_message = signal<boolean>(false);
+    public selected_tools = signal<{summary: ToolSummary, tools: string[]}[]>([]);
 
     /* ── Public computed signals ── */
     public readonly tool_map = computed(() => {
         return new Map(this.data.tools.map((tool) => [tool.name, tool]));
     });
-
     /* -- Public properties ── */
     public form: FormGroup;
 
@@ -65,7 +70,6 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     private subscriptions = new Subscription();
 
     constructor() {
-        console.log('agent form data', this.data);
         this.ai_favorites.set(this.data.favorites);
         this.fullscreen_system_message.set(this.data.fullscreen_system_message);
         this.is_keyed_agent.set(this.data.agent !== null && this.data.agent.agent_key !== null);
@@ -80,6 +84,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
                 this.form = this.getJobCreateForm();
                 break;
         }
+        this.selected_tools.set(this.getSelectedTools());
         if (this.is_keyed_agent()) {
             this.subscriptions.add(this.subSystemMessage());
             this.subscriptions.add(this.subTools());
@@ -155,8 +160,30 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     /** Watches tools control and updates is_default signal */
     private subTools(): Subscription | undefined {
         return this.form.get('tools')?.valueChanges.subscribe((value) => {
+            this.selected_tools.set(this.getSelectedTools());
             this.is_default_tools.set(JSON.stringify(value) === JSON.stringify(this.defaults?.tools));
         });
+    }
+
+    /* *******************************************************
+		Form
+	******************************************************** */
+
+    /** Groups selected tools by category with availability and icon metadata */
+    private getSelectedTools(): {summary: ToolSummary, tools: string[]}[] {
+        const tool_names: string[] = this.form.get('tools')?.value ?? [];
+        const agent = new AiAgent({tools: tool_names} as any);
+        const summaries = buildToolSummary(agent, this.data.tools, this.data.app_settings, this.data.config);
+        const tool_map = this.tool_map();
+        const categories = new Map<string, string[]>();
+        for (const name of tool_names) {
+            const category = tool_map.get(name)?.category ?? 'Uncategorized';
+            categories.set(category, [...(categories.get(category) ?? []), name]);
+        }
+        return summaries.map((summary) => ({
+            summary,
+            tools: categories.get(summary.category) ?? [],
+        }));
     }
 
     /* *******************************************************
@@ -182,6 +209,10 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         this.fullscreen_system_message.set(!this.fullscreen_system_message());
     }
 
+    public onModelChange(model: string): void {
+        this.form.get('model')?.setValue(model);
+        this.form.get('model')?.markAsDirty();
+    }
 
     /** Persists updated AI model favorites to local storage */
 	public onFavoritesChange(favorites: AiFavorites): void {
@@ -189,9 +220,18 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
-    public onModelChange(model: string): void {
-        this.form.get('model')?.setValue(model);
-        this.form.get('model')?.markAsDirty();
+    /** Removes a tool from the selected tools list */
+    public onRemoveTool(tool_name: string): void {
+        const tools: string[] = this.form.get('tools')?.value ?? [];
+        this.form.get('tools')?.setValue(tools.filter((t: string) => t !== tool_name));
+        this.form.get('tools')?.markAsDirty();
+    }
+
+    public onAddTool(): void {
+        console.log('onAddTool');
+        // const tools: string[] = this.form.get('tools')?.value ?? [];
+        // this.form.get('tools')?.setValue([...tools, '']);
+        // this.form.get('tools')?.markAsDirty();
     }
 
     /* *******************************************************

@@ -1,4 +1,5 @@
 @use 'molecule/molecule';
+@use 'nucleus/nucleus';
 
 .agent-form-container {
     @extend %flex;
@@ -24,6 +25,58 @@
 
 .fullscreen-button {
     rotate: 45deg;
+}
+
+.tool-category-chip {
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %orc-corner-full;
+    @extend %p-l-0-25;
+    @extend %p-r-1;
+    @extend %p-v-0-25;
+    width: fit-content;
+    background: color-mix(in srgb, var(--orc-status-active) 10%, transparent);
+    @extend %orc-status-active-color;
+}
+
+.category-circle {
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %orc-corner-full;
+    @extend %p-0-25;
+
+    mat-icon {
+        @extend %orc-status-active-color;
+        font-size: 1.125rem;
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+}
+
+.tool-unavailable {
+    background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
+    @extend %orc-status-inactive-color;
+
+    .category-circle mat-icon {
+        @extend %orc-status-inactive-color;
+    }
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.tool-card {
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-small;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %p-0-5;
 }
 
 .fullscreen-system-message {

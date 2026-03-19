@@ -196,6 +196,8 @@ export class SettingsSubsectionAppAiComponent {
                 vendor: this.app_settings()?.ai_enabled,
                 favorites: this.ai_favorites(),
                 fullscreen_system_message: event.fullscreen_system_message ?? false,
+                app_settings: this.app_settings(),
+                config: this.config(),
             },
         });
     }
