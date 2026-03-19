@@ -253,6 +253,13 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
+    public onAddSchedule(): void {
+        console.log('onAddSchedule');
+        // const schedules: string[] = this.form.get('schedules')?.value ?? [];
+        // this.form.get('schedules')?.setValue([...schedules, '']);
+        // this.form.get('schedules')?.markAsDirty();
+    }
+
     /** Removes a tool from the selected tools list */
     public onRemoveTool(tool_name: string): void {
         const tools: string[] = this.form.get('tools')?.value ?? [];

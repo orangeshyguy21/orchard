@@ -194,10 +194,21 @@
             </div>
 
             @if (data.mode !== 'groundskeeper') {
-                <div class="flex flex-column flex-gap-1">
-                    <div class="title-l p-b-0-5 p-l-1">
-                        <span>Scheduling</span>
+                <div class="flex flex-column flex-gap-1 p-v-1">
+
+                    <div class="flex flex-items-center flex-justify-between flex-gap-0-5">
+                        <div class="title-l p-b-0-5 p-l-1">
+                            <span>Scheduling</span>
+                        </div>
+                        <div class="flex flex-items-center flex-gap-0-5">
+                            <button matButton="tonal" (click)="onAddSchedule()">
+                                <mat-icon>add</mat-icon>
+                                <span class="font-size-s">Add Schedule</span>
+                            </button>
+                        </div>
                     </div>
+
+
                     <div class="flex flex-row flex-gap-0-5">
                         @for (schedule of form.get('schedules')?.value ?? []; track schedule) {
                             <div class="cron-card flex-grow">
