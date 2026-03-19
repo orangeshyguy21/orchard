@@ -9,7 +9,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 	styleUrl: './form-markdown-editor.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
-		'[style.height]': 'height()',
+		'[style.height]': 'height() === "100%" ? "unset" : height()',
 	},
 	providers: [
 		{
@@ -144,7 +144,8 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		}
 
 		const cursor_offset = this.saveCursorPosition(el);
-		const html = this.tokenize(this._value);
+		let html = this.tokenize(this._value);
+		if (this._value.endsWith('\n')) html += '\n';
 		el.innerHTML = html;
 
 		if (cursor_offset !== null) {

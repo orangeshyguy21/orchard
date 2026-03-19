@@ -13,8 +13,6 @@
 	min-height: 0;
 	@extend %orc-surface-container-lowest-bg;
 	@extend %orc-corner-small;
-    // border-bottom-left-radius: var(--mat-sys-corner-small);
-    // border-bottom-right-radius: var(--mat-sys-corner-small);
 	@extend %overflow-hidden;
 	@extend %trans-bg-border-color-fast;
 	border: 1px solid transparent;
