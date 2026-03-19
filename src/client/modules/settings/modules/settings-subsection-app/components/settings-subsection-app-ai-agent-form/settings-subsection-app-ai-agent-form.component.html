@@ -1,9 +1,12 @@
 <div class="agent-form-container">
     <div class="agent-form-header">
         <div class="p-l-0-5">{{ data.mode === 'groundskeeper' ? 'Agent' : 'Agent job' }} settings</div>
-        <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
-            <mat-icon>close</mat-icon>
-        </button>
+        <div class="flex flex-items-center flex-gap-1">
+            <button matButton="filled" [disabled]="form.invalid || form.pristine" (click)="onSave()">Save</button>
+            <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
     </div>
     <div class="category-rule"></div>
     <div class="agent-form-content">
@@ -34,7 +37,7 @@
                         [info]="true"
                         [standalone]="false"
                         (inform)="help_name.set(!help_name())"
-                        (cancel)="onCancel($event)"
+                        (cancel)="onCancel($event, 'name')"
                     >
                         <mat-form-field
                             appearance="fill"
@@ -78,7 +81,7 @@
                         [info]="true"
                         [standalone]="false"
                         (inform)="help_description.set(!help_description())"
-                        (cancel)="onCancel($event)"
+                        (cancel)="onCancel($event, 'description')"
                     >
                         <mat-form-field
                             appearance="fill"

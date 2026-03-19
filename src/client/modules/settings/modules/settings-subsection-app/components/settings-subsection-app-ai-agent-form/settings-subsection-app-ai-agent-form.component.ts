@@ -215,15 +215,23 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     /* *******************************************************
 		Actions
 	******************************************************** */
+
+    public onSave(): void {
+        console.log('onSave');
+    }
     
     public onClose(): void {
         this.panelRef.close();
     }
 
-    public onCancel(event: Event): void {
+    /** Reverts a single form field to its original value and marks it pristine */
+    public onCancel(event: Event, field: string): void {
         event.preventDefault();
-        console.log('onCancel', event);
-        // this.form.reset();
+        const control = this.form.get(field);
+        if (!control) return;
+        const original = (this.data.agent as any)?.[field] ?? null;
+        control.setValue(original);
+        control.markAsPristine();
     }
 
     public onActiveChange(active: boolean): void {
