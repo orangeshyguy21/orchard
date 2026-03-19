@@ -47,6 +47,8 @@ export class SettingsSubsectionAppAiComponent {
 	public submit = output<{form: FormGroup; control: string}>();
 	public cancel = output<{form: FormGroup; control: string}>();
 	public requestAgentForms = output<AiAgent[]>();
+	public saveAgent = output<{id: string; values: Record<string, unknown>}>();
+	public createAgent = output<{values: Record<string, unknown>}>();
 
 	public ai_health = signal<AiHealth | null>(null);
 	public ai_models = signal<AiModel[] | null>(null);
@@ -183,10 +185,10 @@ export class SettingsSubsectionAppAiComponent {
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
-    /** Opens the settings panel for the agent */   
+    /** Opens the settings panel for the agent */
     public onOpenAgentSettings(event: {id: string, fullscreen_system_message?: boolean}, mode: AgentFormMode): void {
         const agent = this.agents().get(event.id);
-        this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
+        const ref = this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
             data: {
                 mode: mode,
                 agent: agent,
@@ -199,6 +201,14 @@ export class SettingsSubsectionAppAiComponent {
                 app_settings: this.app_settings(),
                 config: this.config(),
             },
+        });
+        ref.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((result) => {
+            if (!result) return;
+            if (result.mode === 'jobcreate') {
+                this.createAgent.emit({values: result.values});
+            } else {
+                this.saveAgent.emit({id: result.id, values: result.values});
+            }
         });
     }
 }

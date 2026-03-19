@@ -85,6 +85,12 @@
                                 (openSettings)="onOpenAgentSettings($event, 'jobedit')"
                             ></orc-settings-subsection-app-ai-job>
                         }
+                        <div class="add-agent-job-card" matRipple (click)="onOpenAgentSettings({id: 'new'}, 'jobcreate')">
+                            <div class="flex flex-column flex-items-center flex-justify-center flex-gap-0-5  orc-outline-color">
+                                <mat-icon class="icon-lg">add_task</mat-icon>
+                                <div class="font-size-s">New Agent Job</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

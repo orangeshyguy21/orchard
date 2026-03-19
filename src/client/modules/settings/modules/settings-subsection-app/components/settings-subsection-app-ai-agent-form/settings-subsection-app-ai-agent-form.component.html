@@ -1,6 +1,6 @@
 <div class="agent-form-container">
     <div class="agent-form-header">
-        <div class="p-l-0-5">{{ data.mode === 'groundskeeper' ? 'Agent' : 'Agent job' }} settings</div>
+        <div class="p-l-0-5">{{ form_title() }}</div>
         <div class="flex flex-items-center flex-gap-1">
             <button matButton="filled" [disabled]="form.invalid || form.pristine" (click)="onSave()">Save</button>
             <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
@@ -180,9 +180,11 @@
                             <span>System Prompt</span>
                         </div>
                         <div class="flex flex-items-center flex-gap-0-5">
-                            <button matButton [disabled]="is_default_system_message()" (click)="onResetSystemMessage()">
-                                <span class="font-size-xs">Default Prompt</span>
-                            </button>
+                            @if (data.agent?.agent_key !== null) {
+                                <button matButton [disabled]="is_default_system_message()" (click)="onResetSystemMessage()">
+                                    <span class="font-size-xs">Default Prompt</span>
+                                </button>
+                            }
                             <orc-button-copy [text]="form.get('system_message')?.value ?? ''" size="icon" />
                             <button 
                                 mat-icon-button 
@@ -194,6 +196,9 @@
                         </div>
                     </div>    
                 </orc-form-markdown-editor>
+                <mat-error>
+                    <orc-form-error [errors]="form.get('system_message')?.errors">Invalid system prompt</orc-form-error>
+                </mat-error>
             </div>
 
             @if (data.mode !== 'groundskeeper') {
@@ -203,17 +208,11 @@
                         <div class="title-l p-b-0-5 p-l-1">
                             <span>Scheduling</span>
                         </div>
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <button matButton="tonal" (click)="onAddSchedule()">
-                                <mat-icon>add</mat-icon>
-                                <span class="font-size-s">Add Schedule</span>
-                            </button>
-                        </div>
                     </div>
 
-                    <div class="flex flex-row flex-gap-0-5">
+                    <div class="flex flex-column flex-gap-0-5">
                         @for (schedule of form.get('schedules')?.value ?? []; track schedule) {
-                            <div class="cron-card flex-grow">
+                            <div class="cron-card">
                                 <span class="font-size-s p-l-1">{{ schedule | localCron | titlecase }}</span>
                                 <div class="flex flex-items-center flex-gap-0-5">
                                     <button mat-icon-button type="button" class="orc-icon-button" (click)="onEditSchedule($index)">
@@ -225,6 +224,12 @@
                                 </div>
                             </div>
                         }
+                        <div class="cron-card new-cron-card" (click)="onAddSchedule()">
+                            <span class="font-size-s p-l-1">Add Schedule</span>
+                            <button mat-icon-button type="button" class="orc-icon-button">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
             }
@@ -236,9 +241,11 @@
                         <span>Tools</span>
                     </div>
                     <div class="flex flex-items-center flex-gap-0-5">
-                        <button matButton [disabled]="is_default_tools()" (click)="onResetTools()">
-                            <span class="font-size-xs">Default Tools</span>
-                        </button>
+                        @if (data.agent?.agent_key !== null) {
+                            <button matButton [disabled]="is_default_tools()" (click)="onResetTools()">
+                                <span class="font-size-xs">Default Tools</span>
+                            </button>
+                        }
                         <button matButton="tonal" (click)="onToggleToolsAvailable()">
                             <mat-icon>{{ tools_available() ? 'visibility_off' : 'visibility' }}</mat-icon>
                             <span class="font-size-s">{{ tools_available() ? 'Hide unused tools' : 'Show unused tools (' + available_tool_count() + ')' }}</span>

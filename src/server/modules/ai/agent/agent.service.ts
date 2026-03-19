@@ -612,6 +612,39 @@ export class AgentService implements OnModuleInit {
 		});
 	}
 
+	/** Creates a new custom agent (no agent_key) and syncs its cron schedules */
+	public async createAgent(fields: {
+		name: string;
+		description?: string;
+		active?: boolean;
+		model?: string;
+		system_message?: string;
+		tools?: string[];
+		schedules?: string[];
+	}): Promise<Agent> {
+		const now = DateTime.utc().toUnixInteger();
+		if (fields.schedules) {
+			fields.schedules.forEach((expr) => this.validateCronExpression(expr));
+		}
+		const agent = this.agentRepository.create({
+			agent_key: null,
+			name: fields.name,
+			description: fields.description ?? null,
+			active: fields.active ?? false,
+			model: fields.model ?? null,
+			system_message: fields.system_message ?? null,
+			tools: fields.tools ? JSON.stringify(fields.tools) : null,
+			schedules: JSON.stringify(fields.schedules ?? []),
+			last_run_at: null,
+			last_run_status: null,
+			created_at: now,
+			updated_at: now,
+		});
+		const saved = await this.agentRepository.save(agent);
+		await this.syncAgentSchedules(saved);
+		return saved;
+	}
+
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,

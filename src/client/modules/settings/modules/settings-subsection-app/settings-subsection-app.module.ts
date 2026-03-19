@@ -15,6 +15,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -74,6 +75,7 @@ import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-s
 		MatTooltipModule,
 		MatChipsModule,
 		MatDialogModule,
+		MatRippleModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,

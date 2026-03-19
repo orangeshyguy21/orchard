@@ -104,7 +104,8 @@ const ICONS = [
   'health_cross',
   'network_intelligence',
   'schedule',
-  'work',
+  'task_alt',
+  'add_task',
   'open_with',
 ];
 

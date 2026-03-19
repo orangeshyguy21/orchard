@@ -411,6 +411,55 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		this.initial_agents.set(initial_map);
 	}
 
+	/** Saves an existing agent via the event service */
+	public onSaveAgent(event: {id: string; values: Record<string, unknown>}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.updateAiAgent(event.id, event.values).subscribe({
+			next: (agent) => {
+				this.updateInitialAgents([agent]);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Agent updated!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	/** Creates a new agent via the event service */
+	public onCreateAgent(event: {values: Record<string, unknown>}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.createAiAgent(event.values as any).subscribe({
+			next: (agent) => {
+				this.updateInitialAgents([agent]);
+				this.onRequestAgentForms([...this.initial_agents().values()]);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Agent created!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
 	/** Collects dirty agent form controls into batch update payloads */
 	private getDirtyAgentUpdates(): {id: string; updates: Record<string, unknown>}[] {
 		const dirty_agents: {id: string; updates: Record<string, unknown>}[] = [];

@@ -152,6 +152,12 @@ export const AI_AGENT_QUERY = `
     }
 `;
 
+export const AI_AGENT_CREATE_MUTATION = `
+    mutation AiAgentCreate($name: String!, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
+        ai_agent_create(name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) { ${AI_AGENT_FIELDS} }
+    }
+`;
+
 export const AI_AGENT_UPDATE_MUTATION = `
     mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
         ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) { ${AI_AGENT_FIELDS} }

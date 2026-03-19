@@ -44,6 +44,10 @@ export type AiAgentResponse = {
 	ai_agent: OrchardAgent;
 };
 
+export type AiAgentCreateResponse = {
+	ai_agent_create: OrchardAgent;
+};
+
 export type AiAgentUpdateResponse = {
 	ai_agent_update: OrchardAgent;
 };

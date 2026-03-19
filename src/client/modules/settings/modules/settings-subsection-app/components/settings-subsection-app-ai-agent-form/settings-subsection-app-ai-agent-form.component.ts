@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
 import {firstValueFrom, Subscription} from 'rxjs';
@@ -69,6 +69,11 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public readonly available_tool_count = computed(() => {
         return this.tool_gui().reduce((sum, entry) => sum + entry.available_tools.length, 0);
     });
+    public readonly form_title = computed(() => {
+        if (this.data.mode === 'jobedit') return 'Agent job settings';
+        if (this.data.mode === 'jobcreate') return 'New agent job';
+        return 'Agent settings';
+    });
     /* -- Public properties ── */
     public form: FormGroup;
 
@@ -79,7 +84,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     constructor() {
         this.ai_favorites.set(this.data.favorites);
         this.fullscreen_system_message.set(this.data.fullscreen_system_message);
-        this.is_keyed_agent.set(this.data.agent !== null && this.data.agent.agent_key !== null);
+        this.is_keyed_agent.set(this.data.agent !== null && this.data.agent?.agent_key !== null);
         switch (this.data.mode) {
             case 'groundskeeper':
                 this.form = this.getAgentForm();
@@ -88,6 +93,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
                 this.form = this.getJobEditForm();
                 break;
             default:
+                this.tools_available.set(true);
                 this.form = this.getJobCreateForm();
                 break;
         }
@@ -112,36 +118,36 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     private getAgentForm(): FormGroup {
         if (!this.data.agent || !this.data.agent.agent_key) return new FormGroup({});
         return new FormGroup({
-            name: new FormControl(this.data.agent.name),
-            description: new FormControl(this.data.agent.description),
-            model: new FormControl(this.data.agent.model),
-            system_message: new FormControl(this.data.agent.system_message),
-            tools: new FormControl(this.data.agent.tools ?? []),
+            name: new FormControl(this.data.agent.name, [Validators.required, Validators.maxLength(64)]),
+            description: new FormControl(this.data.agent.description, [Validators.required, Validators.maxLength(256)]),
+            model: new FormControl(this.data.agent.model, [Validators.required]),
+            system_message: new FormControl(this.data.agent.system_message, [Validators.required, Validators.maxLength(4096)]),
+            tools: new FormControl(this.data.agent.tools ?? [], [Validators.required]),
         });
     }
 
     private getJobEditForm(): FormGroup {
         if (!this.data.agent || !this.data.agent.agent_key) return new FormGroup({});
         return new FormGroup({
-            name: new FormControl(this.data.agent.name),
-            description: new FormControl(this.data.agent.description),
+            name: new FormControl(this.data.agent.name, [Validators.required, Validators.maxLength(64)]),
+            description: new FormControl(this.data.agent.description, [Validators.required, Validators.maxLength(256)]),
             active: new FormControl(this.data.agent.active),
-            model: new FormControl(this.data.agent.model),
-            system_message: new FormControl(this.data.agent.system_message),
-            tools: new FormControl(this.data.agent.tools ?? []),
-            schedules: new FormControl(this.data.agent.schedules ?? []),
+            model: new FormControl(this.data.agent.model, [Validators.required]),
+            system_message: new FormControl(this.data.agent.system_message, [Validators.required, Validators.maxLength(4096)]),
+            tools: new FormControl(this.data.agent.tools ?? [], [Validators.required]),
+            schedules: new FormControl(this.data.agent.schedules ?? [], [Validators.required]),
         });
     }
 
     private getJobCreateForm(): FormGroup {
         return new FormGroup({
-            name: new FormControl(),
-            description: new FormControl(),
-            active: new FormControl(),
-            model: new FormControl(),
-            system_message: new FormControl(),
-            tools: new FormControl([]),
-            schedules: new FormControl([]),
+            name: new FormControl(null, [Validators.required, Validators.maxLength(64)]),
+            description: new FormControl(null, [Validators.required, Validators.maxLength(256)]),
+            active: new FormControl(true),
+            model: new FormControl(null, [Validators.required]),
+            system_message: new FormControl(null, [Validators.required, Validators.maxLength(4096)]),
+            tools: new FormControl(null, [Validators.required]),
+            schedules: new FormControl(null, [Validators.required]),
         });
     }
 
@@ -216,8 +222,25 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 		Actions
 	******************************************************** */
 
+    /** Closes the panel with save payload for the parent to handle */
     public onSave(): void {
-        console.log('onSave');
+        if (this.data.mode === 'jobcreate') {
+            this.panelRef.close({mode: 'jobcreate', values: this.form.value});
+            return;
+        }
+        if (!this.data.agent) return;
+        const dirty_values: Record<string, unknown> = {};
+        for (const key of Object.keys(this.form.controls)) {
+            const control = this.form.get(key);
+            if (control?.dirty) {
+                dirty_values[key] = control.value;
+            }
+        }
+        if (Object.keys(dirty_values).length === 0) {
+            this.panelRef.close();
+            return;
+        }
+        this.panelRef.close({mode: this.data.mode, id: this.data.agent.id, values: dirty_values});
     }
     
     public onClose(): void {

@@ -57,6 +57,23 @@ export class AiAgentResolver {
 	******************************************************** */
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Mutation(() => OrchardAgent, {description: 'Create a new custom AI agent'})
+	async ai_agent_create(
+		@Args('name', {description: 'Agent name'}) name: string,
+		@Args('description', {nullable: true, description: 'Agent description'}) description: string,
+		@Args('active', {nullable: true, description: 'Whether the agent should be active'}) active: boolean,
+		@Args('model', {nullable: true, description: 'LLM model identifier'}) model: string,
+		@Args('system_message', {nullable: true, description: 'System message for the agent'}) system_message: string,
+		@Args('tools', {type: () => [String], nullable: true, description: 'List of tool identifiers to assign'}) tools: string[],
+		@Args('schedules', {type: () => [String], nullable: true, description: 'Cron schedules for automatic execution'})
+		schedules: string[],
+	): Promise<OrchardAgent> {
+		const tag = 'MUTATION { ai_agent_create }';
+		this.logger.debug(tag);
+		return await this.aiAgentService.createAgent(tag, {name, description, active, model, system_message, tools, schedules});
+	}
+
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardAgent, {description: 'Update an AI agent configuration'})
 	async ai_agent_update(
 		@Args('id', {description: 'Agent identifier'}) id: string,

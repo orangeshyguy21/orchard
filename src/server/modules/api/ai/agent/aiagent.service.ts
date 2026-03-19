@@ -69,6 +69,30 @@ export class AiAgentService {
 		}
 	}
 
+	/** Creates a new custom agent */
+	async createAgent(
+		tag: string,
+		fields: {
+			name: string;
+			description?: string;
+			active?: boolean;
+			model?: string;
+			system_message?: string;
+			tools?: string[];
+			schedules?: string[];
+		},
+	): Promise<OrchardAgent> {
+		try {
+			const agent = await this.agentService.createAgent(fields);
+			return new OrchardAgent(agent);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AgentError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
 	/** Updates an agent's configuration */
 	async updateAgent(
 		tag: string,

@@ -23,6 +23,7 @@ import {
 	AiChatAbortResponse,
 	AiAgentsResponse,
 	AiAgentResponse,
+	AiAgentCreateResponse,
 	AiAgentUpdateResponse,
 	AiAgentBatchUpdateResponse,
 	AiAgentToolsResponse,
@@ -48,6 +49,7 @@ import {
 	AI_AGENT_DEFAULTS_QUERY,
 	AI_AGENTS_QUERY,
 	AI_AGENT_QUERY,
+	AI_AGENT_CREATE_MUTATION,
 	AI_AGENT_UPDATE_MUTATION,
 	buildAgentBatchMutation,
 } from './ai.queries';
@@ -337,6 +339,31 @@ export class AiService {
 			map((agent) => new AiAgent(agent)),
 			catchError((error) => {
 				console.error('Error loading ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Creates a new custom AI agent */
+	public createAiAgent(fields: {
+		name: string;
+		description?: string;
+		active?: boolean;
+		model?: string;
+		system_message?: string;
+		tools?: string[];
+		schedules?: string[];
+	}): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_CREATE_MUTATION, fields);
+
+		return this.http.post<OrchardRes<AiAgentCreateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_create;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error creating ai agent:', error);
 				return throwError(() => error);
 			}),
 		);
