@@ -56,7 +56,8 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public is_default_system_message = signal<boolean>(false);
     public is_default_tools = signal<boolean>(false);
     public fullscreen_system_message = signal<boolean>(false);
-    public selected_tools = signal<{summary: ToolSummary, tools: string[]}[]>([]);
+    public tool_gui = signal<{summary: ToolSummary, selected_tools: string[], available_tools: string[]}[]>([]);
+    public tools_available = signal<boolean>(false);
 
     /* ── Public computed signals ── */
     public readonly tool_map = computed(() => {
@@ -84,7 +85,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
                 this.form = this.getJobCreateForm();
                 break;
         }
-        this.selected_tools.set(this.getSelectedTools());
+        this.tool_gui.set(this.getToolGui());
         if (this.is_keyed_agent()) {
             this.subscriptions.add(this.subSystemMessage());
             this.subscriptions.add(this.subTools());
@@ -99,6 +100,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         if (!this.data.agent || !this.data.agent.agent_key) return;
         await this.getAiDefaults();
         this.is_default_system_message.set(this.defaults?.system_message === this.form.get('system_message')?.value);
+        this.is_default_tools.set(JSON.stringify(this.data.agent?.tools ?? []) === JSON.stringify(this.defaults?.tools ?? []));
     }
 
     private getAgentForm(): FormGroup {
@@ -160,7 +162,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     /** Watches tools control and updates is_default signal */
     private subTools(): Subscription | undefined {
         return this.form.get('tools')?.valueChanges.subscribe((value) => {
-            this.selected_tools.set(this.getSelectedTools());
+            this.tool_gui.set(this.getToolGui());
             this.is_default_tools.set(JSON.stringify(value) === JSON.stringify(this.defaults?.tools));
         });
     }
@@ -170,7 +172,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	******************************************************** */
 
     /** Groups selected tools by category with availability and icon metadata */
-    private getSelectedTools(): {summary: ToolSummary, tools: string[]}[] {
+    private getToolGui(): {summary: ToolSummary, selected_tools: string[], available_tools: string[]}[] {
         const tool_names: string[] = this.form.get('tools')?.value ?? [];
         const agent = new AiAgent({tools: tool_names} as any);
         const summaries = buildToolSummary(agent, this.data.tools, this.data.app_settings, this.data.config);
@@ -180,10 +182,20 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             const category = tool_map.get(name)?.category ?? 'Uncategorized';
             categories.set(category, [...(categories.get(category) ?? []), name]);
         }
-        return summaries.map((summary) => ({
-            summary,
-            tools: categories.get(summary.category) ?? [],
-        }));
+        const tools_by_category = new Map<string, string[]>();
+        for (const tool of this.data.tools) {
+            const category = tool.category ?? 'Uncategorized';
+            tools_by_category.set(category, [...(tools_by_category.get(category) ?? []), tool.name]);
+        }
+        return summaries.map((summary) => {
+            const selected = categories.get(summary.category) ?? [];
+            const selected_set = new Set(selected);
+            return {
+                summary,
+                selected_tools: selected,
+                available_tools: (tools_by_category.get(summary.category) ?? []).filter((name) => !selected_set.has(name)),
+            };
+        });
     }
 
     /* *******************************************************
@@ -203,6 +215,11 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public onResetSystemMessage(): void {
         this.form.get('system_message')?.setValue(this.defaults?.system_message ?? '');
         this.form.get('system_message')?.markAsDirty();
+    }
+
+    public onResetTools(): void {
+        this.form.get('tools')?.setValue(this.defaults?.tools ?? []);
+        this.form.get('tools')?.markAsDirty();
     }
 
     public onFullscreenSystemMessage(): void {
@@ -227,7 +244,14 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         this.form.get('tools')?.markAsDirty();
     }
 
-    public onAddTool(): void {
+    public onAddTool(tool_name: string): void {
+        const tools: string[] = this.form.get('tools')?.value ?? [];
+        this.form.get('tools')?.setValue([...tools, tool_name]);
+        this.form.get('tools')?.markAsDirty();
+    }
+
+    public onToggleToolsAvailable(): void {
+        this.tools_available.set(!this.tools_available());
         console.log('onAddTool');
         // const tools: string[] = this.form.get('tools')?.value ?? [];
         // this.form.get('tools')?.setValue([...tools, '']);

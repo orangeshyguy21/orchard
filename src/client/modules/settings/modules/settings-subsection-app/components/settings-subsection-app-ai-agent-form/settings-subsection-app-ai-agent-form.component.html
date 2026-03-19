@@ -169,41 +169,62 @@
                     <div class="title-l p-b-0-5 p-l-1">
                         <span>Tools</span>
                     </div>
-                    <button matButton="tonal" (click)="onAddTool()">
-                        <mat-icon class="orc-outline-color">add</mat-icon>
-                        <span class="font-size-s">Add Tools</span>
-                    </button>
+                    <div class="flex flex-items-center flex-gap-0-5">
+                        <button matButton [disabled]="is_default_tools()" (click)="onResetTools()">
+                            <span class="font-size-xs">Default Tools</span>
+                        </button>
+                        <button matButton="tonal" (click)="onToggleToolsAvailable()">
+                            <mat-icon>{{ tools_available() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                            <span class="font-size-s">{{ tools_available() ? 'Hide Available Tools' : 'Show Available Tools' }}</span>
+                        </button>
+                    </div>
+                    
                 </div>
                 
-                @for (entry of selected_tools(); track entry.summary.category) {
-                    <div class="flex flex-column flex-gap-0-5">
-                        <div class="tool-category-chip" [class.tool-unavailable]="!entry.summary.available" [matTooltip]="entry.summary.reason ?? ''">
-                            <div class="category-circle">
-                                @switch (entry.summary.category) {
-                                    @case ('bitcoin') {
-                                        <mat-icon [svgIcon]="entry.summary.icon"></mat-icon>
+                @for (entry of tool_gui(); track entry.summary.category) {
+                    @if (entry.summary.count > 0 || tools_available()) {
+                        <div class="flex flex-column flex-gap-0-5">
+                            <div class="tool-category-chip" [class.tool-unavailable]="!entry.summary.available" [matTooltip]="entry.summary.reason ?? ''">
+                                <div class="category-circle">
+                                    @switch (entry.summary.category) {
+                                        @case ('bitcoin') {
+                                            <mat-icon [svgIcon]="entry.summary.icon"></mat-icon>
+                                        }
+                                        @default {
+                                            <mat-icon>{{ entry.summary.icon }}</mat-icon>
+                                        }
                                     }
-                                    @default {
-                                        <mat-icon>{{ entry.summary.icon }}</mat-icon>
+                                </div>
+                                <span class="font-size-xs">{{ entry.summary.category | titlecase }} {{ entry.summary.available ? 'tools online' : 'tools offline' }}</span>
+                            </div>
+                            <div class="tool-grid">
+                                @for (tool of entry.selected_tools; track tool) {
+                                    <div class="tool-card">
+                                        <div class="flex flex-column flex-gap-0-25 flex-1">
+                                            <div class="font-size-s font-weight-500">{{ tool_map().get(tool)?.title }}</div>
+                                            <div class="font-size-xs orc-outline-color">{{ tool_map().get(tool)?.description }}</div>
+                                        </div>
+                                        <button mat-icon-button type="button" class="orc-icon-button" (click)="onRemoveTool(tool)">
+                                            <mat-icon>delete_forever</mat-icon>
+                                        </button>
+                                    </div>
+                                }
+                                @if (tools_available()) {
+                                    @for (tool of entry.available_tools; track tool) {
+                                        <div class="tool-card tool-available" (click)="onAddTool(tool)">
+                                            <div class="flex flex-column flex-gap-0-25 flex-1">
+                                                <div class="font-size-s font-weight-500">{{ tool_map().get(tool)?.title }}</div>
+                                                <div class="font-size-xs orc-outline-color">{{ tool_map().get(tool)?.description }}</div>
+                                            </div>
+                                            <button mat-icon-button type="button" class="orc-icon-button">
+                                                <mat-icon>add</mat-icon>
+                                            </button>
+                                        </div>
                                     }
                                 }
                             </div>
-                            <span class="font-size-xs">{{ entry.summary.category | titlecase }} {{ entry.summary.available ? 'tools online' : 'tools offline' }}</span>
                         </div>
-                        <div class="tool-grid">
-                            @for (tool of entry.tools; track tool) {
-                                <div class="tool-card">
-                                    <div class="flex flex-column flex-gap-0-25 flex-1">
-                                        <div class="font-size-s font-weight-500">{{ tool_map().get(tool)?.title }}</div>
-                                        <div class="font-size-xs orc-outline-color">{{ tool_map().get(tool)?.description }}</div>
-                                    </div>
-                                    <button mat-icon-button type="button" class="orc-icon-button" (click)="onRemoveTool(tool)">
-                                        <mat-icon>delete_forever</mat-icon>
-                                    </button>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    }
                 }
             </div>
         </form>

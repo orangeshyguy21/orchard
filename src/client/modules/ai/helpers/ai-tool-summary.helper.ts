@@ -46,6 +46,11 @@ export function buildToolSummary(
 	};
 
 	const category_map = new Map<string, number>();
+	for (const tool of tools) {
+		if (!category_map.has(tool.category)) {
+			category_map.set(tool.category, 0);
+		}
+	}
 	for (const tool_name of agent.tools) {
 		const tool = tools.find((t) => t.name === tool_name);
 		if (!tool) continue;
