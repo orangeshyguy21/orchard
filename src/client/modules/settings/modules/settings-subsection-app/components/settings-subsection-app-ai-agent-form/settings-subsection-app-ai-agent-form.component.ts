@@ -60,7 +60,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public is_default_system_message = signal<boolean>(false);
     public is_default_tools = signal<boolean>(false);
     public fullscreen_system_message = signal<boolean>(false);
-    public tool_gui = signal<{summary: ToolSummary, selected_tools: string[], available_tools: string[]}[]>([]);
+    public tool_gui = signal<{summary: ToolSummary, tools: {name: string, selected: boolean}[]}[]>([]);
     public tools_available = signal<boolean>(false);
     public submitted = signal<boolean>(false);
 
@@ -69,7 +69,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         return new Map(this.data.tools.map((tool) => [tool.name, tool]));
     });
     public readonly available_tool_count = computed(() => {
-        return this.tool_gui().reduce((sum, entry) => sum + entry.available_tools.length, 0);
+        return this.tool_gui().reduce((sum, entry) => sum + entry.tools.filter((t) => !t.selected).length, 0);
     });
     public readonly form_title = computed(() => {
         if (this.data.mode === 'jobedit') return 'Agent job settings';
@@ -188,36 +188,27 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     /** Categories banned from the groundskeeper agent */
     private readonly GROUNDSKEEPER_BANNED_CATEGORIES = new Set(['memory', 'message']);
 
-    /** Groups selected tools by category with availability and icon metadata */
-    private getToolGui(): {summary: ToolSummary, selected_tools: string[], available_tools: string[]}[] {
+    /** Groups all tools by category with a selected flag for stable ordering */
+    private getToolGui(): {summary: ToolSummary, tools: {name: string, selected: boolean}[]}[] {
         const tool_names: string[] = this.form.get('tools')?.value ?? [];
         const agent = new AiAgent({tools: tool_names} as any);
         const summaries = buildToolSummary(agent, this.data.tools, this.data.app_settings, this.data.config);
-        const tool_map = this.tool_map();
         const banned = this.data.mode === 'groundskeeper' ? this.GROUNDSKEEPER_BANNED_CATEGORIES : null;
-        const categories = new Map<string, string[]>();
-        for (const name of tool_names) {
-            const category = tool_map.get(name)?.category ?? 'Uncategorized';
-            if (banned?.has(category)) continue;
-            categories.set(category, [...(categories.get(category) ?? []), name]);
-        }
-        const tools_by_category = new Map<string, string[]>();
+        const selected_set = new Set(tool_names);
+        const tools_by_category = new Map<string, {name: string, selected: boolean}[]>();
         for (const tool of this.data.tools) {
             const category = tool.category ?? 'Uncategorized';
             if (banned?.has(category)) continue;
-            tools_by_category.set(category, [...(tools_by_category.get(category) ?? []), tool.name]);
+            const list = tools_by_category.get(category) ?? [];
+            list.push({name: tool.name, selected: selected_set.has(tool.name)});
+            tools_by_category.set(category, list);
         }
         return summaries
             .filter((summary) => !banned?.has(summary.category))
-            .map((summary) => {
-                const selected = categories.get(summary.category) ?? [];
-                const selected_set = new Set(selected);
-                return {
-                    summary,
-                    selected_tools: selected,
-                    available_tools: (tools_by_category.get(summary.category) ?? []).filter((name) => !selected_set.has(name)),
-                };
-            });
+            .map((summary) => ({
+                summary,
+                tools: tools_by_category.get(summary.category) ?? [],
+            }));
     }
 
     /* *******************************************************
