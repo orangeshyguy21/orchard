@@ -2,7 +2,7 @@
     <div class="agent-form-header">
         <div class="p-l-0-5">{{ form_title() }}</div>
         <div class="flex flex-items-center flex-gap-1">
-            <button matButton="filled" [disabled]="form.invalid || form.pristine" (click)="onSave()">Save</button>
+            <button matButton="filled" (click)="onSave()">Save</button>
             <button mat-icon-button type="button" class="orc-icon-button" (click)="onClose()">
                 <mat-icon>close</mat-icon>
             </button>
@@ -128,7 +128,7 @@
             <div class="flex flex-row flex-gap-1">
                 <div class="flex-1">
                     <div class="title-form-section p-b-0-5 p-l-1">
-                        <span>Model</span>
+                        <span [class.orc-error-color]="form.get('model')?.invalid && submitted()">Model</span>
                     </div>
                     <div class="flex flex-items-center flex-gap-1">
                         <orc-ai-model
@@ -141,7 +141,7 @@
                             (favoritesChange)="onFavoritesChange($event)"
                         >
                             <button class="z-index-0" matButton="outlined" type="button" [class.orc-status-warning-color]="!form.get('model')?.value">
-                                <div class="font-size-s">{{ form.get('model')?.value ?? 'missing model' }}</div>
+                                <div class="font-size-s" [class.orc-error-color]="form.get('model')?.invalid && submitted()">{{ form.get('model')?.value ?? 'choose a model' }}</div>
                             </button>
                         </orc-ai-model>
                         <button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_model.set(!help_model())">
@@ -170,14 +170,14 @@
                     [class.fullscreen-system-message]="fullscreen_system_message()"
                     formControlName="system_message"
                     [hot]="focused_system_message() || form.get('system_message')?.dirty || false"
-                    [invalid]="form.get('system_message')?.invalid || false"
+                    [invalid]="(form.get('system_message')?.invalid && form.get('system_message')?.dirty) || (form.get('system_message')?.invalid && submitted()) || false"
                     placeholder="Enter system prompt..."
                     [height]="fullscreen_system_message() ? '100%' : '20rem'"
                     (focusChange)="focused_system_message.set($event)"
                 >
                     <div class="flex flex-justify-between flex-items-center orc-surface-container-high-bg p-0-25">
                         <div class="title-form-section p-l-1">
-                            <span>System Prompt</span>
+                            <span [class.orc-error-color]="(form.get('system_message')?.invalid && form.get('system_message')?.dirty) || (form.get('system_message')?.invalid && submitted())">System Prompt</span>
                         </div>
                         <div class="flex flex-items-center flex-gap-0-5">
                             @if (data.agent?.agent_key !== null) {
@@ -197,16 +197,18 @@
                     </div>    
                 </orc-form-markdown-editor>
                 <mat-error>
-                    <orc-form-error [errors]="form.get('system_message')?.errors">Invalid system prompt</orc-form-error>
+                    @if ((form.get('system_message')?.invalid && form.get('system_message')?.dirty) || (form.get('system_message')?.invalid && submitted())) {
+                        <orc-form-error [errors]="form.get('system_message')?.errors">Invalid system prompt</orc-form-error>
+                    }
                 </mat-error>
             </div>
 
             @if (data.mode !== 'groundskeeper') {
-                <div class="flex flex-column flex-gap-1 p-v-1">
+                <div class="flex flex-column flex-gap-1 p-b-1">
 
                     <div class="flex flex-items-center flex-justify-between flex-gap-0-5">
                         <div class="title-l p-b-0-5 p-l-1">
-                            <span>Scheduling</span>
+                            <span [class.orc-error-color]="form.get('schedules')?.invalid && submitted()">Scheduling</span>
                         </div>
                     </div>
 
@@ -238,7 +240,7 @@
             <div class="flex flex-column flex-gap-1">
                 <div class="flex flex-items-center flex-justify-between flex-gap-0-5">
                     <div class="title-l p-b-0-5 p-l-1">
-                        <span>Tools</span>
+                        <span [class.orc-error-color]="form.get('tools')?.invalid && submitted()">Tools</span>
                     </div>
                     <div class="flex flex-items-center flex-gap-0-5">
                         @if (data.agent?.agent_key !== null) {

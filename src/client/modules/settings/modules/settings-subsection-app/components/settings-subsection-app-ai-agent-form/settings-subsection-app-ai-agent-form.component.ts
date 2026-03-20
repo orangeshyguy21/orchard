@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
@@ -33,6 +33,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	private readonly panelRef = inject(FormPanelRef);
 	private readonly aiService = inject(AiService);
 	private readonly dialog = inject(MatDialog);
+	private readonly cdr = inject(ChangeDetectorRef);
     private readonly settingDeviceService = inject(SettingDeviceService);
 	public readonly data: {
         mode: AgentFormMode;
@@ -61,6 +62,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public fullscreen_system_message = signal<boolean>(false);
     public tool_gui = signal<{summary: ToolSummary, selected_tools: string[], available_tools: string[]}[]>([]);
     public tools_available = signal<boolean>(false);
+    public submitted = signal<boolean>(false);
 
     /* ── Public computed signals ── */
     public readonly tool_map = computed(() => {
@@ -224,6 +226,11 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 
     /** Closes the panel with save payload for the parent to handle */
     public onSave(): void {
+        this.submitted.set(true);
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            return;
+        }
         if (this.data.mode === 'jobcreate') {
             this.panelRef.close({mode: 'jobcreate', values: this.form.value});
             return;
@@ -298,6 +305,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
                 const schedules: string[] = this.form.get('schedules')?.value ?? [];
                 this.form.get('schedules')?.setValue([...schedules, cron]);
                 this.form.get('schedules')?.markAsDirty();
+                this.cdr.markForCheck();
             })
         );
     }
@@ -315,6 +323,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
                 updated[index] = cron;
                 this.form.get('schedules')?.setValue(updated);
                 this.form.get('schedules')?.markAsDirty();
+                this.cdr.markForCheck();
             })
         );
     }
