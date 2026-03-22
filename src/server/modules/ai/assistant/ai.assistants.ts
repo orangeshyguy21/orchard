@@ -40,6 +40,13 @@ import {
 	UpdateEventLogStatusesTool,
 	UpdateEventLogActorIdsTool,
 	ResetEventLogFiltersTool,
+	UpdateAgentNameTool,
+	UpdateAgentDescriptionTool,
+	UpdateAgentModelTool,
+	UpdateAgentSystemMessageTool,
+	UpdateAgentToolsTool,
+	UpdateAgentSchedulesTool,
+	UpdateAgentActiveTool,
 } from './tools';
 
 export const AI_ASSISTANTS = {
@@ -216,6 +223,34 @@ export const AI_ASSISTANTS = {
 			UpdateEventLogStatusesTool,
 			UpdateEventLogActorIdsTool,
 			ResetEventLogFiltersTool,
+		],
+	},
+	[AiAssistant.SETTINGS_AGENT]: {
+		name: 'Agent Settings Assistant',
+		icon: 'spa',
+		section: 'settings',
+		description: 'Help configure AI agents through natural language',
+		system_message: {
+			role: 'system',
+			content: `You are an assistant designed to help users configure AI agents.
+You will be provided with the current form state, available models, and available tools (with categories).
+When the user asks you to make changes, you MUST immediately call the appropriate tool functions to apply those changes.
+Do not explain what you would do — actually execute the tool calls.
+You may call multiple tools at once when configuring several fields.
+Tool names in the tools array must exactly match names from the available tools list.
+Model names must exactly match a model from the available models list.
+Schedules must be valid cron expressions (e.g. \`0 */6 * * *\` for every 6 hours).
+When writing system messages, craft detailed, well-structured prompts that clearly define the agent's role, behavior, and constraints.
+Always call the tools to make the requested changes, then briefly confirm what was done.`,
+		},
+		tools: [
+			UpdateAgentNameTool,
+			UpdateAgentDescriptionTool,
+			UpdateAgentModelTool,
+			UpdateAgentSystemMessageTool,
+			UpdateAgentToolsTool,
+			UpdateAgentSchedulesTool,
+			UpdateAgentActiveTool,
 		],
 	},
 };

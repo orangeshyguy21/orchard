@@ -10,6 +10,7 @@ import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class';
+import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {FormPanelRef, FORM_PANEL_DATA} from '@client/modules/form/services/form-panel';
@@ -20,6 +21,8 @@ import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/s
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 /* Native Dependencies */
 import {AgentFormMode, ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
+/* Shared Dependencies */
+import {AiAssistant, AssistantToolName} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai-agent-form',
@@ -53,9 +56,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     public focused_name = signal<boolean>(false);
     public focused_description = signal<boolean>(false);
     public focused_system_message = signal<boolean>(false);
-    public help_name = signal<boolean>(true);
-    public help_description = signal<boolean>(true);
-    public help_model = signal<boolean>(true);
+    public help_name = signal<boolean>(false);
+    public help_description = signal<boolean>(false);
+    public help_model = signal<boolean>(false);
     public is_keyed_agent = signal<boolean>(false);
     public is_default_system_message = signal<boolean>(false);
     public is_default_tools = signal<boolean>(false);
@@ -104,6 +107,8 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             this.subscriptions.add(this.subSystemMessage());
             this.subscriptions.add(this.subTools());
         }
+        this.subscriptions.add(this.subAssistantRequests());
+        this.subscriptions.add(this.subAssistantToolCalls());
     }
 
     /* *******************************************************
@@ -179,6 +184,113 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             this.tool_gui.set(this.getToolGui());
             this.is_default_tools.set(JSON.stringify(value) === JSON.stringify(this.defaults?.tools));
         });
+    }
+
+    /** Listens for assistant requests and hires the agent settings assistant */
+    private subAssistantRequests(): Subscription {
+        return this.aiService.assistant_requests$.subscribe(({assistant: _assistant, content}) => {
+            console.log('subAssistantRequests', _assistant, content);
+            this.hireAgentSettingsAssistant(content);
+        });
+    }
+
+    /** Listens for tool calls from the assistant and executes them */
+    private subAssistantToolCalls(): Subscription {
+        return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+            this.executeAssistantFunction(tool_call);
+        });
+    }
+
+    /* *******************************************************
+		AI
+	******************************************************** */
+
+    /** Activates the agent settings assistant with current form context */
+    private hireAgentSettingsAssistant(content: string | null): void {
+        const context = this.buildFormContext();
+        this.aiService.openAiSocket(AiAssistant.SettingsAgent, content, context);
+    }
+
+    /** Serializes current form state and available options for the assistant */
+    private buildFormContext(): string {
+        let context = `* **Form Mode:** ${this.data.mode}\n`;
+        context += `* **Name:** ${this.form.get('name')?.value || 'Not set'}\n`;
+        context += `* **Description:** ${this.form.get('description')?.value || 'Not set'}\n`;
+        context += `* **Model:** ${this.form.get('model')?.value || 'Not set'}\n`;
+        const system_message = this.form.get('system_message')?.value;
+        context += `* **System Message:** ${system_message ? system_message.substring(0, 200) + (system_message.length > 200 ? '...' : '') : 'Not set'}\n`;
+        if (this.form.get('active')) {
+            context += `* **Active:** ${this.form.get('active')?.value}\n`;
+        }
+        const tools: string[] = this.form.get('tools')?.value ?? [];
+        context += `* **Selected Tools:** ${tools.length > 0 ? tools.join(', ') : 'None'}\n`;
+        if (this.form.get('schedules')) {
+            const schedules: string[] = this.form.get('schedules')?.value ?? [];
+            context += `* **Schedules:** ${schedules.length > 0 ? schedules.join(', ') : 'None'}\n`;
+        }
+        context += `* **Available Models:** ${this.data.models.map((m) => m.name).join(', ')}\n`;
+        const banned_names = this.getBannedToolNames();
+        const tools_by_category = new Map<string, string[]>();
+        for (const tool of this.data.tools) {
+            if (banned_names.has(tool.name)) continue;
+            const category = tool.category ?? 'uncategorized';
+            const list = tools_by_category.get(category) ?? [];
+            list.push(tool.name);
+            tools_by_category.set(category, list);
+        }
+        context += `* **Available Tools by Category:**\n`;
+        for (const [category, names] of tools_by_category) {
+            context += `  * **${category}:** ${names.join(', ')}\n`;
+        }
+        return context;
+    }
+
+    /** Executes the tool call from the AI assistant */
+    private executeAssistantFunction(tool_call: AiChatToolCall): void {
+        let handled = true;
+        if (tool_call.function.name === AssistantToolName.AgentNameUpdate) {
+            this.form.get('name')?.setValue(tool_call.function.arguments.name);
+            this.form.get('name')?.markAsDirty();
+        } else if (tool_call.function.name === AssistantToolName.AgentDescriptionUpdate) {
+            this.form.get('description')?.setValue(tool_call.function.arguments.description);
+            this.form.get('description')?.markAsDirty();
+        } else if (tool_call.function.name === AssistantToolName.AgentModelUpdate) {
+            this.form.get('model')?.setValue(tool_call.function.arguments.model);
+            this.form.get('model')?.markAsDirty();
+        } else if (tool_call.function.name === AssistantToolName.AgentSystemMessageUpdate) {
+            this.form.get('system_message')?.setValue(tool_call.function.arguments.system_message);
+            this.form.get('system_message')?.markAsDirty();
+        } else if (tool_call.function.name === AssistantToolName.AgentToolsUpdate) {
+            this.setToolsFromAssistant(tool_call.function.arguments.tools);
+        } else if (tool_call.function.name === AssistantToolName.AgentSchedulesUpdate && this.form.get('schedules')) {
+            this.form.get('schedules')?.setValue(tool_call.function.arguments.schedules);
+            this.form.get('schedules')?.markAsDirty();
+        } else if (tool_call.function.name === AssistantToolName.AgentActiveUpdate && this.form.get('active')) {
+            this.form.get('active')?.setValue(tool_call.function.arguments.active);
+            this.form.get('active')?.markAsDirty();
+        } else {
+            handled = false;
+        }
+        if (!handled) return;
+        this.tool_gui.set(this.getToolGui());
+        this.cdr.detectChanges();
+    }
+
+    /** Validates and sets tools from assistant, filtering invalid and banned names */
+    private setToolsFromAssistant(tool_names: string[]): void {
+        const valid_names = new Set(this.data.tools.map((t) => t.name));
+        const banned_tool_names = this.getBannedToolNames();
+        const filtered = (tool_names ?? []).filter((name) => valid_names.has(name) && !banned_tool_names.has(name));
+        this.form.get('tools')?.setValue(filtered);
+        this.form.get('tools')?.markAsDirty();
+    }
+
+    /** Returns the set of tool names banned for the current form mode */
+    private getBannedToolNames(): Set<string> {
+        if (this.data.mode !== 'groundskeeper') return new Set<string>();
+        return new Set(
+            this.data.tools.filter((t) => this.GROUNDSKEEPER_BANNED_CATEGORIES.has(t.category ?? '')).map((t) => t.name),
+        );
     }
 
     /* *******************************************************

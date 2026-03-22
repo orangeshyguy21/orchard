@@ -102,7 +102,14 @@ export type AiFunction =
 	| AiFunctionUpdateEventLogTypes
 	| AiFunctionUpdateEventLogStatuses
 	| AiFunctionUpdateEventLogActorIds
-	| AiFunctionResetEventLogFilters;
+	| AiFunctionResetEventLogFilters
+	| AiFunctionUpdateAgentName
+	| AiFunctionUpdateAgentDescription
+	| AiFunctionUpdateAgentModel
+	| AiFunctionUpdateAgentSystemMessage
+	| AiFunctionUpdateAgentTools
+	| AiFunctionUpdateAgentSchedules
+	| AiFunctionUpdateAgentActive;
 
 export type AiFunctionUpdateSearch = {
 	name: AssistantToolName.UpdateSearch;
@@ -397,4 +404,53 @@ export type AiFunctionUpdateEventLogActorIds = {
 export type AiFunctionResetEventLogFilters = {
 	name: AssistantToolName.EventLogResetFilters;
 	arguments: Record<string, never>;
+};
+
+export type AiFunctionUpdateAgentName = {
+	name: AssistantToolName.AgentNameUpdate;
+	arguments: {
+		name: string;
+	};
+};
+
+export type AiFunctionUpdateAgentDescription = {
+	name: AssistantToolName.AgentDescriptionUpdate;
+	arguments: {
+		description: string;
+	};
+};
+
+export type AiFunctionUpdateAgentModel = {
+	name: AssistantToolName.AgentModelUpdate;
+	arguments: {
+		model: string;
+	};
+};
+
+export type AiFunctionUpdateAgentSystemMessage = {
+	name: AssistantToolName.AgentSystemMessageUpdate;
+	arguments: {
+		system_message: string;
+	};
+};
+
+export type AiFunctionUpdateAgentTools = {
+	name: AssistantToolName.AgentToolsUpdate;
+	arguments: {
+		tools: string[];
+	};
+};
+
+export type AiFunctionUpdateAgentSchedules = {
+	name: AssistantToolName.AgentSchedulesUpdate;
+	arguments: {
+		schedules: string[];
+	};
+};
+
+export type AiFunctionUpdateAgentActive = {
+	name: AssistantToolName.AgentActiveUpdate;
+	arguments: {
+		active: boolean;
+	};
 };

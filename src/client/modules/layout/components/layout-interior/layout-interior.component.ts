@@ -292,6 +292,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getAssistantSubscription(): Subscription {
 		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
+			console.log('layout-interior.component.ts: getAssistantSubscription', assistant, content);
 			if (assistant === AiAssistant.Default) this.aiService.openAiSocket(assistant, content);
 		});
 	}

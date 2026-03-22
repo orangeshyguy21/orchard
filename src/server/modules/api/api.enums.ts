@@ -225,6 +225,7 @@ registerEnumType(AiAssistant, {
 		MINT_DATABASE: {description: 'Mint database management assistant'},
 		MINT_BACKUP: {description: 'Mint backup management assistant'},
 		EVENT_LOG: {description: 'Event log assistant'},
+		SETTINGS_AGENT: {description: 'Agent settings configuration assistant'},
 	},
 });
 registerEnumType(AiMessageRole, {
