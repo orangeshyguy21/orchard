@@ -34,6 +34,8 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 	public openrouter_key_control = viewChild<ElementRef<HTMLInputElement>>('openrouter_key_control');
 
 	public help_status = signal<boolean>(false);
+	public help_ollama_api = signal<boolean>(false);
+	public help_openrouter_key = signal<boolean>(false);
 	public focused_ollama_api = signal<boolean>(false);
 	public focused_openrouter_key = signal<boolean>(false);
 	public key_view = signal<boolean>(false);

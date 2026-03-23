@@ -62,10 +62,12 @@
                     <orc-form-field-dynamic
                         [hot]="hot_ollama_api()"
                         [invalid]="invalid_ollama_api()"
+                        [info]="true"
+                        (inform)="help_ollama_api.set(!help_ollama_api())"
                         (cancel)="onCancelOllamaApi($event)"
                         (submit)="submit.emit('ollama_api')"
                     >
-                        <div class="orc-small-form-field-wrapper">
+                        <div class="tab-form-field-wrapper">
                             <mat-form-field
                                 hideRequiredMarker="true"
                                 class="w-full"
@@ -89,6 +91,17 @@
                             </mat-form-field>
                         </div>
                     </orc-form-field-dynamic>
+                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="help_ollama_api()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex p-t-0-5 p-b-1">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    The base URL where your Ollama instance is running. By default, Ollama serves its API at
+                                    <strong>http://localhost:11434</strong>. If you're running Ollama on a remote machine or a
+                                    different port, update the host and port accordingly.
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </mat-tab>
             <mat-tab [disabled]="!form_group().get('enabled')?.value">
@@ -110,10 +123,12 @@
                     <orc-form-field-dynamic
                         [hot]="hot_openrouter_key()"
                         [invalid]="invalid_openrouter_key()"
+                        [info]="true"
+                        (inform)="help_openrouter_key.set(!help_openrouter_key())"
                         (cancel)="onCancelOpenrouterKey($event)"
                         (submit)="submit.emit('openrouter_key')"
                     >
-                        <div class="orc-small-form-field-wrapper">
+                        <div class="tab-form-field-wrapper">
                             <mat-form-field
                                 hideRequiredMarker="true"
                                 class="w-full"
@@ -147,6 +162,17 @@
                             </mat-form-field>
                         </div>
                     </orc-form-field-dynamic>
+                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="help_openrouter_key()">
+                        <div class="orc-animation-expand-collapse-inner">
+                            <div class="flex p-t-0-5 p-b-1">
+                                <orc-form-help-text class="orc-surface-container-high-bg">
+                                    Your OpenRouter API key, found at
+                                    <strong>openrouter.ai/keys</strong>. OpenRouter provides access to a wide range of AI models
+                                    through a single API. Generate a key from your OpenRouter dashboard and paste it here.
+                                </orc-form-help-text>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </mat-tab>
         </mat-tab-group>
