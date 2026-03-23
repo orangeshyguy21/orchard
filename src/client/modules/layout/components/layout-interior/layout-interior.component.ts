@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal, computed} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal, computed, inject} from '@angular/core';
 import {
 	Event,
 	Router,
@@ -52,11 +52,28 @@ import {AiAssistant, AiMessageRole} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
+	// ── Injected dependencies ──
+	private readonly configService = inject(ConfigService);
+	private readonly crewService = inject(CrewService);
+	private readonly settingAppService = inject(SettingAppService);
+	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly bitcoinService = inject(BitcoinService);
+	private readonly lightningService = inject(LightningService);
+	private readonly mintService = inject(MintService);
+	private readonly aiService = inject(AiService);
+	private readonly eventService = inject(EventService);
+	private readonly chartService = inject(ChartService);
+	private readonly breakpointObserver = inject(BreakpointObserver);
+	private readonly router = inject(Router);
+	private readonly route = inject(ActivatedRoute);
+	private readonly cdr = inject(ChangeDetectorRef);
+
 	@ViewChild('primarySidenav') primarySidenav!: MatSidenav;
 	@ViewChild('aiSidenav') sidenav!: MatSidenav;
 
 	public ai_user_content = new FormControl('');
 
+	// ── Public signals ──
 	public user_name = signal<string>('');
 	public ai_enabled = signal<boolean>(false);
 	public ai_models = signal<AiModel[]>([]);
@@ -69,7 +86,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public active_chat = signal<boolean>(false);
 	public active_section = signal<string>('');
 	public active_sub_section = signal<string>('');
-	public active_assistant = signal<AiAssistant>(AiAssistant.Default);
+	public active_assistant = this.aiService.active_assistant;
 	public active_event = signal<EventData | null>(null);
 	public enabled_bitcoin = signal<boolean>(false);
 	public enabled_lightning = signal<boolean>(false);
@@ -86,6 +103,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public show_mobile_assistant = signal(false);
 	public device_type = signal<DeviceType>('desktop');
 
+	// ── Public computed signals ──
 	public desktop_nav_open = computed(() => this.device_type() === 'desktop');
 	public ai_sidenav_mode = computed(() => (this.device_type() === 'desktop' ? 'side' : 'over'));
 	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_assistant());
@@ -96,25 +114,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return false;
 	});
 
+	// ── Private properties ──
 	private subscriptions: Subscription = new Subscription();
 	private bitcoin_polling_active: boolean = false;
 
-	constructor(
-		private configService: ConfigService,
-		private crewService: CrewService,
-		private settingAppService: SettingAppService,
-		private settingDeviceService: SettingDeviceService,
-		private bitcoinService: BitcoinService,
-		private lightningService: LightningService,
-		private mintService: MintService,
-		private aiService: AiService,
-		private eventService: EventService,
-		private chartService: ChartService,
-		private breakpointObserver: BreakpointObserver,
-		private router: Router,
-		private route: ActivatedRoute,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor() {
 		this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
 		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
 		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
@@ -380,7 +384,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private setAssistant(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if (!route_data) return;
-		this.active_assistant.set(route_data['assistant'] || AiAssistant.Default);
+		this.aiService.setRouteAssistant(route_data['assistant'] || AiAssistant.Default);
 	}
 
 	private getModels(): void {

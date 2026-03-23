@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
-import {firstValueFrom, Subscription} from 'rxjs';
+import {firstValueFrom, Subscription, filter} from 'rxjs';
 /* Application Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
@@ -107,6 +107,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             this.subscriptions.add(this.subSystemMessage());
             this.subscriptions.add(this.subTools());
         }
+        this.aiService.setAssistantOverride(AiAssistant.SettingsAgent);
         this.subscriptions.add(this.subAssistantRequests());
         this.subscriptions.add(this.subAssistantToolCalls());
     }
@@ -134,7 +135,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     }
 
     private getJobEditForm(): FormGroup {
-        if (!this.data.agent || !this.data.agent.agent_key) return new FormGroup({});
+        if (!this.data.agent) return new FormGroup({});
         return new FormGroup({
             name: new FormControl(this.data.agent.name, [Validators.required, Validators.maxLength(64)]),
             description: new FormControl(this.data.agent.description, [Validators.required, Validators.maxLength(256)]),
@@ -188,8 +189,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 
     /** Listens for assistant requests and hires the agent settings assistant */
     private subAssistantRequests(): Subscription {
-        return this.aiService.assistant_requests$.subscribe(({assistant: _assistant, content}) => {
-            console.log('subAssistantRequests', _assistant, content);
+        return this.aiService.assistant_requests$.pipe(
+            filter(({assistant}) => assistant === AiAssistant.SettingsAgent),
+        ).subscribe(({content}) => {
             this.hireAgentSettingsAssistant(content);
         });
     }
@@ -208,6 +210,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
     /** Activates the agent settings assistant with current form context */
     private hireAgentSettingsAssistant(content: string | null): void {
         const context = this.buildFormContext();
+        console.log('hireAgentSettingsAssistant', context);
         this.aiService.openAiSocket(AiAssistant.SettingsAgent, content, context);
     }
 
@@ -228,7 +231,10 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             const schedules: string[] = this.form.get('schedules')?.value ?? [];
             context += `* **Schedules:** ${schedules.length > 0 ? schedules.join(', ') : 'None'}\n`;
         }
-        context += `* **Available Models:** ${this.data.models.map((m) => m.name).join(', ')}\n`;
+        const favorite_ids = new Set(this.data.vendor === 'openrouter' ? this.data.favorites.openrouter : this.data.favorites.ollama);
+        const favorite_models = this.data.models.filter((m) => favorite_ids.has(m.model));
+        const models_for_context = favorite_models.length > 0 ? favorite_models : this.data.models;
+        context += `* **Available Models:** ${models_for_context.map((m) => m.name).join(', ')}\n`;
         const banned_names = this.getBannedToolNames();
         const tools_by_category = new Map<string, string[]>();
         for (const tool of this.data.tools) {
@@ -464,6 +470,7 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	******************************************************** */
 
     ngOnDestroy(): void {
+        this.aiService.clearAssistantOverride();
         this.subscriptions.unsubscribe();
     }
 

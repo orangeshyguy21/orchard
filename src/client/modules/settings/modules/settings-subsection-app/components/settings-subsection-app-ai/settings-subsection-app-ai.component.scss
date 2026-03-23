@@ -2,7 +2,7 @@
 
 .agent-jobs-grid {
     @extend %grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     @extend %flex-gap-2;
     @extend %w-full;
 }
@@ -16,6 +16,7 @@
     @extend %orc-outline-variant-border;
     @extend %cursor-pointer;
     @extend %orc-corner-small;
+    min-height: 15rem;
     
     &:hover {
         @extend %orc-surface-container-bg;

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Injectable} from '@angular/core';
+import {Injectable, signal, computed} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
@@ -83,6 +83,9 @@ export class AiService {
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private assistant_subject = new Subject<{assistant: AiAssistant; content: string | null}>();
 	private active_subject = new Subject<boolean>();
+	private readonly route_assistant = signal<AiAssistant>(AiAssistant.Default);
+	private readonly override_assistant = signal<AiAssistant | null>(null);
+	public readonly active_assistant = computed(() => this.override_assistant() ?? this.route_assistant());
 	private ai_models_observable!: Observable<AiModel[]> | null;
 
 	private readonly CACHE_KEYS = {AI_AGENT_TOOLS: 'AI_AGENT_TOOLS'};
@@ -119,6 +122,21 @@ export class AiService {
 
 	public requestAssistant(assistant: AiAssistant, content: string | null): void {
 		this.assistant_subject.next({assistant, content});
+	}
+
+	/** Sets the base assistant from route data */
+	public setRouteAssistant(assistant: AiAssistant): void {
+		this.route_assistant.set(assistant);
+	}
+
+	/** Imperatively overrides the active assistant (e.g. when a form panel opens) */
+	public setAssistantOverride(assistant: AiAssistant): void {
+		this.override_assistant.set(assistant);
+	}
+
+	/** Clears the override, falling back to the route assistant */
+	public clearAssistantOverride(): void {
+		this.override_assistant.set(null);
 	}
 
 	public openAiSocket(assistant: AiAssistant, content: string | null, context?: string): void {
