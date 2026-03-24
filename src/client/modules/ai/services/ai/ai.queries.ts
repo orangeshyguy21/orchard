@@ -164,6 +164,12 @@ export const AI_AGENT_UPDATE_MUTATION = `
     }
 `;
 
+export const AI_AGENT_DELETE_MUTATION = `
+    mutation AiAgentDelete($id: String!) {
+        ai_agent_delete(id: $id)
+    }
+`;
+
 /** GQL type map for building dynamic variable definitions */
 const GQL_TYPE_MAP: Record<string, string> = {
 	name: 'String',

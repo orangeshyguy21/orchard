@@ -2,6 +2,8 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, input, output, inject, effect, signal, computed} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormGroup} from '@angular/forms';
+/* Vendor Dependencies */
+import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -18,6 +20,7 @@ import {Config} from '@client/modules/config/types/config';
 /* Native Dependencies */
 import {ToolSummary, AgentFormMode} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
 import {SettingsSubsectionAppAiAgentFormComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
+import {SettingsSubsectionAppAiJobDialogComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-job-dialog/settings-subsection-app-ai-job-dialog.component';
 /* Shared Dependencies */
 import {AgentKey} from '@shared/generated.types';
 
@@ -32,6 +35,7 @@ export class SettingsSubsectionAppAiComponent {
 	private readonly aiService = inject(AiService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
 	private readonly formPanelService = inject(FormPanelService);
+	private readonly dialog = inject(MatDialog);
 	private readonly destroyRef = inject(DestroyRef);
 
 	public ai_enabled = input.required<boolean>();
@@ -49,6 +53,7 @@ export class SettingsSubsectionAppAiComponent {
 	public requestAgentForms = output<AiAgent[]>();
 	public saveAgent = output<{id: string; values: Record<string, unknown>}>();
 	public createAgent = output<{values: Record<string, unknown>}>();
+	public deleteAgent = output<{id: string}>();
 
 	public ai_health = signal<AiHealth | null>(null);
 	public ai_models = signal<AiModel[] | null>(null);
@@ -209,6 +214,24 @@ export class SettingsSubsectionAppAiComponent {
             } else {
                 this.saveAgent.emit({id: result.id, values: result.values});
             }
+        });
+    }
+
+    public onExecuteJob(event: {id: string}): void {
+        const agent = this.agents().get(event.id);
+        if (!agent) return;
+        // this.aiService.executeAiAgent(agent.id);
+    }
+
+    public onDeleteJob(event: {id: string}): void {
+        const agent = this.agents().get(event.id);
+        if (!agent) return;
+        const dialog_ref = this.dialog.open(SettingsSubsectionAppAiJobDialogComponent, {
+            data: {name: agent.name},
+        });
+        dialog_ref.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((confirmed) => {
+            if (confirmed !== true) return;
+            this.deleteAgent.emit({id: agent.id});
         });
     }
 }

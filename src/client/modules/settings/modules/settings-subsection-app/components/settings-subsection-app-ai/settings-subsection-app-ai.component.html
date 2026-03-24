@@ -83,6 +83,8 @@
                                 (update)="update.emit()"
                                 (favoritesChange)="onFavoritesChange($event)"
                                 (openSettings)="onOpenAgentSettings($event, 'jobedit')"
+                                (executeNow)="onExecuteJob($event)"
+                                (deleteJob)="onDeleteJob($event)"
                             ></orc-settings-subsection-app-ai-job>
                         }
                         <div class="add-agent-job-card" matRipple (click)="onOpenAgentSettings({id: 'new'}, 'jobcreate')">

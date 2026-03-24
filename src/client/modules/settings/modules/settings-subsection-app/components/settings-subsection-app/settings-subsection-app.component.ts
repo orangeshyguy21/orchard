@@ -460,6 +460,38 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		});
 	}
 
+	/** Deletes a custom agent and removes it from local state */
+	public onDeleteAgent(event: {id: string}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.deleteAiAgent(event.id).subscribe({
+			next: () => {
+				const agents = this.initial_agents();
+				agents.delete(event.id);
+				this.initial_agents.set(new Map(agents));
+
+				const forms = this.agent_form_groups();
+				forms.delete(event.id);
+				this.agent_form_groups.set(new Map(forms));
+
+				this.evaluateDirtyCount();
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Job deleted!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
 	/** Collects dirty agent form controls into batch update payloads */
 	private getDirtyAgentUpdates(): {id: string; updates: Record<string, unknown>}[] {
 		const dirty_agents: {id: string; updates: Record<string, unknown>}[] = [];

@@ -645,6 +645,16 @@ export class AgentService implements OnModuleInit {
 		return saved;
 	}
 
+	/** Delete a custom agent (agent_key must be null). Cleans up cron jobs before removal. */
+	public async deleteAgent(id: string): Promise<void> {
+		const agent = await this.agentRepository.findOne({where: {id}});
+		if (!agent) throw new Error(`Agent not found: ${id}`);
+		if (agent.agent_key !== null) throw new Error(`Cannot delete built-in agent: ${agent.agent_key}`);
+		this.removeCronJobsForAgent(agent.id);
+		this.pending_agents.delete(agent.id);
+		await this.agentRepository.remove(agent);
+	}
+
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,

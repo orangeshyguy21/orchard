@@ -126,6 +126,18 @@ export class AiAgentService {
 		}
 	}
 
+	/** Deletes a custom agent */
+	async deleteAgent(tag: string, id: string): Promise<void> {
+		try {
+			await this.agentService.deleteAgent(id);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AgentError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
 	/** Manually triggers an agent execution */
 	async executeAgent(tag: string, id: string): Promise<OrchardAgentRun> {
 		try {

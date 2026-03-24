@@ -52,6 +52,10 @@ export type AiAgentUpdateResponse = {
 	ai_agent_update: OrchardAgent;
 };
 
+export type AiAgentDeleteResponse = {
+	ai_agent_delete: boolean;
+};
+
 export type AiAgentBatchUpdateResponse = Record<string, OrchardAgent>;
 
 export type AiAgentToolsResponse = {

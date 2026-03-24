@@ -98,4 +98,13 @@ export class AiAgentResolver {
 		this.logger.debug(tag);
 		return await this.aiAgentService.executeAgent(tag, id);
 	}
+
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Mutation(() => Boolean, {description: 'Delete a custom AI agent'})
+	async ai_agent_delete(@Args('id', {description: 'Agent identifier'}) id: string): Promise<boolean> {
+		const tag = 'MUTATION { ai_agent_delete }';
+		this.logger.debug(tag);
+		await this.aiAgentService.deleteAgent(tag, id);
+		return true;
+	}
 }

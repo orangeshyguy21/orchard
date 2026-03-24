@@ -26,6 +26,7 @@ import {
 	AiAgentCreateResponse,
 	AiAgentUpdateResponse,
 	AiAgentBatchUpdateResponse,
+	AiAgentDeleteResponse,
 	AiAgentToolsResponse,
 	AiAgentDefaultsResponse,
 } from '@client/modules/ai/types/ai.types';
@@ -51,6 +52,7 @@ import {
 	AI_AGENT_QUERY,
 	AI_AGENT_CREATE_MUTATION,
 	AI_AGENT_UPDATE_MUTATION,
+	AI_AGENT_DELETE_MUTATION,
 	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
@@ -426,6 +428,22 @@ export class AiService {
 			}),
 			catchError((error) => {
 				console.error('Error batch updating ai agents:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Deletes a custom AI agent by ID */
+	public deleteAiAgent(id: string): Observable<boolean> {
+		const query = getApiQuery(AI_AGENT_DELETE_MUTATION, {id});
+
+		return this.http.post<OrchardRes<AiAgentDeleteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_delete;
+			}),
+			catchError((error) => {
+				console.error('Error deleting ai agent:', error);
 				return throwError(() => error);
 			}),
 		);
