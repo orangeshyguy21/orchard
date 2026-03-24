@@ -132,7 +132,7 @@ export class AiAgentService {
 			await this.agentService.deleteAgent(id);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.AgentError,
+				errord: OrchardErrorCode.AgentDeleteError,
 			});
 			throw new OrchardApiError(orchard_error);
 		}
