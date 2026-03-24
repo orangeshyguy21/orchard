@@ -9,13 +9,32 @@
 		<div class="category-rule"></div>
 	</div>
 	<div class="settings-box">
-		<orc-settings-subsection-user-user
-			[user]="user()"
-			[form_group_user_name]="form_user_name"
-			[device_type]="device_type()"
-			(cancel_user_name)="onCancelUserName($event)"
-			(submit_user_name)="onSubmitUserName()"
-			(save_user_password)="onSaveUserPassword($event)"
-		></orc-settings-subsection-user-user>
+        <div class="flex flex-gap-2 flex-wrap">
+            <div class="flex-1">
+                <div class="font-size-xs orc-outline-color p-b-0-5">Profile</div>
+                <orc-settings-subsection-user-user
+                    [user]="user()"
+                    [form_group]="form_user"
+                    [device_type]="device_type()"
+                    (cancel_user_name)="onCancelUserName($event)"
+                    (submit_user_name)="onSubmitUserName()"
+                    (save_user_password)="onSaveUserPassword($event)"
+                ></orc-settings-subsection-user-user>
+            </div>
+            
+            <div class="flex-1">
+                <div class="font-size-xs orc-outline-color p-b-0-5">Messaging</div>
+                <orc-settings-subsection-user-messaging
+                    [form_group]="form_user"
+                    [ai_enabled]="settings()?.ai_enabled ?? false"
+                    [messages_enabled]="settings()?.messages_enabled ?? false"
+                    [control_name]="'telegram_chat_id'"
+                    [invalid]="form_user.get('telegram_chat_id')?.invalid || false"
+                    [dirty]="form_user.get('telegram_chat_id')?.dirty || false"
+                    (cancel)="onCancelTelegram($event)"
+                    (submit)="onSubmitTelegram()"
+                ></orc-settings-subsection-user-messaging>
+            </div>
+        </div>
 	</div>
 </div>

@@ -12,6 +12,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 
 @Component({
 	selector: 'orc-settings-subsection-user',
@@ -26,13 +27,14 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		return this.active_event?.type !== 'PENDING';
 	}
 
-	public form_user_name: FormGroup = new FormGroup({
+	public form_user: FormGroup = new FormGroup({
 		name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
+		telegram_chat_id: new FormControl(null),
 	});
 
 	public user = signal<User | null>(null);
 	public device_type = signal<DeviceType>('desktop');
-
+    public settings = signal<ParsedAppSettings | null>(null);
 	private dirty_count: WritableSignal<number> = signal(0);
 
 	private active_event: EventData | null = null;
@@ -42,6 +44,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		private crewService: CrewService,
 		private eventService: EventService,
 		private breakpointObserver: BreakpointObserver,
+		private settingAppService: SettingAppService,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
@@ -53,13 +56,19 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
 		this.subscriptions.add(this.getBreakpointSubscription());
+        this.settings.set(this.settingAppService.getParsedSettings());
+		this.updateMessagingDisabled();
 	}
+
+	/* *******************************************************
+		Subscriptions
+	******************************************************** */
 
 	private getUserSubscription(): Subscription {
 		return this.crewService.user$.subscribe((user) => {
 			if (user === undefined || user === null) return;
 			this.user.set(new User(user));
-			this.setUserNameFrom();
+			this.setFormUser();
 		});
 	}
 
@@ -74,7 +83,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	}
 
 	private getFormSubscription(): Subscription {
-		return this.form_user_name.valueChanges.subscribe(() => {
+		return this.form_user.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
 		});
 	}
@@ -91,20 +100,45 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-	private setUserNameFrom(): void {
-		this.form_user_name.setValue({name: this.user()?.name}, {emitEvent: false});
+	/* *******************************************************
+		Form
+	******************************************************** */
+
+	private setFormUser(): void {
+		this.form_user.setValue(
+			{
+				name: this.user()?.name ?? null,
+				telegram_chat_id: this.user()?.telegram_chat_id ?? null,
+			},
+			{emitEvent: false},
+		);
 	}
 
+	private updateMessagingDisabled(): void {
+		const parsed_settings = this.settings();
+		const telegram_control = this.form_user.get('telegram_chat_id');
+		if (!parsed_settings?.ai_enabled || !parsed_settings?.messages_enabled) {
+			telegram_control?.disable({emitEvent: false});
+		} else {
+			telegram_control?.enable({emitEvent: false});
+		}
+	}
+
+	/* *******************************************************
+		Actions Up
+	******************************************************** */
+
 	public onCancelUserName(control_name: string): void {
-		this.setUserNameFrom();
-		this.form_user_name.get(control_name)?.markAsPristine();
-		this.form_user_name.get(control_name)?.markAsUntouched();
-		this.form_user_name.get(control_name)?.setErrors(null);
-		this.evaluateDirtyCount();
+		this.resetControl(control_name, this.user()?.name ?? null);
+	}
+
+	public onCancelTelegram(control_name: string): void {
+		this.resetControl(control_name, this.user()?.telegram_chat_id ?? null);
 	}
 
 	public onSubmitUserName(): void {
-		if (this.form_user_name.invalid) {
+		const name_control = this.form_user.get('name');
+		if (name_control?.invalid) {
 			return this.eventService.registerEvent(
 				new EventData({
 					type: 'WARNING',
@@ -113,7 +147,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.crewService.updateUserName(this.form_user_name.value.name).subscribe({
+		this.crewService.updateUserName(this.form_user.value.name).subscribe({
 			next: () => {
 				this.crewService.clearUserCache();
 				this.crewService.loadUser().subscribe();
@@ -123,8 +157,8 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 						message: 'Username updated!',
 					}),
 				);
-				this.setUserNameFrom();
-				this.form_user_name.markAsPristine();
+				name_control?.setValue(this.user()?.name ?? null, {emitEvent: false});
+				name_control?.markAsPristine();
 				this.evaluateDirtyCount();
 			},
 			error: (errors: OrchardErrors) => {
@@ -137,6 +171,56 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 			},
 		});
 	}
+
+	public onSubmitTelegram(): void {
+		const telegram_control = this.form_user.get('telegram_chat_id');
+		if (telegram_control?.invalid) {
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Invalid info',
+				}),
+			);
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		const value = this.form_user.value.telegram_chat_id || null;
+		this.crewService.updateUserTelegram(value).subscribe({
+			next: () => {
+				this.crewService.clearUserCache();
+				this.crewService.loadUser().subscribe();
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Telegram Chat ID updated!',
+					}),
+				);
+				telegram_control?.setValue(this.user()?.telegram_chat_id ?? null, {emitEvent: false});
+				telegram_control?.markAsPristine();
+				this.evaluateDirtyCount();
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	private resetControl(control_name: string, value: unknown): void {
+		const control = this.form_user.get(control_name);
+		control?.setValue(value, {emitEvent: false});
+		control?.markAsPristine();
+		control?.markAsUntouched();
+		control?.setErrors(null);
+		this.evaluateDirtyCount();
+	}
+
+	/* *******************************************************
+		Actions Up — Password
+	******************************************************** */
 
 	public onSaveUserPassword(form_password: FormGroup): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
@@ -163,11 +247,13 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		});
 	}
 
+	/* *******************************************************
+		Events
+	******************************************************** */
+
 	private evaluateDirtyCount(): void {
-		const contrtol_count = Object.keys(this.form_user_name.controls)
-			.filter((key) => this.form_user_name.get(key) instanceof FormControl)
-			.filter((key) => this.form_user_name.get(key)?.dirty).length;
-		this.dirty_count.set(contrtol_count);
+		const control_count = Object.values(this.form_user.controls).filter((control) => control.dirty).length;
+		this.dirty_count.set(control_count);
 	}
 
 	private createPendingEvent(count: number): void {
@@ -183,12 +269,18 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	}
 
 	private onConfirmedEvent(): void {
-		this.onSubmitUserName();
+		if (this.form_user.get('name')?.dirty) this.onSubmitUserName();
+		if (this.form_user.get('telegram_chat_id')?.dirty) this.onSubmitTelegram();
 	}
 
 	private onUnconfirmedEvent(): void {
 		this.onCancelUserName('name');
+		this.onCancelTelegram('telegram_chat_id');
 	}
+
+	/* *******************************************************
+		Destroy
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
