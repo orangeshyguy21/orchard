@@ -53,6 +53,8 @@ export class SettingsSubsectionAppAiJobComponent {
     public update = output<void>();
     public favoritesChange = output<AiFavorites>();
     public openSettings = output<{id: string, fullscreen_system_message?: boolean}>();
+    public executeNow = output<{id: string}>();
+    public deleteJob = output<{id: string}>();
 
     /* *******************************************************
 		Actions

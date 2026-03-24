@@ -25,9 +25,23 @@
                             </orc-ai-model>
                         </div>
                         
-                        <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit({id: agent.id})">
+                        <button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="jobMenu">
                             <mat-icon>more_vert</mat-icon>
                         </button>
+                        <mat-menu #jobMenu="matMenu">
+                            <button mat-menu-item (click)="openSettings.emit({id: agent.id})" class="orc-icon-button">
+                                <mat-icon class="mat-symbol-outline">edit</mat-icon>
+                                <span>Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="executeNow.emit({id: agent.id})" class="orc-icon-button">
+                                <mat-icon class="mat-symbol-outline">play_circle</mat-icon>
+                                <span>Execute now</span>
+                            </button>
+                            <button mat-menu-item (click)="deleteJob.emit({id: agent.id})" class="orc-icon-button">
+                                <mat-icon class="mat-symbol-outline">delete_forever</mat-icon>
+                                <span>Delete</span>
+                            </button>
+                        </mat-menu>
                     </div>
             
                     <div class="font-size-xs orc-outline-color">{{ agent.description }}</div>    

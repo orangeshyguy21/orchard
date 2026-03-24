@@ -107,6 +107,7 @@ const ICONS = [
   'task_alt',
   'add_task',
   'open_with',
+  'play_circle',
 ];
 
 // Sort alphabetically and remove duplicates
