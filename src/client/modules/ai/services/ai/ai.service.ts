@@ -27,6 +27,7 @@ import {
 	AiAgentUpdateResponse,
 	AiAgentBatchUpdateResponse,
 	AiAgentDeleteResponse,
+	AiAgentExecuteResponse,
 	AiAgentToolsResponse,
 	AiAgentDefaultsResponse,
 } from '@client/modules/ai/types/ai.types';
@@ -39,6 +40,7 @@ import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-def
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class';
+import {AiAgentRun} from '@client/modules/ai/classes/ai-agent-run.class';
 /* Local Dependencies */
 import {
 	AI_CHAT_SUBSCRIPTION,
@@ -53,6 +55,7 @@ import {
 	AI_AGENT_CREATE_MUTATION,
 	AI_AGENT_UPDATE_MUTATION,
 	AI_AGENT_DELETE_MUTATION,
+	AI_AGENT_EXECUTE_MUTATION,
 	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
@@ -444,6 +447,23 @@ export class AiService {
 			}),
 			catchError((error) => {
 				console.error('Error deleting ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Manually triggers an agent execution and returns the run result */
+	public executeAiAgent(id: string): Observable<AiAgentRun> {
+		const query = getApiQuery(AI_AGENT_EXECUTE_MUTATION, {id});
+
+		return this.http.post<OrchardRes<AiAgentExecuteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_execute;
+			}),
+			map((run) => new AiAgentRun(run)),
+			catchError((error) => {
+				console.error('Error executing ai agent:', error);
 				return throwError(() => error);
 			}),
 		);

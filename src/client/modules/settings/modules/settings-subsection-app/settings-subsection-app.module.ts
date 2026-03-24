@@ -15,6 +15,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
@@ -39,6 +40,7 @@ import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsect
 import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-subsection-app-ai-tool-chips/settings-subsection-app-ai-tool-chips.component';
 import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
 import {SettingsSubsectionAppAiJobDialogComponent} from './components/settings-subsection-app-ai-job-dialog/settings-subsection-app-ai-job-dialog.component';
+import {SettingsSubsectionAppAiJobExecuteDialogComponent} from './components/settings-subsection-app-ai-job-execute-dialog/settings-subsection-app-ai-job-execute-dialog.component';
 
 @NgModule({
 	declarations: [
@@ -53,6 +55,7 @@ import {SettingsSubsectionAppAiJobDialogComponent} from './components/settings-s
 		SettingsSubsectionAppAiToolChipsComponent,
 		SettingsSubsectionAppAiAgentFormComponent,
 		SettingsSubsectionAppAiJobDialogComponent,
+		SettingsSubsectionAppAiJobExecuteDialogComponent,
 	],
 	imports: [
 		[
@@ -77,6 +80,7 @@ import {SettingsSubsectionAppAiJobDialogComponent} from './components/settings-s
 		MatTooltipModule,
 		MatChipsModule,
 		MatDialogModule,
+		MatProgressSpinnerModule,
 		MatRippleModule,
 		OrcFormModule,
 		OrcTimeModule,

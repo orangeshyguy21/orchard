@@ -9,6 +9,7 @@ import {
 	OrchardAiAssistant,
 	OrchardAgent,
 	OrchardAgentDefault,
+	OrchardAgentRun,
 	OrchardAgentTool,
 	AssistantToolName,
 	MintUnit,
@@ -54,6 +55,10 @@ export type AiAgentUpdateResponse = {
 
 export type AiAgentDeleteResponse = {
 	ai_agent_delete: boolean;
+};
+
+export type AiAgentExecuteResponse = {
+	ai_agent_execute: OrchardAgentRun;
 };
 
 export type AiAgentBatchUpdateResponse = Record<string, OrchardAgent>;
