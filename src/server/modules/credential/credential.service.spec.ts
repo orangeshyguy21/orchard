@@ -110,4 +110,21 @@ describe('CredentialService', () => {
 		const hex = credentialService.loadMacaroonHex('AQID');
 		expect(hex).toBe(Buffer.from('AQID', 'base64').toString('hex'));
 	});
+
+	it('readPath logs warning when file cannot be read', () => {
+		(fs.readFileSync as unknown as jest.Mock).mockImplementation(() => {
+			throw new Error('ENOENT: no such file or directory');
+		});
+		const spy = jest.spyOn((credentialService as any).logger, 'warn');
+		const result = credentialService.loadMacaroonHex('/nonexistent/admin.macaroon');
+		expect(result).toBeUndefined();
+		expect(spy).toHaveBeenCalledWith(expect.stringContaining('Failed to read credential file'));
+		expect(spy).toHaveBeenCalledWith(expect.stringContaining('ENOENT'));
+	});
+
+	it('loadMacaroonHex logs warning for invalid hex: prefix', () => {
+		const spy = jest.spyOn((credentialService as any).logger, 'warn');
+		credentialService.loadMacaroonHex('hex:xyz');
+		expect(spy).toHaveBeenCalledWith(expect.stringContaining('invalid hex characters'));
+	});
 });
