@@ -1,12 +1,15 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 import {AgentKey} from '@server/modules/ai/agent/agent.enums';
 /* Local Dependencies */
 import {AiAgentService} from './aiagent.service';
+import {AiAgentInterceptor} from './aiagent.interceptor';
 import {OrchardAgent, OrchardAgentDefault, OrchardAgentRun} from './aiagent.model';
 
 @Resolver(() => [OrchardAgent])
@@ -57,6 +60,8 @@ export class AiAgentResolver {
 	******************************************************** */
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(AiAgentInterceptor)
+	@LogEvent({type: EventLogType.CREATE, field: 'agent'})
 	@Mutation(() => OrchardAgent, {description: 'Create a new custom AI agent'})
 	async ai_agent_create(
 		@Args('name', {description: 'Agent name'}) name: string,
@@ -74,6 +79,8 @@ export class AiAgentResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(AiAgentInterceptor)
+	@LogEvent({type: EventLogType.UPDATE, field: 'agent'})
 	@Mutation(() => OrchardAgent, {description: 'Update an AI agent configuration'})
 	async ai_agent_update(
 		@Args('id', {description: 'Agent identifier'}) id: string,
@@ -100,6 +107,8 @@ export class AiAgentResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(AiAgentInterceptor)
+	@LogEvent({type: EventLogType.DELETE, field: 'agent'})
 	@Mutation(() => Boolean, {description: 'Delete a custom AI agent'})
 	async ai_agent_delete(@Args('id', {description: 'Agent identifier'}) id: string): Promise<boolean> {
 		const tag = 'MUTATION { ai_agent_delete }';

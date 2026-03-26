@@ -322,6 +322,7 @@ registerEnumType(EventLogEntityType, {
 		KEYSET: {description: 'Keyset entity'},
 		DATABASE: {description: 'Database entity'},
 		SETTING: {description: 'Setting entity'},
+		AGENT: {description: 'AI agent entity'},
 	},
 });
 registerEnumType(EventLogType, {
