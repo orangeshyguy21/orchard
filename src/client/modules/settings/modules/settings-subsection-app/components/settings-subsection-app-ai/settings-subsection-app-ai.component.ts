@@ -21,7 +21,7 @@ import {Config} from '@client/modules/config/types/config';
 import {ToolSummary, AgentFormMode} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
 import {SettingsSubsectionAppAiAgentFormComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
 import {SettingsSubsectionAppAiJobDialogComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-job-dialog/settings-subsection-app-ai-job-dialog.component';
-import {SettingsSubsectionAppAiJobExecuteDialogComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-job-execute-dialog/settings-subsection-app-ai-job-execute-dialog.component';
+import {SettingsSubsectionAppAiJobExecuteComponent} from '@client/modules/settings/modules/settings-subsection-app/components/settings-subsection-app-ai-job-execute/settings-subsection-app-ai-job-execute.component';
 /* Shared Dependencies */
 import {AgentKey} from '@shared/generated.types';
 
@@ -221,7 +221,7 @@ export class SettingsSubsectionAppAiComponent {
     public onExecuteJob(event: {id: string}): void {
         const agent = this.agents().get(event.id);
         if (!agent) return;
-        this.dialog.open(SettingsSubsectionAppAiJobExecuteDialogComponent, {
+        this.formPanelService.open(SettingsSubsectionAppAiJobExecuteComponent, {
             data: {id: agent.id, name: agent.name},
         });
     }

@@ -15,7 +15,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
@@ -40,7 +40,7 @@ import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsect
 import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-subsection-app-ai-tool-chips/settings-subsection-app-ai-tool-chips.component';
 import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
 import {SettingsSubsectionAppAiJobDialogComponent} from './components/settings-subsection-app-ai-job-dialog/settings-subsection-app-ai-job-dialog.component';
-import {SettingsSubsectionAppAiJobExecuteDialogComponent} from './components/settings-subsection-app-ai-job-execute-dialog/settings-subsection-app-ai-job-execute-dialog.component';
+import {SettingsSubsectionAppAiJobExecuteComponent} from './components/settings-subsection-app-ai-job-execute/settings-subsection-app-ai-job-execute.component';
 
 @NgModule({
 	declarations: [
@@ -55,7 +55,7 @@ import {SettingsSubsectionAppAiJobExecuteDialogComponent} from './components/set
 		SettingsSubsectionAppAiToolChipsComponent,
 		SettingsSubsectionAppAiAgentFormComponent,
 		SettingsSubsectionAppAiJobDialogComponent,
-		SettingsSubsectionAppAiJobExecuteDialogComponent,
+		SettingsSubsectionAppAiJobExecuteComponent,
 	],
 	imports: [
 		[
@@ -80,7 +80,7 @@ import {SettingsSubsectionAppAiJobExecuteDialogComponent} from './components/set
 		MatTooltipModule,
 		MatChipsModule,
 		MatDialogModule,
-		MatProgressSpinnerModule,
+		MatProgressBarModule,
 		MatRippleModule,
 		OrcFormModule,
 		OrcTimeModule,
