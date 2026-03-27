@@ -5,7 +5,7 @@ import {Router, NavigationEnd, NavigationStart, NavigationCancel, NavigationErro
 import {Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import {Chart} from 'chart.js/auto';
+import {Chart} from 'chart.js';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {GraphicService} from '@client/modules/graphic/services/graphic/graphic.service';
