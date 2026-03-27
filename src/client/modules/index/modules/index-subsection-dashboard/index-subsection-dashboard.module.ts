@@ -22,6 +22,7 @@ import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
+import {OrcBitcoinGeneralBlockPipeModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general-block-pipe.module';
 import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/lightning-general/lightning-general.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
@@ -90,6 +91,7 @@ import {IndexSubsectionDashboardEcashEnabledComponent} from './components/index-
 		OrcProgressModule,
 		OrcMintGeneralModule,
 		OrcBitcoinGeneralModule,
+		OrcBitcoinGeneralBlockPipeModule,
 		OrcLightningGeneralModule,
 	],
 })

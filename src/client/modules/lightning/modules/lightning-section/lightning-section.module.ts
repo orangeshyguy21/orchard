@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {LightningSectionComponent} from './components/lightning-section/lightning-section.component';
 
@@ -53,6 +54,7 @@ import {LightningSectionComponent} from './components/lightning-section/lightnin
 		MatIconModule,
 		OrcNavModule,
 	],
+	providers: [provideChartConfig()],
 })
 export class OrcLightningSectionModule {}
 

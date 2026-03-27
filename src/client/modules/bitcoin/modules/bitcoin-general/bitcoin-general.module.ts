@@ -19,7 +19,7 @@ import {OrcNetworkModule} from '@client/modules/network/network.module';
 /* Local Dependencies */
 import {BitcoinGeneralBlockComponent} from './components/bitcoin-general-block/bitcoin-general-block.component';
 import {BitcoinGeneralUtxoStackComponent} from './components/bitcoin-general-utxo-stack/bitcoin-general-utxo-stack.component';
-import {BitcoinGeneralBlockPipe} from './pipes/bitcoin-general-block/bitcoin-general-block.pipe';
+import {OrcBitcoinGeneralBlockPipeModule} from './bitcoin-general-block-pipe.module';
 import {BitcoinGeneralFeeratePipe} from './pipes/bitcoin-general-feerate/bitcoin-general-feerate.pipe';
 import {BitcoinGeneralLog2workPipe} from './pipes/bitcoin-general-log2work/bitcoin-general-log2work.pipe';
 import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general-wallet-summary/bitcoin-general-wallet-summary.component';
@@ -31,7 +31,6 @@ import {BitcoinGeneralTreemapComponent} from './components/bitcoin-general-treem
 		BitcoinGeneralBlockComponent,
 		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
-		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
 		BitcoinGeneralWalletSummaryComponent,
@@ -52,12 +51,12 @@ import {BitcoinGeneralTreemapComponent} from './components/bitcoin-general-treem
 		OrcChartModule,
 		OrcDataModule,
 		OrcNetworkModule,
+		OrcBitcoinGeneralBlockPipeModule,
 	],
 	exports: [
 		BitcoinGeneralBlockComponent,
 		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
-		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
 		BitcoinGeneralWalletSummaryComponent,

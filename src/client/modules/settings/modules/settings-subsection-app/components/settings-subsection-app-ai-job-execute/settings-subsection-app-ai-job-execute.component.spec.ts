@@ -15,8 +15,8 @@ describe('SettingsSubsectionAppAiJobExecuteComponent', () => {
 			declarations: [SettingsSubsectionAppAiJobExecuteComponent],
 			providers: [
 				{provide: FORM_PANEL_DATA, useValue: {id: 'test-id', name: 'Test Agent'}},
-				{provide: FormPanelRef, useValue: {close: jest.fn()}},
-				{provide: AiService, useValue: {executeAiAgent: jest.fn().mockReturnValue(NEVER)}},
+				{provide: FormPanelRef, useValue: {close: jasmine.createSpy('close')}},
+				{provide: AiService, useValue: {executeAiAgent: jasmine.createSpy('executeAiAgent').and.returnValue(NEVER)}},
 			],
 			schemas: [NO_ERRORS_SCHEMA],
 		}).compileComponents();

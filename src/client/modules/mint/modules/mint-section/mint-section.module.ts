@@ -10,6 +10,7 @@ import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard
 import {ErrorService} from '@client/modules/error/services/error.service';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 /* Local Dependencies */
@@ -245,5 +246,6 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 		OrcNavModule,
 		OrcMintGeneralModule,
 	],
+	providers: [provideChartConfig()],
 })
 export class OrcMintSectionModule {}
