@@ -123,9 +123,9 @@ export class AgentService implements OnModuleInit {
 	 * Validates that a cron expression is syntactically correct and does not fire
 	 * more frequently than MIN_CRON_INTERVAL_MINUTES.
 	 */
-	private validateCronExpression(cron_expression: string): void {
+	private validateCronExpression(cron_expression: string, timezone?: string | null): void {
 		try {
-			const probe = new CronJob(cron_expression, () => {});
+			const probe = new CronJob(cron_expression, () => {}, null, false, timezone ?? 'UTC');
 			const [first, second] = probe.nextDates(2) as unknown as DateTime[];
 			const diff_minutes = second.diff(first, 'minutes').minutes;
 			if (diff_minutes < AgentService.MIN_CRON_INTERVAL_MINUTES) {
@@ -144,15 +144,16 @@ export class AgentService implements OnModuleInit {
 	 * Job name format: agent:{agent.id}:{cron_expression}
 	 */
 	private registerCronJob(agent: Agent, cron_expression: string): void {
-		this.validateCronExpression(cron_expression);
+		const timezone = agent.schedule_tz ?? 'UTC';
+		this.validateCronExpression(cron_expression, timezone);
 		const job_name = `agent:${agent.id}:${cron_expression}`;
 		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
 		const job = new CronJob(cron_expression, async () => {
 			await this.enqueueAgent(agent.id, cron_expression);
-		});
+		}, null, false, timezone);
 		this.schedulerRegistry.addCronJob(job_name, job);
 		job.start();
-		this.logger.log(`Registered cron: ${job_name}`);
+		this.logger.log(`Registered cron: ${job_name} (tz: ${timezone})`);
 	}
 
 	/**
@@ -513,7 +514,8 @@ export class AgentService implements OnModuleInit {
 
 	/** Builds a runtime context string to append to agent system messages */
 	public buildRuntimeContext(agent: Agent): string {
-		const now = DateTime.utc();
+		const timezone = agent.schedule_tz ?? 'UTC';
+		const now = DateTime.utc().setZone(timezone);
 		const version = this.configService.get<string>('mode.version');
 
 		const services: string[] = [];
@@ -524,12 +526,13 @@ export class AgentService implements OnModuleInit {
 		if (lightning) services.push(`lightning (${lightning})`);
 		if (mint) services.push(`mint (${mint})`);
 		const schedules: string[] = JSON.parse(agent.schedules);
-		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s)).join('; ') : 'on-demand only';
+		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s, timezone)).join('; ') : 'on-demand only';
 
 		return [
 			'[Runtime Context]',
 			`Agent ID: ${agent.id}`,
 			`Current time: ${now.toISO()} (unix: ${now.toUnixInteger()})`,
+			`Timezone: ${timezone}`,
 			`App version: ${version}`,
 			`Configured services: ${services.length ? services.join(', ') : 'none'}`,
 			`Schedule: ${cadence}`,
@@ -540,7 +543,7 @@ export class AgentService implements OnModuleInit {
 	 * Converts a cron expression into a cadence description the agent can reason about.
 	 * Focuses on the interval between runs so the agent knows what time window to analyze.
 	 */
-	private describeCadence(cron: string): string {
+	private describeCadence(cron: string, timezone: string): string {
 		const parts = cron.trim().split(/\s+/);
 		if (parts.length !== 5) return `custom (${cron})`;
 		const [minute, hour, day_of_month, _month, day_of_week] = parts;
@@ -564,7 +567,7 @@ export class AgentService implements OnModuleInit {
 
 		/* Monthly */
 		if (day_of_month !== '*' && day_of_week === '*') {
-			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 30 days of activity`;
+			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone} — focus on the last 30 days of activity`;
 		}
 
 		/* Weekly */
@@ -574,7 +577,7 @@ export class AgentService implements OnModuleInit {
 
 		/* Daily */
 		if (day_of_month === '*' && day_of_week === '*') {
-			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 24 hours of activity`;
+			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone} — focus on the last 24 hours of activity`;
 		}
 
 		return `custom (${cron})`;
@@ -621,10 +624,11 @@ export class AgentService implements OnModuleInit {
 		system_message?: string;
 		tools?: string[];
 		schedules?: string[];
+		schedule_tz?: string;
 	}): Promise<Agent> {
 		const now = DateTime.utc().toUnixInteger();
 		if (fields.schedules) {
-			fields.schedules.forEach((expr) => this.validateCronExpression(expr));
+			fields.schedules.forEach((expr) => this.validateCronExpression(expr, fields.schedule_tz));
 		}
 		const agent = this.agentRepository.create({
 			agent_key: null,
@@ -635,6 +639,7 @@ export class AgentService implements OnModuleInit {
 			system_message: fields.system_message ?? null,
 			tools: fields.tools ? JSON.stringify(fields.tools) : null,
 			schedules: JSON.stringify(fields.schedules ?? []),
+			schedule_tz: fields.schedule_tz ?? null,
 			last_run_at: null,
 			last_run_status: null,
 			created_at: now,
@@ -658,13 +663,14 @@ export class AgentService implements OnModuleInit {
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,
-		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules'>>,
+		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules' | 'schedule_tz'>>,
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);
 		if (updates.schedules) {
+			const timezone = updates.schedule_tz ?? agent.schedule_tz;
 			const expressions: string[] = JSON.parse(updates.schedules);
-			expressions.forEach((expr) => this.validateCronExpression(expr));
+			expressions.forEach((expr) => this.validateCronExpression(expr, timezone));
 		}
 		const now = DateTime.utc().toUnixInteger();
 		Object.assign(agent, updates, {updated_at: now});

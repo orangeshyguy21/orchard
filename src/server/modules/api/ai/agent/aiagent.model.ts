@@ -4,7 +4,7 @@ import {Field, ID, Int, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
-import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
+import {AgentKey, AgentRunStatus, AgentScheduleKind} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';
 import {AgentRun} from '@server/modules/ai/agent/agent-run.entity';
 import {AGENTS} from '@server/modules/ai/agent/agent.agents';
@@ -56,6 +56,12 @@ export class OrchardAgent {
 	@Field(() => [String], {description: 'Cron schedules for automatic execution'})
 	schedules: string[];
 
+	@Field(() => AgentScheduleKind, {description: 'Schedule type'})
+	schedule_kind: AgentScheduleKind;
+
+	@Field({nullable: true, description: 'IANA timezone for schedule evaluation'})
+	schedule_tz: string | null;
+
 	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp of the last execution'})
 	last_run_at: number | null;
 
@@ -79,6 +85,8 @@ export class OrchardAgent {
 		this.system_message = agent.system_message ?? built_in?.system_message ?? null;
 		this.tools = agent.tools ? JSON.parse(agent.tools) : (built_in?.tools ?? null);
 		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
+		this.schedule_kind = agent.schedule_kind ?? AgentScheduleKind.CRON;
+		this.schedule_tz = agent.schedule_tz ?? null;
 		this.last_run_at = agent.last_run_at;
 		this.last_run_status = agent.last_run_status as AgentRunStatus | null;
 		this.created_at = agent.created_at;

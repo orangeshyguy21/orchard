@@ -110,6 +110,8 @@ const AI_AGENT_FIELDS = `
     system_message
     tools
     schedules
+    schedule_kind
+    schedule_tz
     last_run_at
     last_run_status
     created_at
@@ -153,14 +155,14 @@ export const AI_AGENT_QUERY = `
 `;
 
 export const AI_AGENT_CREATE_MUTATION = `
-    mutation AiAgentCreate($name: String!, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
-        ai_agent_create(name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) { ${AI_AGENT_FIELDS} }
+    mutation AiAgentCreate($name: String!, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!], $schedule_tz: Timezone) {
+        ai_agent_create(name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules, schedule_tz: $schedule_tz) { ${AI_AGENT_FIELDS} }
     }
 `;
 
 export const AI_AGENT_UPDATE_MUTATION = `
-    mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!]) {
-        ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules) { ${AI_AGENT_FIELDS} }
+    mutation AiAgentUpdate($id: String!, $name: String, $description: String, $active: Boolean, $model: String, $system_message: String, $tools: [String!], $schedules: [String!], $schedule_tz: Timezone) {
+        ai_agent_update(id: $id, name: $name, description: $description, active: $active, model: $model, system_message: $system_message, tools: $tools, schedules: $schedules, schedule_tz: $schedule_tz) { ${AI_AGENT_FIELDS} }
     }
 `;
 
@@ -194,6 +196,7 @@ const GQL_TYPE_MAP: Record<string, string> = {
 	system_message: 'String',
 	tools: '[String!]',
 	schedules: '[String!]',
+	schedule_tz: 'Timezone',
 };
 
 /** Builds a dynamic batch mutation for updating multiple agents in a single request */

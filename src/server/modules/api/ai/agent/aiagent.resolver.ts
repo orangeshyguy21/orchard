@@ -7,6 +7,7 @@ import {UserRole} from '@server/modules/user/user.enums';
 import {LogEvent} from '@server/modules/event/event.decorator';
 import {EventLogType} from '@server/modules/event/event.enums';
 import {AgentKey} from '@server/modules/ai/agent/agent.enums';
+import {Timezone} from '@server/modules/graphql/scalars/timezone.scalar';
 /* Local Dependencies */
 import {AiAgentService} from './aiagent.service';
 import {AiAgentInterceptor} from './aiagent.interceptor';
@@ -72,10 +73,12 @@ export class AiAgentResolver {
 		@Args('tools', {type: () => [String], nullable: true, description: 'List of tool identifiers to assign'}) tools: string[],
 		@Args('schedules', {type: () => [String], nullable: true, description: 'Cron schedules for automatic execution'})
 		schedules: string[],
+		@Args('schedule_tz', {type: () => Timezone, nullable: true, description: 'IANA timezone for schedule evaluation'})
+		schedule_tz: string,
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_create }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.createAgent(tag, {name, description, active, model, system_message, tools, schedules});
+		return await this.aiAgentService.createAgent(tag, {name, description, active, model, system_message, tools, schedules, schedule_tz});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
@@ -92,10 +95,12 @@ export class AiAgentResolver {
 		@Args('tools', {type: () => [String], nullable: true, description: 'List of tool identifiers to assign'}) tools: string[],
 		@Args('schedules', {type: () => [String], nullable: true, description: 'Cron schedules for automatic execution'})
 		schedules: string[],
+		@Args('schedule_tz', {type: () => Timezone, nullable: true, description: 'IANA timezone for schedule evaluation'})
+		schedule_tz: string,
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_update }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, model, system_message, tools, schedules});
+		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, model, system_message, tools, schedules, schedule_tz});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)

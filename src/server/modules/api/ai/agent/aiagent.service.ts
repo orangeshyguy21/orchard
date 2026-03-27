@@ -80,6 +80,7 @@ export class AiAgentService {
 			system_message?: string;
 			tools?: string[];
 			schedules?: string[];
+			schedule_tz?: string;
 		},
 	): Promise<OrchardAgent> {
 		try {
@@ -105,6 +106,7 @@ export class AiAgentService {
 			system_message?: string;
 			tools?: string[];
 			schedules?: string[];
+			schedule_tz?: string;
 		},
 	): Promise<OrchardAgent> {
 		try {
@@ -116,6 +118,7 @@ export class AiAgentService {
 			if (updates.system_message !== undefined) serialized.system_message = updates.system_message;
 			if (updates.tools !== undefined) serialized.tools = JSON.stringify(updates.tools);
 			if (updates.schedules !== undefined) serialized.schedules = JSON.stringify(updates.schedules);
+			if (updates.schedule_tz !== undefined) serialized.schedule_tz = updates.schedule_tz;
 			const agent = await this.agentService.updateAgent(id, serialized);
 			return new OrchardAgent(agent);
 		} catch (error) {

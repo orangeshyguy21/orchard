@@ -16,7 +16,7 @@ import {BitcoinAnalyticsMetric} from '@server/modules/bitcoin/analytics/btcanaly
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AssistantToolName, AiAssistant} from '@server/modules/ai/assistant/ai.assistant.enums';
-import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
+import {AgentKey, AgentRunStatus, AgentScheduleKind} from '@server/modules/ai/agent/agent.enums';
 import {UserRole} from '@server/modules/user/user.enums';
 import {SettingKey, SettingValue} from '@server/modules/setting/setting.enums';
 import {UTXOracleProgressStatus} from '@server/modules/bitcoin/utxoracle/utxoracle.enums';
@@ -198,6 +198,13 @@ registerEnumType(AgentKey, {
 	valuesMap: {
 		GROUNDSKEEPER: {description: 'Main Groundskeeper agent'},
 		ACTIVITY_MONITOR: {description: 'Automated activity monitoring agent'},
+	},
+});
+registerEnumType(AgentScheduleKind, {
+	name: 'AgentScheduleKind',
+	description: 'Type of schedule for an AI agent',
+	valuesMap: {
+		CRON: {description: 'Cron-based schedule'},
 	},
 });
 registerEnumType(AgentRunStatus, {

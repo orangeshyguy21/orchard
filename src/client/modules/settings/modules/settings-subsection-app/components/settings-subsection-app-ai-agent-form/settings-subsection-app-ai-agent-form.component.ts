@@ -340,8 +340,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
             this.form.markAllAsTouched();
             return;
         }
+        const timezone = this.settingDeviceService.getTimezone();
         if (this.data.mode === 'jobcreate') {
-            this.panelRef.close({mode: 'jobcreate', values: this.form.value});
+            this.panelRef.close({mode: 'jobcreate', values: {...this.form.value, schedule_tz: timezone}});
             return;
         }
         if (!this.data.agent) return;
@@ -355,6 +356,9 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
         if (Object.keys(dirty_values).length === 0) {
             this.panelRef.close();
             return;
+        }
+        if (dirty_values['schedules'] !== undefined) {
+            dirty_values['schedule_tz'] = timezone;
         }
         this.panelRef.close({mode: this.data.mode, id: this.data.agent.id, values: dirty_values});
     }

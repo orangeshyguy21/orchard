@@ -1,8 +1,9 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 /* Vendor Dependencies */
-import {CronJob} from 'cron';
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {nextCronDate} from '@client/modules/local/helpers/local.helpers';
 /* Native Dependencies */
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
@@ -42,9 +43,11 @@ export class SettingsSubsectionAppAiJobComponent {
 
     /** Calculates the nearest next run time across all agent schedules */
     public readonly next_run = computed<DateTime | null>(() => {
-        const schedules = this.agent()?.schedules ?? [];
+        const agent = this.agent();
+        const schedules = agent?.schedules ?? [];
+        const tz = agent?.schedule_tz ?? undefined;
         return schedules
-            .map((expr) => { try { return new CronJob(expr, () => {}).nextDate(); } catch { return null; } })
+            .map((expr) => nextCronDate(expr, tz))
             .filter((d): d is DateTime => d !== null)
             .reduce<DateTime | null>((earliest, d) => (!earliest || d < earliest ? d : earliest), null);
     });

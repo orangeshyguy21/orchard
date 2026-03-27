@@ -3,6 +3,10 @@ export enum AgentKey {
 	ACTIVITY_MONITOR = 'ACTIVITY_MONITOR',
 }
 
+export enum AgentScheduleKind {
+	CRON = 'cron',
+}
+
 export enum AgentRunStatus {
 	RUNNING = 'running',
 	SUCCESS = 'success',

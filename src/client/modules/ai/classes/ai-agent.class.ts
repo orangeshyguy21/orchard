@@ -1,5 +1,5 @@
 /* Shared Dependencies */
-import {OrchardAgent, AgentKey, AgentRunStatus} from '@shared/generated.types';
+import {OrchardAgent, AgentKey, AgentRunStatus, AgentScheduleKind} from '@shared/generated.types';
 
 export class AiAgent implements OrchardAgent {
 	id: string;
@@ -11,6 +11,8 @@ export class AiAgent implements OrchardAgent {
 	system_message: string | null;
 	tools: string[];
 	schedules: string[];
+	schedule_kind: AgentScheduleKind;
+	schedule_tz: string | null;
 	last_run_at: number | null;
 	last_run_status: AgentRunStatus | null;
 	created_at: number;
@@ -26,6 +28,8 @@ export class AiAgent implements OrchardAgent {
 		this.system_message = agent.system_message ?? null;
 		this.tools = agent.tools ?? [];
 		this.schedules = agent.schedules;
+		this.schedule_kind = agent.schedule_kind ?? AgentScheduleKind.Cron;
+		this.schedule_tz = agent.schedule_tz ?? null;
 		this.last_run_at = agent.last_run_at ?? null;
 		this.last_run_status = agent.last_run_status ?? null;
 		this.created_at = agent.created_at;
