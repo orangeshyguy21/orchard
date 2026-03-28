@@ -1,52 +1,63 @@
-<div class="ai-agent-contaienr">
-    @if (loading()) {
-        <div class="flex-grow flex flex-items-center flex-justify-center p-2">
-            <mat-icon class="orc-outline-color icon-lg">spa</mat-icon>
-        </div>
-    } @else if (agent(); as agent) {
-        <div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein">
-            <div class="flex flex-items-center flex-gap-1">
-                <div class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
-                    <div class="title-l">{{ agent.name }}</div>
-                    <orc-ai-model
-                        [model]="model()"
-                        [model_options]="ai_models()"
-                        [device_type]="device_type()"
-                        [vendor]="ai_vendor()"
-                        [favorites]="ai_favorites()"
-                        (modelChange)="onModelChange($event)"
-                        (favoritesChange)="onFavoritesChange($event)"
-                    >
-                        <button mat-button type="button" class="z-index-0">
-                            <div class="font-size-xs" [class.orc-status-warning-color]="model_warning()">{{ model() ?? 'missing model' }}</div>
+<mat-card appearance="outlined" class="relative overflow-hidden">
+    <mat-card-content class="orc-surface-container-low-bg">
+        <div class="ai-agent-contaienr">
+            @if (loading()) {
+                <div class="flex-grow flex flex-items-center flex-justify-center p-2">
+                    <mat-icon class="orc-outline-color icon-lg">spa</mat-icon>
+                </div>
+            } @else if (agent(); as agent) {
+                <div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein">
+                    <div class="flex flex-items-center flex-gap-1">
+                        <div class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
+                            <div class="title-l">{{ agent.name }}</div>
+                            <orc-ai-model
+                                [model]="model()"
+                                [model_options]="ai_models()"
+                                [device_type]="device_type()"
+                                [vendor]="ai_vendor()"
+                                [favorites]="ai_favorites()"
+                                (modelChange)="onModelChange($event)"
+                                (favoritesChange)="onFavoritesChange($event)"
+                            >
+                                <button mat-button type="button" class="z-index-0">
+                                    <div class="font-size-xs" [class.orc-status-warning-color]="model_warning()">{{ model() ?? 'missing model' }}</div>
+                                </button>
+                            </orc-ai-model>
+                        </div>
+                        
+                        <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit({id: agent.id})">
+                            <mat-icon>settings</mat-icon>
                         </button>
-                    </orc-ai-model>
-                </div>
-                
-                <button mat-icon-button type="button" class="orc-icon-button" (click)="openSettings.emit({id: agent.id})">
-                    <mat-icon>settings</mat-icon>
-                </button>
-            </div>
-    
-            <div class="font-size-xs orc-outline-color">{{ agent.description }}</div>
-    
-            <div class="p-t-1">
-                <div class="system-message font-size-xs">
-                    <div class="system-message-content">{{ agent.system_message }}</div>
-                    <button mat-icon-button type="button" class="expand-button" (click)="openSettings.emit({id: agent.id, fullscreen_system_message: true})">
-                        <mat-icon>open_with</mat-icon>
-                    </button>
-                </div>
-            </div>
+                    </div>
             
-            <div class="p-t-1">
-                <orc-settings-subsection-app-ai-tool-chips
-                    [tools]="tools()"
-                ></orc-settings-subsection-app-ai-tool-chips>
-            </div>
+                    <div class="font-size-xs orc-outline-color">{{ agent.description }}</div>
             
+                    <div class="p-t-1">
+                        <div class="system-message font-size-xs">
+                            <div class="system-message-content">{{ agent.system_message }}</div>
+                            <button mat-icon-button type="button" class="expand-button" (click)="openSettings.emit({id: agent.id, fullscreen_system_message: true})">
+                                <mat-icon>open_with</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-t-1">
+                        <orc-settings-subsection-app-ai-tool-chips
+                            [tools]="tools()"
+                        ></orc-settings-subsection-app-ai-tool-chips>
+                    </div>
+                    
+                </div>
+            } @else {
+                <div class="orc-outline-color">No agent configured</div>
+            }
         </div>
-    } @else {
-        <div class="orc-outline-color">No agent configured</div>
-    }
-</div>
+        @if(!messaging_enabled()) {
+            <div animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast" class="disabled-overlay">
+                <mat-icon class="icon-lg mat-symbol-outline">chat_bubble_off</mat-icon>
+                <div class="font-size-s">Messaging currently disabled</div>
+            </div>
+        }
+    </mat-card-content>
+</mat-card>
+

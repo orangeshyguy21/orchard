@@ -86,6 +86,7 @@ const ICONS = [
   'refresh',
   'add_comment',
   'chat_bubble',
+  'chat_bubble_off',
   'tune',
   'graph_4',
   'link',

@@ -45,24 +45,21 @@
                     </div>
                     <div class="flex-1">
                         <div class="font-size-xs orc-outline-color p-b-0-5">AI agent</div>
-                        <mat-card appearance="outlined" class="relative overflow-hidden">
-                            <mat-card-content class="orc-surface-container-low-bg">
-                                <orc-settings-subsection-app-ai-agent
-                                    [agent]="groundskeeper()"
-                                    [tools]="groundskeeper_tool_summary()"
-                                    [loading]="loading_agents()"
-                                    [form_group]="groundskeeper_form()"
-                                    [model]="groundskeeper_form()?.get('model')?.value ?? null"
-                                    [ai_models]="ai_models() ?? []"
-                                    [ai_favorites]="ai_favorites()"
-                                    [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
-                                    [device_type]="device_type()"
-                                    (update)="update.emit()"
-                                    (favoritesChange)="onFavoritesChange($event)"
-                                    (openSettings)="onOpenAgentSettings($event, 'groundskeeper')"
-                                ></orc-settings-subsection-app-ai-agent>
-                            </mat-card-content>
-                        </mat-card>
+                        <orc-settings-subsection-app-ai-agent
+                            [agent]="groundskeeper()"
+                            [tools]="groundskeeper_tool_summary()"
+                            [loading]="loading_agents()"
+                            [form_group]="groundskeeper_form()"
+                            [model]="groundskeeper_form()?.get('model')?.value ?? null"
+                            [ai_models]="ai_models() ?? []"
+                            [ai_favorites]="ai_favorites()"
+                            [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+                            [messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
+                            [device_type]="device_type()"
+                            (update)="update.emit()"
+                            (favoritesChange)="onFavoritesChange($event)"
+                            (openSettings)="onOpenAgentSettings($event, 'groundskeeper')"
+                        ></orc-settings-subsection-app-ai-agent>
                     </div>
                 </div>
                 <div>
@@ -78,6 +75,7 @@
                                 [ai_models]="ai_models() ?? []"
                                 [ai_favorites]="ai_favorites()"
                                 [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+                                [messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
                                 [device_type]="device_type()"
                                 [loading]="loading_agents()"
                                 (update)="update.emit()"

@@ -25,6 +25,7 @@ export class SettingsSubsectionAppAiAgentComponent {
 	public ai_models = input<AiModel[]>([]);
 	public ai_favorites = input<AiFavorites>({ollama: [], openrouter: []});
 	public ai_vendor = input<string>('ollama');
+	public messaging_enabled = input<boolean>(false);
 	public device_type = input<DeviceType>('desktop');
 	public loading = input<boolean>(false);
 

@@ -3,6 +3,7 @@
 
 .ai-agent-contaienr {
     min-height: 20rem;
+    @extend %relative;
     @extend %flex;
     @extend %flex-column;
     @extend %flex-gap-1;

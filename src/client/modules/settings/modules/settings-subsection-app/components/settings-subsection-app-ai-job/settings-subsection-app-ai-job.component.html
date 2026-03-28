@@ -93,8 +93,11 @@
             } @else {
                 <div class="orc-outline-color" animate.enter="orc-animation-fadein">No agent configured</div>
             }
+            @if(!messaging_enabled()) {
+                <div animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast" class="disabled-overlay">
+                    <mat-icon class="icon-lg mat-symbol-outline">chat_bubble_off</mat-icon>
+                </div>
+            }
         </mat-card-content>
     </mat-card>
-    
-    
 </div>
