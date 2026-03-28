@@ -58,7 +58,7 @@ export class SettingsSubsectionAppAiComponent {
 
 	public ai_health = signal<AiHealth | null>(null);
 	public ai_models = signal<AiModel[] | null>(null);
-    public ai_agent_tools = signal<AiAgentTool[]>([]);
+	public ai_agent_tools = signal<AiAgentTool[]>([]);
 	public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
 	public loading_health = signal<boolean>(false);
 	public loading_agents = signal<boolean>(false);
@@ -70,9 +70,9 @@ export class SettingsSubsectionAppAiComponent {
 		return null;
 	});
 
-    public readonly agent_jobs = computed<AiAgent[]>(() => {
-        return Array.from(this.agents().values()).filter((agent) => agent.agent_key !== AgentKey.Groundskeeper);
-    });
+	public readonly agent_jobs = computed<AiAgent[]>(() => {
+		return Array.from(this.agents().values()).filter((agent) => agent.agent_key !== AgentKey.Groundskeeper);
+	});
 
 	public readonly groundskeeper_form = computed<FormGroup | null>(() => {
 		const agent = this.groundskeeper();
@@ -100,7 +100,7 @@ export class SettingsSubsectionAppAiComponent {
 
 	private initialized_health: boolean = false;
 	private initialized_agents: boolean = false;
-    private set_vendor: string|undefined;
+	private set_vendor: string | undefined;
 
 	constructor() {
 		effect(() => {
@@ -108,12 +108,12 @@ export class SettingsSubsectionAppAiComponent {
 			if (ai_enabled && !this.initialized_agents) this.getAiDatas();
 			if (ai_enabled && !this.initialized_health) this.getAiHealth();
 		});
-        effect(() => {
-            const ai_vendor = this.app_settings()?.ai_vendor;
-            if(ai_vendor === this.set_vendor) return;
-            this.set_vendor = ai_vendor;
-            if(!ai_vendor || ai_vendor === '') return;
-            this.getAiModels();
+		effect(() => {
+			const ai_vendor = this.app_settings()?.ai_vendor;
+			if (ai_vendor === this.set_vendor) return;
+			this.set_vendor = ai_vendor;
+			if (!ai_vendor || ai_vendor === '') return;
+			this.getAiModels();
 		});
 	}
 
@@ -135,12 +135,12 @@ export class SettingsSubsectionAppAiComponent {
 			});
 	}
 
-    private getAiDatas(): void {
-        this.getAiAgents();
-        this.getAiAgentTools();
-        this.getAiModels();
-        this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
-    }
+	private getAiDatas(): void {
+		this.getAiAgents();
+		this.getAiAgentTools();
+		this.getAiModels();
+		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
+	}
 
 	private getAiAgents(): void {
 		this.initialized_agents = true;
@@ -159,27 +159,25 @@ export class SettingsSubsectionAppAiComponent {
 			});
 	}
 
-    private getAiModels(): void {
-        this.aiService
-            .getAiModels()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-                next: (models: AiModel[]) => this.ai_models.set(models),
-                error: () => this.ai_models.set([]),
-            });
-    }
+	private getAiModels(): void {
+		this.aiService
+			.getAiModels()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe({
+				next: (models: AiModel[]) => this.ai_models.set(models),
+				error: () => this.ai_models.set([]),
+			});
+	}
 
-    private getAiAgentTools(): void {
-        this.aiService
-            .loadAiAgentTools()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-                next: (tools: AiAgentTool[]) => this.ai_agent_tools.set(tools),
-                error: () => this.ai_agent_tools.set([]),
-            });
-    }
-
-
+	private getAiAgentTools(): void {
+		this.aiService
+			.loadAiAgentTools()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe({
+				next: (tools: AiAgentTool[]) => this.ai_agent_tools.set(tools),
+				error: () => this.ai_agent_tools.set([]),
+			});
+	}
 
 	public onTestConnection(): void {
 		this.getAiHealth();
@@ -191,50 +189,55 @@ export class SettingsSubsectionAppAiComponent {
 		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
-    /** Opens the settings panel for the agent */
-    public onOpenAgentSettings(event: {id: string, fullscreen_system_message?: boolean}, mode: AgentFormMode): void {
-        const agent = this.agents().get(event.id);
-        const ref = this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
-            data: {
-                mode: mode,
-                agent: agent,
-                models: this.ai_models(),
-                tools: this.ai_agent_tools(),
-                device_type: this.device_type(),
-                vendor: this.app_settings()?.ai_enabled,
-                favorites: this.ai_favorites(),
-                fullscreen_system_message: event.fullscreen_system_message ?? false,
-                app_settings: this.app_settings(),
-                config: this.config(),
-            },
-        });
-        ref.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((result) => {
-            if (!result) return;
-            if (result.mode === 'jobcreate') {
-                this.createAgent.emit({values: result.values});
-            } else {
-                this.saveAgent.emit({id: result.id, values: result.values});
-            }
-        });
-    }
+	/** Opens the settings panel for the agent */
+	public onOpenAgentSettings(event: {id: string; fullscreen_system_message?: boolean}, mode: AgentFormMode): void {
+		const agent = this.agents().get(event.id);
+		const ref = this.formPanelService.open(SettingsSubsectionAppAiAgentFormComponent, {
+			data: {
+				mode: mode,
+				agent: agent,
+				models: this.ai_models(),
+				tools: this.ai_agent_tools(),
+				device_type: this.device_type(),
+				vendor: this.app_settings()?.ai_enabled,
+				favorites: this.ai_favorites(),
+				fullscreen_system_message: event.fullscreen_system_message ?? false,
+				app_settings: this.app_settings(),
+				config: this.config(),
+			},
+		});
+		ref.afterClosed()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe((result) => {
+				if (!result) return;
+				if (result.mode === 'jobcreate') {
+					this.createAgent.emit({values: result.values});
+				} else {
+					this.saveAgent.emit({id: result.id, values: result.values});
+				}
+			});
+	}
 
-    public onExecuteJob(event: {id: string}): void {
-        const agent = this.agents().get(event.id);
-        if (!agent) return;
-        this.formPanelService.open(SettingsSubsectionAppAiJobExecuteComponent, {
-            data: {id: agent.id, name: agent.name},
-        });
-    }
+	public onExecuteJob(event: {id: string}): void {
+		const agent = this.agents().get(event.id);
+		if (!agent) return;
+		this.formPanelService.open(SettingsSubsectionAppAiJobExecuteComponent, {
+			data: {id: agent.id, name: agent.name},
+		});
+	}
 
-    public onDeleteJob(event: {id: string}): void {
-        const agent = this.agents().get(event.id);
-        if (!agent) return;
-        const dialog_ref = this.dialog.open(SettingsSubsectionAppAiJobDialogComponent, {
-            data: {name: agent.name},
-        });
-        dialog_ref.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((confirmed) => {
-            if (confirmed !== true) return;
-            this.deleteAgent.emit({id: agent.id});
-        });
-    }
+	public onDeleteJob(event: {id: string}): void {
+		const agent = this.agents().get(event.id);
+		if (!agent) return;
+		const dialog_ref = this.dialog.open(SettingsSubsectionAppAiJobDialogComponent, {
+			data: {name: agent.name},
+		});
+		dialog_ref
+			.afterClosed()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe((confirmed) => {
+				if (confirmed !== true) return;
+				this.deleteAgent.emit({id: agent.id});
+			});
+	}
 }

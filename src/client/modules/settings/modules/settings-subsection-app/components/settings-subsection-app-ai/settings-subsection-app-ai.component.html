@@ -1,99 +1,99 @@
 <div class="flex flex-column flex-gap-2">
-    <div>
-        <div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
-        <mat-card appearance="outlined" class="relative overflow-hidden">
-            <mat-card-content class="orc-surface-container-low-bg">
-                <orc-settings-subsection-app-ai-integration
-                    [loading]="loading_health()"
-                    [ai_enabled]="ai_enabled()"
-                    [ai_health]="ai_health()"
-                    [form_group]="form_group_ai()"
-                    [selected_vendor]="form_group_ai().get('vendor')?.value"
-                    [device_type]="device_type()"
-                    [dirty_form]="form_group_ai().dirty || false"
-                    [invalid_ollama_api]="form_group_ai().get('ollama_api')?.invalid || false"
-                    [dirty_ollama_api]="form_group_ai().get('ollama_api')?.dirty || false"
-                    [invalid_openrouter_key]="form_group_ai().get('openrouter_key')?.invalid || false"
-                    [dirty_openrouter_key]="form_group_ai().get('openrouter_key')?.dirty || false"
-                    (update)="update.emit()"
-                    (submit)="submit.emit({form: form_group_ai(), control: $event})"
-                    (cancel)="cancel.emit({form: form_group_ai(), control: $event})"
-                    (testConnection)="onTestConnection()"
-                ></orc-settings-subsection-app-ai-integration>
-            </mat-card-content>
-        </mat-card>
-    </div>
+	<div>
+		<div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
+		<mat-card appearance="outlined" class="relative overflow-hidden">
+			<mat-card-content class="orc-surface-container-low-bg">
+				<orc-settings-subsection-app-ai-integration
+					[loading]="loading_health()"
+					[ai_enabled]="ai_enabled()"
+					[ai_health]="ai_health()"
+					[form_group]="form_group_ai()"
+					[selected_vendor]="form_group_ai().get('vendor')?.value"
+					[device_type]="device_type()"
+					[dirty_form]="form_group_ai().dirty || false"
+					[invalid_ollama_api]="form_group_ai().get('ollama_api')?.invalid || false"
+					[dirty_ollama_api]="form_group_ai().get('ollama_api')?.dirty || false"
+					[invalid_openrouter_key]="form_group_ai().get('openrouter_key')?.invalid || false"
+					[dirty_openrouter_key]="form_group_ai().get('openrouter_key')?.dirty || false"
+					(update)="update.emit()"
+					(submit)="submit.emit({form: form_group_ai(), control: $event})"
+					(cancel)="cancel.emit({form: form_group_ai(), control: $event})"
+					(testConnection)="onTestConnection()"
+				></orc-settings-subsection-app-ai-integration>
+			</mat-card-content>
+		</mat-card>
+	</div>
 
-    <div class="orc-animation-expand-collapse" [class.animation-expanded]="form_group_ai().get('enabled')?.value">
-        <div class="orc-animation-expand-collapse-inner">
-            <div class="flex flex-gap-2 flex-column">
-                <div class="flex flex-row flex-gap-2 flex-wrap">
-                    <div class="flex-1">
-                        <div class="font-size-xs orc-outline-color p-b-0-5">Messaging client</div>
-                        <mat-card appearance="outlined" class="relative overflow-hidden">
-                            <mat-card-content class="orc-surface-container-low-bg">
-                                <orc-settings-subsection-app-ai-messaging 
-                                    [form_group]="form_group_messaging()"
-                                    [invalid]="form_group_messaging().get('telegram_bot_token')?.invalid || false"
-                                    [dirty]="form_group_messaging().get('telegram_bot_token')?.dirty || false"
-                                    (update)="update.emit()"
-                                    (cancel)="cancel.emit({form: form_group_messaging(), control: $event})"
-                                    (submit)="submit.emit({form: form_group_messaging(), control: $event})"
-                                ></orc-settings-subsection-app-ai-messaging>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-size-xs orc-outline-color p-b-0-5">AI agent</div>
-                        <orc-settings-subsection-app-ai-agent
-                            [agent]="groundskeeper()"
-                            [tools]="groundskeeper_tool_summary()"
-                            [loading]="loading_agents()"
-                            [form_group]="groundskeeper_form()"
-                            [model]="groundskeeper_form()?.get('model')?.value ?? null"
-                            [ai_models]="ai_models() ?? []"
-                            [ai_favorites]="ai_favorites()"
-                            [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
-                            [messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
-                            [device_type]="device_type()"
-                            (update)="update.emit()"
-                            (favoritesChange)="onFavoritesChange($event)"
-                            (openSettings)="onOpenAgentSettings($event, 'groundskeeper')"
-                        ></orc-settings-subsection-app-ai-agent>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-size-xs orc-outline-color p-b-0-5">Agent jobs</div>
-                    <div class="agent-jobs-grid">
-                        @for (job of agent_jobs(); track job.id) {
-                            <orc-settings-subsection-app-ai-job
-                                [agent]="job"
-                                [tools]="tool_summaries().get(job.id) ?? []"
-                                [form_group]="agent_form_groups().get(job.id) ?? null"
-                                [model]="agent_form_groups().get(job.id)?.get('model')?.value ?? null"
-                                [active]="agent_form_groups().get(job.id)?.get('active')?.value ?? false"
-                                [ai_models]="ai_models() ?? []"
-                                [ai_favorites]="ai_favorites()"
-                                [ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
-                                [messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
-                                [device_type]="device_type()"
-                                [loading]="loading_agents()"
-                                (update)="update.emit()"
-                                (favoritesChange)="onFavoritesChange($event)"
-                                (openSettings)="onOpenAgentSettings($event, 'jobedit')"
-                                (executeNow)="onExecuteJob($event)"
-                                (deleteJob)="onDeleteJob($event)"
-                            ></orc-settings-subsection-app-ai-job>
-                        }
-                        <div class="add-agent-job-card" matRipple (click)="onOpenAgentSettings({id: 'new'}, 'jobcreate')">
-                            <div class="flex flex-column flex-items-center flex-justify-center flex-gap-0-5  orc-outline-color">
-                                <mat-icon class="icon-lg">add_task</mat-icon>
-                                <div class="font-size-s">New Agent Job</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="orc-animation-expand-collapse" [class.animation-expanded]="form_group_ai().get('enabled')?.value">
+		<div class="orc-animation-expand-collapse-inner">
+			<div class="flex flex-gap-2 flex-column">
+				<div class="flex flex-row flex-gap-2 flex-wrap">
+					<div class="flex-1">
+						<div class="font-size-xs orc-outline-color p-b-0-5">Messaging client</div>
+						<mat-card appearance="outlined" class="relative overflow-hidden">
+							<mat-card-content class="orc-surface-container-low-bg">
+								<orc-settings-subsection-app-ai-messaging
+									[form_group]="form_group_messaging()"
+									[invalid]="form_group_messaging().get('telegram_bot_token')?.invalid || false"
+									[dirty]="form_group_messaging().get('telegram_bot_token')?.dirty || false"
+									(update)="update.emit()"
+									(cancel)="cancel.emit({form: form_group_messaging(), control: $event})"
+									(submit)="submit.emit({form: form_group_messaging(), control: $event})"
+								></orc-settings-subsection-app-ai-messaging>
+							</mat-card-content>
+						</mat-card>
+					</div>
+					<div class="flex-1">
+						<div class="font-size-xs orc-outline-color p-b-0-5">AI agent</div>
+						<orc-settings-subsection-app-ai-agent
+							[agent]="groundskeeper()"
+							[tools]="groundskeeper_tool_summary()"
+							[loading]="loading_agents()"
+							[form_group]="groundskeeper_form()"
+							[model]="groundskeeper_form()?.get('model')?.value ?? null"
+							[ai_models]="ai_models() ?? []"
+							[ai_favorites]="ai_favorites()"
+							[ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+							[messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
+							[device_type]="device_type()"
+							(update)="update.emit()"
+							(favoritesChange)="onFavoritesChange($event)"
+							(openSettings)="onOpenAgentSettings($event, 'groundskeeper')"
+						></orc-settings-subsection-app-ai-agent>
+					</div>
+				</div>
+				<div>
+					<div class="font-size-xs orc-outline-color p-b-0-5">Agent jobs</div>
+					<div class="agent-jobs-grid">
+						@for (job of agent_jobs(); track job.id) {
+							<orc-settings-subsection-app-ai-job
+								[agent]="job"
+								[tools]="tool_summaries().get(job.id) ?? []"
+								[form_group]="agent_form_groups().get(job.id) ?? null"
+								[model]="agent_form_groups().get(job.id)?.get('model')?.value ?? null"
+								[active]="agent_form_groups().get(job.id)?.get('active')?.value ?? false"
+								[ai_models]="ai_models() ?? []"
+								[ai_favorites]="ai_favorites()"
+								[ai_vendor]="form_group_ai().get('vendor')?.value ?? 'ollama'"
+								[messaging_enabled]="form_group_messaging().get('enabled')?.value ?? false"
+								[device_type]="device_type()"
+								[loading]="loading_agents()"
+								(update)="update.emit()"
+								(favoritesChange)="onFavoritesChange($event)"
+								(openSettings)="onOpenAgentSettings($event, 'jobedit')"
+								(executeNow)="onExecuteJob($event)"
+								(deleteJob)="onDeleteJob($event)"
+							></orc-settings-subsection-app-ai-job>
+						}
+						<div class="add-agent-job-card" matRipple (click)="onOpenAgentSettings({id: 'new'}, 'jobcreate')">
+							<div class="flex flex-column flex-items-center flex-justify-center flex-gap-0-5 orc-outline-color">
+								<mat-icon class="icon-lg">add_task</mat-icon>
+								<div class="font-size-s">New Agent Job</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

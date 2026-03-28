@@ -28,24 +28,22 @@
 .oracle-card {
 	@extend %flex-grow;
 	@extend %p-2;
-     
-    &.oracle-card-gap{
-        @extend %flex-gap-2;
-    }
 
-    &.tablet-oracle-card{
-        &.oracle-card-gap{
-            @extend %flex-gap-1;
-        }
+	&.oracle-card-gap {
+		@extend %flex-gap-2;
+	}
 
-        .oracle-clamp{
-            height: 9rem;
-            width: 11rem;
-        }
-    }
+	&.tablet-oracle-card {
+		&.oracle-card-gap {
+			@extend %flex-gap-1;
+		}
+
+		.oracle-clamp {
+			height: 9rem;
+			width: 11rem;
+		}
+	}
 }
-
-
 
 .oracle-clamp {
 	height: 12rem;

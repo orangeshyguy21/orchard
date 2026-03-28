@@ -21,7 +21,15 @@ import {AiAgentService} from './aiagent.service';
 import {OrchardAgent} from './aiagent.model';
 
 /** Fields tracked for agent event logging */
-const TRACKED_FIELDS: ReadonlyArray<keyof OrchardAgent> = ['name', 'description', 'active', 'model', 'system_message', 'tools', 'schedules'];
+const TRACKED_FIELDS: ReadonlyArray<keyof OrchardAgent> = [
+	'name',
+	'description',
+	'active',
+	'model',
+	'system_message',
+	'tools',
+	'schedules',
+];
 
 @Injectable()
 export class AiAgentInterceptor implements NestInterceptor {

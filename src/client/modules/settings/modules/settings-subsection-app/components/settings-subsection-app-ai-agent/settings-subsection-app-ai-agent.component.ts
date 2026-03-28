@@ -46,7 +46,7 @@ export class SettingsSubsectionAppAiAgentComponent {
 	/* ── Outputs ── */
 	public update = output<void>();
 	public favoritesChange = output<AiFavorites>();
-	public openSettings = output<{id: string, fullscreen_system_message?: boolean}>();
+	public openSettings = output<{id: string; fullscreen_system_message?: boolean}>();
 
 	/* *******************************************************
 		Actions
@@ -65,6 +65,4 @@ export class SettingsSubsectionAppAiAgentComponent {
 	public onFavoritesChange(favorites: AiFavorites): void {
 		this.favoritesChange.emit(favorites);
 	}
-
-
 }

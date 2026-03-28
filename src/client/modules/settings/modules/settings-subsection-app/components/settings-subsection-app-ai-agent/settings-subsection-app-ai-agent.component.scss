@@ -2,41 +2,48 @@
 @use 'nucleus/nucleus';
 
 .ai-agent-contaienr {
-    min-height: 20rem;
-    @extend %relative;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-gap-1;
+	min-height: 20rem;
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
 }
 
 .system-message {
-    @extend %relative;
+	@extend %relative;
 	@extend %orc-surface-container-lowest-bg;
 	@extend %orc-corner-small;
 	@extend %p-1;
-    @extend %overflow-hidden;
-    max-height: 8rem;
+	@extend %overflow-hidden;
+	max-height: 8rem;
 
-    &:hover {
-        .expand-button {
-            @extend %opacity-1;
-        }
-    }
+	&:hover {
+		.expand-button {
+			@extend %opacity-1;
+		}
+	}
 }
 
 .system-message-content {
-    @extend %orc-on-surface-color;
-    white-space: pre-wrap;
+	@extend %orc-on-surface-color;
+	white-space: pre-wrap;
 	word-break: break-word;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+	font-family:
+		ui-monospace,
+		SFMono-Regular,
+		SF Mono,
+		Menlo,
+		Consolas,
+		Liberation Mono,
+		monospace;
 }
 
 .expand-button {
-    rotate: 45deg;
-    @extend %opacity-0;
-    @extend %orc-outline-color;
-    @extend %trans-opacity-fast;
-    @extend %absolute;
-    @extend %top-0-5;
-    @extend %right-0-5;
+	rotate: 45deg;
+	@extend %opacity-0;
+	@extend %orc-outline-color;
+	@extend %trans-opacity-fast;
+	@extend %absolute;
+	@extend %top-0-5;
+	@extend %right-0-5;
 }

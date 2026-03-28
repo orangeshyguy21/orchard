@@ -14,28 +14,28 @@ import {PublicExitWarningComponent} from '@client/modules/public/components/publ
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppAiMessagingComponent {
-    private readonly dialog = inject(MatDialog);
+	private readonly dialog = inject(MatDialog);
 
-    public form_group = input.required<FormGroup>();
-    public invalid = input<boolean>(false);
-    public dirty = input<boolean>(false);
+	public form_group = input.required<FormGroup>();
+	public invalid = input<boolean>(false);
+	public dirty = input<boolean>(false);
 
-    public update = output<void>();
-    public cancel = output<string>();
-    public submit = output<string>();
+	public update = output<void>();
+	public cancel = output<string>();
+	public submit = output<string>();
 
-    public telegram_bot_token_control = viewChild<ElementRef<HTMLInputElement>>('telegram_bot_token_control');
+	public telegram_bot_token_control = viewChild<ElementRef<HTMLInputElement>>('telegram_bot_token_control');
 
-    public help_status = signal<boolean>(false);
-    public bot_help_status = signal<boolean>(true);
-    public key_view = signal<boolean>(false);
-    public focused = signal<boolean>(false);
+	public help_status = signal<boolean>(false);
+	public bot_help_status = signal<boolean>(true);
+	public key_view = signal<boolean>(false);
+	public focused = signal<boolean>(false);
 
-    public hot = computed(() => {
+	public hot = computed(() => {
 		return this.focused() || this.dirty();
 	});
 
-    /* *******************************************************
+	/* *******************************************************
 		Actions
 	******************************************************** */
 
@@ -47,7 +47,7 @@ export class SettingsSubsectionAppAiMessagingComponent {
 		this.update.emit();
 	}
 
-    public onCancel(event: Event): void {
+	public onCancel(event: Event): void {
 		event.preventDefault();
 		this.cancel.emit('telegram_bot_token');
 	}

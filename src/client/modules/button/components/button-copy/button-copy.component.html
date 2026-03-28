@@ -1,8 +1,6 @@
 @if (size() === 'icon') {
 	<button type="button" class="button-copy-icon orc-icon-button" (click)="onCopy()">
-		<mat-icon #iconRef [class.copied]="copied()">{{
-			copied() ? 'check' : 'content_copy'
-		}}</mat-icon>
+		<mat-icon #iconRef [class.copied]="copied()">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
 	</button>
 } @else {
 	<div class="button-copy-container orc-text-button orc-icon-button" (click)="onCopy()">

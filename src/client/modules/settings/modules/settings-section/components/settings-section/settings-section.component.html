@@ -33,10 +33,15 @@
 				</div>
 			}
 			<router-outlet></router-outlet>
-			<mat-sidenav #formSidenav mode="over" position="end" [class]="'form-sidenav device-' + device_type()" (closed)="onSidenavClosed()">
+			<mat-sidenav
+				#formSidenav
+				mode="over"
+				position="end"
+				[class]="'form-sidenav device-' + device_type()"
+				(closed)="onSidenavClosed()"
+			>
 				<ng-container #formPanelHost></ng-container>
 			</mat-sidenav>
 		</mat-sidenav-container>
 	</div>
 </section>
-

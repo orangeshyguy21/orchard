@@ -72,10 +72,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			ollama_api: new FormControl('http://localhost:11434', [OrchardValidators.url]),
 			openrouter_key: new FormControl('', [OrchardValidators.openrouterKey]),
 		}),
-        form_ai_messaging: new FormGroup({
-            enabled: new FormControl(false, [Validators.required]),
-            telegram_bot_token: new FormControl('', [OrchardValidators.telegramBotToken]),
-        }),
+		form_ai_messaging: new FormGroup({
+			enabled: new FormControl(false, [Validators.required]),
+			telegram_bot_token: new FormControl('', [OrchardValidators.telegramBotToken]),
+		}),
 	});
 	public config = this.configService.config;
 	public bitcoin_enabled = this.config.bitcoin.enabled;
@@ -96,8 +96,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		'form_ai.vendor': SettingKey.AiVendor,
 		'form_ai.ollama_api': SettingKey.AiOllamaApi,
 		'form_ai.openrouter_key': SettingKey.AiOpenrouterKey,
-        'form_ai_messaging.enabled': SettingKey.MessagesEnabled,
-        'form_ai_messaging.telegram_bot_token': SettingKey.MessagesTelegramBotToken,
+		'form_ai_messaging.enabled': SettingKey.MessagesEnabled,
+		'form_ai_messaging.telegram_bot_token': SettingKey.MessagesTelegramBotToken,
 	};
 
 	private readonly initial_value_map: Record<string, keyof ParsedAppSettings> = {
@@ -106,8 +106,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		'form_ai.vendor': 'ai_vendor',
 		'form_ai.ollama_api': 'ai_ollama_api',
 		'form_ai.openrouter_key': 'ai_openrouter_key',
-        'form_ai_messaging.enabled': 'messages_enabled',
-        'form_ai_messaging.telegram_bot_token': 'messages_telegram_bot_token',
+		'form_ai_messaging.enabled': 'messages_enabled',
+		'form_ai_messaging.telegram_bot_token': 'messages_telegram_bot_token',
 	};
 
 	private active_event: EventData | null = null;
@@ -179,8 +179,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private getFormChangesSubscription(): Subscription {
 		return this.form_app_settings.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
-            this.toggleAiControls(this.form_ai.get('enabled')?.value ?? false);
-            this.toggleMessagingControls(this.form_ai_messaging.get('enabled')?.value ?? false);
+			this.toggleAiControls(this.form_ai.get('enabled')?.value ?? false);
+			this.toggleMessagingControls(this.form_ai_messaging.get('enabled')?.value ?? false);
 		});
 	}
 
@@ -196,9 +196,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		return this.form_app_settings.get('form_ai') as FormGroup;
 	}
 
-    public get form_ai_messaging(): FormGroup {
-        return this.form_app_settings.get('form_ai_messaging') as FormGroup;
-    }
+	public get form_ai_messaging(): FormGroup {
+		return this.form_app_settings.get('form_ai_messaging') as FormGroup;
+	}
 
 	private initSettingForms(settings: ParsedAppSettings): void {
 		this.form_bitcoin.patchValue({
@@ -210,15 +210,15 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			ollama_api: settings.ai_ollama_api,
 			openrouter_key: settings.ai_openrouter_key,
 		});
-        this.form_ai_messaging.patchValue({
-            enabled: settings.messages_enabled,
-            telegram_bot_token: settings.messages_telegram_bot_token,
-        });
-        this.toggleAiControls(settings.ai_enabled);
-        this.toggleMessagingControls(settings.messages_enabled);
+		this.form_ai_messaging.patchValue({
+			enabled: settings.messages_enabled,
+			telegram_bot_token: settings.messages_telegram_bot_token,
+		});
+		this.toggleAiControls(settings.ai_enabled);
+		this.toggleMessagingControls(settings.messages_enabled);
 	}
 
-    /** Enables or disables AI vendor controls based on the enabled state */
+	/** Enables or disables AI vendor controls based on the enabled state */
 	private toggleAiControls(enabled: boolean): void {
 		const ollama_api = this.form_ai.get('ollama_api');
 		const openrouter_key = this.form_ai.get('openrouter_key');
@@ -230,14 +230,14 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			openrouter_key?.disable({emitEvent: false});
 		}
 	}
-    private toggleMessagingControls(enabled: boolean): void {
-        const telegram_bot_token = this.form_ai_messaging.get('telegram_bot_token');
-        if (enabled) {
-            telegram_bot_token?.enable({emitEvent: false});
-        } else {
-            telegram_bot_token?.disable({emitEvent: false});
-        }
-    }
+	private toggleMessagingControls(enabled: boolean): void {
+		const telegram_bot_token = this.form_ai_messaging.get('telegram_bot_token');
+		if (enabled) {
+			telegram_bot_token?.enable({emitEvent: false});
+		} else {
+			telegram_bot_token?.disable({emitEvent: false});
+		}
+	}
 
 	public onUpdate(): void {
 		this.evaluateDirtyCount();

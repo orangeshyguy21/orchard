@@ -77,7 +77,7 @@ describe('AgentService', () => {
 				{provide: SchedulerRegistry, useValue: mock_scheduler_registry},
 				{provide: AiService, useValue: mock_ai_service},
 				{provide: ConfigService, useValue: mock_config_service},
-					{provide: ToolService, useValue: mock_tool_executor},
+				{provide: ToolService, useValue: mock_tool_executor},
 			],
 		}).compile();
 		service = module.get<AgentService>(AgentService);
@@ -194,7 +194,15 @@ describe('AgentService', () => {
 						message: {
 							role: AiMessageRole.ASSISTANT,
 							content: '',
-							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {title: 'Alert', body: 'Details', severity: 'warning'}}}],
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {
+										name: AgentToolName.SEND_MESSAGE,
+										arguments: {title: 'Alert', body: 'Details', severity: 'warning'},
+									},
+								},
+							],
 						},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
@@ -312,7 +320,12 @@ describe('AgentService', () => {
 						message: {
 							role: AiMessageRole.ASSISTANT,
 							content: '',
-							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SKIP_MESSAGE, arguments: {reason: 'No changes since last run'}}}],
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {name: AgentToolName.SKIP_MESSAGE, arguments: {reason: 'No changes since last run'}},
+								},
+							],
 						},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
@@ -329,7 +342,10 @@ describe('AgentService', () => {
 					};
 				});
 
-			mock_tool_executor.executeTool.mockResolvedValueOnce({success: true, data: {skipped: true, reason: 'No changes since last run'}});
+			mock_tool_executor.executeTool.mockResolvedValueOnce({
+				success: true,
+				data: {skipped: true, reason: 'No changes since last run'},
+			});
 
 			const run = await service.executeAgent('agent-delib');
 
@@ -360,7 +376,15 @@ describe('AgentService', () => {
 						message: {
 							role: AiMessageRole.ASSISTANT,
 							content: '',
-							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {title: 'Memory High', body: 'Memory at 96%', severity: 'warning'}}}],
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {
+										name: AgentToolName.SEND_MESSAGE,
+										arguments: {title: 'Memory High', body: 'Memory at 96%', severity: 'warning'},
+									},
+								},
+							],
 						},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},

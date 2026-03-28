@@ -1,66 +1,71 @@
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
-        <mat-tab-group [selectedIndex]="0" class="z-index-0 p-h-1">
-            <mat-tab [disabled]="control()?.disabled || false">
-                <ng-template mat-tab-label>
-                    <div class="ai-messaging-label">
-                        <div class="messaging-vendor-icon">
-                            <img src="message-vendor/telegram.png" alt="Telegram" />
-                        </div>
-                        <div class="ai-messaging-text">
-                            <span class="ai-messaging-label-name">Telegram</span>
-                            <span class="ai-messaging-label-desc">Mobile agent messages</span>
-                        </div>
-                    </div>
-                </ng-template>
-                <form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="p-t-2">
-                    <orc-form-field-dynamic
-                        [hot]="hot()"
-                        [invalid]="invalid()"
-                        [info]="true"
-                        (cancel)="onCancel($event)"
-                        (submit)="submit.emit()"
-                        (inform)="help_status.set(!help_status())"
-                    >
-                        <div class="orc-small-form-field-wrapper">
-                            <mat-form-field
-                                hideRequiredMarker="true"
-                                class="w-full"
-                                [ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
-                            >
-                                <mat-label>Telegram Chat ID</mat-label>
-                                <input
-                                    type="text"
-                                    aria-label="Telegram Chat ID"
-                                    matInput
-                                    [formControlName]="control_name()"
-                                    (focus)="focused.set(true)"
-                                    (blur)="focused.set(false)"
-                                    #element_control
-                                />
-                                <mat-error>
-                                    <orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid Telegram Chat ID</orc-form-error>
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </orc-form-field-dynamic>
-                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
-                        <div class="orc-animation-expand-collapse-inner">
-                            <div class="flex p-t-0-5 p-b-1 w-max-18">
-                                <orc-form-help-text class="orc-surface-container-high-bg">
-                                    <div>Your personal Telegram chat ID allows the AI agent to send you direct messages. Open a chat with the configured Telegram bot and send <strong>/start</strong> to get your chat ID.</div>
-                                </orc-form-help-text>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </mat-tab>
-        </mat-tab-group>	
+		<mat-tab-group [selectedIndex]="0" class="z-index-0 p-h-1">
+			<mat-tab [disabled]="control()?.disabled || false">
+				<ng-template mat-tab-label>
+					<div class="ai-messaging-label">
+						<div class="messaging-vendor-icon">
+							<img src="message-vendor/telegram.png" alt="Telegram" />
+						</div>
+						<div class="ai-messaging-text">
+							<span class="ai-messaging-label-name">Telegram</span>
+							<span class="ai-messaging-label-desc">Mobile agent messages</span>
+						</div>
+					</div>
+				</ng-template>
+				<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="p-t-2">
+					<orc-form-field-dynamic
+						[hot]="hot()"
+						[invalid]="invalid()"
+						[info]="true"
+						(cancel)="onCancel($event)"
+						(submit)="submit.emit()"
+						(inform)="help_status.set(!help_status())"
+					>
+						<div class="orc-small-form-field-wrapper">
+							<mat-form-field
+								hideRequiredMarker="true"
+								class="w-full"
+								[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+							>
+								<mat-label>Telegram Chat ID</mat-label>
+								<input
+									type="text"
+									aria-label="Telegram Chat ID"
+									matInput
+									[formControlName]="control_name()"
+									(focus)="focused.set(true)"
+									(blur)="focused.set(false)"
+									#element_control
+								/>
+								<mat-error>
+									<orc-form-error [errors]="form_group().get(control_name())?.errors"
+										>Invalid Telegram Chat ID</orc-form-error
+									>
+								</mat-error>
+							</mat-form-field>
+						</div>
+					</orc-form-field-dynamic>
+					<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+						<div class="orc-animation-expand-collapse-inner">
+							<div class="flex p-t-0-5 p-b-1 w-max-18">
+								<orc-form-help-text class="orc-surface-container-high-bg">
+									<div>
+										Your personal Telegram chat ID allows the AI agent to send you direct messages. Open a chat with the
+										configured Telegram bot and send <strong>/start</strong> to get your chat ID.
+									</div>
+								</orc-form-help-text>
+							</div>
+						</div>
+					</div>
+				</form>
+			</mat-tab>
+		</mat-tab-group>
 	</mat-card-content>
-    @if(!ai_enabled() || !messages_enabled()){
-        <div class="disabled-overlay z-index-1">
-            <mat-icon class="icon-lg mat-symbol-outline">block</mat-icon>
-            <div class="font-size-s">{{ disabled_message() }}</div>
-        </div>
-    }
+	@if (!ai_enabled() || !messages_enabled()) {
+		<div class="disabled-overlay z-index-1">
+			<mat-icon class="icon-lg mat-symbol-outline">block</mat-icon>
+			<div class="font-size-s">{{ disabled_message() }}</div>
+		</div>
+	}
 </mat-card>

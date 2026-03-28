@@ -83,12 +83,12 @@ export class NutshellService {
 				const ca_content = this.credentialService.loadPemOrPath(rpc_ca);
 
 				if (!key_content || !cert_content || !ca_content) {
-					const missing = [
-						!ca_content && 'CA certificate',
-						!cert_content && 'client certificate',
-						!key_content && 'client key',
-					].filter(Boolean).join(', ');
-					this.logger.error(`Failed to load Nutshell mTLS credential(s): ${missing} — check that the file paths exist and are readable`);
+					const missing = [!ca_content && 'CA certificate', !cert_content && 'client certificate', !key_content && 'client key']
+						.filter(Boolean)
+						.join(', ');
+					this.logger.error(
+						`Failed to load Nutshell mTLS credential(s): ${missing} — check that the file paths exist and are readable`,
+					);
 					return undefined;
 				}
 

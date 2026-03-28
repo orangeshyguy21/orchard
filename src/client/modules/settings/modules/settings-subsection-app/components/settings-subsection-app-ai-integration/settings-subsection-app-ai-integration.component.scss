@@ -54,20 +54,20 @@
 	@extend %flex-grow;
 	@extend %p-2;
 
-    &.groundskeeper-card-gap{
-        @extend %flex-gap-2;
-    }
+	&.groundskeeper-card-gap {
+		@extend %flex-gap-2;
+	}
 
-    &.tablet-groundskeeper-card{
-        &.groundskeeper-card-gap{
-            @extend %flex-gap-1;
-        }
+	&.tablet-groundskeeper-card {
+		&.groundskeeper-card-gap {
+			@extend %flex-gap-1;
+		}
 
-        .groundskeeper-clamp{
-            height: 9rem;
-            width: 11rem;
-        }
-    }
+		.groundskeeper-clamp {
+			height: 9rem;
+			width: 11rem;
+		}
+	}
 }
 
 .groundskeeper-clamp {
@@ -80,11 +80,11 @@
 	@extend %flex-justify-center;
 }
 
-.health-container{
-    width: 11rem;
-    @extend %flex;
+.health-container {
+	width: 11rem;
+	@extend %flex;
 }
 
-.tab-form-field-wrapper{
-    width:70%;
+.tab-form-field-wrapper {
+	width: 70%;
 }

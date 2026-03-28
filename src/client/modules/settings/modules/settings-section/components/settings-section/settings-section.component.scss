@@ -13,6 +13,6 @@
 
 	&.device-tablet,
 	&.device-mobile {
-        @extend %w-full;
+		@extend %w-full;
 	}
 }

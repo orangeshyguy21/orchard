@@ -85,19 +85,34 @@ export class FormCronBuilderComponent {
 	public readonly monthly_interval_options = this.buildRange(1, 12);
 	public readonly day_of_month_options = this.buildDayOfMonthOptions();
 	public readonly month_options: {value: number; label: string}[] = [
-		{value: 1, label: 'January'}, {value: 2, label: 'February'}, {value: 3, label: 'March'},
-		{value: 4, label: 'April'}, {value: 5, label: 'May'}, {value: 6, label: 'June'},
-		{value: 7, label: 'July'}, {value: 8, label: 'August'}, {value: 9, label: 'September'},
-		{value: 10, label: 'October'}, {value: 11, label: 'November'}, {value: 12, label: 'December'},
+		{value: 1, label: 'January'},
+		{value: 2, label: 'February'},
+		{value: 3, label: 'March'},
+		{value: 4, label: 'April'},
+		{value: 5, label: 'May'},
+		{value: 6, label: 'June'},
+		{value: 7, label: 'July'},
+		{value: 8, label: 'August'},
+		{value: 9, label: 'September'},
+		{value: 10, label: 'October'},
+		{value: 11, label: 'November'},
+		{value: 12, label: 'December'},
 	];
 	public readonly weekday_options: {value: number; label: string}[] = [
-		{value: 1, label: 'Monday'}, {value: 2, label: 'Tuesday'}, {value: 3, label: 'Wednesday'},
-		{value: 4, label: 'Thursday'}, {value: 5, label: 'Friday'}, {value: 6, label: 'Saturday'},
+		{value: 1, label: 'Monday'},
+		{value: 2, label: 'Tuesday'},
+		{value: 3, label: 'Wednesday'},
+		{value: 4, label: 'Thursday'},
+		{value: 5, label: 'Friday'},
+		{value: 6, label: 'Saturday'},
 		{value: 0, label: 'Sunday'},
 	];
 	public readonly ordinal_options: {value: number; label: string}[] = [
-		{value: 1, label: 'First'}, {value: 2, label: 'Second'}, {value: 3, label: 'Third'},
-		{value: 4, label: 'Fourth'}, {value: 5, label: 'Last'},
+		{value: 1, label: 'First'},
+		{value: 2, label: 'Second'},
+		{value: 3, label: 'Third'},
+		{value: 4, label: 'Fourth'},
+		{value: 5, label: 'Last'},
 	];
 	public readonly day_names: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -319,14 +334,28 @@ export class FormCronBuilderComponent {
 		const [minute, hour, dom, month, dow] = parts;
 
 		const day_names: Record<string, string> = {
-			'0': 'Sunday', '1': 'Monday', '2': 'Tuesday', '3': 'Wednesday',
-			'4': 'Thursday', '5': 'Friday', '6': 'Saturday',
+			'0': 'Sunday',
+			'1': 'Monday',
+			'2': 'Tuesday',
+			'3': 'Wednesday',
+			'4': 'Thursday',
+			'5': 'Friday',
+			'6': 'Saturday',
 		};
 
 		const month_names: Record<string, string> = {
-			'1': 'January', '2': 'February', '3': 'March', '4': 'April',
-			'5': 'May', '6': 'June', '7': 'July', '8': 'August',
-			'9': 'September', '10': 'October', '11': 'November', '12': 'December',
+			'1': 'January',
+			'2': 'February',
+			'3': 'March',
+			'4': 'April',
+			'5': 'May',
+			'6': 'June',
+			'7': 'July',
+			'8': 'August',
+			'9': 'September',
+			'10': 'October',
+			'11': 'November',
+			'12': 'December',
 		};
 
 		/* Hourly */
@@ -339,7 +368,10 @@ export class FormCronBuilderComponent {
 
 		/* Weekly */
 		if (dow !== '*' && !dow.includes('#') && !dow.includes('L') && dom === '*' && month === '*') {
-			const days = dow.split(',').map((d) => day_names[d] ?? d).join(', ');
+			const days = dow
+				.split(',')
+				.map((d) => day_names[d] ?? d)
+				.join(', ');
 			const time = this.formatTime(parseInt(hour, 10), parseInt(minute, 10));
 			return `Every ${days} at ${time}`;
 		}
@@ -452,10 +484,14 @@ export class FormCronBuilderComponent {
 		const remainder = n % 100;
 		if (remainder >= 11 && remainder <= 13) return 'th';
 		switch (n % 10) {
-			case 1: return 'st';
-			case 2: return 'nd';
-			case 3: return 'rd';
-			default: return 'th';
+			case 1:
+				return 'st';
+			case 2:
+				return 'nd';
+			case 3:
+				return 'rd';
+			default:
+				return 'th';
 		}
 	}
 }

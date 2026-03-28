@@ -16,7 +16,21 @@ describe('SettingsSubsectionAppAiAgentFormComponent', () => {
 			imports: [OrcSettingsSubsectionAppModule],
 			providers: [
 				{provide: FormPanelRef, useValue: {close: jasmine.createSpy('close')}},
-				{provide: FORM_PANEL_DATA, useValue: {mode: 'create', agent: null, models: [], tools: [], device_type: 'desktop', vendor: '', favorites: {ollama: [], openrouter: []}, fullscreen_system_message: false, app_settings: null, config: null}},
+				{
+					provide: FORM_PANEL_DATA,
+					useValue: {
+						mode: 'create',
+						agent: null,
+						models: [],
+						tools: [],
+						device_type: 'desktop',
+						vendor: '',
+						favorites: {ollama: [], openrouter: []},
+						fullscreen_system_message: false,
+						app_settings: null,
+						config: null,
+					},
+				},
 			],
 		}).compileComponents();
 

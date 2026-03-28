@@ -40,9 +40,9 @@ export class SettingsSubsectionAppBitcoinOracleComponent {
 		if (!this.oracle_running()) return null;
 		return this.oracle_status();
 	});
-    public graphic_height = computed(() => {
-        return this.device_type() === 'desktop' ? '18rem' : '15rem';
-    });
+	public graphic_height = computed(() => {
+		return this.device_type() === 'desktop' ? '18rem' : '15rem';
+	});
 
 	/** Toggles the oracle form control and emits an update */
 	public toggleOracle(status: boolean): void {

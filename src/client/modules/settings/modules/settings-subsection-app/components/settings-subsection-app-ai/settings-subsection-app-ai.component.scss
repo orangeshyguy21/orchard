@@ -1,25 +1,24 @@
 @use 'molecule/molecule';
 
 .agent-jobs-grid {
-    @extend %grid;
+	@extend %grid;
 	grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    @extend %flex-gap-2;
-    @extend %w-full;
+	@extend %flex-gap-2;
+	@extend %w-full;
 }
 
-.add-agent-job-card{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %border;
-    @extend %border-dashed;
-    @extend %orc-outline-variant-border;
-    @extend %cursor-pointer;
-    @extend %orc-corner-small;
-    min-height: 15rem;
-    
-    &:hover {
-        @extend %orc-surface-container-bg;
-    }
-    
+.add-agent-job-card {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %border;
+	@extend %border-dashed;
+	@extend %orc-outline-variant-border;
+	@extend %cursor-pointer;
+	@extend %orc-corner-small;
+	min-height: 15rem;
+
+	&:hover {
+		@extend %orc-surface-container-bg;
+	}
 }

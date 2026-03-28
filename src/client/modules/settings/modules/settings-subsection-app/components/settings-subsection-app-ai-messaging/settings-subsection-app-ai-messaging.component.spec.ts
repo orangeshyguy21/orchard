@@ -18,9 +18,12 @@ describe('SettingsSubsectionAppAiMessagingComponent', () => {
 		fixture = TestBed.createComponent(SettingsSubsectionAppAiMessagingComponent);
 		component = fixture.componentInstance;
 
-		fixture.componentRef.setInput('form_group', new FormGroup({
-			telegram_bot_token: new FormControl(''),
-		}));
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				telegram_bot_token: new FormControl(''),
+			}),
+		);
 
 		fixture.detectChanges();
 	});

@@ -34,7 +34,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 
 	public user = signal<User | null>(null);
 	public device_type = signal<DeviceType>('desktop');
-    public settings = signal<ParsedAppSettings | null>(null);
+	public settings = signal<ParsedAppSettings | null>(null);
 	private dirty_count: WritableSignal<number> = signal(0);
 
 	private active_event: EventData | null = null;
@@ -56,7 +56,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
 		this.subscriptions.add(this.getBreakpointSubscription());
-        this.settings.set(this.settingAppService.getParsedSettings());
+		this.settings.set(this.settingAppService.getParsedSettings());
 		this.updateMessagingDisabled();
 	}
 

@@ -90,7 +90,7 @@ import {SettingsSubsectionAppAiJobExecuteComponent} from './components/settings-
 		OrcAiModule,
 		OrcProgressModule,
 		OrcLocalModule,
-        OrcButtonModule,
+		OrcButtonModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

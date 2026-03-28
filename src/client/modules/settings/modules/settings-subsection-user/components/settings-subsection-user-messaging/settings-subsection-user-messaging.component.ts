@@ -31,14 +31,14 @@ export class SettingsSubsectionUserMessagingComponent {
 	public control = computed(() => {
 		return this.form_group().get(this.control_name());
 	});
-    public disabled_message = computed(() => {
-        if(!this.ai_enabled()){
-            return 'AI currently disabled';
-        } else if(!this.messages_enabled()){
-            return 'Messaging currently disabled';
-        }
-        return null;
-    });
+	public disabled_message = computed(() => {
+		if (!this.ai_enabled()) {
+			return 'AI currently disabled';
+		} else if (!this.messages_enabled()) {
+			return 'Messaging currently disabled';
+		}
+		return null;
+	});
 
 	/** Cancel handler — emits control name to parent */
 	public onCancel(event: Event): void {

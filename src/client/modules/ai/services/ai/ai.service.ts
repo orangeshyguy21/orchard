@@ -59,7 +59,7 @@ import {
 	buildAgentBatchMutation,
 } from './ai.queries';
 /* Shared Dependencies */
-import {AgentKey, AiAssistant, AiMessageRole, OrchardAgentDefault, OrchardAgentTool} from '@shared/generated.types';
+import {AgentKey, AiAssistant, AiMessageRole, OrchardAgentTool} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -108,10 +108,7 @@ export class AiService {
 		private router: Router,
 		private http: HttpClient,
 	) {
-		this.agent_tools_subject = this.cacheService.createCache<OrchardAgentTool[]>(
-			this.CACHE_KEYS.AI_AGENT_TOOLS,
-			this.CACHE_DURATION,
-		);
+		this.agent_tools_subject = this.cacheService.createCache<OrchardAgentTool[]>(this.CACHE_KEYS.AI_AGENT_TOOLS, this.CACHE_DURATION);
 	}
 
 	public getFunctionModel(): Observable<AiModel | null> {

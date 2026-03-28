@@ -20,47 +20,47 @@ import {ToolSummary} from '@client/modules/settings/modules/settings-subsection-
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppAiJobComponent {
-    /* ── Inputs ── */
-    public agent = input<AiAgent | null>(null);
-    public tools = input<ToolSummary[]>([]);
-    public form_group = input<FormGroup | null>(null);
-    public model = input<string | null>(null);
-    public active = input<boolean>(false);
-    public ai_models = input<AiModel[]>([]);
-    public ai_favorites = input<AiFavorites>({ollama: [], openrouter: []});
-    public ai_vendor = input<string>('ollama');
-    public messaging_enabled = input<boolean>(false);
-    public device_type = input<DeviceType>('desktop');
-    public loading = input<boolean>(false);
+	/* ── Inputs ── */
+	public agent = input<AiAgent | null>(null);
+	public tools = input<ToolSummary[]>([]);
+	public form_group = input<FormGroup | null>(null);
+	public model = input<string | null>(null);
+	public active = input<boolean>(false);
+	public ai_models = input<AiModel[]>([]);
+	public ai_favorites = input<AiFavorites>({ollama: [], openrouter: []});
+	public ai_vendor = input<string>('ollama');
+	public messaging_enabled = input<boolean>(false);
+	public device_type = input<DeviceType>('desktop');
+	public loading = input<boolean>(false);
 
-    /* ── Public computed signals ── */
+	/* ── Public computed signals ── */
 
-    /** Whether the selected model is missing or not in the available models list */
-    public readonly model_warning = computed(() => {
-        const m = this.model();
-        if (!m) return true;
-        return !this.ai_models().some((am) => am.model === m);
-    });
+	/** Whether the selected model is missing or not in the available models list */
+	public readonly model_warning = computed(() => {
+		const m = this.model();
+		if (!m) return true;
+		return !this.ai_models().some((am) => am.model === m);
+	});
 
-    /** Calculates the nearest next run time across all agent schedules */
-    public readonly next_run = computed<DateTime | null>(() => {
-        const agent = this.agent();
-        const schedules = agent?.schedules ?? [];
-        const tz = agent?.schedule_tz ?? undefined;
-        return schedules
-            .map((expr) => nextCronDate(expr, tz))
-            .filter((d): d is DateTime => d !== null)
-            .reduce<DateTime | null>((earliest, d) => (!earliest || d < earliest ? d : earliest), null);
-    });
+	/** Calculates the nearest next run time across all agent schedules */
+	public readonly next_run = computed<DateTime | null>(() => {
+		const agent = this.agent();
+		const schedules = agent?.schedules ?? [];
+		const tz = agent?.schedule_tz ?? undefined;
+		return schedules
+			.map((expr) => nextCronDate(expr, tz))
+			.filter((d): d is DateTime => d !== null)
+			.reduce<DateTime | null>((earliest, d) => (!earliest || d < earliest ? d : earliest), null);
+	});
 
-    /* ── Outputs ── */
-    public update = output<void>();
-    public favoritesChange = output<AiFavorites>();
-    public openSettings = output<{id: string, fullscreen_system_message?: boolean}>();
-    public executeNow = output<{id: string}>();
-    public deleteJob = output<{id: string}>();
+	/* ── Outputs ── */
+	public update = output<void>();
+	public favoritesChange = output<AiFavorites>();
+	public openSettings = output<{id: string; fullscreen_system_message?: boolean}>();
+	public executeNow = output<{id: string}>();
+	public deleteJob = output<{id: string}>();
 
-    /* *******************************************************
+	/* *******************************************************
 		Actions
 	******************************************************** */
 
@@ -78,14 +78,14 @@ export class SettingsSubsectionAppAiJobComponent {
 		this.favoritesChange.emit(favorites);
 	}
 
-    /** Toggles the AI enabled form control and emits an update */
+	/** Toggles the AI enabled form control and emits an update */
 	public onEnabledChange(status: boolean): void {
-        const form = this.form_group();
+		const form = this.form_group();
 		if (!form) return;
 		form.get('active')?.setValue(status);
 		form.get('active')?.markAsDirty();
 		form.get('active')?.markAsTouched();
-        console.log('onEnabledChange', status);
+		console.log('onEnabledChange', status);
 		this.update.emit();
 	}
 }

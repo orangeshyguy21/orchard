@@ -155,7 +155,6 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		}
 	}
 
-
 	/* *******************************************************
 		Cursor Management
 	******************************************************** */
@@ -214,5 +213,4 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 	private extractText(el: HTMLElement): string {
 		return (el.innerText || '').replace(/\n$/, '');
 	}
-
 }

@@ -24,7 +24,9 @@ export class AiAgentResolver {
 	******************************************************** */
 
 	@Query(() => OrchardAgentDefault, {description: 'Get default configuration for an AI agent'})
-	ai_agent_defaults(@Args('agent_key', {type: () => AgentKey, description: 'Agent key to get defaults for'}) agent_key: AgentKey): OrchardAgentDefault {
+	ai_agent_defaults(
+		@Args('agent_key', {type: () => AgentKey, description: 'Agent key to get defaults for'}) agent_key: AgentKey,
+	): OrchardAgentDefault {
 		const tag = 'GET { ai_agent_defaults }';
 		this.logger.debug(tag);
 		return this.aiAgentService.getAgentDefaults(agent_key);
@@ -78,7 +80,16 @@ export class AiAgentResolver {
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_create }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.createAgent(tag, {name, description, active, model, system_message, tools, schedules, schedule_tz});
+		return await this.aiAgentService.createAgent(tag, {
+			name,
+			description,
+			active,
+			model,
+			system_message,
+			tools,
+			schedules,
+			schedule_tz,
+		});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
@@ -100,7 +111,16 @@ export class AiAgentResolver {
 	): Promise<OrchardAgent> {
 		const tag = 'MUTATION { ai_agent_update }';
 		this.logger.debug(tag);
-		return await this.aiAgentService.updateAgent(tag, id, {name, description, active, model, system_message, tools, schedules, schedule_tz});
+		return await this.aiAgentService.updateAgent(tag, id, {
+			name,
+			description,
+			active,
+			model,
+			system_message,
+			tools,
+			schedules,
+			schedule_tz,
+		});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)

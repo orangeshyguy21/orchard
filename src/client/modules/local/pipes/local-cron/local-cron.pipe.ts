@@ -8,13 +8,25 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class LocalCronPipe implements PipeTransform {
 	private readonly day_names: Record<string, string> = {
-		'0': 'Sunday', '1': 'Monday', '2': 'Tuesday', '3': 'Wednesday',
-		'4': 'Thursday', '5': 'Friday', '6': 'Saturday', '7': 'Sunday',
+		'0': 'Sunday',
+		'1': 'Monday',
+		'2': 'Tuesday',
+		'3': 'Wednesday',
+		'4': 'Thursday',
+		'5': 'Friday',
+		'6': 'Saturday',
+		'7': 'Sunday',
 	};
 
 	private readonly short_day_names: Record<string, string> = {
-		'0': 'Sun', '1': 'Mon', '2': 'Tue', '3': 'Wed',
-		'4': 'Thu', '5': 'Fri', '6': 'Sat', '7': 'Sun',
+		'0': 'Sun',
+		'1': 'Mon',
+		'2': 'Tue',
+		'3': 'Wed',
+		'4': 'Thu',
+		'5': 'Fri',
+		'6': 'Sat',
+		'7': 'Sun',
 	};
 
 	/** Converts a cron expression into a human-friendly schedule label */
@@ -44,7 +56,7 @@ export class LocalCronPipe implements PipeTransform {
 		if (day_of_month === '*' && day_of_week !== '*' && month === '*') {
 			const days = day_of_week.split(',');
 			if (days.length > 1) {
-				const labels = days.map(d => this.short_day_names[d] ?? d);
+				const labels = days.map((d) => this.short_day_names[d] ?? d);
 				return `every ${labels.join(', ')}`;
 			}
 			return `every ${this.day_names[day_of_week] ?? day_of_week}`;
@@ -60,9 +72,9 @@ export class LocalCronPipe implements PipeTransform {
 			const hours = hour.split(',');
 			if (hours.length > 1) {
 				const times = hours
-					.map(h => parseInt(h, 10))
+					.map((h) => parseInt(h, 10))
 					.sort((a, b) => a - b)
-					.map(h => `${String(h).padStart(2, '0')}:${minute.padStart(2, '0')}`);
+					.map((h) => `${String(h).padStart(2, '0')}:${minute.padStart(2, '0')}`);
 				return `daily at ${times.join(', ')}`;
 			}
 			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;

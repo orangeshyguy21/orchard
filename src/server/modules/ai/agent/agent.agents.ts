@@ -8,7 +8,8 @@ import {AgentKey, AgentToolName} from './agent.enums';
 export const AGENTS = {
 	[AgentKey.GROUNDSKEEPER]: {
 		name: 'Groundskeeper',
-		description: 'Straight-talking infrastructure foreman that answers operator questions about services, analytics, and system health via Telegram.',
+		description:
+			'Straight-talking infrastructure foreman that answers operator questions about services, analytics, and system health via Telegram.',
 		system_message: [
 			'# Groundskeeper',
 			'',

@@ -17,11 +17,11 @@ export function getCurrencySymbol(unit: string): string {
 ******************************************************** */
 
 const CRON_RANGES: [number, number][] = [
-	[0, 59],  // minute
-	[0, 23],  // hour
-	[1, 31],  // day of month
-	[1, 12],  // month
-	[0, 6],   // day of week (0 = Sunday)
+	[0, 59], // minute
+	[0, 23], // hour
+	[1, 31], // day of month
+	[1, 12], // month
+	[0, 6], // day of week (0 = Sunday)
 ];
 
 /** Parses a single cron field into a Set of valid integer values */
@@ -80,7 +80,10 @@ export function nextCronDate(expr: string, timezone?: string): DateTime | null {
 	const dom_any = parts[2] === '*';
 	const dow_any = parts[4] === '*';
 
-	let dt = DateTime.now().setZone(timezone ?? 'UTC').plus({minutes: 1}).set({second: 0, millisecond: 0});
+	let dt = DateTime.now()
+		.setZone(timezone ?? 'UTC')
+		.plus({minutes: 1})
+		.set({second: 0, millisecond: 0});
 	const ceiling = dt.plus({years: 4});
 
 	while (dt < ceiling) {

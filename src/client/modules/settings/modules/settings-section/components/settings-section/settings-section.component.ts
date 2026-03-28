@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, signal, OnInit, OnDestroy, AfterViewInit, ViewContainerRef, viewChild, inject} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	signal,
+	OnInit,
+	OnDestroy,
+	AfterViewInit,
+	ViewContainerRef,
+	viewChild,
+	inject,
+} from '@angular/core';
 import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';

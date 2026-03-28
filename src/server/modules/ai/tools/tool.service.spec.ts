@@ -188,7 +188,12 @@ describe('ToolService', () => {
 
 	describe('getToolNamesByCategory', () => {
 		it('returns only tools matching the given category', () => {
-			const all_tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.SEND_MESSAGE, AgentToolName.SKIP_MESSAGE, AgentToolName.GET_MINT_INFO];
+			const all_tools = [
+				AgentToolName.GET_LIGHTNING_INFO,
+				AgentToolName.SEND_MESSAGE,
+				AgentToolName.SKIP_MESSAGE,
+				AgentToolName.GET_MINT_INFO,
+			];
 			const result = service.getToolNamesByCategory(all_tools, AgentToolCategory.MESSAGE);
 			expect(result).toEqual([AgentToolName.SEND_MESSAGE, AgentToolName.SKIP_MESSAGE]);
 		});
@@ -208,7 +213,12 @@ describe('ToolService', () => {
 
 	describe('getToolNamesExcludingCategory', () => {
 		it('returns tools not matching the given category', () => {
-			const all_tools = [AgentToolName.GET_LIGHTNING_INFO, AgentToolName.SEND_MESSAGE, AgentToolName.SKIP_MESSAGE, AgentToolName.GET_MINT_INFO];
+			const all_tools = [
+				AgentToolName.GET_LIGHTNING_INFO,
+				AgentToolName.SEND_MESSAGE,
+				AgentToolName.SKIP_MESSAGE,
+				AgentToolName.GET_MINT_INFO,
+			];
 			const result = service.getToolNamesExcludingCategory(all_tools, AgentToolCategory.MESSAGE);
 			expect(result).toEqual([AgentToolName.GET_LIGHTNING_INFO, AgentToolName.GET_MINT_INFO]);
 		});

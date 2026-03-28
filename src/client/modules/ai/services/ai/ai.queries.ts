@@ -200,9 +200,10 @@ const GQL_TYPE_MAP: Record<string, string> = {
 };
 
 /** Builds a dynamic batch mutation for updating multiple agents in a single request */
-export function buildAgentBatchMutation(
-	agents: {id: string; updates: Record<string, unknown>}[],
-): {query: string; variables: Record<string, unknown>} {
+export function buildAgentBatchMutation(agents: {id: string; updates: Record<string, unknown>}[]): {
+	query: string;
+	variables: Record<string, unknown>;
+} {
 	const variable_defs: string[] = [];
 	const mutations: string[] = [];
 	const variables: Record<string, unknown> = {};

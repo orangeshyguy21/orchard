@@ -148,9 +148,15 @@ export class AgentService implements OnModuleInit {
 		this.validateCronExpression(cron_expression, timezone);
 		const job_name = `agent:${agent.id}:${cron_expression}`;
 		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
-		const job = new CronJob(cron_expression, async () => {
-			await this.enqueueAgent(agent.id, cron_expression);
-		}, null, false, timezone);
+		const job = new CronJob(
+			cron_expression,
+			async () => {
+				await this.enqueueAgent(agent.id, cron_expression);
+			},
+			null,
+			false,
+			timezone,
+		);
 		this.schedulerRegistry.addCronJob(job_name, job);
 		job.start();
 		this.logger.log(`Registered cron: ${job_name} (tz: ${timezone})`);
@@ -298,9 +304,7 @@ export class AgentService implements OnModuleInit {
 		/* Phase 2: Deliberation */
 		if (has_deliberation) {
 			const has_skip = message_tools.includes(AgentToolName.SKIP_MESSAGE);
-			const deliberation_prompt = has_skip
-				? AgentService.DELIBERATION_PROMPT_DUAL
-				: AgentService.DELIBERATION_PROMPT_SEND_ONLY;
+			const deliberation_prompt = has_skip ? AgentService.DELIBERATION_PROMPT_DUAL : AgentService.DELIBERATION_PROMPT_SEND_ONLY;
 
 			gather_result.messages.push({role: AiMessageRole.USER, content: deliberation_prompt});
 
@@ -663,7 +667,9 @@ export class AgentService implements OnModuleInit {
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,
-		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules' | 'schedule_tz'>>,
+		updates: Partial<
+			Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules' | 'schedule_tz'>
+		>,
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);

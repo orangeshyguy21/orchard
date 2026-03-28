@@ -32,7 +32,8 @@ export const SkipMessageTool: AiToolEntry = {
 				properties: {
 					reason: {
 						type: 'string',
-						description: 'Brief explanation of why no notification is needed (e.g. "no changes since last run", "all services healthy").',
+						description:
+							'Brief explanation of why no notification is needed (e.g. "no changes since last run", "all services healthy").',
 					},
 				},
 				required: ['reason'],

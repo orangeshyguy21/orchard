@@ -4,8 +4,8 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
-    @extend %w-2;
-    @extend %h-2;
+	@extend %w-2;
+	@extend %h-2;
 	@extend %orc-corner-full;
 	@extend %orc-surface-container-bg;
 	flex-shrink: 0;
@@ -13,11 +13,10 @@
 
 	img {
 		object-fit: contain;
-        @extend %w-2;
-        @extend %h-2;
+		@extend %w-2;
+		@extend %h-2;
 	}
 }
-
 
 .ai-messaging-label {
 	@extend %flex;
@@ -44,6 +43,6 @@
 	@extend %orc-outline-color;
 }
 
-.tab-form-field-wrapper{
-    width:70%;
+.tab-form-field-wrapper {
+	width: 70%;
 }

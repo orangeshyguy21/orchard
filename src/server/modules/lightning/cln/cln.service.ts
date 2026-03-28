@@ -46,7 +46,9 @@ export class ClnService {
 				!ca_cert_content && 'CA certificate',
 				!client_cert_content && 'client certificate',
 				!client_key_content && 'client key',
-			].filter(Boolean).join(', ');
+			]
+				.filter(Boolean)
+				.join(', ');
 			this.logger.error(`Failed to load CLN mTLS credential(s): ${missing} — check that the file paths exist and are readable`);
 			return null;
 		}

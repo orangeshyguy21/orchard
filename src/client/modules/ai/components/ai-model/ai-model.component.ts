@@ -88,7 +88,7 @@ export class AiModelComponent implements OnDestroy {
 	private overlay_ref: OverlayRef | null = null;
 	private overlay_subs: Subscription[] = [];
 	private search_sub: Subscription;
-    private is_open = false;
+	private is_open = false;
 
 	constructor(element_ref: ElementRef, overlay: Overlay, view_container_ref: ViewContainerRef) {
 		this.element_ref = element_ref;

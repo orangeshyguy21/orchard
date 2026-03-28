@@ -62,7 +62,8 @@ export const GetPastRunsTool: AiToolEntry = {
 					},
 					notified: {
 						type: 'boolean',
-						description: 'Filter by notification status. true = only runs where messages were sent, false = only runs with no messages. Omit for all runs.',
+						description:
+							'Filter by notification status. true = only runs where messages were sent, false = only runs with no messages. Omit for all runs.',
 					},
 				},
 				required: ['agent_id'],

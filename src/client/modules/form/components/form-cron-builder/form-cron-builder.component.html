@@ -6,11 +6,7 @@
 		</button>
 	</div>
 
-	<mat-tab-group
-		[selectedIndex]="active_tab()"
-		(selectedIndexChange)="active_tab.set($event)"
-		class="cron-tabs"
-	>
+	<mat-tab-group [selectedIndex]="active_tab()" (selectedIndexChange)="active_tab.set($event)" class="cron-tabs">
 		<!-- Hourly -->
 		<mat-tab label="Hourly">
 			<div class="cron-tab-content">
@@ -78,10 +74,7 @@
 			<div class="cron-tab-content">
 				<div class="day-checkboxes">
 					@for (day of day_names; track day; let i = $index) {
-						<mat-checkbox
-							[checked]="weekly_days()[i]"
-							(change)="onToggleDay(i)"
-						>
+						<mat-checkbox [checked]="weekly_days()[i]" (change)="onToggleDay(i)">
 							{{ day }}
 						</mat-checkbox>
 					}
@@ -197,14 +190,20 @@
 								</mat-form-field>
 								<span>:</span>
 								<mat-form-field subscriptSizing="dynamic" class="cron-select">
-									<mat-select [value]="monthly_weekday_minute()" (selectionChange)="monthly_weekday_minute.set($event.value)">
+									<mat-select
+										[value]="monthly_weekday_minute()"
+										(selectionChange)="monthly_weekday_minute.set($event.value)"
+									>
 										@for (opt of minute_options; track opt.value) {
 											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
 										}
 									</mat-select>
 								</mat-form-field>
 								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
-									<mat-select [value]="monthly_weekday_period()" (selectionChange)="monthly_weekday_period.set($event.value)">
+									<mat-select
+										[value]="monthly_weekday_period()"
+										(selectionChange)="monthly_weekday_period.set($event.value)"
+									>
 										<mat-option value="AM">AM</mat-option>
 										<mat-option value="PM">PM</mat-option>
 									</mat-select>
@@ -300,14 +299,20 @@
 								</mat-form-field>
 								<span>:</span>
 								<mat-form-field subscriptSizing="dynamic" class="cron-select">
-									<mat-select [value]="yearly_weekday_minute()" (selectionChange)="yearly_weekday_minute.set($event.value)">
+									<mat-select
+										[value]="yearly_weekday_minute()"
+										(selectionChange)="yearly_weekday_minute.set($event.value)"
+									>
 										@for (opt of minute_options; track opt.value) {
 											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
 										}
 									</mat-select>
 								</mat-form-field>
 								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
-									<mat-select [value]="yearly_weekday_period()" (selectionChange)="yearly_weekday_period.set($event.value)">
+									<mat-select
+										[value]="yearly_weekday_period()"
+										(selectionChange)="yearly_weekday_period.set($event.value)"
+									>
 										<mat-option value="AM">AM</mat-option>
 										<mat-option value="PM">PM</mat-option>
 									</mat-select>
