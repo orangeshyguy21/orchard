@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, ElementRef, forwardRef, input, output, signal, viewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+/* Native Dependencies */
+import {tokenizeMarkdown} from '@client/modules/form/helpers/markdown-tokenizer.helper';
 
 @Component({
 	selector: 'orc-form-markdown-editor',
@@ -144,7 +146,7 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		}
 
 		const cursor_offset = this.saveCursorPosition(el);
-		let html = this.tokenize(this._value);
+		let html = tokenizeMarkdown(this._value);
 		if (this._value.endsWith('\n')) html += '\n';
 		el.innerHTML = html;
 
@@ -153,71 +155,6 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		}
 	}
 
-	/** Tokenizes raw markdown text into HTML with highlight spans */
-	private tokenize(text: string): string {
-		return text
-			.split('\n')
-			.map((line) => this.tokenizeLine(line))
-			.join('\n');
-	}
-
-	/** Tokenizes a single line of markdown */
-	private tokenizeLine(line: string): string {
-		const escaped = this.escapeHtml(line);
-
-		/* Line-level tokens */
-		const header_match = escaped.match(/^(#{1,6})\s(.*)$/);
-		if (header_match) {
-			const inline_content = this.tokenizeInline(header_match[2]);
-			return `<span class="md-header-marker">${header_match[1]}</span> <span class="md-header">${inline_content}</span>`;
-		}
-
-		const blockquote_match = escaped.match(/^(&gt;)\s(.*)$/);
-		if (blockquote_match) {
-			return `<span class="md-blockquote">${blockquote_match[1]} ${blockquote_match[2]}</span>`;
-		}
-
-		const hr_match = escaped.match(/^(-{3,})$/);
-		if (hr_match) {
-			return `<span class="md-hr">${hr_match[1]}</span>`;
-		}
-
-		const list_match = escaped.match(/^(-)\s(.*)$/);
-		if (list_match) {
-			const inline_content = this.tokenizeInline(list_match[2]);
-			return `<span class="md-list-marker">-</span> ${inline_content}`;
-		}
-
-		return this.tokenizeInline(escaped);
-	}
-
-	/** Tokenizes inline markdown tokens within a line */
-	private tokenizeInline(text: string): string {
-		let result = text;
-
-		/* Inline code */
-		result = result.replace(/`([^`]+)`/g, '<span class="md-code">`$1`</span>');
-
-		/* Bold */
-		result = result.replace(
-			/\*\*([^*]+)\*\*/g,
-			'<span class="md-bold-marker">**</span><span class="md-bold">$1</span><span class="md-bold-marker">**</span>',
-		);
-
-		/* Italic */
-		result = result.replace(
-			/\*([^*]+)\*/g,
-			'<span class="md-italic-marker">*</span><span class="md-italic">$1</span><span class="md-italic-marker">*</span>',
-		);
-
-		/* Links */
-		result = result.replace(
-			/\[([^\]]+)\]\(([^)]+)\)/g,
-			'<span class="md-link-bracket">[</span><span class="md-link-text">$1</span><span class="md-link-bracket">]</span><span class="md-link-bracket">(</span><span class="md-link-url">$2</span><span class="md-link-bracket">)</span>',
-		);
-
-		return result;
-	}
 
 	/* *******************************************************
 		Cursor Management
@@ -278,8 +215,4 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		return (el.innerText || '').replace(/\n$/, '');
 	}
 
-	/** Escapes HTML special characters */
-	private escapeHtml(text: string): string {
-		return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	}
 }

@@ -1,0 +1,62 @@
+@use 'molecule/molecule';
+
+.orc-md-header-marker {
+    color: rgb(186, 203, 102);
+    font-weight: 700;
+}
+
+.orc-md-header {
+    color: rgb(186, 203, 102);
+    font-weight: 700;
+}
+
+.orc-md-bold-marker {
+    @extend %orc-outline-color;
+}
+
+.orc-md-bold {
+    font-weight: 700;
+    color: rgb(220, 176, 114);
+}
+
+.orc-md-italic-marker {
+    @extend %orc-outline-color;
+}
+
+.orc-md-italic {
+    font-style: italic;
+    color: rgb(220, 176, 114);
+}
+
+.orc-md-code {
+    color: rgb(220, 176, 114);
+    background-color: color-mix(in srgb, rgb(220, 176, 114), transparent 90%);
+    border-bottom-right-radius: var(--mat-sys-corner-small);
+    border-bottom-left-radius: var(--mat-sys-corner-small);
+    padding: 0.1rem 0.25rem;
+}
+
+.orc-md-blockquote {
+    @extend %orc-outline-color;
+}
+
+.orc-md-list-marker {
+    color: rgb(186, 203, 102);
+    font-weight: 700;
+}
+
+.orc-md-hr {
+    @extend %orc-outline-color;
+}
+
+.orc-md-link-bracket {
+    @extend %orc-outline-color;
+}
+
+.orc-md-link-text {
+    color: var(--mat-sys-primary);
+}
+
+.orc-md-link-url {
+    @extend %orc-outline-color;
+}

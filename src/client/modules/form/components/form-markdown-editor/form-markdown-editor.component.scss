@@ -45,15 +45,15 @@
 	min-height: 0;
 	font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 	white-space: pre-wrap;
-	word-break: break-word;
-	outline: none;
+	@extend %text-wrap-break;
+	@extend %outline-none;
 	overflow-y: hidden;
 
 	.editor-focused &,
 	.editor-fullscreen & {
-		overflow-y: auto;
+		@extend %overflow-y-auto;
 	}
-	color: var(--mat-sys-on-surface);
+	@extend %orc-on-surface-color;
 	caret-color: rgb(186, 203, 102);
 	caret-shape: block;
 	line-height: 1.5;
@@ -65,68 +65,3 @@
 	}
 }
 
-/* ── Markdown token highlights ── */
-
-:host ::ng-deep {
-	.md-header-marker {
-		color: rgb(186, 203, 102);
-		font-weight: 700;
-	}
-
-	.md-header {
-		color: rgb(186, 203, 102);
-		font-weight: 700;
-	}
-
-	.md-bold-marker {
-		color: var(--mat-sys-outline);
-	}
-
-	.md-bold {
-		font-weight: 700;
-		color: rgb(220, 176, 114);
-	}
-
-	.md-italic-marker {
-		color: var(--mat-sys-outline);
-	}
-
-	.md-italic {
-		font-style: italic;
-		color: rgb(220, 176, 114);
-	}
-
-	.md-code {
-		color: rgb(220, 176, 114);
-		background-color: color-mix(in srgb, rgb(220, 176, 114), transparent 90%);
-		// border-radius: 3px;
-        border-bottom-right-radius: var(--mat-sys-corner-small);
-        border-bottom-left-radius: var(--mat-sys-corner-small);
-		padding: 0.1rem 0.25rem;
-	}
-
-	.md-blockquote {
-		color: var(--mat-sys-outline);
-	}
-
-	.md-list-marker {
-		color: rgb(186, 203, 102);
-		font-weight: 700;
-	}
-
-	.md-hr {
-		color: var(--mat-sys-outline);
-	}
-
-	.md-link-bracket {
-		color: var(--mat-sys-outline);
-	}
-
-	.md-link-text {
-		color: var(--mat-sys-primary);
-	}
-
-	.md-link-url {
-		color: var(--mat-sys-outline);
-	}
-}

@@ -8,6 +8,8 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import {ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
+/* Application Dependencies */
+import {tokenizeMarkdown} from '@client/modules/form/helpers/markdown-tokenizer.helper';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai-agent',
@@ -30,6 +32,11 @@ export class SettingsSubsectionAppAiAgentComponent {
 	public loading = input<boolean>(false);
 
 	/* ── Public computed signals ── */
+	public readonly highlighted_system_message = computed(() => {
+		const msg = this.agent()?.system_message;
+		return msg ? tokenizeMarkdown(msg) : '';
+	});
+
 	public readonly model_warning = computed(() => {
 		const m = this.model();
 		if (!m) return true;

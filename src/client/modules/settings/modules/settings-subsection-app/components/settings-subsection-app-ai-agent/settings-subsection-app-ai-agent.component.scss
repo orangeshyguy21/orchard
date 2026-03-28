@@ -25,7 +25,7 @@
 }
 
 .system-message-content {
-    color: #bbb963;
+    @extend %orc-on-surface-color;
     white-space: pre-wrap;
 	word-break: break-word;
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;

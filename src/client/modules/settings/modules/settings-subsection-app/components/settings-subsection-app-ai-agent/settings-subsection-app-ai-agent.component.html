@@ -34,7 +34,7 @@
             
                     <div class="p-t-1">
                         <div class="system-message font-size-xs">
-                            <div class="system-message-content">{{ agent.system_message }}</div>
+                            <div class="system-message-content" [innerHTML]="highlighted_system_message()"></div>
                             <button mat-icon-button type="button" class="expand-button" (click)="openSettings.emit({id: agent.id, fullscreen_system_message: true})">
                                 <mat-icon>open_with</mat-icon>
                             </button>
