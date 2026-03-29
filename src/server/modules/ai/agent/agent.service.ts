@@ -3,8 +3,6 @@ import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {mkdirSync, writeFileSync} from 'fs';
-import {join} from 'path';
 import {Repository} from 'typeorm';
 import {SchedulerRegistry} from '@nestjs/schedule';
 import {CronJob} from 'cron';
@@ -324,7 +322,6 @@ export class AgentService implements OnModuleInit {
 			notified = was_notified;
 		}
 
-		this.dumpAgentTrace(agent, gather_result.messages, total_tokens, result, tool_names);
 		return {result, tokens_used: total_tokens, notified};
 	}
 
@@ -374,32 +371,6 @@ export class AgentService implements OnModuleInit {
 		}
 
 		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens, messages};
-	}
-
-	/**
-	 * Writes the full agent conversation trace to a tmp file for dev inspection.
-	 */
-	private dumpAgentTrace(agent: Agent, messages: AiMessage[], tokens_used: number, result: string, tool_names: string[] = []): void {
-		try {
-			const timestamp = DateTime.utc().toFormat('yyyyMMdd-HHmmss');
-			const resolved_name = this.resolveName(agent);
-			const safe_name = resolved_name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-			const dir = join(process.cwd(), 'data', 'tmp');
-			mkdirSync(dir, {recursive: true});
-			const file_path = join(dir, `agent-${safe_name}-${timestamp}.json`);
-			const trace = {
-				agent: {id: agent.id, name: resolved_name, agent_key: agent.agent_key},
-				timestamp: DateTime.utc().toISO(),
-				tokens_used,
-				tool_names,
-				result,
-				messages,
-			};
-			writeFileSync(file_path, JSON.stringify(trace, null, 2));
-			this.logger.log(`Agent trace dumped: ${file_path}`);
-		} catch (err) {
-			this.logger.warn(`Failed to dump agent trace: ${err.message}`);
-		}
 	}
 
 	/**

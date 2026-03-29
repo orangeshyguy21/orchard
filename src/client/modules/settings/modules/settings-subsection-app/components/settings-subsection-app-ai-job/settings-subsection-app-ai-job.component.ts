@@ -85,7 +85,6 @@ export class SettingsSubsectionAppAiJobComponent {
 		form.get('active')?.setValue(status);
 		form.get('active')?.markAsDirty();
 		form.get('active')?.markAsTouched();
-		console.log('onEnabledChange', status);
 		this.update.emit();
 	}
 }

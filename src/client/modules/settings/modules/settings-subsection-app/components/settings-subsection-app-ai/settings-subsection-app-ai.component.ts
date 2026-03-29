@@ -199,7 +199,7 @@ export class SettingsSubsectionAppAiComponent {
 				models: this.ai_models(),
 				tools: this.ai_agent_tools(),
 				device_type: this.device_type(),
-				vendor: this.app_settings()?.ai_enabled,
+				vendor: this.app_settings()?.ai_vendor ?? 'ollama',
 				favorites: this.ai_favorites(),
 				fullscreen_system_message: event.fullscreen_system_message ?? false,
 				app_settings: this.app_settings(),

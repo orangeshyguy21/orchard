@@ -1,12 +1,3 @@
-<!-- @if (device_type() === 'mobile') {
-	<button mat-icon-button type="button" (click)="togglePanel()" class="orc-icon-button">
-		<mat-icon class="orc-outline-color">spa</mat-icon>
-	</button>
-} @else {
-	<button mat-button type="button" (click)="togglePanel()">
-		<div class="font-size-xs" [class.orc-outline-color]="model()" [class.orc-status-warning-color]="!model()">{{ model() ?? 'missing model' }}</div>
-	</button>
-} -->
 <div (click)="togglePanel()">
 	<ng-content></ng-content>
 </div>

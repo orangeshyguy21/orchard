@@ -83,7 +83,7 @@ export class OrchardAgent {
 		this.active = agent.active;
 		this.model = agent.model;
 		this.system_message = agent.system_message ?? built_in?.system_message ?? null;
-		this.tools = agent.tools ? JSON.parse(agent.tools) : (built_in?.tools ?? null);
+		this.tools = agent.tools ? safeParse(agent.tools, built_in?.tools ?? [], `agent.tools[${agent.id}]`) : (built_in?.tools ?? null);
 		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 		this.schedule_kind = agent.schedule_kind ?? AgentScheduleKind.CRON;
 		this.schedule_tz = agent.schedule_tz ?? null;

@@ -60,9 +60,9 @@
 								<div class="flex">
 									<orc-form-help-text class="orc-surface-container-high-bg">
 										@if (data.mode === 'groundskeeper') {
-											Your primary agent's name
+											Displayed in conversations and used to identify your agent.
 										} @else {
-											The name of the agent job
+											Displayed in the job list and execution results.
 										}
 									</orc-form-help-text>
 								</div>
@@ -113,9 +113,9 @@
 								<div class="flex p-t-1">
 									<orc-form-help-text class="orc-surface-container-high-bg">
 										@if (data.mode === 'groundskeeper') {
-											Your primary agent's model
+											The LLM that powers your agent. Stronger models tend to produce better conversations.
 										} @else {
-											The model of the agent job
+											The LLM used for this job. Simpler models can help limit resource usage and cost.
 										}
 									</orc-form-help-text>
 								</div>
@@ -162,9 +162,9 @@
 						<div class="flex">
 							<orc-form-help-text class="orc-surface-container-high-bg">
 								@if (data.mode === 'groundskeeper') {
-									Your primary agent's description
+									A short summary of what your agent does. Shown in settings only, not sent to the model.
 								} @else {
-									The description of the agent job
+									A short summary of what this job does. Shown in settings only, not sent to the model.
 								}
 							</orc-form-help-text>
 						</div>

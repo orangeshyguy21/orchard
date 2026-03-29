@@ -210,7 +210,6 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	/** Activates the agent settings assistant with current form context */
 	private hireAgentSettingsAssistant(content: string | null): void {
 		const context = this.buildFormContext();
-		console.log('hireAgentSettingsAssistant', context);
 		this.aiService.openAiSocket(AiAssistant.SettingsAgent, content, context);
 	}
 
@@ -461,10 +460,6 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 
 	public onToggleToolsAvailable(): void {
 		this.tools_available.set(!this.tools_available());
-		console.log('onAddTool');
-		// const tools: string[] = this.form.get('tools')?.value ?? [];
-		// this.form.get('tools')?.setValue([...tools, '']);
-		// this.form.get('tools')?.markAsDirty();
 	}
 
 	/* *******************************************************
