@@ -11,4 +11,4 @@ export {
 export {GetMintAnalyticsMetricsTool, GetMintAnalyticsTool, GetMintInfoTool} from './mint.tools';
 export {GetPastRunsTool} from './memory.tools';
 export {GetSystemMetricsTool} from './system.tools';
-export {createSendMessageTool} from './message.tools';
+export {createSendMessageTool, SkipMessageTool} from './message.tools';

@@ -74,6 +74,12 @@
     #{$c}orc-on-error-container-color { color: var(--mat-sys-on-error-container); }
     #{$c}orc-on-primary-fixed-color { color: var(--mat-sys-on-primary-fixed); }
     #{$c}orc-on-neutral-color { color: var(--mat-sys-on-neutral); }
+    #{$c}orc-brand-lightest-color { color: var(--orc-sys-brand-lightest); }
+    #{$c}orc-brand-light-color { color: var(--orc-sys-brand-light); }
+    #{$c}orc-brand-medium-color { color: var(--orc-sys-brand-medium); }
+    #{$c}orc-brand-dark-color { color: var(--orc-sys-brand-dark); }
+    #{$c}orc-brand-darkest-color { color: var(--orc-sys-brand-darkest); }
+    #{$c}orc-brand-surface-color { color: var(--orc-sys-brand-surface); }
 
     // Fill Colors
     #{$c}orc-brand-lightest-fill { fill: var(--orc-sys-brand-lightest); }

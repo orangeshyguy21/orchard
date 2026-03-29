@@ -208,6 +208,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		this.logger.log('Starting bitcoin analytics streaming backfill');
 
 		try {
+			await this.getNodePubkey().catch(() => null);
+			if (!this.node_pubkey) {
+				this.logger.warn('Lightning node not reachable, skipping bitcoin analytics backfill');
+				return;
+			}
+
 			const current_hour = DateTime.utc().startOf('hour').toSeconds();
 
 			// Stream 1: BTC on-chain transactions

@@ -1,7 +1,7 @@
 /* Vendor Dependencies */
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
 /* Local Dependencies */
-import {AgentKey} from './agent.enums';
+import {AgentKey, AgentScheduleKind} from './agent.enums';
 import {AgentRun} from './agent-run.entity';
 
 @Entity('agents')
@@ -12,14 +12,17 @@ export class Agent {
 	@Column({type: 'text', nullable: true, unique: true})
 	agent_key: AgentKey | null;
 
-	@Column({type: 'text'})
-	name: string;
+	@Column({type: 'text', nullable: true})
+	name: string | null;
 
 	@Column({type: 'text', nullable: true})
 	description: string | null;
 
 	@Column({default: false})
 	active: boolean;
+
+	@Column({type: 'text', nullable: true})
+	model: string | null;
 
 	@Column({type: 'text', nullable: true})
 	system_message: string | null;
@@ -29,6 +32,12 @@ export class Agent {
 
 	@Column({type: 'text', default: '[]'})
 	schedules: string;
+
+	@Column({type: 'text', default: AgentScheduleKind.CRON})
+	schedule_kind: AgentScheduleKind;
+
+	@Column({type: 'text', nullable: true})
+	schedule_tz: string | null;
 
 	@Column({type: 'integer', nullable: true})
 	last_run_at: number | null;

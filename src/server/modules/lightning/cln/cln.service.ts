@@ -41,6 +41,18 @@ export class ClnService {
 		const client_cert_content = this.credentialService.loadPemOrPath(client_cert);
 		const client_key_content = this.credentialService.loadPemOrPath(client_key);
 
+		if (!ca_cert_content || !client_cert_content || !client_key_content) {
+			const missing = [
+				!ca_cert_content && 'CA certificate',
+				!client_cert_content && 'client certificate',
+				!client_key_content && 'client key',
+			]
+				.filter(Boolean)
+				.join(', ');
+			this.logger.error(`Failed to load CLN mTLS credential(s): ${missing} — check that the file paths exist and are readable`);
+			return null;
+		}
+
 		const ssl_creds = grpc.credentials.createSsl(ca_cert_content, client_key_content, client_cert_content);
 
 		let channel_options: Record<string, any> | undefined = undefined;

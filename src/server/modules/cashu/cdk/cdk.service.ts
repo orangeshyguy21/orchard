@@ -78,6 +78,17 @@ export class CdkService {
 				const key_content = this.credentialService.loadPemOrPath(rpc_key);
 				const cert_content = this.credentialService.loadPemOrPath(rpc_cert);
 				const ca_content = this.credentialService.loadPemOrPath(rpc_ca);
+
+				if (!key_content || !cert_content || !ca_content) {
+					const missing = [!ca_content && 'CA certificate', !cert_content && 'client certificate', !key_content && 'client key']
+						.filter(Boolean)
+						.join(', ');
+					this.logger.error(
+						`Failed to load CDK mTLS credential(s): ${missing} — check that the file paths exist and are readable`,
+					);
+					return undefined;
+				}
+
 				credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
 				if (rpc_host?.includes('host.docker.internal')) {
 					channel_options = {

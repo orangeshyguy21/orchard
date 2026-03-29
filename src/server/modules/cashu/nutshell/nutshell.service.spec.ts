@@ -196,6 +196,7 @@ describe('NutshellService', () => {
 		expect(createSsl).toHaveBeenCalledWith(ca_buf, key_buf, cert_buf);
 		const logger_log = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined as any);
 		logger_log.mockClear();
+		credentialService.loadPemOrPath.mockReturnValueOnce(key_buf).mockReturnValueOnce(cert_buf).mockReturnValueOnce(ca_buf);
 		nutshellService.initializeGrpcClient();
 		// ensure success path log is called
 		expect(logger_log).toHaveBeenCalledTimes(1);

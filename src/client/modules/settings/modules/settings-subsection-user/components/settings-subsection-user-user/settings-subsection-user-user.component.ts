@@ -14,7 +14,7 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 })
 export class SettingsSubsectionUserUserComponent {
 	public user = input.required<User | null>();
-	public form_group_user_name = input.required<FormGroup>();
+	public form_group = input.required<FormGroup>();
 	public device_type = input.required<DeviceType>();
 
 	public cancel_user_name = output<string>();

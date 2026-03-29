@@ -19,6 +19,7 @@ export class CredentialService {
 			try {
 				return Buffer.from(value.slice(b64_prefix[0].length), 'base64');
 			} catch {
+				this.logger.warn('PEM/cert value has base64 prefix but failed to decode');
 				return undefined;
 			}
 		}
@@ -45,7 +46,11 @@ export class CredentialService {
 		// hex:... prefix
 		if (/^hex:/i.test(value)) {
 			const hex = value.slice(4);
-			return /^[0-9a-fA-F]+$/.test(hex) ? hex.toLowerCase() : undefined;
+			if (!/^[0-9a-fA-F]+$/.test(hex)) {
+				this.logger.warn('Macaroon value has hex: prefix but contains invalid hex characters');
+				return undefined;
+			}
+			return hex.toLowerCase();
 		}
 		// base64:... or b64:...
 		const b64_prefix = value.match(/^(base64|b64):/i);
@@ -53,6 +58,7 @@ export class CredentialService {
 			try {
 				return Buffer.from(value.slice(b64_prefix[0].length), 'base64').toString('hex');
 			} catch {
+				this.logger.warn('Macaroon value has base64 prefix but failed to decode');
 				return undefined;
 			}
 		}
@@ -62,6 +68,7 @@ export class CredentialService {
 		try {
 			return Buffer.from(value, 'base64').toString('hex');
 		} catch {}
+		this.logger.warn('Unable to decode macaroon value as hex, base64, or file path');
 		return undefined;
 	}
 
@@ -85,7 +92,8 @@ export class CredentialService {
 		const file_path = value.startsWith('file://') ? value.replace(/^file:\/\//, '') : value;
 		try {
 			return fs.readFileSync(file_path);
-		} catch {
+		} catch (error) {
+			this.logger.warn(`Failed to read credential file "${file_path}": ${(error as Error).message}`);
 			return undefined;
 		}
 	}

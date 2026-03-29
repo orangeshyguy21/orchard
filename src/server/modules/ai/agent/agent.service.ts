@@ -3,8 +3,6 @@ import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {mkdirSync, writeFileSync} from 'fs';
-import {join} from 'path';
 import {Repository} from 'typeorm';
 import {SchedulerRegistry} from '@nestjs/schedule';
 import {CronJob} from 'cron';
@@ -13,8 +11,6 @@ import {DateTime} from 'luxon';
 import {AiService} from '@server/modules/ai/ai.service';
 import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
-import {SettingService} from '@server/modules/setting/setting.service';
-import {SettingKey} from '@server/modules/setting/setting.enums';
 import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
 import {ToolService} from '@server/modules/ai/tools/tool.service';
@@ -22,7 +18,7 @@ import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 /* Local Dependencies */
 import {Agent} from './agent.entity';
 import {AgentRun} from './agent-run.entity';
-import {AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
+import {AgentToolCategory, AgentToolName, AgentKey, AgentRunStatus} from './agent.enums';
 import {AGENTS} from './agent.agents';
 
 @Injectable()
@@ -30,8 +26,26 @@ export class AgentService implements OnModuleInit {
 	private readonly logger = new Logger(AgentService.name);
 
 	private static readonly MAX_TOOL_ITERATIONS = 25;
+	private static readonly MAX_DELIBERATION_ITERATIONS = 3;
 	private static readonly MIN_CRON_INTERVAL_MINUTES = 5;
 	private static readonly MAX_QUEUE_DEPTH = 10;
+
+	private static readonly GATHER_PROMPT = [
+		'Run your analysis now.',
+		'Message tools are not available in this phase — a deliberation step follows where you can notify the operator.',
+		'Write a thorough analysis as your final response.',
+	].join('\n');
+
+	private static readonly DELIBERATION_PROMPT_DUAL = [
+		'Based on your analysis above, decide whether the operator needs to be notified.',
+		'Apply the notification criteria defined in your system prompt to make this decision.',
+		'Call exactly one tool: SEND_MESSAGE to notify, or SKIP_MESSAGE to stay silent.',
+	].join('\n');
+
+	private static readonly DELIBERATION_PROMPT_SEND_ONLY = [
+		'Based on your analysis above, compile your findings into a message for the operator.',
+		'Call SEND_MESSAGE with a summary of your analysis.',
+	].join('\n');
 
 	private execution_queue: Promise<any> = Promise.resolve();
 	private queue_depth = 0;
@@ -45,7 +59,6 @@ export class AgentService implements OnModuleInit {
 		private schedulerRegistry: SchedulerRegistry,
 		private aiService: AiService,
 		private configService: ConfigService,
-		private settingService: SettingService,
 		private toolExecutor: ToolService,
 	) {}
 
@@ -70,8 +83,8 @@ export class AgentService implements OnModuleInit {
 			if (existing) continue;
 			const agent = this.agentRepository.create({
 				agent_key,
-				name: definition.name,
-				description: definition.description,
+				name: null,
+				description: null,
 				active: false,
 				system_message: null,
 				tools: null,
@@ -82,7 +95,7 @@ export class AgentService implements OnModuleInit {
 				updated_at: now,
 			});
 			await this.agentRepository.save(agent);
-			this.logger.log(`Seeded agent: ${definition.name} (${agent_key})`);
+			this.logger.log(`Seeded agent: ${agent_key}`);
 		}
 	}
 
@@ -108,9 +121,9 @@ export class AgentService implements OnModuleInit {
 	 * Validates that a cron expression is syntactically correct and does not fire
 	 * more frequently than MIN_CRON_INTERVAL_MINUTES.
 	 */
-	private validateCronExpression(cron_expression: string): void {
+	private validateCronExpression(cron_expression: string, timezone?: string | null): void {
 		try {
-			const probe = new CronJob(cron_expression, () => {});
+			const probe = new CronJob(cron_expression, () => {}, null, false, timezone ?? 'UTC');
 			const [first, second] = probe.nextDates(2) as unknown as DateTime[];
 			const diff_minutes = second.diff(first, 'minutes').minutes;
 			if (diff_minutes < AgentService.MIN_CRON_INTERVAL_MINUTES) {
@@ -129,15 +142,22 @@ export class AgentService implements OnModuleInit {
 	 * Job name format: agent:{agent.id}:{cron_expression}
 	 */
 	private registerCronJob(agent: Agent, cron_expression: string): void {
-		this.validateCronExpression(cron_expression);
+		const timezone = agent.schedule_tz ?? 'UTC';
+		this.validateCronExpression(cron_expression, timezone);
 		const job_name = `agent:${agent.id}:${cron_expression}`;
 		if (this.schedulerRegistry.doesExist('cron', job_name)) return;
-		const job = new CronJob(cron_expression, async () => {
-			await this.enqueueAgent(agent.id, cron_expression);
-		});
+		const job = new CronJob(
+			cron_expression,
+			async () => {
+				await this.enqueueAgent(agent.id, cron_expression);
+			},
+			null,
+			false,
+			timezone,
+		);
 		this.schedulerRegistry.addCronJob(job_name, job);
 		job.start();
-		this.logger.log(`Registered cron: ${job_name}`);
+		this.logger.log(`Registered cron: ${job_name} (tz: ${timezone})`);
 	}
 
 	/**
@@ -235,7 +255,7 @@ export class AgentService implements OnModuleInit {
 				last_run_status: AgentRunStatus.SUCCESS,
 				updated_at: completed_at,
 			});
-			this.logger.log(`Agent ${agent.name} completed successfully`);
+			this.logger.log(`Agent ${this.resolveName(agent)} completed successfully`);
 			return {...saved_run, status: AgentRunStatus.SUCCESS, completed_at, result, tokens_used, notified};
 		} catch (error) {
 			const completed_at = DateTime.utc().toUnixInteger();
@@ -248,41 +268,61 @@ export class AgentService implements OnModuleInit {
 				last_run_status: AgentRunStatus.ERROR,
 				updated_at: completed_at,
 			});
-			this.logger.error(`Agent ${agent.name} failed: ${error.message}`);
+			this.logger.error(`Agent ${this.resolveName(agent)} failed: ${error.message}`);
 			throw error;
 		}
 	}
 
 	/**
-	 * Runs the LLM tool-call loop for an agent.
-	 * Sends the system message and tools to the LLM, processes tool calls,
-	 * and iterates until the LLM returns content or the iteration cap is hit.
+	 * Runs the LLM tool-call loop for an agent using a two-phase architecture:
+	 * 1. Gather — data collection with all tools except message tools
+	 * 2. Deliberation — notification decision with only message tools
+	 * The deliberation phase is skipped when the agent has no message tools.
 	 */
 	private async runAgentLoop(agent: Agent): Promise<{result: string; tokens_used: number; notified: boolean}> {
 		const tool_names = this.resolveToolNames(agent);
+		const message_tools = this.toolExecutor.getToolNamesByCategory(tool_names, AgentToolCategory.MESSAGE);
+		const primary_tools = this.toolExecutor.getToolNamesExcludingCategory(tool_names, AgentToolCategory.MESSAGE);
+		const has_deliberation = message_tools.length > 0;
+
+		const resolved_name = this.resolveName(agent);
 		const system_message: AiMessage = {role: AiMessageRole.SYSTEM, content: this.buildSystemMessage(agent)};
+		const user_prompt = has_deliberation ? AgentService.GATHER_PROMPT : 'Run your analysis now.';
+		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: user_prompt}];
+		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: resolved_name};
 
-		const messages: AiMessage[] = [system_message, {role: AiMessageRole.USER, content: 'Run your analysis now.'}];
-		const agent_context: AiAgentContext = {agent_id: agent.id, agent_name: agent.name};
+		if (!agent.model) throw new Error(`Agent "${resolved_name}" has no model configured`);
 
-		const loop_result = await this.runToolLoop({messages, tool_names, agent_context});
+		/* Phase 1: Gather */
+		const gather_result = await this.runToolLoop({model: agent.model, messages, tool_names: primary_tools, agent_context});
+		let total_tokens = gather_result.tokens_used;
+		let result = gather_result.result;
+		let notified = false;
 
-		const notified = loop_result.messages.some((m) => {
-			if (m.role !== AiMessageRole.TOOL || !m.tool_call_id) return false;
-			const is_send = loop_result.messages.some((msg) =>
-				msg.tool_calls?.some((tc) => tc.id === m.tool_call_id && tc.function.name === AgentToolName.SEND_MESSAGE),
-			);
-			if (!is_send) return false;
-			try {
-				const result = JSON.parse(m.content);
-				return result?.success === true && result?.data?.delivered === true;
-			} catch {
-				return false;
-			}
-		});
+		/* Phase 2: Deliberation */
+		if (has_deliberation) {
+			const has_skip = message_tools.includes(AgentToolName.SKIP_MESSAGE);
+			const deliberation_prompt = has_skip ? AgentService.DELIBERATION_PROMPT_DUAL : AgentService.DELIBERATION_PROMPT_SEND_ONLY;
 
-		this.dumpAgentTrace(agent, loop_result.messages, loop_result.tokens_used, loop_result.result, tool_names);
-		return {result: loop_result.result, tokens_used: loop_result.tokens_used, notified};
+			gather_result.messages.push({role: AiMessageRole.USER, content: deliberation_prompt});
+
+			const deliberation_result = await this.runToolLoop({
+				model: agent.model,
+				messages: gather_result.messages,
+				tool_names: message_tools,
+				agent_context,
+				max_iterations: AgentService.MAX_DELIBERATION_ITERATIONS,
+			});
+
+			total_tokens += deliberation_result.tokens_used;
+
+			/* Extract result from the deliberation tool call */
+			const {deliberation_result: extracted_result, was_notified} = this.extractDeliberationResult(deliberation_result.messages);
+			result = extracted_result ?? deliberation_result.result;
+			notified = was_notified;
+		}
+
+		return {result, tokens_used: total_tokens, notified};
 	}
 
 	/**
@@ -291,19 +331,19 @@ export class AgentService implements OnModuleInit {
 	 * Used by both scheduled agent runs and conversational flows.
 	 */
 	public async runToolLoop(options: {
+		model: string;
 		messages: AiMessage[];
 		tool_names: string[];
 		agent_context: AiAgentContext;
 		signal?: AbortSignal;
+		max_iterations?: number;
 	}): Promise<{result: string; tokens_used: number; messages: AiMessage[]}> {
-		const model = await this.settingService.getStringSetting(SettingKey.AI_SERVER_MODEL);
-		if (!model) throw new Error('No AI model configured (ai.server.model)');
-
-		const {messages, tool_names, agent_context, signal} = options;
+		const {model, messages, tool_names, agent_context, signal} = options;
+		const max_iterations = options.max_iterations ?? AgentService.MAX_TOOL_ITERATIONS;
 		const tool_schemas = this.toolExecutor.getToolSchemas(tool_names);
 		let total_tokens = 0;
 
-		for (let iteration = 0; iteration < AgentService.MAX_TOOL_ITERATIONS; iteration++) {
+		for (let iteration = 0; iteration < max_iterations; iteration++) {
 			if (signal?.aborted) {
 				return {result: '', tokens_used: total_tokens, messages};
 			}
@@ -325,36 +365,12 @@ export class AgentService implements OnModuleInit {
 					messages.push({role: AiMessageRole.TOOL, content: JSON.stringify(tool_result), tool_call_id: tool_call.id});
 				}
 			} else {
+				messages.push(response.message);
 				return {result: response.message.content, tokens_used: total_tokens, messages};
 			}
 		}
 
 		return {result: 'Agent reached maximum tool iterations without producing a final response.', tokens_used: total_tokens, messages};
-	}
-
-	/**
-	 * Writes the full agent conversation trace to a tmp file for dev inspection.
-	 */
-	private dumpAgentTrace(agent: Agent, messages: AiMessage[], tokens_used: number, result: string, tool_names: string[] = []): void {
-		try {
-			const timestamp = DateTime.utc().toFormat('yyyyMMdd-HHmmss');
-			const safe_name = agent.name.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-			const dir = join(process.cwd(), 'data', 'tmp');
-			mkdirSync(dir, {recursive: true});
-			const file_path = join(dir, `agent-${safe_name}-${timestamp}.json`);
-			const trace = {
-				agent: {id: agent.id, name: agent.name, agent_key: agent.agent_key},
-				timestamp: DateTime.utc().toISO(),
-				tokens_used,
-				tool_names,
-				result,
-				messages,
-			};
-			writeFileSync(file_path, JSON.stringify(trace, null, 2));
-			this.logger.log(`Agent trace dumped: ${file_path}`);
-		} catch (err) {
-			this.logger.warn(`Failed to dump agent trace: ${err.message}`);
-		}
 	}
 
 	/**
@@ -397,9 +413,62 @@ export class AgentService implements OnModuleInit {
 		return final_chunk;
 	}
 
+	/**
+	 * Extracts the run result and notification status from the deliberation phase messages.
+	 * For SEND_MESSAGE: the message body becomes the result, notified is true if delivered.
+	 * For SKIP_MESSAGE: the skip reason becomes the result, notified is false.
+	 * Falls back to null if no deliberation tool call is found.
+	 */
+	private extractDeliberationResult(messages: AiMessage[]): {deliberation_result: string | null; was_notified: boolean} {
+		for (let i = messages.length - 1; i >= 0; i--) {
+			const msg = messages[i];
+			if (msg.role !== AiMessageRole.TOOL || !msg.tool_call_id) continue;
+
+			/* Find the matching assistant tool_call */
+			const tool_call = messages.flatMap((m) => m.tool_calls ?? []).find((tc) => tc.id === msg.tool_call_id);
+			const tool_name = tool_call?.function.name;
+
+			if (tool_name === AgentToolName.SEND_MESSAGE) {
+				try {
+					const parsed = JSON.parse(msg.content);
+					const delivered = parsed?.success === true && parsed?.data?.delivered === true;
+					const args = tool_call?.function.arguments ?? {};
+					const body = `[${args.severity ?? 'info'}] ${args.title ?? ''}\n${args.body ?? ''}`.trim();
+					return {deliberation_result: body, was_notified: delivered};
+				} catch {
+					return {deliberation_result: null, was_notified: false};
+				}
+			}
+
+			if (tool_name === AgentToolName.SKIP_MESSAGE) {
+				try {
+					const parsed = JSON.parse(msg.content);
+					const reason = parsed?.data?.reason ?? 'No reason provided';
+					return {deliberation_result: reason, was_notified: false};
+				} catch {
+					return {deliberation_result: null, was_notified: false};
+				}
+			}
+		}
+
+		return {deliberation_result: null, was_notified: false};
+	}
+
 	/* *******************************************************
 		Agent Resolution Helpers
 	******************************************************** */
+
+	/** Resolve the effective name for an agent, falling back to built-in default */
+	public resolveName(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.name : undefined;
+		return agent.name ?? built_in ?? 'Unnamed Agent';
+	}
+
+	/** Resolve the effective description for an agent, falling back to built-in default */
+	public resolveDescription(agent: Agent): string {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key]?.description : undefined;
+		return agent.description ?? built_in ?? '';
+	}
 
 	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
 	public resolveToolNames(agent: Agent): string[] {
@@ -420,7 +489,8 @@ export class AgentService implements OnModuleInit {
 
 	/** Builds a runtime context string to append to agent system messages */
 	public buildRuntimeContext(agent: Agent): string {
-		const now = DateTime.utc();
+		const timezone = agent.schedule_tz ?? 'UTC';
+		const now = DateTime.utc().setZone(timezone);
 		const version = this.configService.get<string>('mode.version');
 
 		const services: string[] = [];
@@ -431,12 +501,13 @@ export class AgentService implements OnModuleInit {
 		if (lightning) services.push(`lightning (${lightning})`);
 		if (mint) services.push(`mint (${mint})`);
 		const schedules: string[] = JSON.parse(agent.schedules);
-		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s)).join('; ') : 'on-demand only';
+		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s, timezone)).join('; ') : 'on-demand only';
 
 		return [
 			'[Runtime Context]',
 			`Agent ID: ${agent.id}`,
 			`Current time: ${now.toISO()} (unix: ${now.toUnixInteger()})`,
+			`Timezone: ${timezone}`,
 			`App version: ${version}`,
 			`Configured services: ${services.length ? services.join(', ') : 'none'}`,
 			`Schedule: ${cadence}`,
@@ -447,7 +518,7 @@ export class AgentService implements OnModuleInit {
 	 * Converts a cron expression into a cadence description the agent can reason about.
 	 * Focuses on the interval between runs so the agent knows what time window to analyze.
 	 */
-	private describeCadence(cron: string): string {
+	private describeCadence(cron: string, timezone: string): string {
 		const parts = cron.trim().split(/\s+/);
 		if (parts.length !== 5) return `custom (${cron})`;
 		const [minute, hour, day_of_month, _month, day_of_week] = parts;
@@ -471,7 +542,7 @@ export class AgentService implements OnModuleInit {
 
 		/* Monthly */
 		if (day_of_month !== '*' && day_of_week === '*') {
-			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 30 days of activity`;
+			return `monthly on day ${day_of_month} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone} — focus on the last 30 days of activity`;
 		}
 
 		/* Weekly */
@@ -481,7 +552,7 @@ export class AgentService implements OnModuleInit {
 
 		/* Daily */
 		if (day_of_month === '*' && day_of_week === '*') {
-			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC — focus on the last 24 hours of activity`;
+			return `daily at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone} — focus on the last 24 hours of activity`;
 		}
 
 		return `custom (${cron})`;
@@ -519,16 +590,64 @@ export class AgentService implements OnModuleInit {
 		});
 	}
 
+	/** Creates a new custom agent (no agent_key) and syncs its cron schedules */
+	public async createAgent(fields: {
+		name: string;
+		description?: string;
+		active?: boolean;
+		model?: string;
+		system_message?: string;
+		tools?: string[];
+		schedules?: string[];
+		schedule_tz?: string;
+	}): Promise<Agent> {
+		const now = DateTime.utc().toUnixInteger();
+		if (fields.schedules) {
+			fields.schedules.forEach((expr) => this.validateCronExpression(expr, fields.schedule_tz));
+		}
+		const agent = this.agentRepository.create({
+			agent_key: null,
+			name: fields.name,
+			description: fields.description ?? null,
+			active: fields.active ?? false,
+			model: fields.model ?? null,
+			system_message: fields.system_message ?? null,
+			tools: fields.tools ? JSON.stringify(fields.tools) : null,
+			schedules: JSON.stringify(fields.schedules ?? []),
+			schedule_tz: fields.schedule_tz ?? null,
+			last_run_at: null,
+			last_run_status: null,
+			created_at: now,
+			updated_at: now,
+		});
+		const saved = await this.agentRepository.save(agent);
+		await this.syncAgentSchedules(saved);
+		return saved;
+	}
+
+	/** Delete a custom agent (agent_key must be null). Cleans up cron jobs before removal. */
+	public async deleteAgent(id: string): Promise<void> {
+		const agent = await this.agentRepository.findOne({where: {id}});
+		if (!agent) throw new Error(`Agent not found: ${id}`);
+		if (agent.agent_key !== null) throw new Error(`Cannot delete built-in agent: ${agent.agent_key}`);
+		this.removeCronJobsForAgent(agent.id);
+		this.pending_agents.delete(agent.id);
+		await this.agentRepository.remove(agent);
+	}
+
 	/** Update an agent and re-sync its cron schedules */
 	public async updateAgent(
 		id: string,
-		updates: Partial<Pick<Agent, 'name' | 'description' | 'active' | 'system_message' | 'tools' | 'schedules'>>,
+		updates: Partial<
+			Pick<Agent, 'name' | 'description' | 'active' | 'model' | 'system_message' | 'tools' | 'schedules' | 'schedule_tz'>
+		>,
 	): Promise<Agent> {
 		const agent = await this.agentRepository.findOne({where: {id}});
 		if (!agent) throw new Error(`Agent not found: ${id}`);
 		if (updates.schedules) {
+			const timezone = updates.schedule_tz ?? agent.schedule_tz;
 			const expressions: string[] = JSON.parse(updates.schedules);
-			expressions.forEach((expr) => this.validateCronExpression(expr));
+			expressions.forEach((expr) => this.validateCronExpression(expr, timezone));
 		}
 		const now = DateTime.utc().toUnixInteger();
 		Object.assign(agent, updates, {updated_at: now});
@@ -561,7 +680,7 @@ export class AgentService implements OnModuleInit {
 				.delete()
 				.where('agent_id = :agent_id AND started_at <= :cutoff', {agent_id: agent.id, cutoff})
 				.execute();
-			this.logger.log(`Cleaned up old runs for agent ${agent.name}`);
+			this.logger.log(`Cleaned up old runs for agent ${this.resolveName(agent)}`);
 		}
 	}
 }

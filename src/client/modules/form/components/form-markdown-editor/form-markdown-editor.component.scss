@@ -1,0 +1,73 @@
+@use 'molecule/molecule';
+
+:host {
+	display: flex;
+	flex-direction: column;
+}
+
+.editor-container {
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-column;
+	flex: 1;
+	min-height: 0;
+	@extend %orc-surface-container-lowest-bg;
+	@extend %orc-corner-small;
+	@extend %overflow-hidden;
+	@extend %trans-bg-border-color-fast;
+	border: 1px solid transparent;
+
+	&.editor-hot {
+		border-color: var(--orc-status-active);
+	}
+
+	&.editor-invalid {
+		border-color: var(--mat-sys-error);
+	}
+
+	&.editor-focused {
+		box-shadow: 0 0 0 1px var(--orc-status-active);
+	}
+
+	&.editor-focused.editor-invalid {
+		box-shadow: 0 0 0 1px var(--mat-sys-error);
+	}
+
+	&.editor-fullscreen {
+		border-radius: 0;
+	}
+}
+
+.editor-content {
+	@extend %font-size-xs;
+	@extend %p-1;
+	flex: 1;
+	min-height: 0;
+	font-family:
+		ui-monospace,
+		SFMono-Regular,
+		SF Mono,
+		Menlo,
+		Consolas,
+		Liberation Mono,
+		monospace;
+	white-space: pre-wrap;
+	@extend %text-wrap-break;
+	@extend %outline-none;
+	overflow-y: hidden;
+
+	.editor-focused &,
+	.editor-fullscreen & {
+		@extend %overflow-y-auto;
+	}
+	@extend %orc-on-surface-color;
+	caret-color: rgb(186, 203, 102);
+	caret-shape: block;
+	line-height: 1.5;
+
+	&:empty::before {
+		content: attr(data-placeholder);
+		color: var(--mat-sys-outline);
+		pointer-events: none;
+	}
+}

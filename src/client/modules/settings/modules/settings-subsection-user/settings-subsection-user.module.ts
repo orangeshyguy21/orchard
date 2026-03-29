@@ -11,6 +11,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
+import {MatTabsModule} from '@angular/material/tabs';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -23,6 +24,7 @@ import {SettingsSubsectionUserUserComponent} from './components/settings-subsect
 import {SettingsSubsectionUserUserNameComponent} from './components/settings-subsection-user-user-name/settings-subsection-user-user-name.component';
 import {SettingsSubsectionUserUserPasswordComponent} from './components/settings-subsection-user-user-password/settings-subsection-user-user-password.component';
 import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/settings-subsection-user-user-password-dialog/settings-subsection-user-user-password-dialog.component';
+import {SettingsSubsectionUserMessagingComponent} from './components/settings-subsection-user-messaging/settings-subsection-user-messaging.component';
 
 @NgModule({
 	declarations: [
@@ -31,6 +33,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/se
 		SettingsSubsectionUserUserNameComponent,
 		SettingsSubsectionUserUserPasswordComponent,
 		SettingsSubsectionUserUserPasswordDialogComponent,
+		SettingsSubsectionUserMessagingComponent,
 	],
 	imports: [
 		[
@@ -51,6 +54,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/se
 		MatButtonModule,
 		MatDialogModule,
 		MatIconModule,
+		MatTabsModule,
 		OrcFormModule,
 		OrcLocalModule,
 		OrcCrewModule,

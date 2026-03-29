@@ -12,6 +12,11 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -20,6 +25,8 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcButtonModule} from '@client/modules/button/button.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -27,6 +34,13 @@ import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subse
 import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
 import {SettingsSubsectionAppAiComponent} from './components/settings-subsection-app-ai/settings-subsection-app-ai.component';
 import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings-subsection-app-ai-integration/settings-subsection-app-ai-integration.component';
+import {SettingsSubsectionAppAiAgentComponent} from './components/settings-subsection-app-ai-agent/settings-subsection-app-ai-agent.component';
+import {SettingsSubsectionAppAiMessagingComponent} from './components/settings-subsection-app-ai-messaging/settings-subsection-app-ai-messaging.component';
+import {SettingsSubsectionAppAiJobComponent} from './components/settings-subsection-app-ai-job/settings-subsection-app-ai-job.component';
+import {SettingsSubsectionAppAiToolChipsComponent} from './components/settings-subsection-app-ai-tool-chips/settings-subsection-app-ai-tool-chips.component';
+import {SettingsSubsectionAppAiAgentFormComponent} from './components/settings-subsection-app-ai-agent-form/settings-subsection-app-ai-agent-form.component';
+import {SettingsSubsectionAppAiJobDialogComponent} from './components/settings-subsection-app-ai-job-dialog/settings-subsection-app-ai-job-dialog.component';
+import {SettingsSubsectionAppAiJobExecuteComponent} from './components/settings-subsection-app-ai-job-execute/settings-subsection-app-ai-job-execute.component';
 
 @NgModule({
 	declarations: [
@@ -35,6 +49,13 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		SettingsSubsectionAppBitcoinOracleComponent,
 		SettingsSubsectionAppAiComponent,
 		SettingsSubsectionAppAiIntegrationComponent,
+		SettingsSubsectionAppAiAgentComponent,
+		SettingsSubsectionAppAiMessagingComponent,
+		SettingsSubsectionAppAiJobComponent,
+		SettingsSubsectionAppAiToolChipsComponent,
+		SettingsSubsectionAppAiAgentFormComponent,
+		SettingsSubsectionAppAiJobDialogComponent,
+		SettingsSubsectionAppAiJobExecuteComponent,
 	],
 	imports: [
 		[
@@ -56,6 +77,11 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		MatTabsModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatTooltipModule,
+		MatChipsModule,
+		MatDialogModule,
+		MatProgressBarModule,
+		MatRippleModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,
@@ -63,6 +89,8 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		OrcNavModule,
 		OrcAiModule,
 		OrcProgressModule,
+		OrcLocalModule,
+		OrcButtonModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

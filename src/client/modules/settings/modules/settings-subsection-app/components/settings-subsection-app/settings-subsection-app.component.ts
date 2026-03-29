@@ -17,7 +17,7 @@ import {
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
-import {Subscription} from 'rxjs';
+import {Subscription, forkJoin, of} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
@@ -28,8 +28,11 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
+import {OrchardValidators} from '@client/modules/form/validators';
+import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
 /* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
+import {AgentKey, SettingKey} from '@shared/generated.types';
 
 enum NavTertiary {
 	Bitcoin = 'nav1',
@@ -44,11 +47,12 @@ enum NavTertiary {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, OnDestroy {
-	private configService = inject(ConfigService);
-	private settingAppService = inject(SettingAppService);
-	private settingDeviceService = inject(SettingDeviceService);
-	private eventService = inject(EventService);
-	private breakpointObserver = inject(BreakpointObserver);
+	private readonly configService = inject(ConfigService);
+	private readonly settingAppService = inject(SettingAppService);
+	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly eventService = inject(EventService);
+	private readonly breakpointObserver = inject(BreakpointObserver);
+	private readonly aiService = inject(AiService);
 
 	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2');
 	readonly settings_container = viewChild<ElementRef>('settings_container');
@@ -65,14 +69,21 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		form_ai: new FormGroup({
 			enabled: new FormControl(false, [Validators.required]),
 			vendor: new FormControl('ollama'),
-			ollama_api: new FormControl('http://localhost:11434'),
-			openrouter_key: new FormControl(''),
+			ollama_api: new FormControl('http://localhost:11434', [OrchardValidators.url]),
+			openrouter_key: new FormControl('', [OrchardValidators.openrouterKey]),
+		}),
+		form_ai_messaging: new FormGroup({
+			enabled: new FormControl(false, [Validators.required]),
+			telegram_bot_token: new FormControl('', [OrchardValidators.telegramBotToken]),
 		}),
 	});
-	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
+	public config = this.configService.config;
+	public bitcoin_enabled = this.config.bitcoin.enabled;
 	public device_type = signal<DeviceType>('desktop');
 	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
 	public initial_settings = signal<ParsedAppSettings | null>(null);
+	public initial_agents = signal<Map<string, AiAgent>>(new Map());
+	public agent_form_groups = signal<Map<string, FormGroup>>(new Map());
 
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Bitcoin]: {title: 'Bitcoin'},
@@ -85,6 +96,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		'form_ai.vendor': SettingKey.AiVendor,
 		'form_ai.ollama_api': SettingKey.AiOllamaApi,
 		'form_ai.openrouter_key': SettingKey.AiOpenrouterKey,
+		'form_ai_messaging.enabled': SettingKey.MessagesEnabled,
+		'form_ai_messaging.telegram_bot_token': SettingKey.MessagesTelegramBotToken,
 	};
 
 	private readonly initial_value_map: Record<string, keyof ParsedAppSettings> = {
@@ -93,6 +106,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		'form_ai.vendor': 'ai_vendor',
 		'form_ai.ollama_api': 'ai_ollama_api',
 		'form_ai.openrouter_key': 'ai_openrouter_key',
+		'form_ai_messaging.enabled': 'messages_enabled',
+		'form_ai_messaging.telegram_bot_token': 'messages_telegram_bot_token',
 	};
 
 	private active_event: EventData | null = null;
@@ -164,6 +179,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private getFormChangesSubscription(): Subscription {
 		return this.form_app_settings.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
+			this.toggleAiControls(this.form_ai.get('enabled')?.value ?? false);
+			this.toggleMessagingControls(this.form_ai_messaging.get('enabled')?.value ?? false);
 		});
 	}
 
@@ -179,6 +196,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		return this.form_app_settings.get('form_ai') as FormGroup;
 	}
 
+	public get form_ai_messaging(): FormGroup {
+		return this.form_app_settings.get('form_ai_messaging') as FormGroup;
+	}
+
 	private initSettingForms(settings: ParsedAppSettings): void {
 		this.form_bitcoin.patchValue({
 			oracle_enabled: settings.bitcoin_oracle,
@@ -189,6 +210,33 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			ollama_api: settings.ai_ollama_api,
 			openrouter_key: settings.ai_openrouter_key,
 		});
+		this.form_ai_messaging.patchValue({
+			enabled: settings.messages_enabled,
+			telegram_bot_token: settings.messages_telegram_bot_token,
+		});
+		this.toggleAiControls(settings.ai_enabled);
+		this.toggleMessagingControls(settings.messages_enabled);
+	}
+
+	/** Enables or disables AI vendor controls based on the enabled state */
+	private toggleAiControls(enabled: boolean): void {
+		const ollama_api = this.form_ai.get('ollama_api');
+		const openrouter_key = this.form_ai.get('openrouter_key');
+		if (enabled) {
+			ollama_api?.enable({emitEvent: false});
+			openrouter_key?.enable({emitEvent: false});
+		} else {
+			ollama_api?.disable({emitEvent: false});
+			openrouter_key?.disable({emitEvent: false});
+		}
+	}
+	private toggleMessagingControls(enabled: boolean): void {
+		const telegram_bot_token = this.form_ai_messaging.get('telegram_bot_token');
+		if (enabled) {
+			telegram_bot_token?.enable({emitEvent: false});
+		} else {
+			telegram_bot_token?.disable({emitEvent: false});
+		}
 	}
 
 	public onUpdate(): void {
@@ -203,6 +251,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 				.filter((key) => group.get(key) instanceof FormControl)
 				.filter((key) => group.get(key)?.dirty).length;
 		});
+		for (const [_id, group] of this.agent_form_groups()) {
+			control_count += Object.keys(group.controls).filter((key) => group.get(key)?.dirty).length;
+		}
 		this.dirty_count.set(control_count);
 	}
 
@@ -219,27 +270,31 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private onConfirmedEvent(): void {
-		if (this.form_app_settings.invalid) {
-			return this.eventService.registerEvent(
-				new EventData({
-					type: 'WARNING',
-					message: 'Invalid info',
-				}),
-			);
-		}
 		const keys: SettingKey[] = [];
 		const values: string[] = [];
 		for (const [path, setting_key] of Object.entries(this.setting_key_map)) {
 			const control = this.form_app_settings.get(path);
 			if (control?.dirty) {
+				if (control.invalid) {
+					return this.eventService.registerEvent(
+						new EventData({
+							type: 'WARNING',
+							message: 'Invalid info',
+						}),
+					);
+				}
 				keys.push(setting_key);
 				values.push(control.value.toString());
 			}
 		}
-		if (keys.length === 0) return;
+		const dirty_agents = this.getDirtyAgentUpdates();
+		if (keys.length === 0 && dirty_agents.length === 0) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.settingAppService.updateSettings(keys, values).subscribe({
-			next: () => {
+		const settings$ = keys.length > 0 ? this.settingAppService.updateSettings(keys, values) : of(null);
+		const agents$ = dirty_agents.length > 0 ? this.aiService.updateAiAgentsBatch(dirty_agents) : of(null);
+		forkJoin([settings$, agents$]).subscribe({
+			next: ([_settings, agents]) => {
+				if (agents) this.updateInitialAgents(agents);
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
@@ -247,6 +302,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 					}),
 				);
 				this.form_app_settings.markAsPristine();
+				this.markAgentFormsPristine();
 				this.evaluateDirtyCount();
 				this.getSettings();
 			},
@@ -264,8 +320,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private onUnconfirmedEvent(): void {
 		const initial_settings = this.initial_settings();
 		if (initial_settings) this.initSettingForms(initial_settings);
+		this.resetAgentForms();
 		setTimeout(() => {
 			this.form_app_settings.markAsPristine();
+			this.markAgentFormsPristine();
 			this.form_app_settings.markAsUntouched();
 			this.evaluateDirtyCount();
 		}, 100);
@@ -324,6 +382,162 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 			if (group === form) return key;
 		}
 		return null;
+	}
+
+	/* *******************************************************
+		Agent Forms
+	******************************************************** */
+
+	/** Builds form groups for agents received from the AI child component */
+	public onRequestAgentForms(agents: AiAgent[]): void {
+		const form_map = new Map<string, FormGroup>();
+		const initial_map = new Map<string, AiAgent>();
+
+		for (const agent of agents) {
+			const is_primary = agent.agent_key === AgentKey.Groundskeeper;
+			const controls: Record<string, FormControl> = {
+				model: new FormControl(agent.model),
+			};
+			if (!is_primary) {
+				controls['active'] = new FormControl(agent.active);
+			}
+			const group = new FormGroup(controls);
+			this.subscriptions.add(group.valueChanges.subscribe(() => this.evaluateDirtyCount()));
+			form_map.set(agent.id, group);
+			initial_map.set(agent.id, agent);
+		}
+
+		this.agent_form_groups.set(form_map);
+		this.initial_agents.set(initial_map);
+	}
+
+	/** Saves an existing agent via the event service */
+	public onSaveAgent(event: {id: string; values: Record<string, unknown>}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.updateAiAgent(event.id, event.values).subscribe({
+			next: (agent) => {
+				this.updateInitialAgents([agent]);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Agent updated!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	/** Creates a new agent via the event service */
+	public onCreateAgent(event: {values: Record<string, unknown>}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.createAiAgent(event.values as any).subscribe({
+			next: (agent) => {
+				this.updateInitialAgents([agent]);
+				this.onRequestAgentForms([...this.initial_agents().values()]);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Agent created!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	/** Deletes a custom agent and removes it from local state */
+	public onDeleteAgent(event: {id: string}): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.aiService.deleteAiAgent(event.id).subscribe({
+			next: () => {
+				const agents = this.initial_agents();
+				agents.delete(event.id);
+				this.initial_agents.set(new Map(agents));
+
+				const forms = this.agent_form_groups();
+				forms.delete(event.id);
+				this.agent_form_groups.set(new Map(forms));
+
+				this.evaluateDirtyCount();
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Job deleted!',
+					}),
+				);
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	/** Collects dirty agent form controls into batch update payloads */
+	private getDirtyAgentUpdates(): {id: string; updates: Record<string, unknown>}[] {
+		const dirty_agents: {id: string; updates: Record<string, unknown>}[] = [];
+		for (const [id, group] of this.agent_form_groups()) {
+			const updates: Record<string, unknown> = {};
+			for (const key of Object.keys(group.controls)) {
+				const control = group.get(key);
+				if (control?.dirty) {
+					updates[key] = control.value;
+				}
+			}
+			if (Object.keys(updates).length > 0) {
+				dirty_agents.push({id, updates});
+			}
+		}
+		return dirty_agents;
+	}
+
+	/** Updates the initial agents cache after a successful save */
+	private updateInitialAgents(agents: AiAgent[]): void {
+		const map = this.initial_agents();
+		for (const agent of agents) {
+			map.set(agent.id, agent);
+		}
+		this.initial_agents.set(new Map(map));
+	}
+
+	/** Marks all agent form groups as pristine */
+	private markAgentFormsPristine(): void {
+		for (const [_id, group] of this.agent_form_groups()) {
+			group.markAsPristine();
+		}
+	}
+
+	/** Resets all agent form controls to their initial values */
+	private resetAgentForms(): void {
+		for (const [id, group] of this.agent_form_groups()) {
+			const initial_agent = this.initial_agents().get(id);
+			if (!initial_agent) continue;
+			for (const key of Object.keys(group.controls)) {
+				const control = group.get(key);
+				if (control) {
+					control.setValue(initial_agent[key as keyof AiAgent], {emitEvent: false});
+				}
+			}
+		}
 	}
 
 	/* *******************************************************

@@ -1,0 +1,97 @@
+<div class="ai-job-contaienr">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			@if (loading()) {
+				<div class="flex-grow flex flex-items-center flex-justify-center p-2">
+					<mat-icon class="orc-outline-color icon-lg">task_alt</mat-icon>
+				</div>
+			} @else if (agent(); as agent) {
+				<div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein">
+					<div class="flex flex-items-start flex-gap-1">
+						<div class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
+							<div class="title-l">{{ agent.name }}</div>
+							<orc-ai-model
+								[model]="model()"
+								[model_options]="ai_models()"
+								[device_type]="device_type()"
+								[vendor]="ai_vendor()"
+								[favorites]="ai_favorites()"
+								(modelChange)="onModelChange($event)"
+								(favoritesChange)="onFavoritesChange($event)"
+							>
+								<button mat-button type="button" class="z-index-0">
+									<div class="font-size-xs" [class.orc-status-warning-color]="model_warning()">
+										{{ model() ?? 'missing model' }}
+									</div>
+								</button>
+							</orc-ai-model>
+						</div>
+
+						<button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="jobMenu">
+							<mat-icon>more_vert</mat-icon>
+						</button>
+						<mat-menu #jobMenu="matMenu">
+							<button mat-menu-item (click)="openSettings.emit({id: agent.id})" class="orc-icon-button">
+								<mat-icon class="mat-symbol-outline">edit</mat-icon>
+								<span>Edit</span>
+							</button>
+							<button mat-menu-item (click)="executeNow.emit({id: agent.id})" class="orc-icon-button">
+								<mat-icon class="mat-symbol-outline">play_circle</mat-icon>
+								<span>Execute now</span>
+							</button>
+							<button mat-menu-item (click)="deleteJob.emit({id: agent.id})" class="orc-icon-button">
+								<mat-icon class="mat-symbol-outline">delete_forever</mat-icon>
+								<span>Delete</span>
+							</button>
+						</mat-menu>
+					</div>
+
+					<div class="font-size-xs orc-outline-color">{{ agent.description }}</div>
+
+					<div class="flex">
+						<orc-form-toggle-group>
+							<orc-form-toggle [selected]="!active()" (click)="onEnabledChange(false)">
+								<div class="font-size-s">Inactive</div>
+							</orc-form-toggle>
+							<orc-form-toggle [selected]="active()" (click)="onEnabledChange(true)">
+								<div class="font-size-s">Active</div>
+							</orc-form-toggle>
+						</orc-form-toggle-group>
+					</div>
+
+					<div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="active()">
+						<div class="orc-animation-expand-collapse-inner">
+							<div class="flex flex-column flex-gap-1">
+								<orc-settings-subsection-app-ai-tool-chips [tools]="tools()"></orc-settings-subsection-app-ai-tool-chips>
+								<div class="flex flex-items-center flex-justify-between flex-gap-1">
+									<div class="flex flex-column flex-gap-0-25">
+										<mat-chip-set>
+											@for (schedule of agent.schedules; track schedule) {
+												<mat-chip
+													><span class="font-size-s">{{ schedule | localCron | titlecase }}</span></mat-chip
+												>
+											}
+										</mat-chip-set>
+									</div>
+									@if (next_run(); as next) {
+										<div class="flex flex-items-center flex-gap-0-25">
+											<mat-icon class="orc-outline-color icon-sm mat-symbol-outline">schedule</mat-icon>
+											<div class="orc-outline-color font-size-xs text-nowrap">{{ next.toRelative() }}</div>
+										</div>
+									}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			} @else {
+				<div class="orc-outline-color" animate.enter="orc-animation-fadein">No agent configured</div>
+			}
+			@if (!messaging_enabled()) {
+				<div animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast" class="disabled-overlay">
+					<mat-icon class="icon-lg mat-symbol-outline">chat_bubble_off</mat-icon>
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+</div>

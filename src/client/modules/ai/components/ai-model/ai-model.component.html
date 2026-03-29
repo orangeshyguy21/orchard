@@ -1,12 +1,6 @@
-@if (device_type() === 'mobile') {
-	<button mat-icon-button type="button" (click)="togglePanel()" class="orc-icon-button" [class.is-open]="is_open()">
-		<mat-icon class="orc-outline-color">spa</mat-icon>
-	</button>
-} @else {
-	<button mat-button type="button" (click)="togglePanel()" [class.is-open]="is_open()">
-		<div class="orc-outline-color font-size-xs">{{ model() }}</div>
-	</button>
-}
+<div (click)="togglePanel()">
+	<ng-content></ng-content>
+</div>
 
 <ng-template #panelTemplate>
 	<div class="model-panel orc-menu-button-full" [class.mobile]="device_type() === 'mobile'">

@@ -8,6 +8,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-section.component';
 
@@ -68,5 +69,6 @@ import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-sect
 		MatProgressSpinnerModule,
 		OrcNavModule,
 	],
+	providers: [provideChartConfig()],
 })
 export class OrcBitcoinSectionModule {}

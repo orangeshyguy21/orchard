@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import {Injectable} from '@angular/core';
+import {Injectable, signal, computed} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay, finalize} from 'rxjs';
+import {Observable, catchError, Subscription, Subject, BehaviorSubject, of, map, tap, throwError, shareReplay, finalize} from 'rxjs';
 /* Application Dependencies */
+import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
@@ -20,6 +21,15 @@ import {
 	AiModelResponse,
 	AiAssistantResponse,
 	AiChatAbortResponse,
+	AiAgentsResponse,
+	AiAgentResponse,
+	AiAgentCreateResponse,
+	AiAgentUpdateResponse,
+	AiAgentBatchUpdateResponse,
+	AiAgentDeleteResponse,
+	AiAgentExecuteResponse,
+	AiAgentToolsResponse,
+	AiAgentDefaultsResponse,
 } from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
@@ -27,10 +37,29 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
+import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
+import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
+import {AiAgentDefault} from '@client/modules/ai/classes/ai-agent-default.class';
+import {AiAgentRun} from '@client/modules/ai/classes/ai-agent-run.class';
 /* Local Dependencies */
-import {AI_CHAT_SUBSCRIPTION, AI_HEALTH_QUERY, AI_MODELS_QUERY, AI_ASSISTANT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
+import {
+	AI_CHAT_SUBSCRIPTION,
+	AI_HEALTH_QUERY,
+	AI_MODELS_QUERY,
+	AI_ASSISTANT_QUERY,
+	AI_CHAT_ABORT_MUTATION,
+	AI_AGENT_TOOLS_QUERY,
+	AI_AGENT_DEFAULTS_QUERY,
+	AI_AGENTS_QUERY,
+	AI_AGENT_QUERY,
+	AI_AGENT_CREATE_MUTATION,
+	AI_AGENT_UPDATE_MUTATION,
+	AI_AGENT_DELETE_MUTATION,
+	AI_AGENT_EXECUTE_MUTATION,
+	buildAgentBatchMutation,
+} from './ai.queries';
 /* Shared Dependencies */
-import {AiAssistant, AiMessageRole} from '@shared/generated.types';
+import {AgentKey, AiAssistant, AiMessageRole, OrchardAgentTool} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -59,18 +88,28 @@ export class AiService {
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private assistant_subject = new Subject<{assistant: AiAssistant; content: string | null}>();
 	private active_subject = new Subject<boolean>();
+	private readonly route_assistant = signal<AiAssistant>(AiAssistant.Default);
+	private readonly override_assistant = signal<AiAssistant | null>(null);
+	public readonly active_assistant = computed(() => this.override_assistant() ?? this.route_assistant());
 	private ai_models_observable!: Observable<AiModel[]> | null;
+
+	private readonly CACHE_KEYS = {AI_AGENT_TOOLS: 'AI_AGENT_TOOLS'};
+	private readonly CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
+	private agent_tools_subject: BehaviorSubject<OrchardAgentTool[] | null>;
 
 	private conversation_cache: AiChatConversation | null = null;
 
 	constructor(
+		private cacheService: CacheService,
 		private apiService: ApiService,
 		private settingDeviceService: SettingDeviceService,
 		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
 		private http: HttpClient,
-	) {}
+	) {
+		this.agent_tools_subject = this.cacheService.createCache<OrchardAgentTool[]>(this.CACHE_KEYS.AI_AGENT_TOOLS, this.CACHE_DURATION);
+	}
 
 	public getFunctionModel(): Observable<AiModel | null> {
 		const set_model = this.settingDeviceService.getModel();
@@ -85,6 +124,21 @@ export class AiService {
 
 	public requestAssistant(assistant: AiAssistant, content: string | null): void {
 		this.assistant_subject.next({assistant, content});
+	}
+
+	/** Sets the base assistant from route data */
+	public setRouteAssistant(assistant: AiAssistant): void {
+		this.route_assistant.set(assistant);
+	}
+
+	/** Imperatively overrides the active assistant (e.g. when a form panel opens) */
+	public setAssistantOverride(assistant: AiAssistant): void {
+		this.override_assistant.set(assistant);
+	}
+
+	/** Clears the override, falling back to the route assistant */
+	public clearAssistantOverride(): void {
+		this.override_assistant.set(null);
 	}
 
 	public openAiSocket(assistant: AiAssistant, content: string | null, context?: string): void {
@@ -225,6 +279,188 @@ export class AiService {
 			map((oaa) => new AiAssistantDefinition(oaa)),
 			catchError((error) => {
 				console.error('Error loading ai assistant:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/* *******************************************************
+		Agents
+	******************************************************** */
+
+	/** Fetches all available AI agent tools (cached for 60 minutes) */
+	public loadAiAgentTools(): Observable<AiAgentTool[]> {
+		if (this.agent_tools_subject.value && this.cacheService.isCacheValid(this.CACHE_KEYS.AI_AGENT_TOOLS)) {
+			return of(this.agent_tools_subject.value as AiAgentTool[]);
+		}
+
+		const query = getApiQuery(AI_AGENT_TOOLS_QUERY);
+
+		return this.http.post<OrchardRes<AiAgentToolsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_tools;
+			}),
+			map((tools) => tools.map((tool) => new AiAgentTool(tool))),
+			tap((tools) => {
+				this.cacheService.updateCache(this.CACHE_KEYS.AI_AGENT_TOOLS, tools);
+			}),
+			shareReplay(1),
+			catchError((error) => {
+				console.error('Error loading ai agent tools:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches default configuration for an AI agent */
+	public getAiAgentDefaults(agent_key: AgentKey): Observable<AiAgentDefault> {
+		const query = getApiQuery(AI_AGENT_DEFAULTS_QUERY, {agent_key});
+
+		return this.http.post<OrchardRes<AiAgentDefaultsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_defaults;
+			}),
+			map((defaults) => new AiAgentDefault(defaults)),
+			catchError((error) => {
+				console.error('Error loading ai agent defaults:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches all AI agents */
+	public getAiAgents(): Observable<AiAgent[]> {
+		const query = getApiQuery(AI_AGENTS_QUERY);
+
+		return this.http.post<OrchardRes<AiAgentsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agents;
+			}),
+			map((agents) => agents.map((agent) => new AiAgent(agent))),
+			catchError((error) => {
+				console.error('Error loading ai agents:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches a single AI agent by ID */
+	public getAiAgent(id: string): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_QUERY, {id});
+
+		return this.http.post<OrchardRes<AiAgentResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error loading ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Creates a new custom AI agent */
+	public createAiAgent(fields: {
+		name: string;
+		description?: string;
+		active?: boolean;
+		model?: string;
+		system_message?: string;
+		tools?: string[];
+		schedules?: string[];
+	}): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_CREATE_MUTATION, fields);
+
+		return this.http.post<OrchardRes<AiAgentCreateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_create;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error creating ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Updates an AI agent configuration */
+	public updateAiAgent(
+		id: string,
+		updates: Partial<{
+			name: string;
+			description: string;
+			active: boolean;
+			model: string;
+			system_message: string;
+			tools: string[];
+			schedules: string[];
+		}>,
+	): Observable<AiAgent> {
+		const query = getApiQuery(AI_AGENT_UPDATE_MUTATION, {id, ...updates});
+
+		return this.http.post<OrchardRes<AiAgentUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_update;
+			}),
+			map((agent) => new AiAgent(agent)),
+			catchError((error) => {
+				console.error('Error updating ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Updates multiple AI agents in a single batched request */
+	public updateAiAgentsBatch(agents: {id: string; updates: Record<string, unknown>}[]): Observable<AiAgent[]> {
+		const {query, variables} = buildAgentBatchMutation(agents);
+
+		return this.http.post<OrchardRes<AiAgentBatchUpdateResponse>>(this.apiService.api, {query, variables}).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return Object.values(response.data).map((agent) => new AiAgent(agent));
+			}),
+			catchError((error) => {
+				console.error('Error batch updating ai agents:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Deletes a custom AI agent by ID */
+	public deleteAiAgent(id: string): Observable<boolean> {
+		const query = getApiQuery(AI_AGENT_DELETE_MUTATION, {id});
+
+		return this.http.post<OrchardRes<AiAgentDeleteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_delete;
+			}),
+			catchError((error) => {
+				console.error('Error deleting ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Manually triggers an agent execution and returns the run result */
+	public executeAiAgent(id: string): Observable<AiAgentRun> {
+		const query = getApiQuery(AI_AGENT_EXECUTE_MUTATION, {id});
+
+		return this.http.post<OrchardRes<AiAgentExecuteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent_execute;
+			}),
+			map((run) => new AiAgentRun(run)),
+			catchError((error) => {
+				console.error('Error executing ai agent:', error);
 				return throwError(() => error);
 			}),
 		);

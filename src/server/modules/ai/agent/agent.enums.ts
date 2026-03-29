@@ -1,12 +1,31 @@
 export enum AgentKey {
-	ORCHARD = 'ORCHARD',
+	GROUNDSKEEPER = 'GROUNDSKEEPER',
 	ACTIVITY_MONITOR = 'ACTIVITY_MONITOR',
+}
+
+export enum AgentScheduleKind {
+	CRON = 'cron',
 }
 
 export enum AgentRunStatus {
 	RUNNING = 'running',
 	SUCCESS = 'success',
 	ERROR = 'error',
+}
+
+export enum AgentToolRole {
+	READ = 'read',
+	WRITE = 'write',
+}
+
+export enum AgentToolCategory {
+	BITCOIN = 'bitcoin',
+	HEALTH = 'health',
+	LIGHTNING = 'lightning',
+	MEMORY = 'memory',
+	MESSAGE = 'message',
+	MINT = 'mint',
+	SYSTEM = 'system',
 }
 
 export enum AgentToolName {
@@ -27,4 +46,5 @@ export enum AgentToolName {
 	GET_PAST_RUNS = 'GET_PAST_RUNS',
 	GET_SYSTEM_METRICS = 'GET_SYSTEM_METRICS',
 	SEND_MESSAGE = 'SEND_MESSAGE',
+	SKIP_MESSAGE = 'SKIP_MESSAGE',
 }

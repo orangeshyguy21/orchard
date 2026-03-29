@@ -19,7 +19,17 @@
 			[favorites]="favorites()"
 			(modelChange)="modelChange.emit($event)"
 			(favoritesChange)="favoritesChange.emit($event)"
-		></orc-ai-model>
+		>
+			@if (device_type() === 'mobile') {
+				<button mat-icon-button type="button" class="orc-icon-button">
+					<mat-icon class="orc-outline-color">spa</mat-icon>
+				</button>
+			} @else {
+				<button mat-button type="button">
+					<div class="font-size-xs">{{ model() }}</div>
+				</button>
+			}
+		</orc-ai-model>
 
 		@if (mobile_assistant()) {
 			<button mat-icon-button type="button" (click)="onHideAssistant()" class="orc-icon-button">

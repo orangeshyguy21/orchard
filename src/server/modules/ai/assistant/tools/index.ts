@@ -43,3 +43,12 @@ export {
 	UpdateEventLogActorIdsTool,
 	ResetEventLogFiltersTool,
 } from './event-log.tools';
+export {
+	UpdateAgentNameTool,
+	UpdateAgentDescriptionTool,
+	UpdateAgentModelTool,
+	UpdateAgentSystemMessageTool,
+	UpdateAgentToolsTool,
+	UpdateAgentSchedulesTool,
+	UpdateAgentActiveTool,
+} from './settings-agent.tools';

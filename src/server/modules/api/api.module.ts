@@ -45,6 +45,7 @@ import {AiAssistantModule} from './ai/assistant/aiassistant.module';
 import {AiChatModule} from './ai/chat/aichat.module';
 import {AiHealthModule} from './ai/health/aihealth.module';
 import {AiAgentModule} from './ai/agent/aiagent.module';
+import {AiToolsModule} from './ai/tools/aitools.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
@@ -101,6 +102,7 @@ import './api.enums';
 		AiChatModule,
 		AiHealthModule,
 		AiAgentModule,
+		AiToolsModule,
 		PublicImageModule,
 		PublicUrlModule,
 		PublicPortModule,

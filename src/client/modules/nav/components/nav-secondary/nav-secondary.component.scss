@@ -45,3 +45,11 @@
 	@extend %flex-row;
 	@extend %h-full;
 }
+
+.nav-secondary-divider {
+	@extend %orc-surface-bg;
+	@extend %w-full;
+	@extend %relative;
+	height: 1px;
+	top: -1px;
+}

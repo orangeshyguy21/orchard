@@ -84,8 +84,9 @@ export class SettingService implements OnModuleInit {
 	 * @returns {Promise<Setting[]>} All settings with decrypted values
 	 */
 	public async getSettings(): Promise<Setting[]> {
+		const valid_keys = new Set(Object.values(SettingKey));
 		const settings = await this.settingRepository.find();
-		return settings.map((s) => this.decryptSetting(s));
+		return settings.filter((s) => valid_keys.has(s.key)).map((s) => this.decryptSetting(s));
 	}
 
 	/**

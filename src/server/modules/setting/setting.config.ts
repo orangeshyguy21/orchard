@@ -34,12 +34,6 @@ export const DEFAULT_SETTINGS: Setting[] = [
 		description: 'The OpenRouter API key',
 	},
 	{
-		key: SettingKey.AI_SERVER_MODEL,
-		value: '',
-		value_type: SettingValue.STRING,
-		description: 'The server model to use',
-	},
-	{
 		key: SettingKey.MESSAGES_ENABLED,
 		value: 'false',
 		value_type: SettingValue.BOOLEAN,

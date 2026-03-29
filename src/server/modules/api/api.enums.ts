@@ -16,7 +16,7 @@ import {BitcoinAnalyticsMetric} from '@server/modules/bitcoin/analytics/btcanaly
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AssistantToolName, AiAssistant} from '@server/modules/ai/assistant/ai.assistant.enums';
-import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
+import {AgentKey, AgentRunStatus, AgentScheduleKind} from '@server/modules/ai/agent/agent.enums';
 import {UserRole} from '@server/modules/user/user.enums';
 import {SettingKey, SettingValue} from '@server/modules/setting/setting.enums';
 import {UTXOracleProgressStatus} from '@server/modules/bitcoin/utxoracle/utxoracle.enums';
@@ -196,8 +196,15 @@ registerEnumType(AgentKey, {
 	name: 'AgentKey',
 	description: 'AI agent identifiers',
 	valuesMap: {
-		ORCHARD: {description: 'Main Orchard assistant agent'},
+		GROUNDSKEEPER: {description: 'Main Groundskeeper agent'},
 		ACTIVITY_MONITOR: {description: 'Automated activity monitoring agent'},
+	},
+});
+registerEnumType(AgentScheduleKind, {
+	name: 'AgentScheduleKind',
+	description: 'Type of schedule for an AI agent',
+	valuesMap: {
+		CRON: {description: 'Cron-based schedule'},
 	},
 });
 registerEnumType(AgentRunStatus, {
@@ -225,6 +232,7 @@ registerEnumType(AiAssistant, {
 		MINT_DATABASE: {description: 'Mint database management assistant'},
 		MINT_BACKUP: {description: 'Mint backup management assistant'},
 		EVENT_LOG: {description: 'Event log assistant'},
+		SETTINGS_AGENT: {description: 'Agent settings configuration assistant'},
 	},
 });
 registerEnumType(AiMessageRole, {
@@ -261,7 +269,6 @@ registerEnumType(SettingKey, {
 		AI_VENDOR: {description: 'AI vendor selection'},
 		AI_OLLAMA_API: {description: 'Ollama API endpoint'},
 		AI_OPENROUTER_KEY: {description: 'OpenRouter API key'},
-		AI_SERVER_MODEL: {description: 'Server-side AI model'},
 		MESSAGES_ENABLED: {description: 'Messaging notifications toggle'},
 		MESSAGES_VENDOR: {description: 'Messaging vendor selection'},
 		MESSAGES_TELEGRAM_BOT_TOKEN: {description: 'Telegram bot token'},
@@ -322,6 +329,7 @@ registerEnumType(EventLogEntityType, {
 		KEYSET: {description: 'Keyset entity'},
 		DATABASE: {description: 'Database entity'},
 		SETTING: {description: 'Setting entity'},
+		AGENT: {description: 'AI agent entity'},
 	},
 });
 registerEnumType(EventLogType, {

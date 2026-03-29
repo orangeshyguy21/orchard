@@ -6,6 +6,7 @@ export const USER_QUERY = `{
         active
         label
         created_at
+        telegram_chat_id
     }
 }`;
 
@@ -29,6 +30,7 @@ mutation crew_user_update_name($name: String!) {
         active
         label
         created_at
+        telegram_chat_id
     }
 }`;
 
@@ -41,6 +43,20 @@ mutation crew_user_update_password($password_old: String!, $password_new: String
         active
         label
         created_at
+        telegram_chat_id
+    }
+}`;
+
+export const USER_TELEGRAM_UPDATE_MUTATION = `
+mutation crew_user_update_telegram($telegram_chat_id: String) {
+    crew_user_update_telegram(telegram_chat_id: $telegram_chat_id) {
+        id
+        name
+        role
+        active
+        label
+        created_at
+        telegram_chat_id
     }
 }`;
 

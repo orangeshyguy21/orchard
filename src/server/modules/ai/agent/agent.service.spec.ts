@@ -6,7 +6,6 @@ import {SchedulerRegistry} from '@nestjs/schedule';
 /* Application Dependencies */
 import {AiService} from '@server/modules/ai/ai.service';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
-import {SettingService} from '@server/modules/setting/setting.service';
 /* Local Dependencies */
 import {AgentService} from './agent.service';
 import {Agent} from './agent.entity';
@@ -49,14 +48,19 @@ describe('AgentService', () => {
 		streamAgent: jest.fn(),
 	};
 
-	const mock_setting_service = {
-		getSetting: jest.fn().mockResolvedValue({value: 'test-model'}),
-		getStringSetting: jest.fn().mockResolvedValue('test-model'),
-	};
-
 	const mock_tool_executor = {
 		getToolSchemas: jest.fn().mockReturnValue([]),
 		executeTool: jest.fn().mockResolvedValue({success: true, data: {}}),
+		getToolNamesByCategory: jest.fn().mockReturnValue([]),
+		getToolNamesExcludingCategory: jest.fn().mockImplementation((tool_names: string[]) => tool_names),
+	};
+
+	/** Helper to configure mocks for agents with deliberation (SEND_MESSAGE + SKIP_MESSAGE) */
+	const setupDeliberationMocks = () => {
+		mock_tool_executor.getToolNamesByCategory.mockReturnValue([AgentToolName.SEND_MESSAGE, AgentToolName.SKIP_MESSAGE]);
+		mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) =>
+			names.filter((n) => n !== AgentToolName.SEND_MESSAGE && n !== AgentToolName.SKIP_MESSAGE),
+		);
 	};
 
 	const mock_config_service = {
@@ -73,7 +77,6 @@ describe('AgentService', () => {
 				{provide: SchedulerRegistry, useValue: mock_scheduler_registry},
 				{provide: AiService, useValue: mock_ai_service},
 				{provide: ConfigService, useValue: mock_config_service},
-				{provide: SettingService, useValue: mock_setting_service},
 				{provide: ToolService, useValue: mock_tool_executor},
 			],
 		}).compile();
@@ -94,6 +97,7 @@ describe('AgentService', () => {
 			agent_key: AgentKey.ACTIVITY_MONITOR,
 			name: 'Activity Monitor',
 			active: true,
+			model: 'test-model',
 			system_message: null,
 			tools: null,
 			schedules: '["10 * * * *"]',
@@ -101,7 +105,8 @@ describe('AgentService', () => {
 
 		beforeEach(() => {
 			mock_agent_repo.findOne.mockResolvedValue(mock_agent);
-			/* Stream that returns a simple text response */
+			setupDeliberationMocks();
+			/* Stream returns a simple text response for both gather and deliberation phases */
 			mock_ai_service.streamAgent.mockImplementation(async function* () {
 				yield {
 					model: 'test-model',
@@ -139,7 +144,8 @@ describe('AgentService', () => {
 
 			expect(result.status).toBe(AgentRunStatus.SUCCESS);
 			expect(result.result).toBe('All systems nominal.');
-			expect(result.tokens_used).toBe(70);
+			/* 70 tokens per phase (gather + deliberation) */
+			expect(result.tokens_used).toBe(140);
 		});
 
 		it('should record schedule_trigger when provided', async () => {
@@ -167,9 +173,20 @@ describe('AgentService', () => {
 			expect(error_update[1].error).toBe('LLM unavailable');
 		});
 
-		it('should detect notified flag when SEND_MESSAGE tool result indicates delivery', async () => {
+		it('should detect notified flag when SEND_MESSAGE is called in deliberation phase', async () => {
 			const tool_call_id = 'tc-send-1';
 			mock_ai_service.streamAgent
+				/* Phase 1: Gather — returns text analysis */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Issues found.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — calls SEND_MESSAGE */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
@@ -177,12 +194,21 @@ describe('AgentService', () => {
 						message: {
 							role: AiMessageRole.ASSISTANT,
 							content: '',
-							tool_calls: [{id: tool_call_id, function: {name: AgentToolName.SEND_MESSAGE, arguments: {text: 'Alert'}}}],
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {
+										name: AgentToolName.SEND_MESSAGE,
+										arguments: {title: 'Alert', body: 'Details', severity: 'warning'},
+									},
+								},
+							],
 						},
 						done: true,
 						usage: {prompt_tokens: 10, completion_tokens: 5},
 					};
 				})
+				/* Phase 2: Deliberation — final text after tool call */
 				.mockImplementationOnce(async function* () {
 					yield {
 						model: 'test-model',
@@ -198,6 +224,207 @@ describe('AgentService', () => {
 			const result = await service.executeAgent('agent-1');
 
 			expect(result.notified).toBe(true);
+			expect(result.result).toContain('[warning] Alert');
+			expect(result.result).toContain('Details');
+		});
+	});
+
+	/* *******************************************************
+		Deliberation
+	******************************************************** */
+
+	describe('deliberation', () => {
+		const mock_agent_with_message: Partial<Agent> = {
+			id: 'agent-delib',
+			agent_key: AgentKey.ACTIVITY_MONITOR,
+			name: 'Activity Monitor',
+			active: true,
+			model: 'test-model',
+			system_message: null,
+			tools: null,
+			schedules: '["10 * * * *"]',
+		};
+
+		const mock_agent_without_message: Partial<Agent> = {
+			id: 'agent-no-delib',
+			agent_key: AgentKey.GROUNDSKEEPER,
+			name: 'Groundskeeper',
+			active: true,
+			model: 'test-model',
+			system_message: null,
+			tools: null,
+			schedules: '[]',
+		};
+
+		it('should run two phases when agent has message tools', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			setupDeliberationMocks();
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Response.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			await service.executeAgent('agent-delib');
+
+			/* streamAgent called twice: once for gather, once for deliberation */
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(2);
+		});
+
+		it('should skip deliberation when agent has no message tools', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_without_message);
+			mock_tool_executor.getToolNamesByCategory.mockReturnValue([]);
+			mock_tool_executor.getToolNamesExcludingCategory.mockImplementation((names: string[]) => names);
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'Response.'},
+					done: true,
+					done_reason: 'stop',
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			await service.executeAgent('agent-no-delib');
+
+			/* streamAgent called once: gather only */
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(1);
+		});
+
+		it('should extract SKIP_MESSAGE reason as the stored run result', async () => {
+			const tool_call_id = 'tc-skip-1';
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			setupDeliberationMocks();
+			mock_ai_service.streamAgent
+				/* Phase 1: Gather */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Gather analysis.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — calls SKIP_MESSAGE */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {
+							role: AiMessageRole.ASSISTANT,
+							content: '',
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {name: AgentToolName.SKIP_MESSAGE, arguments: {reason: 'No changes since last run'}},
+								},
+							],
+						},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — final text after tool call */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				});
+
+			mock_tool_executor.executeTool.mockResolvedValueOnce({
+				success: true,
+				data: {skipped: true, reason: 'No changes since last run'},
+			});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.result).toBe('No changes since last run');
+			expect(run.notified).toBe(false);
+		});
+
+		it('should extract SEND_MESSAGE body as the stored run result', async () => {
+			const tool_call_id = 'tc-send-1';
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			setupDeliberationMocks();
+			mock_ai_service.streamAgent
+				/* Phase 1: Gather */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Gather analysis.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — calls SEND_MESSAGE */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {
+							role: AiMessageRole.ASSISTANT,
+							content: '',
+							tool_calls: [
+								{
+									id: tool_call_id,
+									function: {
+										name: AgentToolName.SEND_MESSAGE,
+										arguments: {title: 'Memory High', body: 'Memory at 96%', severity: 'warning'},
+									},
+								},
+							],
+						},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				})
+				/* Phase 2: Deliberation — final text after tool call */
+				.mockImplementationOnce(async function* () {
+					yield {
+						model: 'test-model',
+						created_at: new Date().toISOString(),
+						message: {role: AiMessageRole.ASSISTANT, content: 'Done.'},
+						done: true,
+						usage: {prompt_tokens: 10, completion_tokens: 5},
+					};
+				});
+
+			mock_tool_executor.executeTool.mockResolvedValueOnce({success: true, data: {delivered: true}});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.result).toBe('[warning] Memory High\nMemory at 96%');
+			expect(run.notified).toBe(true);
+		});
+
+		it('should set notified to false when deliberation produces no tool call', async () => {
+			mock_agent_repo.findOne.mockResolvedValue(mock_agent_with_message);
+			setupDeliberationMocks();
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {role: AiMessageRole.ASSISTANT, content: 'All clear.'},
+					done: true,
+					usage: {prompt_tokens: 10, completion_tokens: 5},
+				};
+			});
+
+			const run = await service.executeAgent('agent-delib');
+
+			expect(run.notified).toBe(false);
 		});
 	});
 
@@ -218,6 +445,7 @@ describe('AgentService', () => {
 			});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [
 					{role: AiMessageRole.SYSTEM, content: 'sys'},
 					{role: AiMessageRole.USER, content: 'hi'},
@@ -260,6 +488,7 @@ describe('AgentService', () => {
 			mock_tool_executor.executeTool.mockResolvedValueOnce({cpu: 0.5});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [
 					{role: AiMessageRole.SYSTEM, content: 'sys'},
 					{role: AiMessageRole.USER, content: 'check cpu'},
@@ -273,23 +502,12 @@ describe('AgentService', () => {
 			expect(result.tokens_used).toBe(45);
 		});
 
-		it('should throw when no AI model is configured', async () => {
-			mock_setting_service.getStringSetting.mockResolvedValueOnce(null);
-
-			await expect(
-				service.runToolLoop({
-					messages: [{role: AiMessageRole.USER, content: 'hi'}],
-					tool_names: [],
-					agent_context: {agent_id: 'a1', agent_name: 'Test'},
-				}),
-			).rejects.toThrow('No AI model configured');
-		});
-
 		it('should respect abort signal', async () => {
 			const controller = new AbortController();
 			controller.abort();
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [{role: AiMessageRole.USER, content: 'hi'}],
 				tool_names: [],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
@@ -317,6 +535,7 @@ describe('AgentService', () => {
 			});
 
 			const result = await service.runToolLoop({
+				model: 'test-model',
 				messages: [{role: AiMessageRole.USER, content: 'loop'}],
 				tool_names: ['GET_SYSTEM_METRICS'],
 				agent_context: {agent_id: 'a1', agent_name: 'Test'},
@@ -325,6 +544,33 @@ describe('AgentService', () => {
 			expect(result.result).toContain('maximum tool iterations');
 			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(25);
 		}, 15000);
+
+		it('should respect custom max_iterations parameter', async () => {
+			mock_ai_service.streamAgent.mockImplementation(async function* () {
+				yield {
+					model: 'test-model',
+					created_at: new Date().toISOString(),
+					message: {
+						role: AiMessageRole.ASSISTANT,
+						content: '',
+						tool_calls: [{id: `tc-${Date.now()}`, function: {name: 'GET_SYSTEM_METRICS', arguments: {}}}],
+					},
+					done: true,
+					usage: {prompt_tokens: 1, completion_tokens: 1},
+				};
+			});
+
+			const result = await service.runToolLoop({
+				model: 'test-model',
+				messages: [{role: AiMessageRole.USER, content: 'loop'}],
+				tool_names: ['GET_SYSTEM_METRICS'],
+				agent_context: {agent_id: 'a1', agent_name: 'Test'},
+				max_iterations: 3,
+			});
+
+			expect(result.result).toContain('maximum tool iterations');
+			expect(mock_ai_service.streamAgent).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	/* *******************************************************
@@ -338,24 +584,27 @@ describe('AgentService', () => {
 				agent_key: AgentKey.ACTIVITY_MONITOR,
 				name: 'Agent 1',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
 			},
 			'agent-2': {
 				id: 'agent-2',
-				agent_key: AgentKey.ORCHARD,
+				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 2',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
 			},
 			'agent-3': {
 				id: 'agent-3',
-				agent_key: AgentKey.ORCHARD,
+				agent_key: AgentKey.GROUNDSKEEPER,
 				name: 'Agent 3',
 				active: true,
+				model: 'test-model',
 				system_message: null,
 				tools: null,
 				schedules: '["10 * * * *"]',
@@ -470,9 +719,10 @@ describe('AgentService', () => {
 				const id = `agent-q-${i}`;
 				agents[id] = {
 					id,
-					agent_key: AgentKey.ORCHARD,
+					agent_key: AgentKey.GROUNDSKEEPER,
 					name: `Agent ${i}`,
 					active: true,
+					model: 'test-model',
 					system_message: null,
 					tools: null,
 					schedules: '[]',
@@ -537,15 +787,15 @@ describe('AgentService', () => {
 
 	describe('resolveToolNames', () => {
 		it('should return parsed tools when agent has custom tools', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, tools: '["GET_MINT_INFO"]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: '["GET_MINT_INFO"]'} as Agent;
 
 			expect(service.resolveToolNames(agent)).toEqual(['GET_MINT_INFO']);
 		});
 
 		it('should fall back to built-in tools when agent.tools is null', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, tools: null} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, tools: null} as Agent;
 
-			expect(service.resolveToolNames(agent)).toEqual(AGENTS[AgentKey.ORCHARD].tools);
+			expect(service.resolveToolNames(agent)).toEqual(AGENTS[AgentKey.GROUNDSKEEPER].tools);
 		});
 
 		it('should return empty array for non-built-in agent with no tools', () => {
@@ -557,7 +807,7 @@ describe('AgentService', () => {
 
 	describe('buildSystemMessage', () => {
 		it('should use custom system_message when set', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, system_message: 'Custom prompt', schedules: '[]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: 'Custom prompt', schedules: '[]'} as Agent;
 
 			const result = service.buildSystemMessage(agent);
 
@@ -566,11 +816,11 @@ describe('AgentService', () => {
 		});
 
 		it('should fall back to built-in system_message when agent has none', () => {
-			const agent = {agent_key: AgentKey.ORCHARD, system_message: null, schedules: '[]'} as Agent;
+			const agent = {agent_key: AgentKey.GROUNDSKEEPER, system_message: null, schedules: '[]'} as Agent;
 
 			const result = service.buildSystemMessage(agent);
 
-			expect(result).toContain('Orchard');
+			expect(result).toContain('Groundskeeper');
 			expect(result).toContain('[Runtime Context]');
 		});
 	});

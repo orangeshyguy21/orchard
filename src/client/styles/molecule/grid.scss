@@ -1,5 +1,7 @@
 @mixin prefixStyles($c) {
     #{$c}rows-0 { grid-template-rows: 0fr; }
     #{$c}rows-1 { grid-template-rows: 1fr; }
+    #{$c}cols-0 { grid-template-columns: 0fr; }
+    #{$c}cols-1 { grid-template-columns: 1fr; }
     #{$c}columns-full { grid-template-columns: 100%; }
 }

@@ -86,6 +86,7 @@ const ICONS = [
   'refresh',
   'add_comment',
   'chat_bubble',
+  'chat_bubble_off',
   'tune',
   'graph_4',
   'link',
@@ -100,6 +101,14 @@ const ICONS = [
   'file_save_off',
   'calendar_today',
   'swap_calls',
+  'monitor_heart',
+  'health_cross',
+  'network_intelligence',
+  'schedule',
+  'task_alt',
+  'add_task',
+  'open_with',
+  'play_circle',
 ];
 
 // Sort alphabetically and remove duplicates

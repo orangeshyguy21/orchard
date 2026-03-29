@@ -4,9 +4,28 @@ import {Field, ID, Int, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {safeParse} from '@server/utils/safe-parse';
 /* Native Dependencies */
-import {AgentKey, AgentRunStatus} from '@server/modules/ai/agent/agent.enums';
+import {AgentKey, AgentRunStatus, AgentScheduleKind} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';
 import {AgentRun} from '@server/modules/ai/agent/agent-run.entity';
+import {AGENTS} from '@server/modules/ai/agent/agent.agents';
+
+@ObjectType({description: 'Default configuration for an AI agent'})
+export class OrchardAgentDefault {
+	@Field(() => AgentKey, {description: 'Predefined agent key'})
+	agent_key: AgentKey;
+
+	@Field({description: 'Default system message for the agent'})
+	system_message: string;
+
+	@Field(() => [String], {description: 'Default tools available to the agent'})
+	tools: string[];
+
+	constructor(agent_key: AgentKey, system_message: string, tools: string[]) {
+		this.agent_key = agent_key;
+		this.system_message = system_message;
+		this.tools = tools;
+	}
+}
 
 @ObjectType({description: 'AI agent configuration'})
 export class OrchardAgent {
@@ -25,6 +44,9 @@ export class OrchardAgent {
 	@Field({description: 'Whether the agent is active'})
 	active: boolean;
 
+	@Field({nullable: true, description: 'LLM model identifier'})
+	model: string | null;
+
 	@Field({nullable: true, description: 'System message used to instruct the agent'})
 	system_message: string | null;
 
@@ -33,6 +55,12 @@ export class OrchardAgent {
 
 	@Field(() => [String], {description: 'Cron schedules for automatic execution'})
 	schedules: string[];
+
+	@Field(() => AgentScheduleKind, {description: 'Schedule type'})
+	schedule_kind: AgentScheduleKind;
+
+	@Field({nullable: true, description: 'IANA timezone for schedule evaluation'})
+	schedule_tz: string | null;
 
 	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp of the last execution'})
 	last_run_at: number | null;
@@ -47,14 +75,18 @@ export class OrchardAgent {
 	updated_at: number;
 
 	constructor(agent: Agent) {
+		const built_in = agent.agent_key ? AGENTS[agent.agent_key] : undefined;
 		this.id = agent.id;
 		this.agent_key = agent.agent_key;
-		this.name = agent.name;
-		this.description = agent.description;
+		this.name = agent.name ?? built_in?.name ?? 'Unnamed Agent';
+		this.description = agent.description ?? built_in?.description ?? null;
 		this.active = agent.active;
-		this.system_message = agent.system_message;
-		this.tools = safeParse(agent.tools, [], `agent.tools[${agent.id}]`);
+		this.model = agent.model;
+		this.system_message = agent.system_message ?? built_in?.system_message ?? null;
+		this.tools = agent.tools ? safeParse(agent.tools, built_in?.tools ?? [], `agent.tools[${agent.id}]`) : (built_in?.tools ?? null);
 		this.schedules = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
+		this.schedule_kind = agent.schedule_kind ?? AgentScheduleKind.CRON;
+		this.schedule_tz = agent.schedule_tz ?? null;
 		this.last_run_at = agent.last_run_at;
 		this.last_run_status = agent.last_run_status as AgentRunStatus | null;
 		this.created_at = agent.created_at;

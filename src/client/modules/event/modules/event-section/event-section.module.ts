@@ -6,6 +6,7 @@ import {RouterModule as CoreRouterModule, ResolveFn} from '@angular/router';
 import {catchError, of} from 'rxjs';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 /* Local Dependencies */
@@ -51,5 +52,6 @@ const eventLogGenesisResolver: ResolveFn<number> = () => {
 		CoreCommonModule,
 		OrcNavModule,
 	],
+	providers: [provideChartConfig()],
 })
 export class OrcEventSectionModule {}

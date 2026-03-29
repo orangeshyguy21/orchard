@@ -1,5 +1,19 @@
 @use 'molecule/molecule';
 
+.button-copy-icon {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %cursor-pointer;
+	background: none;
+	border: none;
+	padding: 0;
+
+	mat-icon.copied {
+		@extend %orc-status-active-color;
+	}
+}
+
 .button-copy-container {
 	@extend %relative;
 	@extend %flex;

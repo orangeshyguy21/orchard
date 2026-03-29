@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Application Dependencies */
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 import {MintActivitySummary, MintActivityBucket} from '@client/modules/mint/classes/mint-activity-summary.class';
@@ -49,6 +51,7 @@ describe('MintGeneralActivityComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintGeneralModule],
+			providers: [provideChartConfig()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintGeneralActivityComponent);

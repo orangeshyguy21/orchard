@@ -1,0 +1,341 @@
+<div class="cron-builder-container orc-small-select">
+	<div class="cron-builder-header">
+		<span class="title-form-section">{{ data.cron ? 'Edit' : 'New' }} Schedule</span>
+		<button mat-icon-button type="button" class="orc-icon-button" (click)="onCancel()">
+			<mat-icon>close</mat-icon>
+		</button>
+	</div>
+
+	<mat-tab-group [selectedIndex]="active_tab()" (selectedIndexChange)="active_tab.set($event)" class="cron-tabs">
+		<!-- Hourly -->
+		<mat-tab label="Hourly">
+			<div class="cron-tab-content">
+				<div class="cron-row">
+					<span>Every</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="hourly_every()" (selectionChange)="hourly_every.set($event.value)">
+							@for (opt of hourly_interval_options; track opt) {
+								<mat-option [value]="opt">{{ opt }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<span>hour(s) on minute</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="hourly_minute()" (selectionChange)="hourly_minute.set($event.value)">
+							@for (opt of minute_options; track opt.value) {
+								<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+		</mat-tab>
+
+		<!-- Daily -->
+		<mat-tab label="Daily">
+			<div class="cron-tab-content">
+				<div class="cron-row">
+					<span>Every</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="daily_every()" (selectionChange)="daily_every.set($event.value)">
+							@for (opt of daily_interval_options; track opt) {
+								<mat-option [value]="opt">{{ opt }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<span>day(s) at</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="daily_hour()" (selectionChange)="daily_hour.set($event.value)">
+							@for (opt of hour_options; track opt) {
+								<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<span>:</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="daily_minute()" (selectionChange)="daily_minute.set($event.value)">
+							@for (opt of minute_options; track opt.value) {
+								<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+						<mat-select [value]="daily_period()" (selectionChange)="daily_period.set($event.value)">
+							<mat-option value="AM">AM</mat-option>
+							<mat-option value="PM">PM</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+		</mat-tab>
+
+		<!-- Weekly -->
+		<mat-tab label="Weekly">
+			<div class="cron-tab-content">
+				<div class="day-checkboxes">
+					@for (day of day_names; track day; let i = $index) {
+						<mat-checkbox [checked]="weekly_days()[i]" (change)="onToggleDay(i)">
+							{{ day }}
+						</mat-checkbox>
+					}
+				</div>
+				<div class="cron-row">
+					<span>Start time</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="weekly_hour()" (selectionChange)="weekly_hour.set($event.value)">
+							@for (opt of hour_options; track opt) {
+								<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<span>:</span>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select">
+						<mat-select [value]="weekly_minute()" (selectionChange)="weekly_minute.set($event.value)">
+							@for (opt of minute_options; track opt.value) {
+								<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+						<mat-select [value]="weekly_period()" (selectionChange)="weekly_period.set($event.value)">
+							<mat-option value="AM">AM</mat-option>
+							<mat-option value="PM">PM</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+		</mat-tab>
+
+		<!-- Monthly -->
+		<mat-tab label="Monthly">
+			<div class="cron-tab-modes">
+				<mat-radio-group [value]="monthly_mode()" (change)="monthly_mode.set($event.value)" class="flex flex-column flex-gap-1">
+					<div class="cron-mode-card">
+						<mat-radio-button value="day">
+							<div class="cron-row">
+								<span>On the</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="monthly_day()" (selectionChange)="monthly_day.set($event.value)">
+										@for (opt of day_of_month_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>of every</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_every()" (selectionChange)="monthly_every.set($event.value)">
+										@for (opt of monthly_interval_options; track opt) {
+											<mat-option [value]="opt">{{ opt }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>month(s) at</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_hour()" (selectionChange)="monthly_hour.set($event.value)">
+										@for (opt of hour_options; track opt) {
+											<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>:</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_minute()" (selectionChange)="monthly_minute.set($event.value)">
+										@for (opt of minute_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+									<mat-select [value]="monthly_period()" (selectionChange)="monthly_period.set($event.value)">
+										<mat-option value="AM">AM</mat-option>
+										<mat-option value="PM">PM</mat-option>
+									</mat-select>
+								</mat-form-field>
+							</div>
+						</mat-radio-button>
+					</div>
+					<div class="cron-mode-card">
+						<mat-radio-button value="weekday">
+							<div class="cron-row">
+								<span>On the</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_ordinal()" (selectionChange)="monthly_ordinal.set($event.value)">
+										@for (opt of ordinal_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="monthly_weekday()" (selectionChange)="monthly_weekday.set($event.value)">
+										@for (opt of weekday_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>of every</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_every()" (selectionChange)="monthly_every.set($event.value)">
+										@for (opt of monthly_interval_options; track opt) {
+											<mat-option [value]="opt">{{ opt }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>month(s) at</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="monthly_weekday_hour()" (selectionChange)="monthly_weekday_hour.set($event.value)">
+										@for (opt of hour_options; track opt) {
+											<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>:</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select
+										[value]="monthly_weekday_minute()"
+										(selectionChange)="monthly_weekday_minute.set($event.value)"
+									>
+										@for (opt of minute_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+									<mat-select
+										[value]="monthly_weekday_period()"
+										(selectionChange)="monthly_weekday_period.set($event.value)"
+									>
+										<mat-option value="AM">AM</mat-option>
+										<mat-option value="PM">PM</mat-option>
+									</mat-select>
+								</mat-form-field>
+							</div>
+						</mat-radio-button>
+					</div>
+				</mat-radio-group>
+			</div>
+		</mat-tab>
+
+		<!-- Yearly -->
+		<mat-tab label="Yearly">
+			<div class="cron-tab-modes">
+				<mat-radio-group [value]="yearly_mode()" (change)="yearly_mode.set($event.value)" class="flex flex-column flex-gap-1">
+					<div class="cron-mode-card">
+						<mat-radio-button value="day">
+							<div class="cron-row">
+								<span>Every</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="yearly_month()" (selectionChange)="yearly_month.set($event.value)">
+										@for (opt of month_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>on the</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="yearly_day()" (selectionChange)="yearly_day.set($event.value)">
+										@for (opt of day_of_month_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>at</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="yearly_hour()" (selectionChange)="yearly_hour.set($event.value)">
+										@for (opt of hour_options; track opt) {
+											<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>:</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="yearly_minute()" (selectionChange)="yearly_minute.set($event.value)">
+										@for (opt of minute_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+									<mat-select [value]="yearly_period()" (selectionChange)="yearly_period.set($event.value)">
+										<mat-option value="AM">AM</mat-option>
+										<mat-option value="PM">PM</mat-option>
+									</mat-select>
+								</mat-form-field>
+							</div>
+						</mat-radio-button>
+					</div>
+					<div class="cron-mode-card">
+						<mat-radio-button value="weekday">
+							<div class="cron-row">
+								<span>On the</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="yearly_ordinal()" (selectionChange)="yearly_ordinal.set($event.value)">
+										@for (opt of ordinal_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="yearly_weekday()" (selectionChange)="yearly_weekday.set($event.value)">
+										@for (opt of weekday_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>of</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-wide">
+									<mat-select [value]="yearly_weekday_month()" (selectionChange)="yearly_weekday_month.set($event.value)">
+										@for (opt of month_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>at</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select [value]="yearly_weekday_hour()" (selectionChange)="yearly_weekday_hour.set($event.value)">
+										@for (opt of hour_options; track opt) {
+											<mat-option [value]="opt">{{ opt | number: '2.0-0' }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<span>:</span>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select">
+									<mat-select
+										[value]="yearly_weekday_minute()"
+										(selectionChange)="yearly_weekday_minute.set($event.value)"
+									>
+										@for (opt of minute_options; track opt.value) {
+											<mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								<mat-form-field subscriptSizing="dynamic" class="cron-select cron-select-small">
+									<mat-select
+										[value]="yearly_weekday_period()"
+										(selectionChange)="yearly_weekday_period.set($event.value)"
+									>
+										<mat-option value="AM">AM</mat-option>
+										<mat-option value="PM">PM</mat-option>
+									</mat-select>
+								</mat-form-field>
+							</div>
+						</mat-radio-button>
+					</div>
+				</mat-radio-group>
+			</div>
+		</mat-tab>
+	</mat-tab-group>
+
+	<div class="cron-builder-preview">
+		<div class="flex flex-column flex-items-center flex-gap-0-25">
+			<span class="font-size-s">{{ cron_preview() }}</span>
+			<span class="font-size-xs orc-outline-color">{{ cron_expression() }}</span>
+		</div>
+	</div>
+
+	<div class="cron-builder-actions">
+		<button matButton (click)="onCancel()">Cancel</button>
+		<button matButton (click)="onSave()">
+			<span>{{ data.cron ? 'Update' : 'Add' }} Schedule</span>
+		</button>
+	</div>
+</div>

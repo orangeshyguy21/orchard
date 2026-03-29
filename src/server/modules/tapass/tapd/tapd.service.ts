@@ -31,6 +31,16 @@ export class TapdService {
 		const rpc_url = `${rpc_host}:${rpc_port}`;
 		const macaroon_hex = this.credentialService.loadMacaroonHex(rpc_macaroon);
 		const cert_content = this.credentialService.loadPemOrPath(rpc_tls_cert);
+
+		if (!macaroon_hex) {
+			this.logger.error('Failed to load TAPD macaroon — check that the file path exists and is readable');
+			return null;
+		}
+		if (!cert_content) {
+			this.logger.error('Failed to load TAPD TLS certificate — check that the file path exists and is readable');
+			return null;
+		}
+
 		const metadata = new grpc.Metadata();
 		metadata.add('macaroon', macaroon_hex);
 		const macaroon_creds = grpc.credentials.createFromMetadataGenerator((args, callback) => {

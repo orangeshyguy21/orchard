@@ -6,8 +6,10 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Native Dependencies */
 import {AgentService} from '@server/modules/ai/agent/agent.service';
+import {AgentKey} from '@server/modules/ai/agent/agent.enums';
+import {AGENTS} from '@server/modules/ai/agent/agent.agents';
 /* Local Dependencies */
-import {OrchardAgent, OrchardAgentRun} from './aiagent.model';
+import {OrchardAgent, OrchardAgentDefault, OrchardAgentRun} from './aiagent.model';
 
 @Injectable()
 export class AiAgentService {
@@ -17,6 +19,12 @@ export class AiAgentService {
 		private agentService: AgentService,
 		private errorService: ErrorService,
 	) {}
+
+	/** Retrieves default configuration for an agent key */
+	getAgentDefaults(agent_key: AgentKey): OrchardAgentDefault {
+		const agent = AGENTS[agent_key];
+		return new OrchardAgentDefault(agent_key, agent.system_message, agent.tools);
+	}
 
 	/** Retrieves all agents */
 	async getAgents(tag: string): Promise<OrchardAgent[]> {
@@ -61,6 +69,31 @@ export class AiAgentService {
 		}
 	}
 
+	/** Creates a new custom agent */
+	async createAgent(
+		tag: string,
+		fields: {
+			name: string;
+			description?: string;
+			active?: boolean;
+			model?: string;
+			system_message?: string;
+			tools?: string[];
+			schedules?: string[];
+			schedule_tz?: string;
+		},
+	): Promise<OrchardAgent> {
+		try {
+			const agent = await this.agentService.createAgent(fields);
+			return new OrchardAgent(agent);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AgentError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
 	/** Updates an agent's configuration */
 	async updateAgent(
 		tag: string,
@@ -69,9 +102,11 @@ export class AiAgentService {
 			name?: string;
 			description?: string;
 			active?: boolean;
+			model?: string;
 			system_message?: string;
 			tools?: string[];
 			schedules?: string[];
+			schedule_tz?: string;
 		},
 	): Promise<OrchardAgent> {
 		try {
@@ -79,14 +114,28 @@ export class AiAgentService {
 			if (updates.name !== undefined) serialized.name = updates.name;
 			if (updates.description !== undefined) serialized.description = updates.description;
 			if (updates.active !== undefined) serialized.active = updates.active;
+			if (updates.model !== undefined) serialized.model = updates.model;
 			if (updates.system_message !== undefined) serialized.system_message = updates.system_message;
 			if (updates.tools !== undefined) serialized.tools = JSON.stringify(updates.tools);
 			if (updates.schedules !== undefined) serialized.schedules = JSON.stringify(updates.schedules);
+			if (updates.schedule_tz !== undefined) serialized.schedule_tz = updates.schedule_tz;
 			const agent = await this.agentService.updateAgent(id, serialized);
 			return new OrchardAgent(agent);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AgentError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
+	/** Deletes a custom agent */
+	async deleteAgent(tag: string, id: string): Promise<void> {
+		try {
+			await this.agentService.deleteAgent(id);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AgentDeleteError,
 			});
 			throw new OrchardApiError(orchard_error);
 		}

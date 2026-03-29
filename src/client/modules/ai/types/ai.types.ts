@@ -7,6 +7,10 @@ import {
 	OrchardAiHealth,
 	OrchardAiModel,
 	OrchardAiAssistant,
+	OrchardAgent,
+	OrchardAgentDefault,
+	OrchardAgentRun,
+	OrchardAgentTool,
 	AssistantToolName,
 	MintUnit,
 	AnalyticsInterval,
@@ -31,6 +35,40 @@ export type AiHealthResponse = {
 
 export type AiChatAbortResponse = {
 	ai_chat_abort: OrchardAiChatStream;
+};
+
+export type AiAgentsResponse = {
+	ai_agents: OrchardAgent[];
+};
+
+export type AiAgentResponse = {
+	ai_agent: OrchardAgent;
+};
+
+export type AiAgentCreateResponse = {
+	ai_agent_create: OrchardAgent;
+};
+
+export type AiAgentUpdateResponse = {
+	ai_agent_update: OrchardAgent;
+};
+
+export type AiAgentDeleteResponse = {
+	ai_agent_delete: boolean;
+};
+
+export type AiAgentExecuteResponse = {
+	ai_agent_execute: OrchardAgentRun;
+};
+
+export type AiAgentBatchUpdateResponse = Record<string, OrchardAgent>;
+
+export type AiAgentToolsResponse = {
+	ai_agent_tools: OrchardAgentTool[];
+};
+
+export type AiAgentDefaultsResponse = {
+	ai_agent_defaults: OrchardAgentDefault;
 };
 
 export type AiFunction =
@@ -73,7 +111,14 @@ export type AiFunction =
 	| AiFunctionUpdateEventLogTypes
 	| AiFunctionUpdateEventLogStatuses
 	| AiFunctionUpdateEventLogActorIds
-	| AiFunctionResetEventLogFilters;
+	| AiFunctionResetEventLogFilters
+	| AiFunctionUpdateAgentName
+	| AiFunctionUpdateAgentDescription
+	| AiFunctionUpdateAgentModel
+	| AiFunctionUpdateAgentSystemMessage
+	| AiFunctionUpdateAgentTools
+	| AiFunctionUpdateAgentSchedules
+	| AiFunctionUpdateAgentActive;
 
 export type AiFunctionUpdateSearch = {
 	name: AssistantToolName.UpdateSearch;
@@ -368,4 +413,53 @@ export type AiFunctionUpdateEventLogActorIds = {
 export type AiFunctionResetEventLogFilters = {
 	name: AssistantToolName.EventLogResetFilters;
 	arguments: Record<string, never>;
+};
+
+export type AiFunctionUpdateAgentName = {
+	name: AssistantToolName.AgentNameUpdate;
+	arguments: {
+		name: string;
+	};
+};
+
+export type AiFunctionUpdateAgentDescription = {
+	name: AssistantToolName.AgentDescriptionUpdate;
+	arguments: {
+		description: string;
+	};
+};
+
+export type AiFunctionUpdateAgentModel = {
+	name: AssistantToolName.AgentModelUpdate;
+	arguments: {
+		model: string;
+	};
+};
+
+export type AiFunctionUpdateAgentSystemMessage = {
+	name: AssistantToolName.AgentSystemMessageUpdate;
+	arguments: {
+		system_message: string;
+	};
+};
+
+export type AiFunctionUpdateAgentTools = {
+	name: AssistantToolName.AgentToolsUpdate;
+	arguments: {
+		tools: string[];
+	};
+};
+
+export type AiFunctionUpdateAgentSchedules = {
+	name: AssistantToolName.AgentSchedulesUpdate;
+	arguments: {
+		schedules: string[];
+	};
+};
+
+export type AiFunctionUpdateAgentActive = {
+	name: AssistantToolName.AgentActiveUpdate;
+	arguments: {
+		active: boolean;
+	};
 };

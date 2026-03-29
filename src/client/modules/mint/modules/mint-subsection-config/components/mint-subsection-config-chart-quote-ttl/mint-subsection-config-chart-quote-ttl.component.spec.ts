@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Application Dependencies */
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Native Dependencies */
 import {OrcMintSubsectionConfigModule} from '@client/modules/mint/modules/mint-subsection-config/mint-subsection-config.module';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
@@ -14,6 +16,7 @@ describe('MintSubsectionConfigChartQuoteTtlComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionConfigModule],
 			declarations: [MintSubsectionConfigChartQuoteTtlComponent],
+			providers: [provideChartConfig()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionConfigChartQuoteTtlComponent);

@@ -16,6 +16,10 @@ export type CrewUserPasswordUpdateResponse = {
 	crew_user_update_password: OrchardCrewUser;
 };
 
+export type CrewUserTelegramUpdateResponse = {
+	crew_user_update_telegram: OrchardCrewUser;
+};
+
 export type CrewUserUpdateResponse = {
 	crew_user_update: OrchardCrewUser;
 };

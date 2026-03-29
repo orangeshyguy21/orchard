@@ -1,0 +1,23 @@
+<div
+	class="editor-container"
+	[class.editor-focused]="focused()"
+	[class.editor-hot]="hot()"
+	[class.editor-invalid]="invalid()"
+	[class.editor-fullscreen]="fullscreen()"
+>
+	<ng-content></ng-content>
+	<div
+		#editorRef
+		class="editor-content"
+		[attr.contenteditable]="!disabled()"
+		[attr.data-placeholder]="placeholder()"
+		spellcheck="false"
+		(input)="onInput()"
+		(focus)="onFocus()"
+		(blur)="onBlur()"
+		(keydown)="onKeyDown($event)"
+		(paste)="onPaste($event)"
+		(compositionstart)="onCompositionStart()"
+		(compositionend)="onCompositionEnd()"
+	></div>
+</div>

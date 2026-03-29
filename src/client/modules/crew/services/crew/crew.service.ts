@@ -17,6 +17,7 @@ import {
 	CrewUsersResponse,
 	CrewUserNameUpdateResponse,
 	CrewUserPasswordUpdateResponse,
+	CrewUserTelegramUpdateResponse,
 	CrewUserUpdateResponse,
 	CrewUserDeleteResponse,
 	CrewInvitesResponse,
@@ -30,6 +31,7 @@ import {
 	USERS_QUERY,
 	USER_NAME_UPDATE_MUTATION,
 	USER_PASSWORD_UPDATE_MUTATION,
+	USER_TELEGRAM_UPDATE_MUTATION,
 	USER_UPDATE_MUTATION,
 	USER_DELETE_MUTATION,
 	INVITS_QUERY,
@@ -173,6 +175,20 @@ export class CrewService {
 			}),
 			catchError((error) => {
 				console.error('Error updating user password:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public updateUserTelegram(telegram_chat_id: string | null): Observable<User> {
+		const query = getApiQuery(USER_TELEGRAM_UPDATE_MUTATION, {telegram_chat_id});
+		return this.http.post<OrchardRes<CrewUserTelegramUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return new User(response.data.crew_user_update_telegram);
+			}),
+			catchError((error) => {
+				console.error('Error updating user telegram:', error);
 				return throwError(() => error);
 			}),
 		);

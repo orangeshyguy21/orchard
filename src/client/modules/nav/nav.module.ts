@@ -12,7 +12,7 @@ import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {MatListModule} from '@angular/material/list';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
-import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
+import {OrcBitcoinGeneralBlockPipeModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general-block-pipe.module';
 import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Local Dependencies */
 import {NavPrimaryComponent} from '@client/modules/nav/components/nav-primary/nav-primary.component';
@@ -62,7 +62,7 @@ import {NavMobileSheetMenuSectionComponent} from './components/nav-mobile-sheet-
 		MatListModule,
 		DragDropModule,
 		OrcGraphicModule,
-		OrcBitcoinGeneralModule,
+		OrcBitcoinGeneralBlockPipeModule,
 		OrcEventGeneralModule,
 	],
 	exports: [

@@ -1,0 +1,10 @@
+@use 'molecule/molecule';
+
+.ai-job-contaienr {
+	mat-card-content {
+		min-height: 15rem;
+		@extend %flex;
+		@extend %flex-column;
+		@extend %flex-gap-1;
+	}
+}

@@ -77,6 +77,6 @@ import {AiVendorIconComponent} from './components/ai-vendor-icon/ai-vendor-icon.
 		OrcFormModule,
 		OrcCrewModule,
 	],
-	exports: [AiNavComponent, AiChatLogComponent, AiVendorIconComponent],
+	exports: [AiNavComponent, AiChatLogComponent, AiVendorIconComponent, AiModelComponent],
 })
 export class OrcAiModule {}

@@ -353,6 +353,12 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		this.logger.log('Starting streaming backfill');
 
 		try {
+			await this.getNodePubkey().catch(() => null);
+			if (!this.node_pubkey) {
+				this.logger.warn('Lightning node not reachable, skipping analytics backfill');
+				return;
+			}
+
 			const current_hour = DateTime.utc().startOf('hour').toSeconds();
 
 			// Fetch static data once

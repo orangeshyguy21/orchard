@@ -42,6 +42,7 @@ export enum OrchardErrorCode {
 	AiAssistantNotFoundError = 50004,
 	AgentError = 50005,
 	AgentNotFoundError = 50006,
+	AgentDeleteError = 50007,
 	// Taproot Assets Level Errors
 	TaprootAssetsRpcConnectionError = 60001,
 	TaprootAssetsRpcActionError = 60002,
@@ -97,6 +98,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.AiAssistantNotFoundError]: 'AiAssistantNotFoundError',
 	[OrchardErrorCode.AgentError]: 'AgentError',
 	[OrchardErrorCode.AgentNotFoundError]: 'AgentNotFoundError',
+	[OrchardErrorCode.AgentDeleteError]: 'AgentDeleteError',
 	[OrchardErrorCode.TaprootAssetsRpcConnectionError]: 'TaprootAssetsRpcConnectionError',
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: 'TaprootAssetsRpcActionError',
 	[OrchardErrorCode.TaprootAssetsSupportError]: 'TaprootAssetsSupportError',
