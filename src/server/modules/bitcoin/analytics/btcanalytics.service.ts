@@ -205,7 +205,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		}
 
 		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
-		this.logger.log('Starting bitcoin analytics streaming backfill');
+		this.logger.log('Starting bitcoin analytics backfill');
 
 		try {
 			await this.getNodePubkey().catch(() => null);
