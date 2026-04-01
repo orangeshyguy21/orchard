@@ -29,7 +29,6 @@ import {
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
-import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
 /* Native Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -51,7 +50,6 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
 	public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
-	public lightning_analytics_backfill_status = input.required<LightningAnalyticsBackfillStatus | null>();
 	public lightning_analytics = input.required<LightningAnalytic[]>();
 	public lightning_analytics_pre = input.required<LightningAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();

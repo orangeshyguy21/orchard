@@ -50,6 +50,7 @@ import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.cl
 import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
+import {MintAnalyticsBackfillStatus} from '@client/modules/mint/classes/mint-analytics-backfill-status.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AssistantToolName, AnalyticsInterval, MintActivityPeriod, MintUnit} from '@shared/generated.types';
@@ -103,6 +104,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public lightning_analytics: LightningAnalytic[] = [];
 	public lightning_analytics_pre: LightningAnalytic[] = [];
 	public lightning_analytics_backfill_status: LightningAnalyticsBackfillStatus | null = null;
+	public mint_analytics_backfill_status: MintAnalyticsBackfillStatus | null = null;
 	public locale!: string;
 	public bitcoin_oracle_enabled: boolean;
 	// derived data
@@ -333,6 +335,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await Promise.all([this.loadMintAnalytics(), this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve()]);
+
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {
@@ -365,7 +368,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.mintService.loadMintAnalyticsProofs.bind(this.mintService),
 			this.mintService.loadMintAnalyticsPromises.bind(this.mintService),
 		];
-		const results = await lastValueFrom(forkJoin(loaders.flatMap((load) => [load(base_args), load(pre_args)])));
+		const [results, backfill_status] = await lastValueFrom(
+			forkJoin([
+				forkJoin(loaders.flatMap((load) => [load(base_args), load(pre_args)])),
+				this.mintService.getMintAnalyticsBackfillStatus(),
+			]),
+		);
 
 		this.mint_analytics_balances = results[0];
 		this.mint_analytics_balances_pre = results[1];
@@ -381,6 +389,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_proofs_pre = results[11];
 		this.mint_analytics_promises = results[12];
 		this.mint_analytics_promises_pre = results[13];
+		this.mint_analytics_backfill_status = backfill_status;
 	}
 
 	private async loadLightningAnalytics(): Promise<void> {
@@ -450,6 +459,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_mint.set(true);
 			this.cdr.detectChanges();
 			await Promise.all([this.loadMintAnalytics(), this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve()]);
+
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {

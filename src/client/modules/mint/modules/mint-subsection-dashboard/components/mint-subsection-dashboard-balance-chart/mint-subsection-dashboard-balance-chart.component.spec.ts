@@ -21,7 +21,6 @@ describe('MintSubsectionDashboardBalanceChartComponent', () => {
 		fixture.componentRef.setInput('mint_analytics_pre', []);
 		fixture.componentRef.setInput('bitcoin_oracle_price_map', null);
 		fixture.componentRef.setInput('lightning_balance', null);
-		fixture.componentRef.setInput('lightning_analytics_backfill_status', null);
 		fixture.componentRef.setInput('lightning_analytics', []);
 		fixture.componentRef.setInput('lightning_analytics_pre', []);
 		fixture.componentRef.setInput('page_settings', {date_start: 0, date_end: 0, units: [], interval: 'day'});
