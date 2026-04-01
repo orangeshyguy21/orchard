@@ -7,9 +7,9 @@
 			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 		</div>
 	}
-    @if (loading()) {
-        <div class="chart-overlay" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout-slow">
+	@if (loading()) {
+		<div class="chart-overlay" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout-slow">
 			<mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
 		</div>
-    }
+	}
 </div>
