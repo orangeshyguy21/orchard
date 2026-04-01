@@ -60,7 +60,7 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintAnalyticsBackfillStatus} from '@client/modules/mint/classes/mint-analytics-backfill-status.class';
+import {AnalyticsBackfillStatus} from '@client/modules/analytics/classes/analytics-backfill-status.class';
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
@@ -592,7 +592,7 @@ export class MintService {
 		);
 	}
 
-	public getMintAnalyticsBackfillStatus(): Observable<MintAnalyticsBackfillStatus> {
+	public getMintAnalyticsBackfillStatus(): Observable<AnalyticsBackfillStatus> {
 		const query = getApiQuery(MINT_ANALYTICS_BACKFILL_STATUS_QUERY);
 
 		return this.http.post<OrchardRes<MintAnalyticsBackfillStatusResponse>>(this.apiService.api, query).pipe(
@@ -600,7 +600,7 @@ export class MintService {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_backfill_status;
 			}),
-			map((status) => new MintAnalyticsBackfillStatus(status)),
+			map((status) => new AnalyticsBackfillStatus(status)),
 			catchError((error) => {
 				console.error('Error loading mint analytics backfill status:', error);
 				return throwError(() => error);

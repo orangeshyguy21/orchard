@@ -11,7 +11,7 @@ import {
 	OrchardMintActivitySummary,
 	MintUnit,
 	AnalyticsInterval,
-	OrchardMintAnalyticsBackfillStatus,
+	OrchardAnalyticsBackfillStatus,
 	MintQuoteState,
 	MeltQuoteState,
 	OrchardMintInfoRpc,
@@ -102,7 +102,7 @@ export type MintAnalyticsPromisesResponse = {
 };
 
 export type MintAnalyticsBackfillStatusResponse = {
-	mint_analytics_backfill_status: OrchardMintAnalyticsBackfillStatus;
+	mint_analytics_backfill_status: OrchardAnalyticsBackfillStatus;
 };
 
 export type MintAnalyticsKeysetsResponse = {

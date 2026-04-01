@@ -54,7 +54,7 @@
 			@if (device_type() === 'desktop') {
 				<div class="p-b-1">
 					<div class="title-l">Nutalytics</div>
-					@if (mint_analytics_backfill_status?.is_running || lightning_analytics_backfill_status?.is_running) {
+					@if (is_archiving()) {
 						<div class="orc-status-warning-color font-size-xs">Archiving...</div>
 					}
 				</div>

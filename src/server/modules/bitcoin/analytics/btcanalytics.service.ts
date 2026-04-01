@@ -10,17 +10,18 @@ import {TaprootAssetsService} from '@server/modules/tapass/tapass/tapass.service
 import {AnalyticsCheckpoint} from '@server/modules/analytics/analytics-checkpoint.entity';
 import {LightningTransaction} from '@server/modules/lightning/lightning/lightning.types';
 import {AssetTransfer, AddrEvent, TaprootAsset} from '@server/modules/tapass/tapass/tapass.types';
+import {AnalyticsBackfillStatus} from '@server/modules/analytics/analytics.interfaces';
 /* Local Dependencies */
 import {BitcoinAnalytics} from './btcanalytics.entity';
 import {BitcoinAnalyticsMetric} from './btcanalytics.enums';
-import {BitcoinAnalyticsBackfillStatus, AssetInfoMap} from './btcanalytics.interfaces';
+import {AssetInfoMap} from './btcanalytics.interfaces';
 
 const RESCAN_SECONDS = 86400 * 7; // Re-scan last 7 days on daily rescan
 
 @Injectable()
 export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(BitcoinAnalyticsService.name);
-	private backfill_status: BitcoinAnalyticsBackfillStatus = {is_running: false};
+	private backfill_status: AnalyticsBackfillStatus = {is_running: false};
 	private node_pubkey: string | null = null;
 
 	constructor(
@@ -97,7 +98,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Gets the current backfill status
 	 */
-	getBackfillStatus(): BitcoinAnalyticsBackfillStatus {
+	getBackfillStatus(): AnalyticsBackfillStatus {
 		return {...this.backfill_status};
 	}
 

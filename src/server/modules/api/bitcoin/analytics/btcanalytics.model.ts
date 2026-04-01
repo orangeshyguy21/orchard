@@ -52,18 +52,3 @@ export class OrchardBitcoinAnalyticsMetric {
 		this.count = count;
 	}
 }
-
-@ObjectType({description: 'Bitcoin analytics backfill status'})
-export class OrchardBitcoinAnalyticsBackfillStatus {
-	@Field(() => Boolean, {description: 'Whether the backfill process is currently running'})
-	is_running: boolean;
-
-	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill started'})
-	started_at?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
-	errors?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of hours completed in the backfill'})
-	hours_completed?: number;
-}

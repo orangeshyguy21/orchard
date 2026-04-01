@@ -11,8 +11,9 @@ import {BitcoinAnalytics} from '@server/modules/bitcoin/analytics/btcanalytics.e
 import {BitcoinAnalyticsMetric} from '@server/modules/bitcoin/analytics/btcanalytics.enums';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Local Dependencies */
-import {OrchardBitcoinAnalytics, OrchardBitcoinAnalyticsMetric, OrchardBitcoinAnalyticsBackfillStatus} from './btcanalytics.model';
+import {OrchardBitcoinAnalytics, OrchardBitcoinAnalyticsMetric} from './btcanalytics.model';
 import {BitcoinAnalyticsApiArgs, BitcoinAnalyticsMetricsArgs} from './btcanalytics.interfaces';
 
 @Injectable()
@@ -97,10 +98,10 @@ export class ApiBitcoinAnalyticsService {
 	/**
 	 * Gets the current backfill status
 	 */
-	getBackfillStatus(tag: string): OrchardBitcoinAnalyticsBackfillStatus {
+	getBackfillStatus(tag: string): OrchardAnalyticsBackfillStatus {
 		try {
 			const status = this.bitcoinAnalyticsService.getBackfillStatus();
-			return status as OrchardBitcoinAnalyticsBackfillStatus;
+			return new OrchardAnalyticsBackfillStatus(status);
 		} catch (error) {
 			throw this.handleError(tag, error);
 		}

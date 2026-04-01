@@ -18,10 +18,11 @@ import {
 	CashuMintPromise,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
+import {AnalyticsBackfillStatus} from '@server/modules/analytics/analytics.interfaces';
 /* Native Dependencies */
 import {MintAnalytics} from './mintanalytics.entity';
 import {MintAnalyticsMetric} from './mintanalytics.enums';
-import {MintAnalyticsBackfillStatus, MintAnalyticsCachedArgs} from './mintanalytics.interfaces';
+import {MintAnalyticsCachedArgs} from './mintanalytics.interfaces';
 
 const BATCH_SIZE = 500;
 const BATCH_DELAY_MS = 5000;
@@ -35,7 +36,7 @@ const CHECKPOINT_DATA_TYPES: CheckpointDataType[] = ['mint_quotes', 'melt_quotes
 @Injectable()
 export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(CashuMintAnalyticsService.name);
-	private backfill_status: MintAnalyticsBackfillStatus = {is_running: false};
+	private backfill_status: AnalyticsBackfillStatus = {is_running: false};
 	private mint_pubkey: string | null = null;
 
 	constructor(
@@ -65,7 +66,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	******************************************************** */
 
 	/** Returns the current backfill status */
-	getBackfillStatus(): MintAnalyticsBackfillStatus {
+	getBackfillStatus(): AnalyticsBackfillStatus {
 		return {...this.backfill_status};
 	}
 

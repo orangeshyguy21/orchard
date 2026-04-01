@@ -5,10 +5,11 @@ import {Resolver, Query, Args} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Native Dependencies */
 import {BitcoinAnalyticsMetric} from '@server/modules/bitcoin/analytics/btcanalytics.enums';
 /* Local Dependencies */
-import {OrchardBitcoinAnalytics, OrchardBitcoinAnalyticsMetric, OrchardBitcoinAnalyticsBackfillStatus} from './btcanalytics.model';
+import {OrchardBitcoinAnalytics, OrchardBitcoinAnalyticsMetric} from './btcanalytics.model';
 import {ApiBitcoinAnalyticsService} from './btcanalytics.service';
 
 @Resolver()
@@ -53,8 +54,8 @@ export class BitcoinAnalyticsResolver {
 		Backfill Status
 	******************************************************** */
 
-	@Query(() => OrchardBitcoinAnalyticsBackfillStatus, {description: 'Get Bitcoin analytics backfill status'})
-	bitcoin_analytics_backfill_status(): OrchardBitcoinAnalyticsBackfillStatus {
+	@Query(() => OrchardAnalyticsBackfillStatus, {description: 'Get Bitcoin analytics backfill status'})
+	bitcoin_analytics_backfill_status(): OrchardAnalyticsBackfillStatus {
 		const tag = 'GET { bitcoin_analytics_backfill_status }';
 		this.logger.debug(tag);
 		return this.apiBitcoinAnalyticsService.getBackfillStatus(tag);

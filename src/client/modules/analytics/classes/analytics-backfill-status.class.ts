@@ -1,12 +1,13 @@
-import {OrchardMintAnalyticsBackfillStatus} from '@shared/generated.types';
+/* Shared Dependencies */
+import {OrchardAnalyticsBackfillStatus} from '@shared/generated.types';
 
-export class MintAnalyticsBackfillStatus implements OrchardMintAnalyticsBackfillStatus {
+export class AnalyticsBackfillStatus implements OrchardAnalyticsBackfillStatus {
 	is_running: boolean;
 	started_at?: number | null;
 	errors?: number | null;
 	hours_completed?: number | null;
 
-	constructor(status: OrchardMintAnalyticsBackfillStatus) {
+	constructor(status: OrchardAnalyticsBackfillStatus) {
 		this.is_running = status.is_running;
 		this.started_at = status.started_at ?? null;
 		this.errors = status.errors ?? null;

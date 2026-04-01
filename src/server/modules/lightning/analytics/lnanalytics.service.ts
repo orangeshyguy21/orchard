@@ -17,10 +17,10 @@ import {
 	LightningTransaction,
 } from '@server/modules/lightning/lightning/lightning.types';
 import {LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
+import {AnalyticsBackfillStatus} from '@server/modules/analytics/analytics.interfaces';
 /* Local Dependencies */
 import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
-import {LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
 
 const BATCH_SIZE = 500;
 const BATCH_DELAY_MS = 5000;
@@ -31,7 +31,7 @@ const RESCAN_RECORDS = 1000;
 @Injectable()
 export class LightningAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(LightningAnalyticsService.name);
-	private backfill_status: LightningAnalyticsBackfillStatus = {is_running: false};
+	private backfill_status: AnalyticsBackfillStatus = {is_running: false};
 	private node_pubkey: string | null = null;
 
 	constructor(
@@ -120,7 +120,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Gets the current backfill status
 	 */
-	getBackfillStatus(): LightningAnalyticsBackfillStatus {
+	getBackfillStatus(): AnalyticsBackfillStatus {
 		return {...this.backfill_status};
 	}
 

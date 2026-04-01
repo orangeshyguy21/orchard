@@ -16,7 +16,7 @@ import {LightningAccount} from '@client/modules/lightning/classes/lightning-acco
 import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
-import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
+import {AnalyticsBackfillStatus} from '@client/modules/analytics/classes/analytics-backfill-status.class';
 import {
 	LightningInfoResponse,
 	LightningBalanceResponse,
@@ -270,7 +270,7 @@ export class LightningService {
 		return this.loadGenericLocalBalance(args, this.lightning_analytics_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
 	}
 
-	public loadLightningAnalyticsBackfillStatus(): Observable<LightningAnalyticsBackfillStatus> {
+	public loadLightningAnalyticsBackfillStatus(): Observable<AnalyticsBackfillStatus> {
 		const query = getApiQuery(LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY);
 
 		return this.http.post<OrchardRes<LightningAnalyticsBackfillStatusResponse>>(this.apiService.api, query).pipe(
@@ -278,7 +278,7 @@ export class LightningService {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_analytics_backfill_status;
 			}),
-			map((status) => new LightningAnalyticsBackfillStatus(status)),
+			map((status) => new AnalyticsBackfillStatus(status)),
 			catchError((error) => {
 				console.error('Error loading lightning analytics backfill status:', error);
 				return throwError(() => error);
