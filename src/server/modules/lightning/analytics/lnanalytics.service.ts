@@ -22,7 +22,8 @@ import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
 import {LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 500;
+const BATCH_DELAY_MS = 5000;
 const MAX_PENDING_RECORDS = 100_000;
 const FORCE_FLUSH_COUNT = 10;
 const RESCAN_RECORDS = 1000;
@@ -453,6 +454,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// Save checkpoint after each full batch
 			await this.saveCheckpoint('payments', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 
@@ -523,6 +525,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			}
 
 			await this.saveCheckpoint('invoices', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 
@@ -595,6 +598,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			}
 
 			await this.saveCheckpoint('forwards', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 
