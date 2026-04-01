@@ -12,13 +12,6 @@ export interface BitcoinAnalyticsArgs {
 	metrics?: BitcoinAnalyticsMetric[];
 }
 
-export interface BitcoinAnalyticsBackfillStatus {
-	is_running: boolean;
-	started_at?: number;
-	errors?: number;
-	hours_completed?: number;
-}
-
 /**
  * Maps asset_id (hex) to group_key (hex) and unit name for Taproot Assets
  */

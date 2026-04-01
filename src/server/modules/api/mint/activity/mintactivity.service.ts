@@ -167,6 +167,10 @@ export class MintActivityService {
 		);
 
 		summary.warnings = [];
+		const backfill = this.cashuMintAnalyticsService.getBackfillStatus();
+		if (backfill.is_running) {
+			summary.warnings.push('Mint analytics are still being archived. Data may be incomplete.');
+		}
 
 		return summary;
 	}

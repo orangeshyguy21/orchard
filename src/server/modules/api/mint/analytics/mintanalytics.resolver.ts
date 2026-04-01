@@ -7,13 +7,9 @@ import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.s
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Local Dependencies */
-import {
-	OrchardMintAnalytics,
-	OrchardMintAnalyticsMetric,
-	OrchardMintKeysetsAnalytics,
-	OrchardMintAnalyticsBackfillStatus,
-} from './mintanalytics.model';
+import {OrchardMintAnalytics, OrchardMintAnalyticsMetric, OrchardMintKeysetsAnalytics} from './mintanalytics.model';
 import {MintAnalyticsService} from './mintanalytics.service';
 
 @Resolver()
@@ -158,8 +154,8 @@ export class MintAnalyticsResolver {
 		return await this.mintAnalyticsService.getMintAnalyticsKeysets(tag, {date_start, date_end, interval, timezone});
 	}
 
-	@Query(() => OrchardMintAnalyticsBackfillStatus, {description: 'Get analytics backfill job status'})
-	mint_analytics_backfill_status(): OrchardMintAnalyticsBackfillStatus {
+	@Query(() => OrchardAnalyticsBackfillStatus, {description: 'Get analytics backfill job status'})
+	mint_analytics_backfill_status(): OrchardAnalyticsBackfillStatus {
 		const tag = 'GET { mint_analytics_backfill_status }';
 		this.logger.debug(tag);
 		return this.mintAnalyticsService.getBackfillStatus(tag);

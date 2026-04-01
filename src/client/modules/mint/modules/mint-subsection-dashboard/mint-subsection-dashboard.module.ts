@@ -12,6 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
@@ -49,6 +50,7 @@ import {MintSubsectionDashboardControlComponent} from './components/mint-subsect
 		MatButtonToggleModule,
 		MatMenuModule,
 		MatCheckboxModule,
+		MatProgressSpinnerModule,
 		ChartJsBaseChartDirective,
 		OrcNavModule,
 		OrcFormModule,

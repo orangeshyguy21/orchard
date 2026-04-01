@@ -17,12 +17,13 @@ import {
 	LightningTransaction,
 } from '@server/modules/lightning/lightning/lightning.types';
 import {LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
+import {AnalyticsBackfillStatus} from '@server/modules/analytics/analytics.interfaces';
 /* Local Dependencies */
 import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
-import {LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 500;
+const BATCH_DELAY_MS = 5000;
 const MAX_PENDING_RECORDS = 100_000;
 const FORCE_FLUSH_COUNT = 10;
 const RESCAN_RECORDS = 1000;
@@ -30,7 +31,7 @@ const RESCAN_RECORDS = 1000;
 @Injectable()
 export class LightningAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(LightningAnalyticsService.name);
-	private backfill_status: LightningAnalyticsBackfillStatus = {is_running: false};
+	private backfill_status: AnalyticsBackfillStatus = {is_running: false};
 	private node_pubkey: string | null = null;
 
 	constructor(
@@ -119,7 +120,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Gets the current backfill status
 	 */
-	getBackfillStatus(): LightningAnalyticsBackfillStatus {
+	getBackfillStatus(): AnalyticsBackfillStatus {
 		return {...this.backfill_status};
 	}
 
@@ -350,12 +351,12 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		}
 
 		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
-		this.logger.log('Starting streaming backfill');
+		this.logger.log('Starting lightning analytics backfill');
 
 		try {
 			await this.getNodePubkey().catch(() => null);
 			if (!this.node_pubkey) {
-				this.logger.warn('Lightning node not reachable, skipping analytics backfill');
+				this.logger.warn('Lightning node not reachable, skipping lightning analytics backfill');
 				return;
 			}
 
@@ -377,9 +378,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			// Handle channel opens/closes
 			await this.backfillChannelMetrics(channels, closed_channels, tx_timestamps, current_hour);
 
-			this.logger.log(`Streaming backfill complete: ${this.backfill_status.hours_completed} hours cached`);
+			this.logger.log(`Lightning analytics backfill complete: ${this.backfill_status.hours_completed} hours cached`);
 		} catch (error) {
-			this.logger.error('Streaming backfill error', error);
+			this.logger.error('Lightning analytics backfill error', error);
 			this.backfill_status.errors++;
 		} finally {
 			this.backfill_status.is_running = false;
@@ -453,6 +454,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// Save checkpoint after each full batch
 			await this.saveCheckpoint('payments', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 
@@ -523,6 +525,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			}
 
 			await this.saveCheckpoint('invoices', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 
@@ -595,6 +598,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			}
 
 			await this.saveCheckpoint('forwards', offset);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 	}
 

@@ -52,7 +52,12 @@
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			@if (device_type() === 'desktop') {
-				<div class="title-l p-b-1">Nutalytics</div>
+				<div class="p-b-1">
+					<div class="title-l">Nutalytics</div>
+					@if (is_archiving()) {
+						<div class="orc-status-warning-color font-size-xs">Archiving...</div>
+					}
+				</div>
 			}
 			@if (page_settings()) {
 				<orc-mint-subsection-dashboard-control
@@ -113,7 +118,6 @@
 					[mint_analytics_pre]="mint_analytics_balances_pre"
 					[bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 					[lightning_balance]="lightning_balance"
-					[lightning_analytics_backfill_status]="lightning_analytics_backfill_status"
 					[lightning_analytics]="lightning_analytics"
 					[lightning_analytics_pre]="lightning_analytics_pre"
 					[page_settings]="page_settings()"

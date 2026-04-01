@@ -18,12 +18,14 @@ import {
 	CashuMintPromise,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
+import {AnalyticsBackfillStatus} from '@server/modules/analytics/analytics.interfaces';
 /* Native Dependencies */
 import {MintAnalytics} from './mintanalytics.entity';
 import {MintAnalyticsMetric} from './mintanalytics.enums';
-import {MintAnalyticsBackfillStatus, MintAnalyticsCachedArgs} from './mintanalytics.interfaces';
+import {MintAnalyticsCachedArgs} from './mintanalytics.interfaces';
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 500;
+const BATCH_DELAY_MS = 5000;
 const MAX_PENDING_RECORDS = 100_000;
 const FORCE_FLUSH_COUNT = 10;
 const RESCAN_SECONDS = 86400 * 7;
@@ -34,7 +36,7 @@ const CHECKPOINT_DATA_TYPES: CheckpointDataType[] = ['mint_quotes', 'melt_quotes
 @Injectable()
 export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(CashuMintAnalyticsService.name);
-	private backfill_status: MintAnalyticsBackfillStatus = {is_running: false};
+	private backfill_status: AnalyticsBackfillStatus = {is_running: false};
 	private mint_pubkey: string | null = null;
 
 	constructor(
@@ -64,7 +66,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	******************************************************** */
 
 	/** Returns the current backfill status */
-	getBackfillStatus(): MintAnalyticsBackfillStatus {
+	getBackfillStatus(): AnalyticsBackfillStatus {
 		return {...this.backfill_status};
 	}
 
@@ -121,30 +123,29 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await this.streamAndBucket<CashuMintMintQuote>(
 				current_hour,
 				'mint_quotes',
-				({page, page_size, sort_order, date_start}) =>
-					this.cashuMintDatabaseService.listMintQuotes(client, {page, page_size, sort_order, date_start}),
+				({page_size, sort_order, date_start}) =>
+					this.cashuMintDatabaseService.listMintQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMintQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintMeltQuote>(
 				current_hour,
 				'melt_quotes',
-				({page, page_size, sort_order, date_start}) =>
-					this.cashuMintDatabaseService.listMeltQuotes(client, {page, page_size, sort_order, date_start}),
+				({page_size, sort_order, date_start}) =>
+					this.cashuMintDatabaseService.listMeltQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMeltQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintSwap>(
 				current_hour,
 				'swaps',
-				({page, page_size, sort_order, date_start}) =>
-					this.cashuMintDatabaseService.listSwaps(client, {page, page_size, sort_order, date_start}),
+				({page_size, sort_order, date_start}) =>
+					this.cashuMintDatabaseService.listSwaps(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertSwapMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintProof>(
 				current_hour,
 				'proofs',
-				({page, page_size, sort_order, date_start}) =>
+				({page_size, sort_order, date_start}) =>
 					this.cashuMintDatabaseService.listProofs(client, {
-						page,
 						page_size,
 						sort_order,
 						date_start,
@@ -155,8 +156,8 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await this.streamAndBucket<CashuMintPromise>(
 				current_hour,
 				'promises',
-				({page, page_size, sort_order, date_start}) =>
-					this.cashuMintDatabaseService.listPromises(client, {page, page_size, sort_order, date_start}),
+				({page_size, sort_order, date_start}) =>
+					this.cashuMintDatabaseService.listPromises(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertPromiseMetrics(h, records),
 			);
 
@@ -191,37 +192,49 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		Stream Methods
 	******************************************************** */
 
-	/** Generic stream-and-bucket: fetches pages, buckets by hour, flushes metrics */
+	/** Generic stream-and-bucket: uses cursor-based pagination to avoid OFFSET, buckets by hour, flushes metrics */
 	private async streamAndBucket<T extends {created_time: number}>(
 		current_hour: number,
 		data_type: CheckpointDataType,
-		fetcher: (opts: {page: number; page_size: number; sort_order: 'ASC' | 'DESC'; date_start?: number}) => Promise<T[]>,
+		fetcher: (opts: {page_size: number; sort_order: 'ASC' | 'DESC'; date_start?: number}) => Promise<T[]>,
 		inserter: (hour: number, records: T[]) => Promise<void>,
 	): Promise<void> {
 		const checkpoint_ts = await this.getCheckpoint(data_type);
-		const date_start = checkpoint_ts > 0 ? checkpoint_ts : undefined;
-		let page = 1;
+		let cursor = checkpoint_ts > 0 ? checkpoint_ts : undefined;
 		let has_data = false;
 		const pending_bucket: Map<number, T[]> = new Map();
 
 		while (true) {
-			const batch = await fetcher({page, page_size: BATCH_SIZE, sort_order: 'ASC', date_start});
+			const batch = await fetcher({page_size: BATCH_SIZE, sort_order: 'ASC', date_start: cursor});
 			if (batch.length === 0) break;
 			has_data = true;
 
+			const first_time = batch[0].created_time;
+			const last_time = batch[batch.length - 1].created_time;
+			const all_same_timestamp = first_time === last_time;
+			const cutoff = all_same_timestamp ? Infinity : last_time;
+
+			// Bucket records below the cutoff; boundary records are deferred to the next batch
 			for (const record of batch) {
+				if (record.created_time >= cutoff) continue;
 				const hour = DateTime.fromSeconds(record.created_time, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 				if (hour >= current_hour) continue;
 				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
 				pending_bucket.get(hour)!.push(record);
 			}
 
-			// Safe boundary: only flush hours strictly before the earliest record in this batch
-			let min_timestamp = Infinity;
-			for (const record of batch) {
-				min_timestamp = Math.min(min_timestamp, record.created_time);
+			if (all_same_timestamp) {
+				// Edge case: entire batch shares one timestamp — advance cursor past it
+				if (batch.length >= BATCH_SIZE) {
+					this.logger.warn(`All ${batch.length} records in batch share timestamp ${last_time}, advancing cursor`);
+				}
+				cursor = last_time + 1;
+			} else {
+				cursor = last_time;
 			}
-			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+
+			// Safe boundary: only flush hours strictly before the earliest record in this batch
+			const safe_boundary = DateTime.fromSeconds(first_time, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 			for (const hour of complete_hours.sort((a, b) => a - b)) {
 				await inserter(hour, pending_bucket.get(hour)!);
@@ -229,15 +242,20 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				this.backfill_status.hours_completed++;
 			}
 
+			// Progressive checkpoint: save after flushing so crash recovery resumes near here
+			if (complete_hours.length > 0 && cursor !== undefined) {
+				await this.saveCheckpoint(data_type, cursor);
+			}
+
 			if (batch.length < BATCH_SIZE) break;
-			page++;
 			await this.forceFlushIfNeeded(pending_bucket, inserter);
+			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 
 		// Flush remaining complete hours (all < current_hour)
 		await this.flushBuckets(pending_bucket, inserter);
 
-		// Save timestamp checkpoint so next run resumes from here
+		// Save final checkpoint so next run resumes from current hour
 		if (has_data) {
 			await this.saveCheckpoint(data_type, current_hour);
 		}

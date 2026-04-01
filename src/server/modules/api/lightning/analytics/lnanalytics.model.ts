@@ -52,18 +52,3 @@ export class OrchardLightningAnalyticsMetric {
 		this.count = count;
 	}
 }
-
-@ObjectType({description: 'Lightning analytics backfill job status'})
-export class OrchardLightningAnalyticsBackfillStatus {
-	@Field(() => Boolean, {description: 'Whether the backfill job is currently running'})
-	is_running: boolean;
-
-	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill job started'})
-	started_at?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
-	errors?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of hours of data successfully backfilled'})
-	hours_completed?: number;
-}

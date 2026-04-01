@@ -48,6 +48,7 @@ describe('MintActivityService', () => {
 					provide: CashuMintAnalyticsService,
 					useValue: {
 						getCachedAnalytics: jest.fn().mockResolvedValue([]),
+						getBackfillStatus: jest.fn().mockReturnValue({is_running: false}),
 					},
 				},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
@@ -228,16 +229,19 @@ describe('MintActivityService', () => {
 		expect(result.total_volume).toBe(150);
 	});
 
-	it('always returns empty warnings array', async () => {
-		const current_rows = [
-			makeCacheRow({metric: MintAnalyticsMetric.mints_created, count: 1000}),
-			makeCacheRow({metric: MintAnalyticsMetric.mints_amount, count: 1000, amount: '999999'}),
-		];
-
-		analyticsService.getCachedAnalytics.mockResolvedValueOnce(current_rows).mockResolvedValueOnce([]);
+	it('returns empty warnings when backfill is not running', async () => {
+		analyticsService.getBackfillStatus.mockReturnValue({is_running: false});
 
 		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
 		expect(result.warnings).toEqual([]);
+	});
+
+	it('returns warning when backfill is running', async () => {
+		analyticsService.getBackfillStatus.mockReturnValue({is_running: true, hours_completed: 42});
+
+		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
+		expect(result.warnings).toHaveLength(1);
+		expect(result.warnings[0]).toContain('archived');
 	});
 
 	it('wraps errors via ErrorService and throws OrchardApiError', async () => {

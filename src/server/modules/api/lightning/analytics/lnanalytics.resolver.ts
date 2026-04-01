@@ -5,10 +5,11 @@ import {Resolver, Query, Args} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Native Dependencies */
 import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 /* Local Dependencies */
-import {OrchardLightningAnalytics, OrchardLightningAnalyticsMetric, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
+import {OrchardLightningAnalytics, OrchardLightningAnalyticsMetric} from './lnanalytics.model';
 import {ApiLightningAnalyticsService} from './lnanalytics.service';
 
 @Resolver()
@@ -66,8 +67,8 @@ export class LightningAnalyticsResolver {
 		Backfill Status
 	******************************************************** */
 
-	@Query(() => OrchardLightningAnalyticsBackfillStatus, {description: 'Get lightning analytics backfill job status'})
-	lightning_analytics_backfill_status(): OrchardLightningAnalyticsBackfillStatus {
+	@Query(() => OrchardAnalyticsBackfillStatus, {description: 'Get lightning analytics backfill job status'})
+	lightning_analytics_backfill_status(): OrchardAnalyticsBackfillStatus {
 		const tag = 'GET { lightning_analytics_backfill_status }';
 		this.logger.debug(tag);
 		return this.apiLightningAnalyticsService.getBackfillStatus(tag);

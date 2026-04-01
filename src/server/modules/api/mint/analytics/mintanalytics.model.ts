@@ -70,18 +70,3 @@ export class OrchardMintAnalyticsMetric {
 		this.count = count;
 	}
 }
-
-@ObjectType({description: 'Cashu mint analytics backfill job status'})
-export class OrchardMintAnalyticsBackfillStatus {
-	@Field(() => Boolean, {description: 'Whether the backfill job is currently running'})
-	is_running: boolean;
-
-	@Field(() => UnixTimestamp, {nullable: true, description: 'Timestamp when the backfill started'})
-	started_at?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of errors encountered during backfill'})
-	errors?: number;
-
-	@Field(() => Int, {nullable: true, description: 'Number of hours completed in the backfill'})
-	hours_completed?: number;
-}

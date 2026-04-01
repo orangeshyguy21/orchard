@@ -11,13 +11,9 @@ import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Local Dependencies */
-import {
-	OrchardMintAnalytics,
-	OrchardMintAnalyticsMetric,
-	OrchardMintKeysetsAnalytics,
-	OrchardMintAnalyticsBackfillStatus,
-} from './mintanalytics.model';
+import {OrchardMintAnalytics, OrchardMintAnalyticsMetric, OrchardMintKeysetsAnalytics} from './mintanalytics.model';
 import {MintAnalyticsApiArgs, MintAnalyticsMetricsArgs} from './mintanalytics.interfaces';
 
 @Injectable()
@@ -146,10 +142,10 @@ export class MintAnalyticsService {
 	******************************************************** */
 
 	/** Gets the current backfill status */
-	getBackfillStatus(tag: string): OrchardMintAnalyticsBackfillStatus {
+	getBackfillStatus(tag: string): OrchardAnalyticsBackfillStatus {
 		try {
 			const status = this.cashuMintAnalyticsService.getBackfillStatus();
-			return status as OrchardMintAnalyticsBackfillStatus;
+			return new OrchardAnalyticsBackfillStatus(status);
 		} catch (error) {
 			throw this.handleError(tag, error);
 		}

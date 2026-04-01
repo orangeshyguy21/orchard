@@ -6,7 +6,7 @@ import {
 	OrchardLightningClosedChannel,
 	OrchardLightningRequest,
 	OrchardLightningAnalytics,
-	OrchardLightningAnalyticsBackfillStatus,
+	OrchardAnalyticsBackfillStatus,
 	AnalyticsInterval,
 } from '@shared/generated.types';
 
@@ -46,5 +46,5 @@ export type LightningAnalyticsArgs = {
 };
 
 export type LightningAnalyticsBackfillStatusResponse = {
-	lightning_analytics_backfill_status: OrchardLightningAnalyticsBackfillStatus;
+	lightning_analytics_backfill_status: OrchardAnalyticsBackfillStatus;
 };

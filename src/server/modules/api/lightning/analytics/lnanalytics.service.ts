@@ -11,8 +11,9 @@ import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytic
 import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {getBucketDate} from '@server/modules/analytics/analytics.helpers';
+import {OrchardAnalyticsBackfillStatus} from '@server/modules/api/common/analytics-backfill-status.model';
 /* Local Dependencies */
-import {OrchardLightningAnalytics, OrchardLightningAnalyticsMetric, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
+import {OrchardLightningAnalytics, OrchardLightningAnalyticsMetric} from './lnanalytics.model';
 import {LightningAnalyticsApiArgs, LightningAnalyticsMetricsArgs} from './lnanalytics.interfaces';
 
 @Injectable()
@@ -109,10 +110,10 @@ export class ApiLightningAnalyticsService {
 	******************************************************** */
 
 	/** Gets the current backfill status */
-	getBackfillStatus(tag: string): OrchardLightningAnalyticsBackfillStatus {
+	getBackfillStatus(tag: string): OrchardAnalyticsBackfillStatus {
 		try {
 			const status = this.lightningAnalyticsService.getBackfillStatus();
-			return status as OrchardLightningAnalyticsBackfillStatus;
+			return new OrchardAnalyticsBackfillStatus(status);
 		} catch (error) {
 			throw this.handleError(tag, error);
 		}
