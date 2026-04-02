@@ -350,7 +350,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), hours_completed: 0, errors: 0};
 		this.logger.log('Starting lightning analytics backfill');
 
 		try {
