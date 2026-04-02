@@ -212,20 +212,94 @@ describe('NutshellService', () => {
 		expect(out[0].derivation_path_index).toBe(0);
 	});
 
-	it('getKeysets handles null path index and prime suffix; passes auth filter and logs on error', async () => {
-		(helpers.queryRows as jest.Mock)
-			.mockResolvedValueOnce([
-				{valid_from: 'x', valid_to: 'y', derivation_path: undefined},
-				{valid_from: 'x', valid_to: 'y', derivation_path: "m/86'/0'/1'"},
-			])
-			.mockRejectedValueOnce(new Error('fail'));
+	it('getKeysets skips index resolution when all derivation paths are valid', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/0'", unit: 'sat'},
+			{valid_from: 200, valid_to: 200, derivation_path: "m/0'/0'/1'", unit: 'sat'},
+		]);
 		const out = await nutshellService.getKeysets({} as any);
-		expect(out[0].derivation_path_index).toBeNull();
+		expect(out[0].derivation_path_index).toBe(0);
 		expect(out[1].derivation_path_index).toBe(1);
-		// verify auth param applied
+	});
+
+	it('getKeysets assigns indices by timestamp when legacy keysets exist', async () => {
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: 300, valid_to: 300, derivation_path: 'randomhex123456', unit: 'sat'},
+			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/1'", unit: 'sat'},
+			{valid_from: 200, valid_to: 200, derivation_path: "m/0'/0'/3'", unit: 'sat'},
+		]);
+		const out = await nutshellService.getKeysets({} as any);
+		// sorted by timestamp: 100 → index 0, 200 → index 1, 300 → index 2
+		expect(out.find((k) => k.derivation_path === "m/0'/0'/1'").derivation_path_index).toBe(0);
+		expect(out.find((k) => k.derivation_path === "m/0'/0'/3'").derivation_path_index).toBe(1);
+		expect(out.find((k) => k.derivation_path === 'randomhex123456').derivation_path_index).toBe(2);
+	});
+
+	it('getKeysets claimed keysets reserve their index, unclaimed fill remaining slots', async () => {
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: 100, valid_to: 100, derivation_path: 'legacyhex1234567', unit: 'sat'},
+			{valid_from: null, valid_to: null, derivation_path: "m/0'/0'/1'", unit: 'sat'},
+			{valid_from: 200, valid_to: 200, derivation_path: "m/0'/0'/3'", unit: 'sat'},
+		]);
+		const out = await nutshellService.getKeysets({} as any);
+		// claimed: m/0'/0'/1' has null timestamp + valid index 1 → keeps index 1
+		// unclaimed sorted by ts: legacyhex(100), m/0'/0'/3'(200) → fill slots 0, 2 (skip 1)
+		expect(out.find((k) => k.derivation_path === "m/0'/0'/1'").derivation_path_index).toBe(1);
+		expect(out.find((k) => k.derivation_path === 'legacyhex1234567').derivation_path_index).toBe(0);
+		expect(out.find((k) => k.derivation_path === "m/0'/0'/3'").derivation_path_index).toBe(2);
+	});
+
+	it('getKeysets unresolved keysets (null timestamp + null deriv path) assigned after unclaimed', async () => {
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: null, valid_to: null, derivation_path: undefined, unit: 'sat'},
+			{valid_from: 100, valid_to: 100, derivation_path: 'legacyhex1234567', unit: 'sat'},
+		]);
+		const out = await nutshellService.getKeysets({} as any);
+		// unclaimed (has timestamp): legacyhex → slot 0
+		// unresolved (no timestamp, no deriv path): undefined → slot 1
+		expect(out.find((k) => k.derivation_path === 'legacyhex1234567').derivation_path_index).toBe(0);
+		expect(out.find((k) => k.derivation_path === undefined).derivation_path_index).toBe(1);
+	});
+
+	it('getKeysets resolves indices independently per unit', async () => {
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: 200, valid_to: 200, derivation_path: 'legacyhex1234567', unit: 'sat'},
+			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/0'", unit: 'sat'},
+			{valid_from: 300, valid_to: 300, derivation_path: 'legacyhex7654321', unit: 'usd'},
+			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/2'/0'", unit: 'usd'},
+		]);
+		const out = await nutshellService.getKeysets({} as any);
+		// sat unit: sorted by ts → m/0'/0'/0'(100)=0, legacyhex(200)=1
+		expect(out.find((k) => k.derivation_path === "m/0'/0'/0'").derivation_path_index).toBe(0);
+		expect(out.find((k) => k.derivation_path === 'legacyhex1234567').derivation_path_index).toBe(1);
+		// usd unit: sorted by ts → m/0'/2'/0'(100)=0, legacyhex(300)=1
+		expect(out.find((k) => k.derivation_path === "m/0'/2'/0'").derivation_path_index).toBe(0);
+		expect(out.find((k) => k.derivation_path === 'legacyhex7654321').derivation_path_index).toBe(1);
+	});
+
+	it('getKeysets passes auth filter and logs on error', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/0'", unit: 'sat'},
+		]);
+		await nutshellService.getKeysets({} as any);
 		const call = (helpers.queryRows as jest.Mock).mock.calls[0];
 		expect(call[2]).toEqual(['auth']);
-		// error path
+	});
+
+	it('getKeysets logs and rethrows on error', async () => {
+		(helpers.queryRows as jest.Mock).mockRejectedValueOnce(new Error('fail'));
 		const logger_error = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined as any);
 		await expect(nutshellService.getKeysets({} as any)).rejects.toThrow('fail');
 		expect(logger_error).toHaveBeenCalled();
