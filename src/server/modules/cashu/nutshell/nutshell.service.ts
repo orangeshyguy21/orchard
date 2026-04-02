@@ -180,9 +180,7 @@ export class NutshellService {
 			// Group 1: keep their derivation_path_index, reserve those slots
 			const claimed = unit_keysets.filter((k) => k.valid_from === null && k.derivation_path_index !== null);
 			// Group 2: have timestamps, sort oldest-first for chronological indexing
-			const unclaimed = unit_keysets
-				.filter((k) => k.valid_from !== null)
-				.sort((a, b) => a.valid_from - b.valid_from);
+			const unclaimed = unit_keysets.filter((k) => k.valid_from !== null).sort((a, b) => a.valid_from - b.valid_from);
 			// Group 3: no timestamp, no derivation path — assigned last
 			const unresolved = unit_keysets.filter((k) => k.valid_from === null && k.derivation_path_index === null);
 			// Fill available slots, skipping indices reserved by claimed keysets

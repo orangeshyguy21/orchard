@@ -223,7 +223,9 @@ describe('NutshellService', () => {
 	});
 
 	it('getKeysets assigns indices by timestamp when legacy keysets exist', async () => {
-		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) => (d === null ? null : typeof d === 'number' ? d : 1));
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{valid_from: 300, valid_to: 300, derivation_path: 'randomhex123456', unit: 'sat'},
 			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/1'", unit: 'sat'},
@@ -237,7 +239,9 @@ describe('NutshellService', () => {
 	});
 
 	it('getKeysets claimed keysets reserve their index, unclaimed fill remaining slots', async () => {
-		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) => (d === null ? null : typeof d === 'number' ? d : 1));
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{valid_from: 100, valid_to: 100, derivation_path: 'legacyhex1234567', unit: 'sat'},
 			{valid_from: null, valid_to: null, derivation_path: "m/0'/0'/1'", unit: 'sat'},
@@ -252,7 +256,9 @@ describe('NutshellService', () => {
 	});
 
 	it('getKeysets unresolved keysets (null timestamp + null deriv path) assigned after unclaimed', async () => {
-		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) => (d === null ? null : typeof d === 'number' ? d : 1));
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{valid_from: null, valid_to: null, derivation_path: undefined, unit: 'sat'},
 			{valid_from: 100, valid_to: 100, derivation_path: 'legacyhex1234567', unit: 'sat'},
@@ -265,7 +271,9 @@ describe('NutshellService', () => {
 	});
 
 	it('getKeysets resolves indices independently per unit', async () => {
-		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) => (d === null ? null : typeof d === 'number' ? d : 1));
+		(helpers.convertDateToUnixTimestamp as jest.Mock).mockImplementation((d: any) =>
+			d === null ? null : typeof d === 'number' ? d : 1,
+		);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{valid_from: 200, valid_to: 200, derivation_path: 'legacyhex1234567', unit: 'sat'},
 			{valid_from: 100, valid_to: 100, derivation_path: "m/0'/0'/0'", unit: 'sat'},
