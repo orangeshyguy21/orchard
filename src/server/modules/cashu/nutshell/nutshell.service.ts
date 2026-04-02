@@ -144,18 +144,63 @@ export class NutshellService {
 		const sql = 'SELECT * FROM keysets WHERE unit != ?;';
 		try {
 			const rows = await queryRows<CashuMintKeyset>(client, sql, ['auth']);
-			return rows.map((row) => ({
+			const keysets = rows.map((row) => ({
 				...row,
 				valid_from: convertDateToUnixTimestamp(row.valid_from),
 				valid_to: convertDateToUnixTimestamp(row.valid_to),
-				derivation_path_index: row.derivation_path?.match(/\/(\d+)'?$/)?.[1]
-					? parseInt(row.derivation_path.match(/\/(\d+)'?$/)[1], 10)
-					: null,
+				derivation_path_index: this.extractDerivationIndex(row.derivation_path),
 			}));
+			const has_legacy = keysets.some((k) => k.derivation_path_index === null);
+			if (!has_legacy) return keysets;
+			return this.resolveKeysetIndices(keysets);
 		} catch (err) {
 			this.logger.error(`Error fetching mint keysets: ${err}`);
 			throw err;
 		}
+	}
+
+	/**
+	 * Resolves derivation_path_index for legacy keysets that lack a
+	 * standard BIP derivation path (e.g. random hex strings).
+	 *
+	 * Keysets are partitioned per-unit into three groups:
+	 *   1. claimed   — no timestamp, but has a valid derivation path index.
+	 *                   These keep their index as-is.
+	 *   2. unclaimed — has a timestamp. Sorted chronologically by valid_from
+	 *                   and assigned the next available index.
+	 *   3. unresolved — no timestamp AND no valid derivation path index.
+	 *                   Assigned after unclaimed, filling remaining slots.
+	 *
+	 * Slot assignment skips indices already claimed, ensuring no collisions.
+	 */
+	private resolveKeysetIndices(keysets: CashuMintKeyset[]): CashuMintKeyset[] {
+		const units = Array.from(new Set(keysets.map((k) => k.unit)));
+		for (const unit of units) {
+			const unit_keysets = keysets.filter((k) => k.unit === unit);
+			// Group 1: keep their derivation_path_index, reserve those slots
+			const claimed = unit_keysets.filter((k) => k.valid_from === null && k.derivation_path_index !== null);
+			// Group 2: have timestamps, sort oldest-first for chronological indexing
+			const unclaimed = unit_keysets
+				.filter((k) => k.valid_from !== null)
+				.sort((a, b) => a.valid_from - b.valid_from);
+			// Group 3: no timestamp, no derivation path — assigned last
+			const unresolved = unit_keysets.filter((k) => k.valid_from === null && k.derivation_path_index === null);
+			// Fill available slots, skipping indices reserved by claimed keysets
+			const claimed_indices = new Set(claimed.map((k) => k.derivation_path_index));
+			let slot = 0;
+			for (const keyset of [...unclaimed, ...unresolved]) {
+				while (claimed_indices.has(slot)) slot++;
+				keyset.derivation_path_index = slot;
+				slot++;
+			}
+		}
+		return keysets;
+	}
+
+	/** Extracts the last numeric component from a BIP-style derivation path. */
+	private extractDerivationIndex(derivation_path: string): number | null {
+		const match = derivation_path?.match(/\/(\d+)'?$/);
+		return match ? parseInt(match[1], 10) : null;
 	}
 
 	public async listMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
