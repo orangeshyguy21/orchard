@@ -2,13 +2,90 @@
 
 :host {
 	@extend %flex;
-	--orc-oracle-dark-fill: var(--mat-sys-surface-container-low);
+	--orc-groundskeeper-dark-fill: var(--mat-sys-surface-container-low);
 
 	&.high-bg {
-		--orc-oracle-dark-fill: var(--mat-sys-surface-container-high);
+		--orc-groundskeeper-dark-fill: var(--mat-sys-surface-container-high);
 	}
 }
 
 .graphic-groundskeeper-container {
 	@extend %flex;
+
+	.groundskeeper-eye {
+		fill: var(--orc-groundskeeper-dark-fill);
+	}
+
+	.groundskeeper-cursor {
+		fill: var(--orc-groundskeeper-dark-fill);
+	}
+
+	.lightest-fill,
+	.light-fill,
+	.medium-fill,
+	.dark-fill,
+	.darkest-fill {
+		transition: fill 1s ease-in-out;
+	}
+
+	&.stone {
+		.lightest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.light-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.medium-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.dark-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.darkest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
+
+	&.active {
+		.groundskeeper-eye {
+			@extend %orc-brand-lightest-fill;
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+		}
+	}
+
+	&.running {
+		.groundskeeper-eye {
+			@extend %orc-brand-lightest-fill;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
+			animation: pulse 3s ease-in-out 1s infinite;
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
+			animation: pulse 3s ease-in-out 1s infinite;
+		}
+	}
+
+	&.error {
+		.groundskeeper-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.groundskeeper-cursor {
+			fill: var(--mat-sys-error);
+		}
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+	50% {
+		opacity: 1;
+	}
 }
