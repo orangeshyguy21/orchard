@@ -181,15 +181,13 @@
 			[class.groundskeeper-card-gap]="form_group().get('enabled')?.value"
 		>
 			<div class="flex flex-items-center flex-justify-center">
-				<div class="groundskeeper-clamp">
-					<orc-graphic-oracle
-						class="high-bg"
-						[height]="graphic_height()"
-						[active]="form_group().get('enabled')?.value"
-						[running]="false"
-						[status]="null"
-					></orc-graphic-oracle>
-				</div>
+				<orc-graphic-groundskeeper
+                    class="high-bg"
+                    [height]="graphic_height()"
+                    [active]="form_group().get('enabled')?.value"
+                    [running]="false"
+                    [error]="false"
+                ></orc-graphic-groundskeeper>
 			</div>
 			<div class="orc-animation-expand-collapse-horizontal" [class.animation-expanded]="form_group().get('enabled')?.value">
 				<div class="orc-animation-expand-collapse-horizontal-inner">

@@ -9,6 +9,7 @@ import {GraphicAssetComponent} from './components/graphic-asset/graphic-asset.co
 import {GraphicOracleComponent} from './components/graphic-oracle/graphic-oracle.component';
 import {GraphicOracleIconComponent} from './components/graphic-oracle-icon/graphic-oracle-icon.component';
 import {GraphicStatusComponent} from './components/graphic-status/graphic-status.component';
+import {GraphicGroundskeeperComponent} from './components/graphic-groundskeeper/graphic-groundskeeper.component';
 
 @NgModule({
 	declarations: [
@@ -17,6 +18,7 @@ import {GraphicStatusComponent} from './components/graphic-status/graphic-status
 		GraphicOracleComponent,
 		GraphicOracleIconComponent,
 		GraphicStatusComponent,
+		GraphicGroundskeeperComponent,
 	],
 	imports: [CommonModule, MatIconModule],
 	exports: [
@@ -25,6 +27,7 @@ import {GraphicStatusComponent} from './components/graphic-status/graphic-status
 		GraphicOracleComponent,
 		GraphicOracleIconComponent,
 		GraphicStatusComponent,
+		GraphicGroundskeeperComponent,
 	],
 })
 export class OrcGraphicModule {}

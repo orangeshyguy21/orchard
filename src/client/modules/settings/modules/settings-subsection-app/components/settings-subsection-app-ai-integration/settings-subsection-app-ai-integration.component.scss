@@ -62,22 +62,7 @@
 		&.groundskeeper-card-gap {
 			@extend %flex-gap-1;
 		}
-
-		.groundskeeper-clamp {
-			height: 9rem;
-			width: 11rem;
-		}
 	}
-}
-
-.groundskeeper-clamp {
-	height: 12rem;
-	width: 13rem;
-	@extend %p-t-1;
-	@extend %overflow-hidden;
-	@extend %flex;
-	@extend %flex-items-center;
-	@extend %flex-justify-center;
 }
 
 .health-container {

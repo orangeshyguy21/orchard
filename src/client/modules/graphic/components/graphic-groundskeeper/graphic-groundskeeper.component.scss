@@ -1,0 +1,14 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %flex;
+	--orc-oracle-dark-fill: var(--mat-sys-surface-container-low);
+
+	&.high-bg {
+		--orc-oracle-dark-fill: var(--mat-sys-surface-container-high);
+	}
+}
+
+.graphic-groundskeeper-container {
+	@extend %flex;
+}
