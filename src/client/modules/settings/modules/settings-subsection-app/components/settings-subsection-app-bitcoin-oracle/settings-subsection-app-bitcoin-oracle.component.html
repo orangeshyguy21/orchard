@@ -91,7 +91,7 @@
 					} @else if (!oracle_price()) {
 						<div class="h-3 flex flex-justify-center flex-items-center">
 							<button matButton="tonal" (click)="oracleAsked.emit()" [disabled]="!bitcoin_oracle_enabled()">
-								What is the price?
+								<span class="text-nowrap">What is the price?</span>
 							</button>
 						</div>
 					}
