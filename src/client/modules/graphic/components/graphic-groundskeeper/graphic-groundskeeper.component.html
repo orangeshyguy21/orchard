@@ -3,7 +3,8 @@
 	[class.stone]="!running() && !active()"
 	[class.active]="active() && !running()"
 	[class.running]="running()"
-	[class.error]="error()"
+	[class.success]="state() === 'success'"
+	[class.error]="state() === 'error'"
 >
 	<svg [attr.height]="height()" id="groundskeeper" viewBox="0 0 873.41 873.41">
 		@if (surface()) {

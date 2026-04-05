@@ -13,5 +13,5 @@ export class GraphicGroundskeeperComponent {
 	public active = input<boolean>(false);
 	public height = input.required<string>();
 	public running = input.required<boolean>();
-	public error = input.required<boolean>();
+	public state = input<'error' | 'success' | null>();
 }

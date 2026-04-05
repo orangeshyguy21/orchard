@@ -70,6 +70,15 @@
 		}
 	}
 
+	&.success {
+		.groundskeeper-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+		}
+	}
+
 	&.error {
 		.groundskeeper-eye {
 			fill: var(--mat-sys-surface-container-low);
