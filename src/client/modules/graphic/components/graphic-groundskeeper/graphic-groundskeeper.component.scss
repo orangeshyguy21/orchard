@@ -58,15 +58,10 @@
 	&.running {
 		.groundskeeper-eye {
 			@extend %orc-brand-lightest-fill;
-			opacity: 0.4;
-			transition: fill 1s ease-in-out;
-			animation: pulse 3s ease-in-out 1s infinite;
 		}
 		.groundskeeper-cursor {
 			@extend %orc-brand-lightest-fill;
-			opacity: 0.4;
-			transition: fill 1s ease-in-out;
-			animation: pulse 3s ease-in-out 1s infinite;
+			animation: cursor-blink 1s step-end infinite;
 		}
 	}
 
@@ -89,12 +84,13 @@
 	}
 }
 
-@keyframes pulse {
+@keyframes cursor-blink {
 	0%,
-	100% {
-		opacity: 0.4;
-	}
 	50% {
 		opacity: 1;
+	}
+	50.01%,
+	100% {
+		opacity: 0;
 	}
 }
