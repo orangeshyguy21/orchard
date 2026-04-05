@@ -22,7 +22,7 @@
 			}
 		</div>
 		@if (reserve() !== null) {
-			<div class="orc-outline-color text-nowrap" [class.invisible]="!showReserve">{{ reserve() }}x</div>
+			<div class="orc-outline-color text-nowrap" [class.invisible]="!showReserve" [class.orc-status-inactive-color]="reserve()! < 1">{{ reserve() }}x</div>
 		}
 	</div>
 </ng-template>

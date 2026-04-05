@@ -99,7 +99,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), hours_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), total_streams: 5, streams_completed: 0, errors: 0};
 
 		let client: CashuMintDatabase;
 		try {
@@ -107,7 +107,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			if (client.type === 'postgres') await client.database.connect();
 		} catch (error) {
 			this.logger.error('Failed to connect to mint database for backfill', error);
-			this.backfill_status = {is_running: false, started_at: 0, hours_completed: 0, errors: 0};
+			this.backfill_status = {is_running: false, started_at: 0, total_streams: 0, streams_completed: 0, errors: 0};
 			return;
 		}
 		this.logger.log('Starting cashu mint analytics backfill');
@@ -127,6 +127,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listMintQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMintQuoteMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintMeltQuote>(
 				current_hour,
 				'melt_quotes',
@@ -134,6 +135,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listMeltQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMeltQuoteMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintSwap>(
 				current_hour,
 				'swaps',
@@ -141,6 +143,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listSwaps(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertSwapMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintProof>(
 				current_hour,
 				'proofs',
@@ -153,6 +156,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					}),
 				(h, records) => this.insertProofMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintPromise>(
 				current_hour,
 				'promises',
@@ -160,8 +164,9 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listPromises(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertPromiseMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 
-			this.logger.log(`Cashu mint analytics backfill complete: ${this.backfill_status.hours_completed} hours cached`);
+			this.logger.log('Cashu mint analytics backfill complete');
 		} catch (error) {
 			this.logger.error('Cashu mint analytics backfill error', error);
 			this.backfill_status.errors++;
@@ -239,7 +244,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			for (const hour of complete_hours.sort((a, b) => a - b)) {
 				await inserter(hour, pending_bucket.get(hour)!);
 				pending_bucket.delete(hour);
-				this.backfill_status.hours_completed++;
+				this.backfill_status.last_processed_at = hour;
 			}
 
 			// Progressive checkpoint: save after flushing so crash recovery resumes near here
@@ -561,7 +566,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	private async flushBuckets<T>(bucket: Map<number, T[]>, inserter: (hour: number, records: T[]) => Promise<void>): Promise<void> {
 		for (const [hour, records] of Array.from(bucket).sort(([a], [b]) => a - b)) {
 			await inserter(hour, records);
-			this.backfill_status.hours_completed++;
+			this.backfill_status.last_processed_at = hour;
 		}
 		bucket.clear();
 	}
@@ -578,7 +583,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		for (const hour of oldest_hours) {
 			await inserter(hour, bucket.get(hour)!);
 			bucket.delete(hour);
-			this.backfill_status.hours_completed++;
+			this.backfill_status.last_processed_at = hour;
 		}
 	}
 }

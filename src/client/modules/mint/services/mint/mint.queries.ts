@@ -199,7 +199,9 @@ export const MINT_ANALYTICS_BACKFILL_STATUS_QUERY = `{
 		is_running
 		started_at
 		errors
-		hours_completed
+		last_processed_at
+		total_streams
+		streams_completed
 	}
 }`;
 

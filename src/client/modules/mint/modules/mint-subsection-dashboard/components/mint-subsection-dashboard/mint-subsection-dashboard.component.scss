@@ -5,7 +5,7 @@ $analytics-offset: 86px;
 
 .mint-dashboard-container {
 	@extend %flex;
-	@extend %flex-column;
+    @extend %flex-gap-2;
 	@extend %p-1;
 }
 
@@ -48,7 +48,7 @@ $analytics-offset: 86px;
 .mint-chart-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
-	top: calc(#{$analytics-offset} + 1rem);
+    top: 2rem;
 }
 
 .chart-tertiary-nav-mobile {

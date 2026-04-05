@@ -17,6 +17,7 @@ import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
 import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
@@ -54,6 +55,7 @@ import {MintSubsectionDashboardControlComponent} from './components/mint-subsect
 		ChartJsBaseChartDirective,
 		OrcNavModule,
 		OrcFormModule,
+		OrcProgressModule,
 		OrcMintGeneralModule,
 	],
 	exports: [],

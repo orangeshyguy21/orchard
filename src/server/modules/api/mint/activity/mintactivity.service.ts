@@ -169,7 +169,11 @@ export class MintActivityService {
 		summary.warnings = [];
 		const backfill = this.cashuMintAnalyticsService.getBackfillStatus();
 		if (backfill.is_running) {
-			summary.warnings.push('Mint analytics are still being archived. Data may be incomplete.');
+			const date_label = backfill.last_processed_at
+				? DateTime.fromSeconds(backfill.last_processed_at, {zone: timezone}).toFormat('MMM d, yyyy')
+				: null;
+			const suffix = date_label ? ` Currently processing: ${date_label}.` : '';
+			summary.warnings.push(`Mint analytics are still being archived. ${suffix}`);
 		}
 
 		return summary;

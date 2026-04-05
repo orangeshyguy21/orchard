@@ -157,6 +157,25 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public is_archiving = computed(
 		() => !!this.mint_analytics_backfill_status()?.is_running || !!this.lightning_analytics_backfill_status()?.is_running,
 	);
+	public archiving_progress = computed(() => {
+		const mint = this.mint_analytics_backfill_status();
+		const ln = this.lightning_analytics_backfill_status();
+		const now = Math.floor(Date.now() / 1000);
+		let completed = 0;
+		let total = 0;
+		let stream_fraction = 0;
+		if (mint?.is_running) {
+			completed += mint.streams_completed ?? 0;
+			total += mint.total_streams ?? 0;
+			if (mint.last_processed_at) stream_fraction += mint.last_processed_at / now;
+		}
+		if (ln?.is_running) {
+			completed += ln.streams_completed ?? 0;
+			total += ln.total_streams ?? 0;
+			if (ln.last_processed_at) stream_fraction += ln.last_processed_at / now;
+		}
+		return total > 0 ? Math.min(100, Math.round(((completed + stream_fraction) / total) * 100)) : 0;
+	});
 
 	private subscriptions: Subscription = new Subscription();
 
