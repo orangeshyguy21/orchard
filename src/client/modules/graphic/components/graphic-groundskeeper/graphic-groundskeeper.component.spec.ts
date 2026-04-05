@@ -13,6 +13,8 @@ describe('GraphicGroundskeeperComponent', () => {
 
 		fixture = TestBed.createComponent(GraphicGroundskeeperComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('height', '15rem');
+		fixture.componentRef.setInput('running', false);
 		fixture.detectChanges();
 	});
 
