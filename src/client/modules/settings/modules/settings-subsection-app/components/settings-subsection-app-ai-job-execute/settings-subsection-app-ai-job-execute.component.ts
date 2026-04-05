@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, OnDestroy, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, OnDestroy, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {marked} from 'marked';
@@ -29,6 +29,15 @@ export class SettingsSubsectionAppAiJobExecuteComponent implements OnInit, OnDes
 	public readonly marked_result = signal<string | null>(null);
 	public readonly run_result = signal<AiAgentRun | null>(null);
 	public readonly elapsed_seconds = signal<number>(0);
+
+	// ── Public computed signals ──
+	public readonly groundskeeper_active = computed(() => this.loading());
+	public readonly groundskeeper_running = computed(() => this.loading());
+	public readonly groundskeeper_state = computed<'error' | 'success' | null>(() => {
+		if (this.loading()) return null;
+		if (this.error()) return 'error';
+		return 'success';
+	});
 
 	// ── Private properties ──
 	private timer_id: ReturnType<typeof setInterval> | null = null;

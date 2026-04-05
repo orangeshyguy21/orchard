@@ -15,7 +15,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
@@ -80,7 +79,6 @@ import {SettingsSubsectionAppAiJobExecuteComponent} from './components/settings-
 		MatTooltipModule,
 		MatChipsModule,
 		MatDialogModule,
-		MatProgressBarModule,
 		MatRippleModule,
 		OrcFormModule,
 		OrcTimeModule,

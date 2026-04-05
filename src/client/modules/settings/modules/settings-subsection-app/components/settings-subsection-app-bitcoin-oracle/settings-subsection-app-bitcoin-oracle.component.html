@@ -85,13 +85,13 @@
 							</div>
 						</div>
 					} @else if (oracle_running()) {
-						<div animate.enter="orc-animation-fadein" class="h-3 flex flex-justify-center flex-items-center p-h-2">
-							<orc-progress-bar [value]="oracle_progress()"></orc-progress-bar>
+						<div animate.enter="orc-animation-fadein" class="w-min-7 flex flex-justify-center flex-items-center p-h-2">
+							<orc-progress-circle [value]="oracle_progress()" [diameter]="50" [stroke_width]="8"></orc-progress-circle>
 						</div>
 					} @else if (!oracle_price()) {
 						<div class="h-3 flex flex-justify-center flex-items-center">
 							<button matButton="tonal" (click)="oracleAsked.emit()" [disabled]="!bitcoin_oracle_enabled()">
-								What is the price?
+								<span class="text-nowrap">What is the price?</span>
 							</button>
 						</div>
 					}

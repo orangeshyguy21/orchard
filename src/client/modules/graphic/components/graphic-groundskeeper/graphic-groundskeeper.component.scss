@@ -1,0 +1,91 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %flex;
+	--orc-groundskeeper-dark-fill: var(--mat-sys-surface-container-low);
+
+	&.high-bg {
+		--orc-groundskeeper-dark-fill: var(--mat-sys-surface-container-high);
+	}
+}
+
+.graphic-groundskeeper-container {
+	@extend %flex;
+
+	.groundskeeper-eye {
+		fill: var(--orc-groundskeeper-dark-fill);
+	}
+
+	.groundskeeper-cursor {
+		fill: var(--orc-groundskeeper-dark-fill);
+	}
+
+	.lightest-fill,
+	.light-fill,
+	.medium-fill,
+	.dark-fill,
+	.darkest-fill {
+		transition: fill 1s ease-in-out;
+	}
+
+	&.stone {
+		.lightest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.light-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.medium-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.dark-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.darkest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
+
+	&.active {
+		.groundskeeper-eye {
+			@extend %orc-brand-lightest-fill;
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+		}
+	}
+
+	&.running {
+		.groundskeeper-eye {
+			@extend %orc-brand-lightest-fill;
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+			animation: cursor-blink 1s step-end infinite;
+		}
+	}
+
+	&.success {
+		.groundskeeper-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.groundskeeper-cursor {
+			@extend %orc-brand-lightest-fill;
+		}
+	}
+
+	&.error {
+		.groundskeeper-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.groundskeeper-cursor {
+			fill: var(--mat-sys-error);
+		}
+	}
+}
+
+@keyframes cursor-blink {
+	50% {
+		opacity: 0;
+	}
+}
