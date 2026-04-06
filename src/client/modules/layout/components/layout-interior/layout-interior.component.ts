@@ -329,6 +329,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
 				this.ai_model.set(this.settingDeviceService.getModel());
 				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+                this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
 				this.getModels();
 			}
 		});
