@@ -47,6 +47,8 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 	public readonly show_health = computed(() => {
 		const loading = this.loading();
 		if (loading) return true;
+		const dirty_form = this.dirty_form();
+		if (dirty_form) return false;
 		const ai_health = this.ai_health();
 		if (!ai_health) return false;
 		if (ai_health.vendor === this.selected_vendor()) return true;
@@ -93,15 +95,6 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 		this.form_group().get('vendor')?.setValue(vendor);
 		this.form_group().get('vendor')?.markAsDirty();
 		this.form_group().get('vendor')?.markAsTouched();
-		this.update.emit();
-	}
-
-	/** Marks a form control as dirty/touched and emits an update */
-	public onFieldChange(control_name: string): void {
-		const control = this.form_group().get(control_name);
-		if (!control) return;
-		control.markAsDirty();
-		control.markAsTouched();
 		this.update.emit();
 	}
 
