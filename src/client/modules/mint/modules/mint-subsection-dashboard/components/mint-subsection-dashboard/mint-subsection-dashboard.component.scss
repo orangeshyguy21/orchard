@@ -5,7 +5,7 @@ $analytics-offset: 86px;
 
 .mint-dashboard-container {
 	@extend %flex;
-    @extend %flex-gap-2;
+	@extend %flex-gap-2;
 	@extend %p-1;
 }
 
@@ -48,10 +48,10 @@ $analytics-offset: 86px;
 .mint-chart-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
-    top: 2rem;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-gap-2;
+	top: 2rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-2;
 }
 
 .chart-tertiary-nav-mobile {
@@ -83,7 +83,7 @@ $analytics-offset: 86px;
 .summary-grid {
 	@extend %grid;
 	@extend %flex-gap-0-5;
-	grid-template-areas: "summary1" "summary2";
+	grid-template-areas: 'summary1' 'summary2';
 }
 
 .summary-mint {

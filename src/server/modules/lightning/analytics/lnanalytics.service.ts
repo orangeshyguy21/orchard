@@ -505,7 +505,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				if (invoice.settle_date) min_timestamp = Math.min(min_timestamp, invoice.settle_date);
 			}
 			const safe_boundary =
-				min_timestamp === Infinity ? current_hour : DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+				min_timestamp === Infinity
+					? current_hour
+					: DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 
 			if (complete_hours.length > 0) {
