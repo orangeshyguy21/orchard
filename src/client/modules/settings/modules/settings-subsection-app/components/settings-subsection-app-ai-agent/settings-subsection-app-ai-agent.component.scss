@@ -1,7 +1,7 @@
 @use 'molecule/molecule';
 @use 'nucleus/nucleus';
 
-.ai-agent-contaienr {
+.ai-agent-container {
 	min-height: 20rem;
 	@extend %relative;
 	@extend %flex;
