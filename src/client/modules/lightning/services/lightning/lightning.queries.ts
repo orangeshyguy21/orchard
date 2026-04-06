@@ -154,7 +154,7 @@ export const LIGHTNING_CLOSED_CHANNELS_QUERY = `{
 export const LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY = `{
 	lightning_analytics_backfill_status {
 		is_running
-		started_at
+		first_processed_at
 		errors
 		last_processed_at
 		total_streams

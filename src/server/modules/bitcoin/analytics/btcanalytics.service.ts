@@ -196,6 +196,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		Streaming Backfill
 	******************************************************** */
 
+	/** Records a processed hour, seeding first_processed_at on the first call */
+	private recordProcessedHour(hour: number): void {
+		if (this.backfill_status.first_processed_at == null) this.backfill_status.first_processed_at = hour;
+		this.backfill_status.last_processed_at = hour;
+	}
+
 	/**
 	 * Runs all backfill streams: BTC transactions, asset transfers, asset receives
 	 */
@@ -205,7 +211,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), total_streams: 3, streams_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, total_streams: 3, streams_completed: 0, errors: 0};
 		this.logger.log('Starting bitcoin analytics backfill');
 
 		try {
@@ -338,7 +344,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				count: fees_count,
 			});
 
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)
@@ -440,7 +446,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				});
 			}
 
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)
@@ -522,7 +528,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				});
 			}
 
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)

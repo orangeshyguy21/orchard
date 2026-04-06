@@ -99,7 +99,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), total_streams: 5, streams_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, total_streams: 5, streams_completed: 0, errors: 0};
 
 		let client: CashuMintDatabase;
 		try {
@@ -107,7 +107,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			if (client.type === 'postgres') await client.database.connect();
 		} catch (error) {
 			this.logger.error('Failed to connect to mint database for backfill', error);
-			this.backfill_status = {is_running: false, started_at: 0, total_streams: 0, streams_completed: 0, errors: 0};
+			this.backfill_status = {is_running: false, total_streams: 0, streams_completed: 0, errors: 0};
 			return;
 		}
 		this.logger.log('Starting cashu mint analytics backfill');
@@ -244,7 +244,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			for (const hour of complete_hours.sort((a, b) => a - b)) {
 				await inserter(hour, pending_bucket.get(hour)!);
 				pending_bucket.delete(hour);
-				this.backfill_status.last_processed_at = hour;
+				this.recordProcessedHour(hour);
 			}
 
 			// Progressive checkpoint: save after flushing so crash recovery resumes near here
@@ -562,11 +562,17 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		return Object.entries(map);
 	}
 
+	/** Records a processed hour, seeding first_processed_at on the first call */
+	private recordProcessedHour(hour: number): void {
+		if (this.backfill_status.first_processed_at == null) this.backfill_status.first_processed_at = hour;
+		this.backfill_status.last_processed_at = hour;
+	}
+
 	/** Flushes all remaining buckets */
 	private async flushBuckets<T>(bucket: Map<number, T[]>, inserter: (hour: number, records: T[]) => Promise<void>): Promise<void> {
 		for (const [hour, records] of Array.from(bucket).sort(([a], [b]) => a - b)) {
 			await inserter(hour, records);
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 		bucket.clear();
 	}
@@ -583,7 +589,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		for (const hour of oldest_hours) {
 			await inserter(hour, bucket.get(hour)!);
 			bucket.delete(hour);
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 	}
 }

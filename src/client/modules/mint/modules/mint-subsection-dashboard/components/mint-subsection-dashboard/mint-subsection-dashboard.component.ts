@@ -171,23 +171,29 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		() => !!this.mint_analytics_backfill_status()?.is_running || !!this.lightning_analytics_backfill_status()?.is_running,
 	);
 	public archiving_progress = computed(() => {
+		const now = DateTime.now();
+		const statusStreamFraction = (status: AnalyticsBackfillStatus | null): number => {
+			if (!status?.first_processed_at || !status.last_processed_at) return 0;
+			const first = DateTime.fromSeconds(status.first_processed_at);
+			const last = DateTime.fromSeconds(status.last_processed_at);
+			const window_seconds = now.diff(first).as('seconds');
+			if (window_seconds <= 0) return 0;
+			const processed_seconds = last.diff(first).as('seconds');
+			return Math.max(0, Math.min(1, processed_seconds / window_seconds));
+		};
 		const mint = this.mint_analytics_backfill_status();
 		const ln = this.lightning_analytics_backfill_status();
-		const now = Math.floor(Date.now() / 1000);
 		let completed = 0;
 		let total = 0;
-		let stream_fraction = 0;
 		if (mint?.is_running) {
-			completed += mint.streams_completed ?? 0;
+			completed += (mint.streams_completed ?? 0) + statusStreamFraction(mint);
 			total += mint.total_streams ?? 0;
-			if (mint.last_processed_at) stream_fraction += mint.last_processed_at / now;
 		}
 		if (ln?.is_running) {
-			completed += ln.streams_completed ?? 0;
+			completed += (ln.streams_completed ?? 0) + statusStreamFraction(ln);
 			total += ln.total_streams ?? 0;
-			if (ln.last_processed_at) stream_fraction += ln.last_processed_at / now;
 		}
-		return total > 0 ? Math.min(100, Math.round(((completed + stream_fraction) / total) * 100)) : 0;
+		return total > 0 ? Math.min(99, Math.floor((completed / total) * 100)) : 0;
 	});
 
 	private subscriptions: Subscription = new Subscription();

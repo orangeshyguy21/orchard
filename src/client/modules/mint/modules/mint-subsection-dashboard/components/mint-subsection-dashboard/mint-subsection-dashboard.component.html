@@ -62,7 +62,12 @@
             <div class="flex flex-justify-between flex-gap-1 flex-items-end">
                 @if (device_type() === 'desktop') {
                     <div class="p-b-1">
-                        <div class="title-l">Nutalytics</div>
+                        <div class="title-l">
+                            Nutalytics
+                            @if (is_archiving()) {
+                                <span class="font-size-xs orc-status-warning-color"> Archiving...</span>
+                            }
+                        </div>
                         @if (is_archiving()) {
                             <div class="p-t-0-5">
                                 <orc-progress-bar [value]="archiving_progress()" height="0.5rem" variant="progress-warning" />

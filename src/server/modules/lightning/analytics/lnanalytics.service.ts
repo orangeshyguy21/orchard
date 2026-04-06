@@ -341,6 +341,12 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		);
 	}
 
+	/** Records a processed hour, seeding first_processed_at on the first call */
+	private recordProcessedHour(hour: number): void {
+		if (this.backfill_status.first_processed_at == null) this.backfill_status.first_processed_at = hour;
+		this.backfill_status.last_processed_at = hour;
+	}
+
 	/**
 	 * Runs the streaming backfill - fetches data in batches, buckets by hour, inserts when complete
 	 */
@@ -350,7 +356,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), total_streams: 3, streams_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, total_streams: 3, streams_completed: 0, errors: 0};
 		this.logger.log('Starting lightning analytics backfill');
 
 		try {
@@ -435,7 +441,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 					for (const hour of complete_hours.sort((a, b) => a - b)) {
 						await this.insertPaymentMetrics(manager, hour, pending_bucket.get(hour)!, asset_to_group, group_to_name);
 						pending_bucket.delete(hour);
-						this.backfill_status.last_processed_at = hour;
+						this.recordProcessedHour(hour);
 					}
 				});
 			}
@@ -507,7 +513,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 					for (const hour of complete_hours.sort((a, b) => a - b)) {
 						await this.insertInvoiceMetrics(manager, hour, pending_bucket.get(hour)!, asset_to_group, group_to_name);
 						pending_bucket.delete(hour);
-						this.backfill_status.last_processed_at = hour;
+						this.recordProcessedHour(hour);
 					}
 				});
 			}
@@ -574,7 +580,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 					for (const hour of complete_hours.sort((a, b) => a - b)) {
 						await this.insertForwardMetrics(manager, hour, pending_bucket.get(hour)!);
 						pending_bucket.delete(hour);
-						this.backfill_status.last_processed_at = hour;
+						this.recordProcessedHour(hour);
 					}
 				});
 			}
@@ -615,7 +621,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	): Promise<void> {
 		for (const [hour, payments] of Array.from(pending_bucket)) {
 			await this.insertPaymentMetrics(null, hour, payments, asset_to_group, group_to_name);
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 		pending_bucket.clear();
 	}
@@ -630,7 +636,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	): Promise<void> {
 		for (const [hour, invoices] of Array.from(pending_bucket)) {
 			await this.insertInvoiceMetrics(null, hour, invoices, asset_to_group, group_to_name);
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 		pending_bucket.clear();
 	}
@@ -641,7 +647,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	private async flushForwardBuckets(pending_bucket: Map<number, LightningForward[]>): Promise<void> {
 		for (const [hour, forwards] of Array.from(pending_bucket)) {
 			await this.insertForwardMetrics(null, hour, forwards);
-			this.backfill_status.last_processed_at = hour;
+			this.recordProcessedHour(hour);
 		}
 		pending_bucket.clear();
 	}
