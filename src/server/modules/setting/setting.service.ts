@@ -3,7 +3,7 @@ import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ConfigService} from '@nestjs/config';
 /* Vendor Dependencies */
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 /* Local Dependencies */
 import {Setting} from './setting.entity';
 import {DEFAULT_SETTINGS} from './setting.config';
@@ -144,26 +144,30 @@ export class SettingService implements OnModuleInit {
 	 * @returns {Promise<Setting[]>} The updated settings with decrypted values
 	 */
 	public async updateSettings(keys: SettingKey[], values: string[]): Promise<Setting[]> {
-		const results: Setting[] = [];
-		for (let i = 0; i < keys.length; i++) {
-			results.push(await this.updateSetting(keys[i], values[i]));
-		}
-		return results;
+		return this.settingRepository.manager.transaction(async (manager) => {
+			const results: Setting[] = [];
+			for (let i = 0; i < keys.length; i++) {
+				results.push(await this.updateSetting(keys[i], values[i], manager));
+			}
+			return results;
+		});
 	}
 
 	/**
 	 * Update a setting by key
 	 * @param {SettingKey} key - The setting key to update
 	 * @param {string} value - The new value for the setting
+	 * @param {EntityManager} manager - Optional transactional entity manager
 	 * @returns {Promise<Setting>} The updated setting with decrypted value
 	 */
-	private async updateSetting(key: SettingKey, value: string): Promise<Setting> {
-		const setting = await this.settingRepository.findOne({
+	private async updateSetting(key: SettingKey, value: string, manager?: EntityManager): Promise<Setting> {
+		const repo = manager ? manager.getRepository(Setting) : this.settingRepository;
+		const setting = await repo.findOne({
 			where: {key},
 		});
 		if (!setting) throw new Error(`Setting with key ${key} not found`);
 		setting.value = this.encryptIfSensitive(key, value);
-		const updated_setting = await this.settingRepository.save(setting);
+		const updated_setting = await repo.save(setting);
 		const log_value = isSettingSensitive(key, value) ? maskSensitiveValue(value) : value;
 		this.logger.debug(`Updated setting: ${key} = ${log_value}`);
 		return this.decryptSetting(updated_setting);
