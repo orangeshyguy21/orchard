@@ -48,7 +48,7 @@ export class ConversationService {
 	******************************************************** */
 
 	/** Handle an incoming user message: abort any in-flight run, persist the message, then run agent */
-	@OnEvent(MESSAGE_INCOMING_EVENT, {async: true})
+	@OnEvent(MESSAGE_INCOMING_EVENT)
 	public async handleIncomingMessage(payload: IncomingMessagePayload): Promise<void> {
 		const {chat_id, user_id, text} = payload;
 
@@ -134,7 +134,7 @@ export class ConversationService {
 	}
 
 	/** Handle a /new command: expire the active conversation and confirm */
-	@OnEvent(MESSAGE_RESET_EVENT, {async: true})
+	@OnEvent(MESSAGE_RESET_EVENT)
 	public async handleReset(payload: ResetMessagePayload): Promise<void> {
 		const {chat_id} = payload;
 
