@@ -46,7 +46,8 @@ export type MintDashboardSettings = {
 	date_preset: DateRangePreset | null;
 	units: MintUnit[] | null;
 	interval: AnalyticsInterval | null;
-	tertiary_nav: string[] | null;
+	summary_nav: string[] | null;
+	chart_nav: string[] | null;
 	oracle_used: boolean | null;
 	type: {
 		balance_sheet: ChartType | null;

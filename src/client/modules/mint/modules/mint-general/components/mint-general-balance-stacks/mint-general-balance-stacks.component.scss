@@ -1,5 +1,10 @@
 @use 'molecule/molecule';
 
+:host {
+	@extend %w-min-0;
+	@extend %overflow-hidden;
+}
+
 $coin-gap: 3px;
 $coin-height: 3px;
 
