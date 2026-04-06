@@ -262,13 +262,13 @@ export class AgentService implements OnModuleInit {
 			await this.runRepository.update(saved_run.id, {
 				status: AgentRunStatus.ERROR,
 				completed_at,
-				error: error.message,
+				error: String(error?.message ?? error),
 			});
 			await this.agentRepository.update(agent_id, {
 				last_run_status: AgentRunStatus.ERROR,
 				updated_at: completed_at,
 			});
-			this.logger.error(`Agent ${this.resolveName(agent)} failed: ${error.message}`);
+			this.logger.error(`Agent ${this.resolveName(agent)} failed`, error);
 			throw error;
 		}
 	}

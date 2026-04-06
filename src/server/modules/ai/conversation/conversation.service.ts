@@ -123,7 +123,7 @@ export class ConversationService {
 			await this.replyOrEdit(chat_id, thinking, loop_result.result);
 		} catch (error) {
 			if (controller.signal.aborted) return;
-			this.logger.error(`Agent ${resolved_name} conversation failed (chat: ${chat_id}): ${error.message}`);
+			this.logger.error(`Agent ${resolved_name} conversation failed (chat: ${chat_id})`, error);
 			await this.replyOrEdit(chat_id, thinking, 'Something went wrong processing your message.');
 		} finally {
 			/* Clean up only if this controller is still the active one */

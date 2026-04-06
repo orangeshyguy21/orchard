@@ -136,8 +136,8 @@ export class ToolService {
 			}
 			return {success: false, error: `Tool ${name} has no query or handler configured`};
 		} catch (error) {
-			this.logger.error(`Tool ${name} failed: ${error.message}`);
-			return {success: false, error: error.message};
+			this.logger.error(`Tool ${name} failed`, error);
+			return {success: false, error: String(error?.message ?? error)};
 		}
 	}
 
