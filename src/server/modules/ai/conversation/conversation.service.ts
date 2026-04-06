@@ -161,8 +161,9 @@ export class ConversationService {
 	******************************************************** */
 
 	/**
-	 * Replace large function results from previous turns with a short placeholder.
-	 * Only messages before the last user message are compressed; the current turn is untouched.
+	 * Blank out large tool results older than the previous turn to save tokens.
+	 * Destructive: rewrites the array that gets persisted AND sent to the model, so
+	 * agents can't recall compressed results — they must re-call the tool.
 	 */
 	private compressPreviousTurns(messages: AiMessage[]): void {
 		const last_user_idx = messages.findLastIndex((m) => m.role === AiMessageRole.USER);
