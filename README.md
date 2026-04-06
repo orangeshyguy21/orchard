@@ -34,6 +34,13 @@
 - Install [Node.js] which includes [Node Package Manager][npm]
   - Recommended version (v22)
 
+## Versioning
+Always check out the latest release tag before installing or updating. Running from `master` is unsupported and may leave your database in a state that cannot be cleanly upgraded.
+```bash
+git fetch --tags
+git checkout v1.8.0
+```
+
 ## Environment Variables
 ```bash
 cp .env.example .env
