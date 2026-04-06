@@ -170,31 +170,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public is_archiving = computed(
 		() => !!this.mint_analytics_backfill_status()?.is_running || !!this.lightning_analytics_backfill_status()?.is_running,
 	);
-	public archiving_progress = computed(() => {
-		const now = DateTime.now();
-		const statusStreamFraction = (status: AnalyticsBackfillStatus | null): number => {
-			if (!status?.first_processed_at || !status.last_processed_at) return 0;
-			const first = DateTime.fromSeconds(status.first_processed_at);
-			const last = DateTime.fromSeconds(status.last_processed_at);
-			const window_seconds = now.diff(first).as('seconds');
-			if (window_seconds <= 0) return 0;
-			const processed_seconds = last.diff(first).as('seconds');
-			return Math.max(0, Math.min(1, processed_seconds / window_seconds));
-		};
-		const mint = this.mint_analytics_backfill_status();
-		const ln = this.lightning_analytics_backfill_status();
-		let completed = 0;
-		let total = 0;
-		if (mint?.is_running) {
-			completed += (mint.streams_completed ?? 0) + statusStreamFraction(mint);
-			total += mint.total_streams ?? 0;
-		}
-		if (ln?.is_running) {
-			completed += (ln.streams_completed ?? 0) + statusStreamFraction(ln);
-			total += ln.total_streams ?? 0;
-		}
-		return total > 0 ? Math.min(99, Math.floor((completed / total) * 100)) : 0;
-	});
+	public archiving_progress = computed(() => this.computeArchivingProgress());
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -253,6 +229,32 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_lightning.set(true);
 			this.subscriptions.add(this.getLightningBalanceSubscription());
 		}
+	}
+
+	private computeArchivingProgress(): number {
+		const now = DateTime.now();
+		const statusStreamFraction = (status: AnalyticsBackfillStatus | null): number => {
+			if (!status?.first_processed_at || !status.last_processed_at) return 0;
+			const first = DateTime.fromSeconds(status.first_processed_at);
+			const last = DateTime.fromSeconds(status.last_processed_at);
+			const window_seconds = now.diff(first).as('seconds');
+			if (window_seconds <= 0) return 0;
+			const processed_seconds = last.diff(first).as('seconds');
+			return Math.max(0, Math.min(1, processed_seconds / window_seconds));
+		};
+		const mint = this.mint_analytics_backfill_status();
+		const ln = this.lightning_analytics_backfill_status();
+		let completed = 0;
+		let total = 0;
+		if (mint?.is_running) {
+			completed += (mint.streams_completed ?? 0) + statusStreamFraction(mint);
+			total += mint.total_streams ?? 0;
+		}
+		if (ln?.is_running) {
+			completed += (ln.streams_completed ?? 0) + statusStreamFraction(ln);
+			total += ln.total_streams ?? 0;
+		}
+		return total > 0 ? Math.min(99, Math.floor((completed / total) * 100)) : 0;
 	}
 
 	private getMintGenesisTime(): number {
