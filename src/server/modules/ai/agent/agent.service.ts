@@ -473,7 +473,7 @@ export class AgentService implements OnModuleInit {
 	/** Resolve the effective tool names for an agent, falling back to built-in defaults */
 	public resolveToolNames(agent: Agent): string[] {
 		const built_in_tools = agent.agent_key ? AGENTS[agent.agent_key]?.tools : undefined;
-		return agent.tools ? JSON.parse(agent.tools) : (built_in_tools ?? []);
+		return agent.tools ? safeParse(agent.tools, built_in_tools ?? [], `agent.tools[${agent.id}]`) : (built_in_tools ?? []);
 	}
 
 	/** Build a system message from agent config + runtime context */
@@ -500,7 +500,7 @@ export class AgentService implements OnModuleInit {
 		if (bitcoin) services.push(`bitcoin (${bitcoin})`);
 		if (lightning) services.push(`lightning (${lightning})`);
 		if (mint) services.push(`mint (${mint})`);
-		const schedules: string[] = JSON.parse(agent.schedules);
+		const schedules: string[] = safeParse(agent.schedules, [], `agent.schedules[${agent.id}]`);
 		const cadence = schedules.length ? schedules.map((s) => this.describeCadence(s, timezone)).join('; ') : 'on-demand only';
 
 		return [
