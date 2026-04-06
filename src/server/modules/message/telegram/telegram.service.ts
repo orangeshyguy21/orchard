@@ -19,6 +19,7 @@ import {
 export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	private readonly logger = new Logger(TelegramService.name);
 	private bot: Bot | null = null;
+	private lifecycle: Promise<void> = Promise.resolve();
 
 	constructor(
 		private readonly settingService: SettingService,
@@ -35,7 +36,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	async onModuleDestroy(): Promise<void> {
-		this.stopBot();
+		await this.stopBot();
 	}
 
 	/* *******************************************************
@@ -43,36 +44,45 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	******************************************************** */
 
 	/** Initialize or re-initialize the bot from current settings */
-	public async initializeBot(): Promise<void> {
-		this.stopBot();
-		const enabled = await this.settingService.getBooleanSetting(SettingKey.MESSAGES_ENABLED);
-		if (!enabled) return;
-
-		const vendor = await this.settingService.getStringSetting(SettingKey.MESSAGES_VENDOR);
-		if (vendor !== 'telegram') return;
-
-		const token = await this.settingService.getStringSetting(SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN);
-		if (!token) return;
-
-		try {
-			this.bot = new Bot(token);
-			this.registerHandlers();
-			this.bot.start({drop_pending_updates: true}).catch((error) => {
-				this.logger.error(`Telegram bot polling error: ${error.message}`);
-				this.bot = null;
-			});
-			this.logger.log('Telegram bot started (long-polling)');
-		} catch (error) {
-			this.logger.error(`Failed to start Telegram bot: ${error.message}`);
-			this.bot = null;
-		}
+	public initializeBot(): Promise<void> {
+		this.lifecycle = this.lifecycle.catch(() => {}).then(() => this.startBot());
+		return this.lifecycle;
 	}
 
-	/** Stop the running bot gracefully */
-	private stopBot(): void {
-		if (this.bot) {
-			this.bot.stop();
-			this.bot = null;
+	private async startBot(): Promise<void> {
+		await this.stopBot();
+
+		const enabled = await this.settingService.getBooleanSetting(SettingKey.MESSAGES_ENABLED);
+		const vendor = await this.settingService.getStringSetting(SettingKey.MESSAGES_VENDOR);
+		const token = await this.settingService.getStringSetting(SettingKey.MESSAGES_TELEGRAM_BOT_TOKEN);
+		if (!enabled || vendor !== 'telegram' || !token) return;
+
+		const bot = new Bot(token);
+		try {
+			await bot.init();
+		} catch (error) {
+			this.logger.error(`Failed to initialize Telegram bot: ${error.message}`);
+			return;
+		}
+
+		this.bot = bot;
+		this.registerHandlers();
+		bot.start({drop_pending_updates: true}).catch((error) => {
+			this.logger.error(`Telegram bot polling error: ${error.message}`);
+			if (this.bot === bot) this.bot = null;
+		});
+		this.logger.log('Telegram bot started (long-polling)');
+	}
+
+	/** Stop the running bot and wait for the poll loop to drain */
+	private async stopBot(): Promise<void> {
+		const bot = this.bot;
+		if (!bot) return;
+		this.bot = null;
+		try {
+			await bot.stop();
+		} catch (error) {
+			this.logger.warn(`Error stopping Telegram bot: ${error.message}`);
 		}
 	}
 
