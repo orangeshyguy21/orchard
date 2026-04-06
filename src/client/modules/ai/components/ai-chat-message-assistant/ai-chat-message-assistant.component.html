@@ -42,7 +42,7 @@
 	</div>
 	@if (message.tool_calls?.length) {
 		<div animate.enter="orc-animation-fadein-fast" class="orc-ai-chat-message">
-			<orc-ai-chat-avatar [role]="tool_roll" [icon]="'construction'" [section]="assistant ? assistant.section : null">
+			<orc-ai-chat-avatar [role]="tool_role" [icon]="'construction'" [section]="assistant ? assistant.section : null">
 			</orc-ai-chat-avatar>
 			<div class="flex flex-column flex-gap-1">
 				<div class="orc-ai-chat-message-tool-calls">

@@ -24,7 +24,7 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public index!: number;
 	@Input() public conversation_length!: number | undefined;
 
-	public tool_roll = AiMessageRole.Tool;
+	public tool_role = AiMessageRole.Tool;
 	public marked_content!: string;
 	public marked_thinking_content!: string;
 	public think_duration!: number;
