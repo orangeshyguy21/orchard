@@ -49,8 +49,13 @@
 		mint_analytics_promises().length === 0 &&
 		mint_analytics_promises_pre().length === 0
 	) {
-		<div class="no-data-overlay">
+		<div class="chart-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
 			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+		</div>
+	}
+	@if (loading()) {
+		<div class="chart-overlay" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout-slow">
+			<mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
 		</div>
 	}
 </div>
