@@ -55,5 +55,5 @@ export function extractEventError(error: any): EventLogError {
  * @returns {number} The current Unix timestamp in seconds
  */
 export function eventTimestamp(): number {
-	return Math.floor(DateTime.now().toSeconds());
+	return DateTime.now().toUnixInteger();
 }

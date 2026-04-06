@@ -76,8 +76,8 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		const where: FindOptionsWhere<MintAnalytics> = {mint_pubkey};
 
 		if (args.date_start !== undefined && args.date_end !== undefined) {
-			const start_hour = DateTime.fromSeconds(args.date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-			const end_hour = DateTime.fromSeconds(args.date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const start_hour = DateTime.fromSeconds(args.date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+			const end_hour = DateTime.fromSeconds(args.date_end, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			where.date = Between(start_hour, end_hour);
 		}
 
@@ -118,7 +118,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				this.logger.warn('Mint not reachable, skipping analytics backfill');
 				return;
 			}
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+			const current_hour = DateTime.utc().startOf('hour').toUnixInteger();
 
 			await this.streamAndBucket<CashuMintMintQuote>(
 				current_hour,
@@ -492,7 +492,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				scope: mint_pubkey,
 				data_type,
 				last_index: index,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
 		);
@@ -534,7 +534,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				date: params.hour,
 				amount: params.amount.toString(),
 				count: params.count,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			{conflictPaths: ['mint_pubkey', 'keyset_id', 'unit', 'metric', 'date']},
 		);

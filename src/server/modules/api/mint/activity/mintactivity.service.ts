@@ -54,7 +54,7 @@ export class MintActivityService {
 	public async getMintActivitySummary(tag: string, period: MintActivityPeriod, timezone?: string): Promise<OrchardMintActivitySummary> {
 		try {
 			const now = Math.floor(Date.now() / 1000);
-			const cached_end = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds() - 1;
+			const cached_end = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toUnixInteger() - 1;
 			const period_seconds = PERIOD_SECONDS[period];
 			const current_start = now - period_seconds;
 			const prior_start = now - period_seconds * 2;

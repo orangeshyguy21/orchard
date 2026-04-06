@@ -96,8 +96,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
-		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 		const where: any = {
 			node_pubkey,
 			date: Between(start_hour, end_hour),
@@ -303,7 +303,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				date: params.hour,
 				amount: params.amount.toString(),
 				count: params.count,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			{conflictPaths: ['node_pubkey', 'group_key', 'unit', 'metric', 'date']},
 		);
@@ -335,7 +335,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				scope: node_pubkey,
 				data_type,
 				last_index: index,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
 		);
@@ -366,7 +366,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				return;
 			}
 
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+			const current_hour = DateTime.utc().startOf('hour').toUnixInteger();
 
 			// Fetch static data once
 			const [channels, closed_channels, transactions] = await Promise.all([
@@ -420,7 +420,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// Bucket by hour
 			for (const payment of batch) {
-				const hour = DateTime.fromSeconds(payment.creation_time, {zone: 'UTC'}).startOf('hour').toSeconds();
+				const hour = DateTime.fromSeconds(payment.creation_time, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 				if (hour >= current_hour) continue;
 
 				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
@@ -432,7 +432,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			for (const payment of batch) {
 				min_timestamp = Math.min(min_timestamp, payment.creation_time);
 			}
-			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 
 			// Flush complete hours within transaction
@@ -492,7 +492,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			// Bucket by settle_date (when payment was received), not creation_date
 			for (const invoice of batch) {
 				if (invoice.state !== 'settled' || !invoice.settle_date) continue;
-				const hour = DateTime.fromSeconds(invoice.settle_date, {zone: 'UTC'}).startOf('hour').toSeconds();
+				const hour = DateTime.fromSeconds(invoice.settle_date, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 				if (hour >= current_hour) continue;
 
 				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
@@ -505,7 +505,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				if (invoice.settle_date) min_timestamp = Math.min(min_timestamp, invoice.settle_date);
 			}
 			const safe_boundary =
-				min_timestamp === Infinity ? current_hour : DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+				min_timestamp === Infinity ? current_hour : DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 
 			if (complete_hours.length > 0) {
@@ -560,7 +560,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// Bucket by timestamp
 			for (const forward of batch) {
-				const hour = DateTime.fromSeconds(forward.timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+				const hour = DateTime.fromSeconds(forward.timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 				if (hour >= current_hour) continue;
 
 				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
@@ -572,7 +572,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			for (const forward of batch) {
 				min_timestamp = Math.min(min_timestamp, forward.timestamp);
 			}
-			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 
 			if (complete_hours.length > 0) {
@@ -857,7 +857,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		for (const channel of [...channels, ...closed_channels]) {
 			const timestamp = await this.getTxTimestamp(channel.funding_txid, tx_timestamps);
 			if (!timestamp) continue;
-			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			// BTC balance (empty string = BTC group_key)
@@ -875,7 +875,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		for (const channel of closed_channels) {
 			const timestamp = await this.getTxTimestamp(channel.closing_txid, tx_timestamps);
 			if (!timestamp) continue;
-			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			// BTC balance

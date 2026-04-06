@@ -80,8 +80,8 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
-		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 		const where: FindOptionsWhere<BitcoinAnalytics> = {
 			node_pubkey,
 			date: Between(start_hour, end_hour),
@@ -128,7 +128,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				scope: node_pubkey,
 				data_type,
 				last_index: index,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
 		);
@@ -161,7 +161,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				date: params.hour,
 				amount: params.amount.toString(),
 				count: params.count,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			{conflictPaths: ['node_pubkey', 'group_key', 'unit', 'metric', 'date']},
 		);
@@ -221,7 +221,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				return;
 			}
 
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+			const current_hour = DateTime.utc().startOf('hour').toUnixInteger();
 
 			// Stream 1: BTC on-chain transactions
 			await this.backfillBtcTransactions(current_hour);
@@ -283,7 +283,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		// Group by hour
 		const buckets: Map<number, LightningTransaction[]> = new Map();
 		for (const tx of new_txs) {
-			const hour = DateTime.fromSeconds(tx.time_stamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(tx.time_stamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);
@@ -385,7 +385,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		const buckets: Map<number, AssetTransfer[]> = new Map();
 		for (const transfer of new_transfers) {
 			const ts = Number(transfer.transfer_timestamp);
-			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);
@@ -488,7 +488,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		const buckets: Map<number, AddrEvent[]> = new Map();
 		for (const event of new_events) {
 			const ts = Number(event.creation_time_unix_seconds);
-			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);

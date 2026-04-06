@@ -35,8 +35,8 @@ export class SystemMetricsService {
 	 */
 	async collectAndStore(): Promise<void> {
 		const now = DateTime.utc();
-		const minute_start = now.startOf('minute').toSeconds();
-		const updated_at = Math.floor(now.toSeconds());
+		const minute_start = now.startOf('minute').toUnixInteger();
+		const updated_at = now.toUnixInteger();
 
 		const samples = await this.sampleAll();
 
@@ -166,7 +166,7 @@ export class SystemMetricsService {
 		const now = DateTime.utc();
 
 		// Delete records older than retention period
-		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('minute').toSeconds();
+		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('minute').toUnixInteger();
 		const deleted = await this.systemMetricsRepository.delete({
 			date: LessThan(retention_cutoff),
 		});
@@ -184,9 +184,9 @@ export class SystemMetricsService {
 	 * Uses SQL GROUP BY to avoid loading all rows into memory.
 	 */
 	private async downsampleToHourly(now: DateTime): Promise<void> {
-		const downsample_cutoff = now.minus({days: DOWNSAMPLE_AFTER_DAYS}).startOf('hour').toSeconds();
-		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('hour').toSeconds();
-		const updated_at = Math.floor(now.toSeconds());
+		const downsample_cutoff = now.minus({days: DOWNSAMPLE_AFTER_DAYS}).startOf('hour').toUnixInteger();
+		const retention_cutoff = now.minus({days: RETENTION_DAYS}).startOf('hour').toUnixInteger();
+		const updated_at = now.toUnixInteger();
 
 		// Aggregate in SQL: group by metric + hour bucket, compute averages
 		const hourly_averages: {metric: string; hour_bucket: number; avg_value: number; row_count: number}[] =
