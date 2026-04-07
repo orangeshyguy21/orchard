@@ -247,9 +247,12 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				this.recordProcessedHour(hour);
 			}
 
-			// Progressive checkpoint: save after flushing so crash recovery resumes near here
-			if (complete_hours.length > 0 && cursor !== undefined) {
-				await this.saveCheckpoint(data_type, cursor);
+			// Progressive checkpoint: resume from the flush boundary, not the raw cursor.
+			// `safe_boundary` is the earliest hour still in pending_bucket (everything before
+			// it has been written). Saving `cursor` (= last_time, mid-hour) would cause a
+			// resume to skip the buffered-but-unflushed hours between safe_boundary and cursor.
+			if (complete_hours.length > 0) {
+				await this.saveCheckpoint(data_type, safe_boundary);
 			}
 
 			if (batch.length < BATCH_SIZE) break;
@@ -483,15 +486,27 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		return result?.last_index ?? 0;
 	}
 
-	/** Saves the checkpoint for a specific data type */
-	private async saveCheckpoint(data_type: CheckpointDataType, index: number): Promise<void> {
+	/**
+	 * Saves the checkpoint for a specific data type.
+	 *
+	 * Checkpoints are always aligned to the start of an hour (UTC). This is
+	 * a load-bearing invariant: the backfill buckets records by hour and uses
+	 * `upsert` with REPLACE semantics on (keyset, unit, metric, hour). If a
+	 * checkpoint ever landed mid-hour, a resume or rescan would refetch only
+	 * the post-checkpoint portion of that hour and silently overwrite the
+	 * previously-complete total with a partial one. Aligning to hour-start
+	 * guarantees any resumed run re-fetches the entire hour and writes a
+	 * complete replacement.
+	 */
+	private async saveCheckpoint(data_type: CheckpointDataType, timestamp: number): Promise<void> {
 		const mint_pubkey = await this.getMintPubkey();
+		const aligned_ts = timestamp > 0 ? DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger() : timestamp;
 		await this.checkpointRepository.upsert(
 			{
 				module: 'cashu_mint',
 				scope: mint_pubkey,
 				data_type,
-				last_index: index,
+				last_index: aligned_ts,
 				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
