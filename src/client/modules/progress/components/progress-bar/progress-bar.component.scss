@@ -24,6 +24,6 @@
 	background: color-mix(in srgb, var(--orc-status-warning) 10%, transparent);
 
 	.progress-bar-fill {
-		background: var(--orc-status-warning);
+		@extend %orc-status-warning-bg;
 	}
 }

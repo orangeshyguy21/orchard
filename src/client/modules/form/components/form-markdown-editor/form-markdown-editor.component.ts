@@ -135,7 +135,14 @@ export class FormMarkdownEditorComponent implements ControlValueAccessor {
 		Rendering
 	******************************************************** */
 
-	/** Renders the highlighted markdown content into the contenteditable div */
+	/**
+	 * Renders the highlighted markdown content into the contenteditable div.
+	 *
+	 * TODO: Reassigning `innerHTML` on every keystroke wipes the browser's
+	 * native undo stack, so Cmd/Ctrl+Z does nothing. Follow-up patch should
+	 * add a custom history stack (snapshot `{value, cursor}` on input with
+	 * debouncing, intercept Cmd/Ctrl+Z and Shift+Cmd/Ctrl+Z in `onKeyDown`).
+	 */
 	private renderHighlightedContent(): void {
 		const el = this.editor_ref()?.nativeElement;
 		if (!el) return;

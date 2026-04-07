@@ -40,6 +40,7 @@
     @extend %flex-gap-0-25;
     @extend %p-0-5;
     @extend %orc-corner-extra-small;
+    // TODO: --orc-status-inactive needs to be changed to error - and replaced everywhere
     background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
     @extend %orc-status-inactive-color;
 }

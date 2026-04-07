@@ -231,6 +231,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Unified archiving progress (0–99) across mint and lightning backfills.
+	 * Completed streams count as whole units; the in-flight stream contributes a
+	 * fraction based on how much of its `first_processed_at`→now window has been
+	 * covered. Capped at 99 so 100% only shows once archiving truly finishes.
+	 */
 	private computeArchivingProgress(): number {
 		const now = DateTime.now();
 		const statusStreamFraction = (status: AnalyticsBackfillStatus | null): number => {
