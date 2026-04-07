@@ -13,8 +13,8 @@ import {AiAssistant} from './assistant/ai.assistant.enums';
 
 @Injectable()
 export class AiService {
-	private assistant_timeout: number = 60000;
-	private agent_timeout: number = 300000;
+	private assistant_idle_timeout: number = 120000;
+	private agent_idle_timeout: number = 300000;
 
 	constructor(
 		private settingService: SettingService,
@@ -52,10 +52,7 @@ export class AiService {
 	 */
 	async *streamAgent(model: string, messages: AiMessage[], tools: AiTool[], signal?: AbortSignal): AsyncGenerator<AiStreamChunk> {
 		const vendor = await this.getVendor();
-		const timeout_signal = AbortSignal.timeout(this.agent_timeout);
-		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
-
-		yield* vendor.streamChat(model, messages, tools, combined_signal);
+		yield* this.streamWithIdleTimeout(vendor, model, messages, tools, this.agent_idle_timeout, signal);
 	}
 
 	/**
@@ -78,9 +75,68 @@ export class AiService {
 		const system_message = AI_ASSISTANTS[assistant].system_message;
 
 		const vendor = await this.getVendor();
-		const timeout_signal = AbortSignal.timeout(this.assistant_timeout);
-		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
+		yield* this.streamWithIdleTimeout(
+			vendor,
+			model,
+			[system_message as AiMessage, ...messages],
+			tools,
+			this.assistant_idle_timeout,
+			signal,
+		);
+	}
 
-		yield* vendor.streamChat(model, [system_message as AiMessage, ...messages], tools, combined_signal);
+	/**
+	 * Wrap a vendor stream with an idle (inter-chunk) timeout.
+	 * The timer is reset every time a chunk arrives, so long-running streams
+	 * are only aborted when the upstream genuinely stalls. The caller's abort
+	 * signal is forwarded, and idle expiry aborts with a DOMException whose
+	 * name is 'TimeoutError' so consumers can distinguish it from a user abort.
+	 * @param {AiVendor} vendor - The vendor to stream from
+	 * @param {string} model - The model identifier
+	 * @param {AiMessage[]} messages - The messages to send
+	 * @param {AiTool[]} tools - Tool definitions
+	 * @param {number} idle_ms - Max ms allowed between chunks
+	 * @param {AbortSignal} [caller_signal] - Optional caller abort signal
+	 * @returns {AsyncGenerator<AiStreamChunk>} Typed stream chunks
+	 */
+	private async *streamWithIdleTimeout(
+		vendor: AiVendor,
+		model: string,
+		messages: AiMessage[],
+		tools: AiTool[],
+		idle_ms: number,
+		caller_signal?: AbortSignal,
+	): AsyncGenerator<AiStreamChunk> {
+		const idle_controller = new AbortController();
+		let handle: NodeJS.Timeout | undefined;
+		const reset = () => {
+			if (handle) clearTimeout(handle);
+			handle = setTimeout(() => {
+				idle_controller.abort(new DOMException(`No chunks received for ${idle_ms}ms`, 'TimeoutError'));
+			}, idle_ms);
+		};
+		const onCallerAbort = () => idle_controller.abort(caller_signal?.reason ?? new DOMException('Aborted', 'AbortError'));
+		if (caller_signal) {
+			if (caller_signal.aborted) idle_controller.abort(caller_signal.reason ?? new DOMException('Aborted', 'AbortError'));
+			else caller_signal.addEventListener('abort', onCallerAbort, {once: true});
+		}
+		try {
+			reset();
+			for await (const chunk of vendor.streamChat(model, messages, tools, idle_controller.signal)) {
+				reset();
+				yield chunk;
+			}
+		} catch (error) {
+			// Fetch surfaces signal-driven aborts as a generic AbortError without the signal's
+			// reason. If our idle timer was the trigger (caller did not cancel), re-throw the
+			// timer's reason so consumers can distinguish a timeout from a user abort.
+			if (idle_controller.signal.aborted && !caller_signal?.aborted && idle_controller.signal.reason instanceof DOMException) {
+				throw idle_controller.signal.reason;
+			}
+			throw error;
+		} finally {
+			if (handle) clearTimeout(handle);
+			if (caller_signal) caller_signal.removeEventListener('abort', onCallerAbort);
+		}
 	}
 }
