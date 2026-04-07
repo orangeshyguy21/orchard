@@ -1,6 +1,6 @@
 /* Local Dependencies */
 import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
-import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
+import {AiToolEntry, ToolGuardName} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
 	GraphQL Queries
@@ -140,7 +140,7 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 				'- `fees_amount` — protocol fees collected',
 				'',
 				'**Usage:** Use the `metrics` parameter to filter for specific metrics. Omit to get all.',
-				'**Defaults:** `date_start` = all time, `date_end` = now, `units` = all. Always provide a `date_start` to scope results.',
+				'**Defaults:** `date_start` = all time, `date_end` = now, `units` = all. See parameter docs for when to scope `date_start` vs leave it open.',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -156,7 +156,7 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 					date_start: {
 						type: 'number',
 						description:
-							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). Set this for time-bounded questions (e.g. "this month", "last 7 days"); omit it for current-state or all-time queries (e.g. "current balance", "lifetime totals").',
 					},
 					date_end: {
 						type: 'number',
@@ -164,8 +164,9 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 					},
 					interval: {
 						type: 'string',
-						description: 'The aggregation interval for bucketing analytics data.',
-						enum: ['hour', 'day', 'week', 'month'],
+						description:
+							'Aggregation bucket size. Use `hour`/`day`/`week`/`month` for time-series breakdowns over the range. Use `custom` to collapse the entire `date_start`–`date_end` window into a single aggregated bucket — ideal for all-time totals or totals over an arbitrary custom range.',
+						enum: ['hour', 'day', 'week', 'month', 'custom'],
 					},
 					metrics: {
 						type: 'array',
@@ -194,6 +195,7 @@ export const GetMintAnalyticsMetricsTool: AiToolEntry = {
 	query: GET_MINT_ANALYTICS_METRICS_QUERY,
 	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
+	guards: [ToolGuardName.AnalyticsBucketBudget],
 };
 
 /** Fetches mint analytics for balances, mints, melts, and fees */
@@ -215,7 +217,7 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 				'- `melts` — tokens redeemed (ecash → Lightning conversions)',
 				'- `fees` — fees collected from mint/melt operations',
 				'',
-				'**Defaults:** `date_start` = all time (epoch 0), `date_end` = now, `units` = all. Always provide a `date_start` to scope results.',
+				'**Defaults:** `date_start` = all time (epoch 0), `date_end` = now, `units` = all. See parameter docs for when to scope `date_start` vs leave it open.',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -231,7 +233,7 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 					date_start: {
 						type: 'number',
 						description:
-							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). Set this for time-bounded questions (e.g. "this month", "last 7 days"); omit it for current-state or all-time queries (e.g. "current balance", "lifetime totals").',
 					},
 					date_end: {
 						type: 'number',
@@ -239,8 +241,9 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 					},
 					interval: {
 						type: 'string',
-						description: 'The aggregation interval for bucketing analytics data.',
-						enum: ['hour', 'day', 'week', 'month'],
+						description:
+							'Aggregation bucket size. Use `hour`/`day`/`week`/`month` for time-series breakdowns over the range. Use `custom` to collapse the entire `date_start`–`date_end` window into a single aggregated bucket — ideal for all-time totals or totals over an arbitrary custom range.',
+						enum: ['hour', 'day', 'week', 'month', 'custom'],
 					},
 				},
 			},
@@ -249,4 +252,5 @@ export const GetMintAnalyticsTool: AiToolEntry = {
 	query: GET_MINT_ANALYTICS_QUERY,
 	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
+	guards: [ToolGuardName.AnalyticsBucketBudget],
 };
