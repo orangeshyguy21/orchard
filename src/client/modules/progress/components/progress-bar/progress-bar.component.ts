@@ -11,6 +11,5 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 export class ProgressBarComponent {
 	public value = input.required<number>();
 	public height = input<string>('1rem');
-	public bar_color = input<string>('');
-	public track_color = input<string>('');
+	public variant = input<'' | 'progress-warning'>('');
 }

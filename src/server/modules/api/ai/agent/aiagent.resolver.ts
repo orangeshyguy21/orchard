@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
+/* Vendor Dependencies */
+import {Throttle, minutes} from '@nestjs/throttler';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
@@ -124,6 +126,7 @@ export class AiAgentResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Throttle({default: {limit: 3, ttl: minutes(1)}})
 	@Mutation(() => OrchardAgentRun, {description: 'Execute an AI agent immediately'})
 	async ai_agent_execute(@Args('id', {description: 'Agent identifier'}) id: string): Promise<OrchardAgentRun> {
 		const tag = 'MUTATION { ai_agent_execute }';

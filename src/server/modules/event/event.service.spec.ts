@@ -165,6 +165,95 @@ describe('EventLogService', () => {
 	});
 
 	/**
+	 * Test logEvent method (fire-and-forget audit logging)
+	 */
+	describe('logEvent', () => {
+		const base_input: CreateEventLogInput = {
+			actor_type: EventLogActorType.USER,
+			actor_id: 'user-uuid-1',
+			timestamp: 1700000000,
+			section: EventLogSection.SETTINGS,
+			entity_type: EventLogEntityType.INFO,
+			entity_id: 'bitcoin.oracle',
+			type: EventLogType.UPDATE,
+			status: EventLogStatus.SUCCESS,
+			details: [
+				{
+					field: 'name',
+					old_value: 'old',
+					new_value: 'new',
+					status: EventLogDetailStatus.SUCCESS,
+				},
+			],
+		};
+
+		it('should skip when details are empty', () => {
+			// act
+			service.logEvent({...base_input, details: []});
+
+			// assert
+			expect(mock_event_repository.create).not.toHaveBeenCalled();
+			expect(mock_event_repository.save).not.toHaveBeenCalled();
+		});
+
+		it('should call createEvent when details are present', () => {
+			// arrange
+			mock_detail_repository.create.mockReturnValue(mock_detail);
+			mock_event_repository.create.mockReturnValue(mock_event);
+			mock_event_repository.save.mockResolvedValue(mock_event);
+
+			// act
+			service.logEvent(base_input);
+
+			// assert
+			expect(mock_event_repository.create).toHaveBeenCalledTimes(1);
+			expect(mock_event_repository.save).toHaveBeenCalledTimes(1);
+		});
+
+		it('should swallow repository errors and not throw', async () => {
+			// arrange
+			mock_detail_repository.create.mockReturnValue(mock_detail);
+			mock_event_repository.create.mockReturnValue(mock_event);
+			mock_event_repository.save.mockRejectedValue(new Error('db down'));
+
+			// act
+			expect(() => service.logEvent(base_input)).not.toThrow();
+			// allow the floating promise to settle so the .catch handler runs
+			await new Promise((resolve) => setImmediate(resolve));
+
+			// assert
+			expect(mock_event_repository.save).toHaveBeenCalledTimes(1);
+		});
+
+		it('should log agent-run audit events (AGENT actor, AI section)', () => {
+			// arrange
+			mock_detail_repository.create.mockReturnValue(mock_detail);
+			mock_event_repository.create.mockReturnValue(mock_event);
+			mock_event_repository.save.mockResolvedValue(mock_event);
+
+			// act
+			service.logEvent({
+				...base_input,
+				actor_type: EventLogActorType.AGENT,
+				actor_id: 'agent-uuid-1',
+				section: EventLogSection.AI,
+				entity_type: EventLogEntityType.AGENT,
+				type: EventLogType.EXECUTE,
+			});
+
+			// assert
+			expect(mock_event_repository.create).toHaveBeenCalledWith(
+				expect.objectContaining({
+					actor_type: EventLogActorType.AGENT,
+					section: EventLogSection.AI,
+					entity_type: EventLogEntityType.AGENT,
+					type: EventLogType.EXECUTE,
+				}),
+			);
+		});
+	});
+
+	/**
 	 * Test getEvents method
 	 */
 	describe('getEvents', () => {

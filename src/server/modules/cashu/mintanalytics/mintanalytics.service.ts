@@ -76,8 +76,8 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		const where: FindOptionsWhere<MintAnalytics> = {mint_pubkey};
 
 		if (args.date_start !== undefined && args.date_end !== undefined) {
-			const start_hour = DateTime.fromSeconds(args.date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-			const end_hour = DateTime.fromSeconds(args.date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const start_hour = DateTime.fromSeconds(args.date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+			const end_hour = DateTime.fromSeconds(args.date_end, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			where.date = Between(start_hour, end_hour);
 		}
 
@@ -99,7 +99,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toUnixInteger(), hours_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, total_streams: 5, streams_completed: 0, errors: 0};
 
 		let client: CashuMintDatabase;
 		try {
@@ -107,7 +107,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			if (client.type === 'postgres') await client.database.connect();
 		} catch (error) {
 			this.logger.error('Failed to connect to mint database for backfill', error);
-			this.backfill_status = {is_running: false, started_at: 0, hours_completed: 0, errors: 0};
+			this.backfill_status = {is_running: false, total_streams: 0, streams_completed: 0, errors: 0};
 			return;
 		}
 		this.logger.log('Starting cashu mint analytics backfill');
@@ -118,7 +118,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				this.logger.warn('Mint not reachable, skipping analytics backfill');
 				return;
 			}
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+			const current_hour = DateTime.utc().startOf('hour').toUnixInteger();
 
 			await this.streamAndBucket<CashuMintMintQuote>(
 				current_hour,
@@ -127,6 +127,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listMintQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMintQuoteMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintMeltQuote>(
 				current_hour,
 				'melt_quotes',
@@ -134,6 +135,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listMeltQuotes(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertMeltQuoteMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintSwap>(
 				current_hour,
 				'swaps',
@@ -141,6 +143,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listSwaps(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertSwapMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintProof>(
 				current_hour,
 				'proofs',
@@ -153,6 +156,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					}),
 				(h, records) => this.insertProofMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 			await this.streamAndBucket<CashuMintPromise>(
 				current_hour,
 				'promises',
@@ -160,8 +164,9 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 					this.cashuMintDatabaseService.listPromises(client, {page_size, sort_order, date_start}),
 				(h, records) => this.insertPromiseMetrics(h, records),
 			);
+			this.backfill_status.streams_completed++;
 
-			this.logger.log(`Cashu mint analytics backfill complete: ${this.backfill_status.hours_completed} hours cached`);
+			this.logger.log('Cashu mint analytics backfill complete');
 		} catch (error) {
 			this.logger.error('Cashu mint analytics backfill error', error);
 			this.backfill_status.errors++;
@@ -239,12 +244,15 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			for (const hour of complete_hours.sort((a, b) => a - b)) {
 				await inserter(hour, pending_bucket.get(hour)!);
 				pending_bucket.delete(hour);
-				this.backfill_status.hours_completed++;
+				this.recordProcessedHour(hour);
 			}
 
-			// Progressive checkpoint: save after flushing so crash recovery resumes near here
-			if (complete_hours.length > 0 && cursor !== undefined) {
-				await this.saveCheckpoint(data_type, cursor);
+			// Progressive checkpoint: resume from the flush boundary, not the raw cursor.
+			// `safe_boundary` is the earliest hour still in pending_bucket (everything before
+			// it has been written). Saving `cursor` (= last_time, mid-hour) would cause a
+			// resume to skip the buffered-but-unflushed hours between safe_boundary and cursor.
+			if (complete_hours.length > 0) {
+				await this.saveCheckpoint(data_type, safe_boundary);
 			}
 
 			if (batch.length < BATCH_SIZE) break;
@@ -478,16 +486,28 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		return result?.last_index ?? 0;
 	}
 
-	/** Saves the checkpoint for a specific data type */
-	private async saveCheckpoint(data_type: CheckpointDataType, index: number): Promise<void> {
+	/**
+	 * Saves the checkpoint for a specific data type.
+	 *
+	 * Checkpoints are always aligned to the start of an hour (UTC). This is
+	 * a load-bearing invariant: the backfill buckets records by hour and uses
+	 * `upsert` with REPLACE semantics on (keyset, unit, metric, hour). If a
+	 * checkpoint ever landed mid-hour, a resume or rescan would refetch only
+	 * the post-checkpoint portion of that hour and silently overwrite the
+	 * previously-complete total with a partial one. Aligning to hour-start
+	 * guarantees any resumed run re-fetches the entire hour and writes a
+	 * complete replacement.
+	 */
+	private async saveCheckpoint(data_type: CheckpointDataType, timestamp: number): Promise<void> {
 		const mint_pubkey = await this.getMintPubkey();
+		const aligned_ts = timestamp > 0 ? DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toUnixInteger() : timestamp;
 		await this.checkpointRepository.upsert(
 			{
 				module: 'cashu_mint',
 				scope: mint_pubkey,
 				data_type,
-				last_index: index,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				last_index: aligned_ts,
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
 		);
@@ -529,7 +549,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				date: params.hour,
 				amount: params.amount.toString(),
 				count: params.count,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			{conflictPaths: ['mint_pubkey', 'keyset_id', 'unit', 'metric', 'date']},
 		);
@@ -557,11 +577,17 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		return Object.entries(map);
 	}
 
+	/** Records a processed hour, seeding first_processed_at on the first call */
+	private recordProcessedHour(hour: number): void {
+		if (this.backfill_status.first_processed_at == null) this.backfill_status.first_processed_at = hour;
+		this.backfill_status.last_processed_at = hour;
+	}
+
 	/** Flushes all remaining buckets */
 	private async flushBuckets<T>(bucket: Map<number, T[]>, inserter: (hour: number, records: T[]) => Promise<void>): Promise<void> {
 		for (const [hour, records] of Array.from(bucket).sort(([a], [b]) => a - b)) {
 			await inserter(hour, records);
-			this.backfill_status.hours_completed++;
+			this.recordProcessedHour(hour);
 		}
 		bucket.clear();
 	}
@@ -578,7 +604,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		for (const hour of oldest_hours) {
 			await inserter(hour, bucket.get(hour)!);
 			bucket.delete(hour);
-			this.backfill_status.hours_completed++;
+			this.recordProcessedHour(hour);
 		}
 	}
 }

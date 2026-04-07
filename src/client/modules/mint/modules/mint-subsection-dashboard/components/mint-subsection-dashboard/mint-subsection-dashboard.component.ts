@@ -54,7 +54,12 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AssistantToolName, AnalyticsInterval, MintActivityPeriod, MintUnit} from '@shared/generated.types';
 
-enum NavTertiary {
+enum NavSummary {
+	Mint = 'summary1',
+	BalanceSheet = 'summary2',
+}
+
+enum NavChart {
 	BalanceSheet = 'nav1',
 	Mints = 'nav2',
 	Melts = 'nav3',
@@ -62,6 +67,8 @@ enum NavTertiary {
 	FeeRevenue = 'nav5',
 	Ecash = 'nav6',
 }
+
+type NavSection = 'summary' | 'charts';
 
 type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 'ecash';
 
@@ -73,7 +80,8 @@ type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
-	@ViewChildren('nav1,nav2,nav3,nav4,nav5,nav6') nav_elements!: QueryList<ElementRef>;
+	@ViewChildren('summary1,summary2,nav1,nav2,nav3,nav4,nav5,nav6') nav_elements!: QueryList<ElementRef>;
+	@ViewChild('summary_container', {static: false}) summary_container!: ElementRef;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
@@ -115,13 +123,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public errors_lightning: OrchardError[] = [];
 	// charts
 	public page_settings: WritableSignal<NonNullableMintDashboardSettings>;
-	public tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
-		[NavTertiary.BalanceSheet]: {title: 'Balance Sheet'},
-		[NavTertiary.Mints]: {title: 'Mints'},
-		[NavTertiary.Melts]: {title: 'Melts'},
-		[NavTertiary.Swaps]: {title: 'Swaps'},
-		[NavTertiary.FeeRevenue]: {title: 'Fee Revenue'},
-		[NavTertiary.Ecash]: {title: 'Ecash Counts'},
+	public summary_nav_items: Record<NavSummary, NavTertiaryItem> = {
+		[NavSummary.Mint]: {title: 'Mint'},
+		[NavSummary.BalanceSheet]: {title: 'Balance Sheet'},
+	};
+	public chart_nav_items: Record<NavChart, NavTertiaryItem> = {
+		[NavChart.BalanceSheet]: {title: 'Balance Sheet'},
+		[NavChart.Mints]: {title: 'Mints'},
+		[NavChart.Melts]: {title: 'Melts'},
+		[NavChart.Swaps]: {title: 'Swaps'},
+		[NavChart.FeeRevenue]: {title: 'Fee Revenue'},
+		[NavChart.Ecash]: {title: 'Ecash Counts'},
 	};
 	public chart_type_options: Record<string, ChartType[]> = {
 		balance_sheet: [ChartType.Totals, ChartType.Volume],
@@ -146,7 +158,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public error_activity = signal<boolean>(false);
 	public selected_activity_period = signal<MintActivityPeriod>(MintActivityPeriod.Week);
 
-	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
+	public summary_nav = computed(() => this.page_settings().summary_nav || []);
+	public chart_nav = computed(() => this.page_settings().chart_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
 	public type_mints = computed(() => this.page_settings().type.mints || ChartType.Volume);
 	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
@@ -157,6 +170,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public is_archiving = computed(
 		() => !!this.mint_analytics_backfill_status()?.is_running || !!this.lightning_analytics_backfill_status()?.is_running,
 	);
+	public archiving_progress = computed(() => this.computeArchivingProgress());
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -215,6 +229,38 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_lightning.set(true);
 			this.subscriptions.add(this.getLightningBalanceSubscription());
 		}
+	}
+
+	/**
+	 * Unified archiving progress (0–99) across mint and lightning backfills.
+	 * Completed streams count as whole units; the in-flight stream contributes a
+	 * fraction based on how much of its `first_processed_at`→now window has been
+	 * covered. Capped at 99 so 100% only shows once archiving truly finishes.
+	 */
+	private computeArchivingProgress(): number {
+		const now = DateTime.now();
+		const statusStreamFraction = (status: AnalyticsBackfillStatus | null): number => {
+			if (!status?.first_processed_at || !status.last_processed_at) return 0;
+			const first = DateTime.fromSeconds(status.first_processed_at);
+			const last = DateTime.fromSeconds(status.last_processed_at);
+			const window_seconds = now.diff(first).as('seconds');
+			if (window_seconds <= 0) return 0;
+			const processed_seconds = last.diff(first).as('seconds');
+			return Math.max(0, Math.min(1, processed_seconds / window_seconds));
+		};
+		const mint = this.mint_analytics_backfill_status();
+		const ln = this.lightning_analytics_backfill_status();
+		let completed = 0;
+		let total = 0;
+		if (mint?.is_running) {
+			completed += (mint.streams_completed ?? 0) + statusStreamFraction(mint);
+			total += mint.total_streams ?? 0;
+		}
+		if (ln?.is_running) {
+			completed += (ln.streams_completed ?? 0) + statusStreamFraction(ln);
+			total += ln.total_streams ?? 0;
+		}
+		return total > 0 ? Math.min(99, Math.floor((completed / total) * 100)) : 0;
 	}
 
 	private getMintGenesisTime(): number {
@@ -333,7 +379,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async initAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingDeviceService.getLocale();
-			this.updateTertiaryNav();
+			this.updateGridNav('summary');
+			this.updateGridNav('charts');
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await Promise.all([this.loadMintAnalytics(), this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve()]);
@@ -491,7 +538,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.getSelectedDateStart(),
 			date_end: resolved_dates?.date_end ?? settings.date_end ?? this.getSelectedDateEnd(),
 			date_preset,
-			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
+			summary_nav: settings.summary_nav ?? Object.values(NavSummary),
+			chart_nav: settings.chart_nav ?? Object.values(NavChart),
 			oracle_used: this.bitcoin_oracle_enabled ? (settings.oracle_used ?? false) : false,
 		};
 	}
@@ -593,27 +641,30 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		Tertiary Nav                      
 	******************************************************** */
 
-	public onTertiaryNavChange(event: string[]): void {
+	public onTertiaryNavChange(event: string[], section: NavSection): void {
 		const current = this.page_settings();
-		const updated = {...current, tertiary_nav: event};
+		const key = section === 'summary' ? 'summary_nav' : 'chart_nav';
+		const updated = {...current, [key]: event};
 		this.page_settings.set(updated);
 		this.settingDeviceService.setMintDashboardSettings(updated);
-		this.updateTertiaryNav();
+		this.updateGridNav(section);
 	}
 
-	public onTertiaryNavSelect(event: string): void {
-		this.scrollToChart(event as NavTertiary);
+	public onTertiaryNavSelect(event: string, _section: NavSection): void {
+		this.scrollToNav(event);
 	}
 
-	private updateTertiaryNav(): void {
-		if (!this.chart_container) return;
-		const tertiary_nav = this.page_settings()
-			.tertiary_nav.map((area) => `"${area}"`)
+	private updateGridNav(section: NavSection): void {
+		const container = section === 'summary' ? this.summary_container : this.chart_container;
+		if (!container) return;
+		const key = section === 'summary' ? 'summary_nav' : 'chart_nav';
+		const areas = this.page_settings()
+			[key].map((area: string) => `"${area}"`)
 			.join(' ');
-		this.chart_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
+		container.nativeElement.style.gridTemplateAreas = areas;
 	}
 
-	private scrollToChart(nav_item: NavTertiary) {
+	private scrollToNav(nav_item: string) {
 		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
 		setTimeout(() => {

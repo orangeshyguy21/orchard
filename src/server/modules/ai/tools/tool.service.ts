@@ -31,14 +31,25 @@ import {
 import {MessageService} from '@server/modules/message/message.service';
 import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
-import {AiAgentContext, AiToolResult, AiToolEntry} from './tool.types';
+import {AiAgentContext, AiToolResult, AiToolEntry, ToolGuard, ToolGuardContext, ToolGuardName} from './tool.types';
 
 @Injectable()
 export class ToolService {
+	private static readonly INTERVAL_SECONDS: Record<'hour' | 'day' | 'week' | 'month', number> = {
+		hour: 3_600,
+		day: 86_400,
+		week: 604_800,
+		month: 2_592_000,
+	};
+	private static readonly MAX_ANALYTICS_BUCKETS = 500;
+
 	private readonly logger = new Logger(ToolService.name);
 	private readonly registry = new Map<string, AiToolEntry>();
 	private readonly call_log = new Map<string, number[]>();
 	private readonly parsed_queries = new Map<string, DocumentNode>();
+	private readonly guards: ReadonlyMap<ToolGuardName, ToolGuard> = new Map([
+		[ToolGuardName.AnalyticsBucketBudget, (context: ToolGuardContext) => this.guardAnalyticsBucketBudget(context)],
+	]);
 	private schema: GraphQLSchema | null = null;
 
 	constructor(
@@ -126,6 +137,12 @@ export class ToolService {
 			return {success: false, error: throttle_error};
 		}
 
+		const guard_error = this.runGuards(entry, name, args);
+		if (guard_error) {
+			this.logger.warn(`Tool ${name} rejected by guard: ${guard_error}`);
+			return {success: false, error: guard_error};
+		}
+
 		this.recordCall(name);
 
 		try {
@@ -136,8 +153,8 @@ export class ToolService {
 			}
 			return {success: false, error: `Tool ${name} has no query or handler configured`};
 		} catch (error) {
-			this.logger.error(`Tool ${name} failed: ${error.message}`);
-			return {success: false, error: error.message};
+			this.logger.error(`Tool ${name} failed`, error);
+			return {success: false, error: String(error?.message ?? error)};
 		}
 	}
 
@@ -170,6 +187,63 @@ export class ToolService {
 			timestamps.splice(0, timestamps.length - 100);
 		}
 		this.call_log.set(name, timestamps);
+	}
+
+	/* *******************************************************
+		Tool Guards
+	******************************************************** */
+
+	/**
+	 * Run all registered guards against a pending tool call.
+	 * Returns the first error message produced, or null if every guard approves.
+	 */
+	private runGuards(entry: AiToolEntry, tool_name: string, variables: Record<string, unknown>): string | null {
+		if (!entry.guards?.length) return null;
+		const context: ToolGuardContext = {tool_name, variables};
+		for (const guard_name of entry.guards) {
+			const guard = this.guards.get(guard_name);
+			if (!guard) continue;
+			const error = guard(context);
+			if (error) return error;
+		}
+		return null;
+	}
+
+	/**
+	 * Reject analytics calls that would return an unbounded number of buckets.
+	 * The model occasionally requests a fine-grained interval against an open
+	 * date_start, which produces tens of thousands of rows and blows the context
+	 * window. Returning a teaching error lets the model self-correct on the next turn.
+	 */
+	private guardAnalyticsBucketBudget({variables}: ToolGuardContext): string | null {
+		const interval = variables.interval as string | undefined;
+		if (!interval || interval === 'custom') return null;
+
+		const interval_seconds = ToolService.INTERVAL_SECONDS[interval as keyof typeof ToolService.INTERVAL_SECONDS];
+		if (!interval_seconds) return null;
+
+		const now = DateTime.utc().toUnixInteger();
+		const date_start = (variables.date_start as number | undefined) ?? 0;
+		const date_end = (variables.date_end as number | undefined) ?? now;
+
+		if (date_start <= 0) {
+			return (
+				`interval='${interval}' requires a bounded date_start. ` +
+				`For all-time totals or a single aggregated value over the full range, use interval='custom' instead. ` +
+				`For a time-series, set date_start to the beginning of the window you care about.`
+			);
+		}
+
+		const estimated_buckets = Math.ceil((date_end - date_start) / interval_seconds);
+		if (estimated_buckets > ToolService.MAX_ANALYTICS_BUCKETS) {
+			return (
+				`interval='${interval}' over the requested range would return ~${estimated_buckets} buckets ` +
+				`(max ${ToolService.MAX_ANALYTICS_BUCKETS}). ` +
+				`Use a coarser interval (e.g. 'week'/'month'), narrow date_start, or use interval='custom' for a single aggregate.`
+			);
+		}
+
+		return null;
 	}
 
 	/* *******************************************************

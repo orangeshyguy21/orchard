@@ -1,12 +1,15 @@
 @use 'molecule/molecule';
 
+$orc-md-structural: rgb(186, 203, 102);
+$orc-md-emphasis: rgb(220, 176, 114);
+
 .orc-md-header-marker {
-    color: rgb(186, 203, 102);
+    color: $orc-md-structural;
     font-weight: 700;
 }
 
 .orc-md-header {
-    color: rgb(186, 203, 102);
+    color: $orc-md-structural;
     font-weight: 700;
 }
 
@@ -16,7 +19,7 @@
 
 .orc-md-bold {
     font-weight: 700;
-    color: rgb(220, 176, 114);
+    color: $orc-md-emphasis;
 }
 
 .orc-md-italic-marker {
@@ -25,15 +28,24 @@
 
 .orc-md-italic {
     font-style: italic;
-    color: rgb(220, 176, 114);
+    color: $orc-md-emphasis;
 }
 
 .orc-md-code {
-    color: rgb(220, 176, 114);
-    background-color: color-mix(in srgb, rgb(220, 176, 114), transparent 90%);
+    color: $orc-md-emphasis;
+    background-color: color-mix(in srgb, $orc-md-emphasis, transparent 90%);
     border-bottom-right-radius: var(--mat-sys-corner-small);
     border-bottom-left-radius: var(--mat-sys-corner-small);
     padding: 0.1rem 0.25rem;
+}
+
+.orc-md-code-block {
+    display: inline-block;
+    color: $orc-md-emphasis;
+    background-color: color-mix(in srgb, $orc-md-emphasis, transparent 92%);
+    border-radius: var(--mat-sys-corner-small);
+    padding: 0.25rem 0.5rem;
+    white-space: pre;
 }
 
 .orc-md-blockquote {
@@ -41,7 +53,7 @@
 }
 
 .orc-md-list-marker {
-    color: rgb(186, 203, 102);
+    color: $orc-md-structural;
     font-weight: 700;
 }
 

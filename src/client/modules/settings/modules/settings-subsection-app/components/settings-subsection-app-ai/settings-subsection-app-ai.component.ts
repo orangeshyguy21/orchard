@@ -63,6 +63,9 @@ export class SettingsSubsectionAppAiComponent {
 	public loading_health = signal<boolean>(false);
 	public loading_agents = signal<boolean>(false);
 
+	private previous_ollama_api: string | null = null;
+	private previous_openrouter_key: string | null = null;
+
 	public readonly groundskeeper = computed<AiAgent | null>(() => {
 		for (const agent of this.agents().values()) {
 			if (agent.agent_key === AgentKey.Groundskeeper) return agent;
@@ -115,6 +118,18 @@ export class SettingsSubsectionAppAiComponent {
 			if (!ai_vendor || ai_vendor === '') return;
 			this.getAiModels();
 		});
+		effect(() => {
+			const ai_ollama_api = this.app_settings()?.ai_ollama_api;
+			const ai_openrouter_key = this.app_settings()?.ai_openrouter_key;
+			const ollama_changed = ai_ollama_api !== this.previous_ollama_api;
+			const openrouter_changed = ai_openrouter_key !== this.previous_openrouter_key;
+
+			if (ollama_changed || openrouter_changed) {
+				this.previous_ollama_api = ai_ollama_api ?? null;
+				this.previous_openrouter_key = ai_openrouter_key ?? null;
+				this.ai_health.set(null);
+			}
+		});
 	}
 
 	private getAiHealth(): void {
@@ -129,7 +144,7 @@ export class SettingsSubsectionAppAiComponent {
 					this.loading_health.set(false);
 				},
 				error: () => {
-					this.ai_health.set(null);
+					this.ai_health.set(new AiHealth({status: false, vendor: this.app_settings()?.ai_vendor ?? '', message: null}));
 					this.loading_health.set(false);
 				},
 			});

@@ -116,6 +116,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	// ── Private properties ──
 	private subscriptions: Subscription = new Subscription();
+	private ai_initialized: boolean = false;
 	private bitcoin_polling_active: boolean = false;
 
 	constructor() {
@@ -157,20 +158,24 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getMintInfoSubscription());
 		}
 		// if taproot go get the ids
-		if (this.ai_enabled()) {
-			this.subscriptions.add(this.getAssistantSubscription());
-			this.subscriptions.add(this.getActiveAiSubscription());
-			this.subscriptions.add(this.getAiMessagesSubscription());
-			this.subscriptions.add(this.getAiConversationSubscription());
-			this.ai_model.set(this.settingDeviceService.getModel());
-			if (!this.ai_model()) {
-				this.aiService.getFunctionModel().subscribe((model) => {
-					this.ai_model.set(model?.model || null);
-					this.settingDeviceService.setModel(this.ai_model());
-				});
-			}
-			this.getModels();
+		if (this.ai_enabled()) this.initAi();
+	}
+
+	private initAi(): void {
+		if (this.ai_initialized) return;
+		this.ai_initialized = true;
+		this.subscriptions.add(this.getAssistantSubscription());
+		this.subscriptions.add(this.getActiveAiSubscription());
+		this.subscriptions.add(this.getAiMessagesSubscription());
+		this.subscriptions.add(this.getAiConversationSubscription());
+		this.ai_model.set(this.settingDeviceService.getModel());
+		if (!this.ai_model()) {
+			this.aiService.getFunctionModel().subscribe((model) => {
+				this.ai_model.set(model?.model || null);
+				this.settingDeviceService.setModel(this.ai_model());
+			});
 		}
+		this.getModels();
 	}
 
 	/* *******************************************************
@@ -329,7 +334,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
 				this.ai_model.set(this.settingDeviceService.getModel());
 				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
-				this.getModels();
+				this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
+				if (this.ai_enabled()) {
+					if (this.ai_initialized) this.getModels();
+					else this.initAi();
+				}
 			}
 		});
 	}

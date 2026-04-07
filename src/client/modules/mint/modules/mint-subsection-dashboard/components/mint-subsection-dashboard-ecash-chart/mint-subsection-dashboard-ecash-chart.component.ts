@@ -297,7 +297,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 		};
 	}
 
-	/** Builds a solid bar dataset for proofs (volume mode) */
+	/** Builds a striped bar dataset for proofs (volume mode) */
 	private buildBarVolumeDataset(data: {x: number; y: number}[], unit: string, type: string, color: {bg: string; border: string}): any {
 		return {
 			data,
@@ -305,7 +305,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 			_type: type,
 			_unit: unit,
 			stack: 'counts',
-			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+			backgroundColor: this.chartService.createStripePattern(color.border),
 			borderColor: color.border,
 			borderWidth: 1,
 			borderRadius: 0,
@@ -313,7 +313,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 		};
 	}
 
-	/** Builds a striped bar dataset for promises (volume mode) */
+	/** Builds a solid bar dataset for promises (volume mode) */
 	private buildBarPromiseDataset(data: {x: number; y: number}[], unit: string, color: {bg: string; border: string}): any {
 		return {
 			data,
@@ -321,7 +321,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 			_type: 'promise',
 			_unit: unit,
 			stack: 'counts',
-			backgroundColor: this.chartService.createStripePattern(color.border),
+			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 			borderColor: color.border,
 			borderWidth: 1,
 			borderSkipped: false,

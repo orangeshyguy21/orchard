@@ -80,8 +80,8 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
-		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger();
+		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 		const where: FindOptionsWhere<BitcoinAnalytics> = {
 			node_pubkey,
 			date: Between(start_hour, end_hour),
@@ -128,7 +128,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				scope: node_pubkey,
 				data_type,
 				last_index: index,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			['module', 'scope', 'data_type'],
 		);
@@ -161,7 +161,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				date: params.hour,
 				amount: params.amount.toString(),
 				count: params.count,
-				updated_at: Math.floor(DateTime.utc().toSeconds()),
+				updated_at: DateTime.utc().toUnixInteger(),
 			},
 			{conflictPaths: ['node_pubkey', 'group_key', 'unit', 'metric', 'date']},
 		);
@@ -196,6 +196,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		Streaming Backfill
 	******************************************************** */
 
+	/** Records a processed hour, seeding first_processed_at on the first call */
+	private recordProcessedHour(hour: number): void {
+		if (this.backfill_status.first_processed_at == null) this.backfill_status.first_processed_at = hour;
+		this.backfill_status.last_processed_at = hour;
+	}
+
 	/**
 	 * Runs all backfill streams: BTC transactions, asset transfers, asset receives
 	 */
@@ -205,7 +211,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
+		this.backfill_status = {is_running: true, total_streams: 3, streams_completed: 0, errors: 0};
 		this.logger.log('Starting bitcoin analytics backfill');
 
 		try {
@@ -215,10 +221,11 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				return;
 			}
 
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+			const current_hour = DateTime.utc().startOf('hour').toUnixInteger();
 
 			// Stream 1: BTC on-chain transactions
 			await this.backfillBtcTransactions(current_hour);
+			this.backfill_status.streams_completed++;
 
 			// Streams 2 & 3: Taproot Asset transfers and receives (share asset info map)
 			let asset_info_map: AssetInfoMap = new Map();
@@ -234,9 +241,12 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 					this.backfillAssetTransfers(current_hour, asset_info_map),
 					this.backfillAssetReceives(current_hour, asset_info_map),
 				]);
+				this.backfill_status.streams_completed += 2;
+			} else {
+				this.backfill_status.total_streams -= 2;
 			}
 
-			this.logger.log(`Bitcoin analytics backfill complete: ${this.backfill_status.hours_completed} hours cached`);
+			this.logger.log('Bitcoin analytics backfill complete');
 		} catch (error) {
 			this.logger.error('Bitcoin analytics backfill error', error);
 			this.backfill_status.errors++;
@@ -273,7 +283,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		// Group by hour
 		const buckets: Map<number, LightningTransaction[]> = new Map();
 		for (const tx of new_txs) {
-			const hour = DateTime.fromSeconds(tx.time_stamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(tx.time_stamp, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);
@@ -334,7 +344,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				count: fees_count,
 			});
 
-			this.backfill_status.hours_completed++;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)
@@ -375,7 +385,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		const buckets: Map<number, AssetTransfer[]> = new Map();
 		for (const transfer of new_transfers) {
 			const ts = Number(transfer.transfer_timestamp);
-			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);
@@ -436,7 +446,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				});
 			}
 
-			this.backfill_status.hours_completed++;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)
@@ -478,7 +488,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 		const buckets: Map<number, AddrEvent[]> = new Map();
 		for (const event of new_events) {
 			const ts = Number(event.creation_time_unix_seconds);
-			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const hour = DateTime.fromSeconds(ts, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			if (hour >= current_hour) continue;
 
 			if (!buckets.has(hour)) buckets.set(hour, []);
@@ -518,7 +528,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 				});
 			}
 
-			this.backfill_status.hours_completed++;
+			this.recordProcessedHour(hour);
 		}
 
 		// Save checkpoint from flushed records only (not current-hour records)

@@ -24,6 +24,27 @@ export type AiToolResult = {
 };
 
 /* *******************************************************
+	Tool Guards
+******************************************************** */
+
+/** Identifiers for opt-in tool guards. Tool entries declare which guards apply via `guards`. */
+export enum ToolGuardName {
+	AnalyticsBucketBudget = 'analytics_bucket_budget',
+}
+
+/** Context passed to a guard when inspecting a pending tool call */
+export type ToolGuardContext = {
+	tool_name: string;
+	variables: Record<string, unknown>;
+};
+
+/**
+ * A guard inspects a pending tool call and either approves it (returns null)
+ * or rejects it with a teaching error message that the model can act on.
+ */
+export type ToolGuard = (context: ToolGuardContext) => string | null;
+
+/* *******************************************************
 	Tool Handlers
 ******************************************************** */
 
@@ -50,4 +71,5 @@ export type AiToolEntry = {
 	throttle_window_seconds: number;
 	query?: string;
 	handler?: AiToolHandler;
+	guards?: ToolGuardName[];
 };

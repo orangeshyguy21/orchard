@@ -48,7 +48,7 @@ export class ConversationService {
 	******************************************************** */
 
 	/** Handle an incoming user message: abort any in-flight run, persist the message, then run agent */
-	@OnEvent(MESSAGE_INCOMING_EVENT, {async: true})
+	@OnEvent(MESSAGE_INCOMING_EVENT)
 	public async handleIncomingMessage(payload: IncomingMessagePayload): Promise<void> {
 		const {chat_id, user_id, text} = payload;
 
@@ -123,7 +123,7 @@ export class ConversationService {
 			await this.replyOrEdit(chat_id, thinking, loop_result.result);
 		} catch (error) {
 			if (controller.signal.aborted) return;
-			this.logger.error(`Agent ${resolved_name} conversation failed (chat: ${chat_id}): ${error.message}`);
+			this.logger.error(`Agent ${resolved_name} conversation failed (chat: ${chat_id})`, error);
 			await this.replyOrEdit(chat_id, thinking, 'Something went wrong processing your message.');
 		} finally {
 			/* Clean up only if this controller is still the active one */
@@ -134,7 +134,7 @@ export class ConversationService {
 	}
 
 	/** Handle a /new command: expire the active conversation and confirm */
-	@OnEvent(MESSAGE_RESET_EVENT, {async: true})
+	@OnEvent(MESSAGE_RESET_EVENT)
 	public async handleReset(payload: ResetMessagePayload): Promise<void> {
 		const {chat_id} = payload;
 
@@ -161,8 +161,9 @@ export class ConversationService {
 	******************************************************** */
 
 	/**
-	 * Replace large function results from previous turns with a short placeholder.
-	 * Only messages before the last user message are compressed; the current turn is untouched.
+	 * Blank out large tool results older than the previous turn to save tokens.
+	 * Destructive: rewrites the array that gets persisted AND sent to the model, so
+	 * agents can't recall compressed results — they must re-call the tool.
 	 */
 	private compressPreviousTurns(messages: AiMessage[]): void {
 		const last_user_idx = messages.findLastIndex((m) => m.role === AiMessageRole.USER);

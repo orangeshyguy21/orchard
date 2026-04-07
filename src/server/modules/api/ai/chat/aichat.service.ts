@@ -41,12 +41,17 @@ export class AiChatService {
 			return true;
 		} catch (error) {
 			this.active_streams.delete(ai_chat.id);
-			if (error.name === 'AbortError' || error.type === 'aborted') {
-				this.logger.debug(`Chat was aborted for stream ${ai_chat.id}`);
+			const is_timeout = error instanceof DOMException && error.name === 'TimeoutError';
+			if (is_timeout) {
+				this.logger.warn(`Chat stream ${ai_chat.id} aborted: idle timeout (${error.message})`);
+				this.event_emitter.emit(
+					'ai.chat.update',
+					new OrchardAiChatChunk(this.getChunkErrorJSON('Response timed out — no data received from model'), ai_chat.id),
+				);
 				return false;
 			}
-			if (error instanceof DOMException && error.name === 'TimeoutError') {
-				this.logger.debug(`Chat timed out for stream ${ai_chat.id}`);
+			if (error.name === 'AbortError' || error.type === 'aborted') {
+				this.logger.debug(`Chat stream ${ai_chat.id} aborted by user`);
 				return false;
 			}
 			this.logger.debug(`Error streaming chat`, error);

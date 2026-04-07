@@ -237,11 +237,20 @@ describe('MintActivityService', () => {
 	});
 
 	it('returns warning when backfill is running', async () => {
-		analyticsService.getBackfillStatus.mockReturnValue({is_running: true, hours_completed: 42});
+		analyticsService.getBackfillStatus.mockReturnValue({is_running: true});
 
 		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
 		expect(result.warnings).toHaveLength(1);
 		expect(result.warnings[0]).toContain('archived');
+	});
+
+	it('includes last processed date in warning when available', async () => {
+		analyticsService.getBackfillStatus.mockReturnValue({is_running: true, last_processed_at: 1700000000});
+
+		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
+		expect(result.warnings).toHaveLength(1);
+		expect(result.warnings[0]).toContain('Currently processing');
+		expect(result.warnings[0]).toContain('Nov');
 	});
 
 	it('wraps errors via ErrorService and throws OrchardApiError', async () => {

@@ -97,11 +97,11 @@ export class ApiSystemMetricsService {
 
 		switch (interval) {
 			case SystemMetricsInterval.day:
-				return dt.startOf('day').toSeconds();
+				return dt.startOf('day').toUnixInteger();
 			case SystemMetricsInterval.hour:
-				return dt.startOf('hour').toSeconds();
+				return dt.startOf('hour').toUnixInteger();
 			default:
-				return dt.startOf('minute').toSeconds();
+				return dt.startOf('minute').toUnixInteger();
 		}
 	}
 }

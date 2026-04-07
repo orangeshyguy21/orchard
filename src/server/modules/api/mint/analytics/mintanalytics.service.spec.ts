@@ -192,12 +192,12 @@ describe('MintAnalyticsService', () => {
 
 	describe('getBackfillStatus', () => {
 		it('should return the backfill status from cashu service', () => {
-			mock_cashu_analytics.getBackfillStatus.mockReturnValueOnce({is_running: true, started_at: 1700000000, errors: 0});
+			mock_cashu_analytics.getBackfillStatus.mockReturnValueOnce({is_running: true, first_processed_at: 1700000000, errors: 0});
 
 			const result = service.getBackfillStatus('test');
 
 			expect(result.is_running).toBe(true);
-			expect(result.started_at).toBe(1700000000);
+			expect(result.first_processed_at).toBe(1700000000);
 		});
 	});
 

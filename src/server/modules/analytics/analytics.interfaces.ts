@@ -1,6 +1,8 @@
 export interface AnalyticsBackfillStatus {
 	is_running: boolean;
-	started_at?: number;
+	first_processed_at?: number;
 	errors?: number;
-	hours_completed?: number;
+	last_processed_at?: number;
+	total_streams?: number;
+	streams_completed?: number;
 }

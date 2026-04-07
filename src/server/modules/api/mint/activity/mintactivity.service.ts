@@ -54,7 +54,7 @@ export class MintActivityService {
 	public async getMintActivitySummary(tag: string, period: MintActivityPeriod, timezone?: string): Promise<OrchardMintActivitySummary> {
 		try {
 			const now = Math.floor(Date.now() / 1000);
-			const cached_end = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds() - 1;
+			const cached_end = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toUnixInteger() - 1;
 			const period_seconds = PERIOD_SECONDS[period];
 			const current_start = now - period_seconds;
 			const prior_start = now - period_seconds * 2;
@@ -169,7 +169,11 @@ export class MintActivityService {
 		summary.warnings = [];
 		const backfill = this.cashuMintAnalyticsService.getBackfillStatus();
 		if (backfill.is_running) {
-			summary.warnings.push('Mint analytics are still being archived. Data may be incomplete.');
+			const date_label = backfill.last_processed_at
+				? DateTime.fromSeconds(backfill.last_processed_at, {zone: timezone}).toFormat('MMM d, yyyy')
+				: null;
+			const suffix = date_label ? ` Currently processing: ${date_label}.` : '';
+			summary.warnings.push(`Mint analytics are still being archived. ${suffix}`);
 		}
 
 		return summary;

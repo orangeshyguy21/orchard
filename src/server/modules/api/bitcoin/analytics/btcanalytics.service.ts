@@ -116,7 +116,7 @@ export class ApiBitcoinAnalyticsService {
 	 */
 	private resolveQueryParams(args: BitcoinAnalyticsApiArgs) {
 		const now = DateTime.utc().toUnixInteger();
-		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 		return {
 			interval: args.interval ?? AnalyticsInterval.hour,
 			date_start: args.date_start ?? 0,

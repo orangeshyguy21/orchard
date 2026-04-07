@@ -1,6 +1,6 @@
 /* Local Dependencies */
 import {AgentToolCategory, AgentToolName, AgentToolRole} from '../agent.enums';
-import {AiToolEntry} from '@server/modules/ai/tools/tool.types';
+import {AiToolEntry, ToolGuardName} from '@server/modules/ai/tools/tool.types';
 
 /* *******************************************************
 	GraphQL Queries
@@ -280,7 +280,7 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 				'',
 				'Amounts are in **millisatoshis** (1 sat = 1,000 msat).',
 				'',
-				'**Defaults:** `date_start` = all time, `date_end` = now. Always provide a `date_start` to scope results.',
+				'**Defaults:** `date_start` = all time, `date_end` = now. See parameter docs for when to scope `date_start` vs leave it open.',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -288,7 +288,7 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 					date_start: {
 						type: 'number',
 						description:
-							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). Set this for time-bounded questions (e.g. "this month", "last 7 days"); omit it for current-state or all-time queries (e.g. "lifetime totals").',
 					},
 					date_end: {
 						type: 'number',
@@ -296,8 +296,9 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 					},
 					interval: {
 						type: 'string',
-						description: 'The aggregation interval for bucketing analytics data.',
-						enum: ['hour', 'day', 'week', 'month'],
+						description:
+							'Aggregation bucket size. Use `hour`/`day`/`week`/`month` for time-series breakdowns over the range. Use `custom` to collapse the entire `date_start`–`date_end` window into a single aggregated bucket — ideal for all-time totals or totals over an arbitrary custom range.',
+						enum: ['hour', 'day', 'week', 'month', 'custom'],
 					},
 				},
 			},
@@ -306,6 +307,7 @@ export const GetLightningAnalyticsBalancesTool: AiToolEntry = {
 	query: GET_LIGHTNING_ANALYTICS_BALANCES_QUERY,
 	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
+	guards: [ToolGuardName.AnalyticsBucketBudget],
 };
 
 /** Fetches lightning per-metric analytics with optional filters */
@@ -332,7 +334,7 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 				'- `channel_opens` / `channel_closes` — locally-initiated channel events',
 				'- `channel_opens_remote` / `channel_closes_remote` — remotely-initiated channel events',
 				'',
-				'**Defaults:** `date_start` = all time, `date_end` = now, `metrics` = all. Always provide a `date_start` to scope results.',
+				'**Defaults:** `date_start` = all time, `date_end` = now, `metrics` = all. See parameter docs for when to scope `date_start` vs leave it open.',
 			].join('\n'),
 			parameters: {
 				type: 'object',
@@ -340,7 +342,7 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 					date_start: {
 						type: 'number',
 						description:
-							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). You should always set this.',
+							'Start of the time range as a unix timestamp in seconds. Defaults to 0 (all time). Set this for time-bounded questions (e.g. "this month", "last 7 days"); omit it for current-state or all-time queries (e.g. "lifetime totals").',
 					},
 					date_end: {
 						type: 'number',
@@ -348,8 +350,9 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 					},
 					interval: {
 						type: 'string',
-						description: 'The aggregation interval for bucketing analytics data.',
-						enum: ['hour', 'day', 'week', 'month'],
+						description:
+							'Aggregation bucket size. Use `hour`/`day`/`week`/`month` for time-series breakdowns over the range. Use `custom` to collapse the entire `date_start`–`date_end` window into a single aggregated bucket — ideal for all-time totals or totals over an arbitrary custom range.',
+						enum: ['hour', 'day', 'week', 'month', 'custom'],
 					},
 					metrics: {
 						type: 'array',
@@ -376,6 +379,7 @@ export const GetLightningAnalyticsMetricsTool: AiToolEntry = {
 	query: GET_LIGHTNING_ANALYTICS_METRICS_QUERY,
 	throttle_max_calls: 15,
 	throttle_window_seconds: 60,
+	guards: [ToolGuardName.AnalyticsBucketBudget],
 };
 
 /** Fetches lightning node identity and status information */

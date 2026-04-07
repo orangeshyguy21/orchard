@@ -197,9 +197,11 @@ query MintAnalyticsPromises($units: [MintUnit!], $date_start: UnixTimestamp, $da
 export const MINT_ANALYTICS_BACKFILL_STATUS_QUERY = `{
 	mint_analytics_backfill_status {
 		is_running
-		started_at
+		first_processed_at
 		errors
-		hours_completed
+		last_processed_at
+		total_streams
+		streams_completed
 	}
 }`;
 

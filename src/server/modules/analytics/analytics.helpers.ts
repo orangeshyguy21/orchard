@@ -27,12 +27,12 @@ export function getBucketDate(
 
 	switch (interval) {
 		case AnalyticsInterval.day:
-			return dt.startOf('day').toSeconds();
+			return dt.startOf('day').toUnixInteger();
 		case AnalyticsInterval.week:
-			return dt.startOf('week').toSeconds();
+			return dt.startOf('week').toUnixInteger();
 		case AnalyticsInterval.month:
-			return dt.startOf('month').toSeconds();
+			return dt.startOf('month').toUnixInteger();
 		default:
-			return dt.startOf('hour').toSeconds();
+			return dt.startOf('hour').toUnixInteger();
 	}
 }

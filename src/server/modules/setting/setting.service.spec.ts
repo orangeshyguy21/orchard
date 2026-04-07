@@ -28,11 +28,14 @@ describe('SettingService', () => {
 		description: 'Whether the bitcoin oracle is enabled',
 	};
 
-	const mock_repository = {
+	const mock_repository: any = {
 		findOne: jest.fn(),
 		find: jest.fn(),
 		create: jest.fn(),
 		save: jest.fn(),
+		manager: {
+			transaction: jest.fn((cb: any) => cb({getRepository: () => mock_repository})),
+		},
 	};
 
 	const mock_config_service = {

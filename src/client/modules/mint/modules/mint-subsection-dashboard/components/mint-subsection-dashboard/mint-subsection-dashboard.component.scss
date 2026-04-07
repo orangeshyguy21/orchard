@@ -5,7 +5,7 @@ $analytics-offset: 86px;
 
 .mint-dashboard-container {
 	@extend %flex;
-	@extend %flex-column;
+	@extend %flex-gap-2;
 	@extend %p-1;
 }
 
@@ -48,7 +48,10 @@ $analytics-offset: 86px;
 .mint-chart-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
-	top: calc(#{$analytics-offset} + 1rem);
+	top: 2rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-2;
 }
 
 .chart-tertiary-nav-mobile {
@@ -75,6 +78,19 @@ $analytics-offset: 86px;
 			@extend %orc-surface-variant-bg;
 		}
 	}
+}
+
+.summary-grid {
+	@extend %grid;
+	@extend %flex-gap-0-5;
+	grid-template-areas: 'summary1' 'summary2';
+}
+
+.summary-mint {
+	grid-area: summary1;
+}
+.summary-balance-sheet {
+	grid-area: summary2;
 }
 
 .chart-balance-sheet {
