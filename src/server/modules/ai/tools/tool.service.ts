@@ -268,7 +268,7 @@ export class ToolService {
 			schema: this.schema,
 			document,
 			variableValues: variables,
-			contextValue: {req: {headers: {}, user}},
+			contextValue: {req: {headers: {}, user, internal: true}},
 		});
 
 		if (result.errors?.length) {
