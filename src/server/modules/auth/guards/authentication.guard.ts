@@ -30,6 +30,8 @@ export class GqlAuthenticationGuard extends AuthGuard('jwt') {
 		if (is_public) return true;
 		const no_headers = this.reflector.getAllAndOverride<boolean>(NO_HEADERS_KEY, [context.getHandler(), context.getClass()]);
 		if (no_headers) return true;
+		const request = this.getRequest(context);
+		if (request?.internal && request.user) return true;
 		return super.canActivate(context);
 	}
 
