@@ -103,9 +103,10 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 				break;
 		}
 		this.tool_gui.set(this.getToolGui());
+		this.subscriptions.add(this.subToolGui());
 		if (this.is_keyed_agent()) {
 			this.subscriptions.add(this.subSystemMessage());
-			this.subscriptions.add(this.subTools());
+			this.subscriptions.add(this.subToolDefaults());
 		}
 		this.aiService.setAssistantOverride(AiAssistant.SettingsAgent);
 		this.subscriptions.add(this.subAssistantRequests());
@@ -180,10 +181,16 @@ export class SettingsSubsectionAppAiAgentFormComponent implements OnInit, OnDest
 	}
 
 	/** Watches tools control and updates is_default signal */
-	private subTools(): Subscription | undefined {
+	private subToolDefaults(): Subscription | undefined {
 		return this.form.get('tools')?.valueChanges.subscribe((value) => {
-			this.tool_gui.set(this.getToolGui());
 			this.is_default_tools.set(JSON.stringify(value) === JSON.stringify(this.defaults?.tools));
+		});
+	}
+
+	/** Refreshes tool GUI state whenever the tools control value changes */
+	private subToolGui(): Subscription | undefined {
+		return this.form.get('tools')?.valueChanges.subscribe(() => {
+			this.tool_gui.set(this.getToolGui());
 		});
 	}
 
