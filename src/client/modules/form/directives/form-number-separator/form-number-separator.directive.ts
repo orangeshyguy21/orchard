@@ -9,6 +9,8 @@ import {NgControl} from '@angular/forms';
 })
 export class FormNumberSeparatorDirective {
 	private static readonly DIGIT_RE = /\d/;
+	private static readonly DEFAULT_GROUP_SEPARATOR = ',';
+	private static readonly GROUP_SEPARATOR_SAMPLE = 1234567;
 
 	private _value!: string | null;
 	private readonly formatter: Intl.NumberFormat;
@@ -37,8 +39,8 @@ export class FormNumberSeparatorDirective {
 	private _onChange(_value: any): void {}
 
 	private detectGroupSeparator(): string {
-		const parts = this.formatter.formatToParts(1234567);
-		return parts.find((p) => p.type === 'group')?.value ?? ',';
+		const parts = this.formatter.formatToParts(FormNumberSeparatorDirective.GROUP_SEPARATOR_SAMPLE);
+		return parts.find((p) => p.type === 'group')?.value ?? FormNumberSeparatorDirective.DEFAULT_GROUP_SEPARATOR;
 	}
 
 	/**
