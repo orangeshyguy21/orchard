@@ -11,7 +11,7 @@ describe('EventLogEventPipe', () => {
 	});
 
 	it('should format entity type and event type into readable string', () => {
-		expect(pipe.transform(EventLogEntityType.QuoteTtl, EventLogType.Update)).toBe('Quote TTL Updated');
+		expect(pipe.transform(EventLogEntityType.QuoteTtl, EventLogType.Update)).toBe('Quote Expiry Updated');
 		expect(pipe.transform(EventLogEntityType.Info, EventLogType.Create)).toBe('Info Created');
 		expect(pipe.transform(EventLogEntityType.Keyset, EventLogType.Delete)).toBe('Keyset Deleted');
 		expect(pipe.transform(EventLogEntityType.Database, EventLogType.Execute)).toBe('Database Executed');

@@ -26,7 +26,7 @@
 										[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 										class="w-full orc-dynamic-form-field"
 									>
-										<mat-label>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} quote TTL</mat-label>
+										<mat-label>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} quote expiry</mat-label>
 										<input
 											type="text"
 											formNumberSeparator
@@ -40,12 +40,11 @@
 										<span matSuffix class="form-suffix-text">{{ device_desktop() ? 'seconds' : 's' }}</span>
 										<mat-hint class="font-size-xs orc-outline-color">
 											<orc-mint-subsection-config-form-quote-ttl-hint
-												[deltas]="stat_deltas()"
 												[quote_ttl]="form_group().get(control_name())?.value"
 											></orc-mint-subsection-config-form-quote-ttl-hint>
 										</mat-hint>
 										<mat-error>
-											<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid TTL</orc-form-error>
+											<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid expiry</orc-form-error>
 										</mat-error>
 									</mat-form-field>
 								</div>

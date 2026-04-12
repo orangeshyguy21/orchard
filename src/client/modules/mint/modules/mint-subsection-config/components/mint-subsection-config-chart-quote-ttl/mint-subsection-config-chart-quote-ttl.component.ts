@@ -215,7 +215,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 					display: true,
 					label: {
 						display: true,
-						content: 'Quote TTL',
+						content: 'Quote Expiry',
 						position: 'start',
 						backgroundColor: config.label_bg_color,
 						color: config.text_color,

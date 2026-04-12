@@ -97,11 +97,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
-			mint_ttl: new FormControl(null, [Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
+			mint_ttl: new FormControl(null, [Validators.min(0), Validators.max(604800), OrchardValidators.integer]),
 		}),
 		melting: new FormGroup({
 			enabled: new FormControl(),
-			melt_ttl: new FormControl(null, [Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
+			melt_ttl: new FormControl(null, [Validators.min(0), Validators.max(604800), OrchardValidators.integer]),
 		}),
 	});
 	public tertiary_nav_revision: number = 0;
@@ -251,11 +251,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.form_config.patchValue({
 			minting: {
 				enabled: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
-				mint_ttl: this.translateQuoteTtl(this.quote_ttls.mint_ttl),
+				mint_ttl: this.quote_ttls.mint_ttl,
 			},
 			melting: {
 				enabled: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
-				melt_ttl: this.translateQuoteTtl(this.quote_ttls.melt_ttl),
+				melt_ttl: this.quote_ttls.melt_ttl,
 			},
 		});
 	}
@@ -501,11 +501,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		return !status;
 	}
 
-	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
-		if (quote_ttl === null) return null;
-		return to_seconds ? quote_ttl / 1000 : quote_ttl * 1000;
-	}
-
 	private createPendingEvent(count: number): void {
 		if (this.active_event?.type === 'SAVING') return;
 		if (count === 0 && this.active_event?.type !== 'PENDING') return;
@@ -542,14 +537,14 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public onTtlCancel({form_group, control_name}: {form_group: FormGroup; control_name: keyof MintQuoteTtls}): void {
 		if (!control_name) return;
 		form_group.get(control_name)?.markAsPristine();
-		form_group.get(control_name)?.setValue(this.translateQuoteTtl(this.quote_ttls[control_name]));
+		form_group.get(control_name)?.setValue(this.quote_ttls[control_name]);
 	}
 
 	public onTtlUpdate({form_group, control_name}: {form_group: FormGroup; control_name: keyof MintQuoteTtls}): void {
 		if (!control_name) return;
 		if (form_group.get(control_name)?.invalid) return;
 		form_group.get(control_name)?.markAsPristine();
-		const control_value = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
+		const control_value = form_group.get(control_name)?.value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.updateMintTtl(control_name, control_value);
 	}
@@ -652,6 +647,15 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private onConfirmedEvent(): void {
 		if (this.form_config.invalid) {
+
+            Object.entries(this.form_config.controls).forEach(([group_name, group]) => {
+                if (group instanceof FormGroup) {
+                    Object.entries(group.controls).forEach(([name, control]) => {
+                        if (control.invalid) console.log('Invalid:', group_name, name, control.errors);
+                    });
+                }
+            });
+            
 			return this.eventService.registerEvent(
 				new EventData({
 					type: 'WARNING',
@@ -666,9 +670,9 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		const ttl_updates: Record<string, number | null> = {};
 
 		if (this.form_minting.get('mint_ttl')?.dirty)
-			ttl_updates['mint_ttl'] = this.translateQuoteTtl(this.form_minting.get('mint_ttl')?.value, false);
+			ttl_updates['mint_ttl'] = this.form_minting.get('mint_ttl')?.value;
 		if (this.form_melting.get('melt_ttl')?.dirty)
-			ttl_updates['melt_ttl'] = this.translateQuoteTtl(this.form_melting.get('melt_ttl')?.value, false);
+			ttl_updates['melt_ttl'] = this.form_melting.get('melt_ttl')?.value;
 
 		if (Object.keys(ttl_updates).length > 0) {
 			mutation_parts.push(`

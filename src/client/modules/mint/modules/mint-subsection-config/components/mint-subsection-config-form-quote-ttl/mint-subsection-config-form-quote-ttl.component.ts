@@ -54,9 +54,9 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 
 	public help_text = computed(() => {
 		if (this.nut() === 'nut4')
-			return 'Configure the time to live for checking deposit invoices.<br> Invoices paid after this time will be checked less often.';
+			return 'How long a deposit invoice stays valid.<br> After this time, the invoice expires and the user must request a new quote.<br><br><span class="orc-status-warning-color">Note: This setting only applies to the <b>bolt11</b> payment method.</span>';
 		if (this.nut() === 'nut5')
-			return 'Configure the time to live for checking withdraw invoices.<br> Invoices paid after this time will be checked less often.';
+			return 'How long a withdrawal fee quote is locked in.<br> After this time, the quote expires and the user must request a new one.';
 		return '';
 	});
 
