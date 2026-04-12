@@ -60,6 +60,10 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 		return '';
 	});
 
+	public placeholder = computed(() => {
+		return this.nut() === 'nut4' ? 'Ex. 3600 (1 hour)' : 'Ex. 60';
+	});
+
 	public valid_quotes = computed(() => {
 		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
 		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;

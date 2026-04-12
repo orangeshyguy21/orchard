@@ -34,7 +34,7 @@
 											[formControlName]="control_name()"
 											(focus)="onFocus()"
 											(blur)="onBlur()"
-											placeholder="Ex. 30"
+											[placeholder]="placeholder()"
 											#element_quote_ttl
 										/>
 										<span matSuffix class="form-suffix-text">{{ device_desktop() ? 'seconds' : 's' }}</span>
