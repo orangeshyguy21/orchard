@@ -647,15 +647,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private onConfirmedEvent(): void {
 		if (this.form_config.invalid) {
-
-            Object.entries(this.form_config.controls).forEach(([group_name, group]) => {
-                if (group instanceof FormGroup) {
-                    Object.entries(group.controls).forEach(([name, control]) => {
-                        if (control.invalid) console.log('Invalid:', group_name, name, control.errors);
-                    });
-                }
-            });
-            
 			return this.eventService.registerEvent(
 				new EventData({
 					type: 'WARNING',
@@ -669,10 +660,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		const mutation_values: Record<string, any> = {};
 		const ttl_updates: Record<string, number | null> = {};
 
-		if (this.form_minting.get('mint_ttl')?.dirty)
-			ttl_updates['mint_ttl'] = this.form_minting.get('mint_ttl')?.value;
-		if (this.form_melting.get('melt_ttl')?.dirty)
-			ttl_updates['melt_ttl'] = this.form_melting.get('melt_ttl')?.value;
+		if (this.form_minting.get('mint_ttl')?.dirty) ttl_updates['mint_ttl'] = this.form_minting.get('mint_ttl')?.value;
+		if (this.form_melting.get('melt_ttl')?.dirty) ttl_updates['melt_ttl'] = this.form_melting.get('melt_ttl')?.value;
 
 		if (Object.keys(ttl_updates).length > 0) {
 			mutation_parts.push(`

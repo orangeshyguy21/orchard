@@ -113,8 +113,7 @@ export class FormNumberSeparatorDirective {
 	 */
 	private handleSeparatorDeletion(value: string, cursor: number, direction: 'backward' | 'forward') {
 		const all_digits = value.replace(/\D/g, '');
-		const digit_index =
-			direction === 'backward' ? this.countDigitsUpTo(value, cursor - 1) : this.countDigitsUpTo(value, cursor);
+		const digit_index = direction === 'backward' ? this.countDigitsUpTo(value, cursor - 1) : this.countDigitsUpTo(value, cursor);
 		const remove_index = direction === 'backward' ? digit_index - 1 : digit_index;
 		const new_digits = all_digits.slice(0, remove_index) + all_digits.slice(remove_index + 1);
 		this.applyEditedDigits(new_digits, direction === 'backward' ? remove_index : digit_index);
