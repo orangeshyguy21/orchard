@@ -140,24 +140,30 @@ export class FormNumberSeparatorDirective {
 		const value = el.value;
 		const has_selection = cursor !== el.selectionEnd;
 
-		if (event.key === 'Backspace') {
-			if (!has_selection && cursor > 1 && value[cursor - 1] === this.group_separator) {
+		switch (event.key) {
+			case 'Backspace':
+				if (!has_selection && cursor > 1 && value[cursor - 1] === this.group_separator) {
+					event.preventDefault();
+					this.handleSeparatorDeletion(value, cursor, 'backward');
+				}
+				break;
+			case 'Delete':
+				if (!has_selection && cursor < value.length && value[cursor] === this.group_separator) {
+					event.preventDefault();
+					this.handleSeparatorDeletion(value, cursor, 'forward');
+				}
+				break;
+			case 'ArrowUp':
+			case 'ArrowDown': {
 				event.preventDefault();
-				this.handleSeparatorDeletion(value, cursor, 'backward');
+				const current_value = this._value ? Number(this._value) : 0;
+				const new_value = current_value + (event.key === 'ArrowUp' ? 1 : -1);
+				this._value = new_value.toString();
+				this._onChange(new_value);
+				el.value = this.formatter.format(new_value);
+				this.ngControl?.control?.markAsTouched();
+				break;
 			}
-		} else if (event.key === 'Delete') {
-			if (!has_selection && cursor < value.length && value[cursor] === this.group_separator) {
-				event.preventDefault();
-				this.handleSeparatorDeletion(value, cursor, 'forward');
-			}
-		} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-			event.preventDefault();
-			const current_value = this._value ? Number(this._value) : 0;
-			const new_value = current_value + (event.key === 'ArrowUp' ? 1 : -1);
-			this._value = new_value.toString();
-			this._onChange(new_value);
-			el.value = this.formatter.format(new_value);
-			this.ngControl?.control?.markAsTouched();
 		}
 	}
 
