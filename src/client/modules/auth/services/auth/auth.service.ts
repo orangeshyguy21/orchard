@@ -184,7 +184,7 @@ export class AuthService {
 	}
 
 	public isAuthenticated(): boolean {
-		if (!this.configService.config.mode.production) return true;
+		if (this.configService.config.mode.dev_auth_bypass) return true;
 		const token = this.localStorageService.getAuthToken();
 		if (!token) return false;
 		try {

@@ -11,7 +11,7 @@ import {Router} from '@angular/router';
 })
 export class NavPrimaryHeaderComponent {
 	public user_name = input<string | null>();
-	public user_error = input.required<boolean>();
+	public user_error = input<boolean>(false);
 	public active = input.required<boolean>();
 	public block_count = input.required<number>();
 	public mode = input<'desktop' | 'mobile'>('desktop');
