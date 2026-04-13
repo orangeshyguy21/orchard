@@ -10,6 +10,7 @@ import {provideHttpClientTesting} from '@angular/common/http/testing';
 (window as any).__config__ = {
 	mode: {
 		production: false,
+		dev_auth_bypass: false,
 		version: 'orchard/test',
 	},
 	api: {

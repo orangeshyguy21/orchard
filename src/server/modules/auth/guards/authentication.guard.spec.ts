@@ -51,15 +51,22 @@ describe('GqlAuthenticationGuard', () => {
 		expect(result).toBe(true);
 	});
 
-	it('throws OrchardApiError when user is missing in production', () => {
-		configService.get.mockReturnValue(true);
+	it('throws OrchardApiError when user is missing and dev_auth_bypass is disabled', () => {
+		configService.get.mockReturnValue(false);
 		const context = {getHandler: jest.fn(), getClass: jest.fn()} as unknown as ExecutionContext;
 
 		expect(() => guard.handleRequest(null, null, null, context)).toThrow(OrchardApiError);
 	});
 
-	it('returns dev user when not in production and no auth header present', () => {
-		configService.get.mockReturnValue(false);
+	it('throws OrchardApiError when user is missing and dev_auth_bypass is not set', () => {
+		configService.get.mockReturnValue(undefined);
+		const context = {getHandler: jest.fn(), getClass: jest.fn()} as unknown as ExecutionContext;
+
+		expect(() => guard.handleRequest(null, null, null, context)).toThrow(OrchardApiError);
+	});
+
+	it('returns dev user when DEV_AUTH_BYPASS is enabled and no auth header present', () => {
+		configService.get.mockReturnValue(true);
 		const mock_request = {headers: {}};
 		jest.spyOn(guard, 'getRequest').mockReturnValue(mock_request);
 		const context = {getHandler: jest.fn(), getClass: jest.fn()} as unknown as ExecutionContext;

@@ -43,6 +43,8 @@ async function bootstrap() {
 	await app.listen(port, host);
 	const logger = new Logger('OrchardApplication');
 	validation(app, configService, logger);
+	const dev_auth_bypass = configService.get<boolean>('mode.dev_auth_bypass');
+	if (dev_auth_bypass) logger.warn('DEV_AUTH_BYPASS is enabled — all unauthenticated requests get admin access');
 	logger.log(`Application version ${version}`);
 	logger.log(`Application is running on: ${host}:${port}`);
 }

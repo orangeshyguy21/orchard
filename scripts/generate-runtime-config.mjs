@@ -5,6 +5,7 @@ config({ path: '.env', override: false, quiet: true });
 
 const mode = {
 	production: process.env['NODE_ENV'] === 'production',
+	dev_auth_bypass: process.env['DEV_AUTH_BYPASS'] === 'true',
 	version: `orchard/${process.env['npm_package_version'] || '1.0.0'}`,
 };
 

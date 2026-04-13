@@ -6,6 +6,7 @@ import {RouterModule as CoreRouterModule} from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {provideChartConfig} from '@client/modules/chart/chart.providers';
 /* Local Dependencies */
 import {IndexSectionComponent} from './components/index-section/index-section.component';
 /* Shared Dependencies */
@@ -54,5 +55,6 @@ import {AiAssistant} from '@shared/generated.types';
 		MatProgressSpinnerModule,
 		OrcNavModule,
 	],
+	providers: [provideChartConfig()],
 })
 export class OrcIndexSectionModule {}

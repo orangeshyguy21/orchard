@@ -1,6 +1,7 @@
 export type Config = {
 	mode: {
 		production: boolean;
+		dev_auth_bypass: boolean;
 		version: string;
 	};
 	server: {

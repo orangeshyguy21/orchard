@@ -75,6 +75,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	// ── Public signals ──
 	public user_name = signal<string>('');
+	public user_error = signal<boolean>(false);
 	public ai_enabled = signal<boolean>(false);
 	public ai_models = signal<AiModel[]>([]);
 	public ai_conversation = signal<AiChatConversation | null>(null);
@@ -214,12 +215,13 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getUserSubscription(): Subscription {
 		return this.crewService.user$.subscribe({
 			next: (user: User | null) => {
-				if (user === undefined || user === null) return;
-				this.user_name.set(user.name);
-			},
-			error: (error) => {
-				console.error(error);
-				this.user_name.set('');
+				if (!user) {
+					this.user_name.set('dev user');
+					this.user_error.set(true);
+				} else {
+					this.user_name.set(user.name);
+					this.user_error.set(false);
+				}
 			},
 		});
 	}

@@ -20,6 +20,7 @@ describe('NavPrimaryComponent', () => {
 		component = fixture.componentInstance;
 
 		fixture.componentRef.setInput('user_name', 'TestUser');
+		fixture.componentRef.setInput('user_error', false);
 		fixture.componentRef.setInput('active_section', 'index');
 		fixture.componentRef.setInput('active_event', null);
 		fixture.componentRef.setInput('enabled_bitcoin', true);
