@@ -36,8 +36,8 @@ export class GqlAuthenticationGuard extends AuthGuard('jwt') {
 	}
 
 	handleRequest(err: any, user: any, _info: any, context: ExecutionContext) {
-		const production = this.configService.get<boolean>('mode.production');
-		if (!production && !user && !err) {
+		const dev_auth_bypass = this.configService.get<boolean>('mode.dev_auth_bypass');
+		if (dev_auth_bypass && !user && !err) {
 			const request = this.getRequest(context);
 			const has_auth_header = request.headers?.authorization;
 			if (!has_auth_header) return {id: 'dev-user', name: 'dev', role: UserRole.ADMIN};
