@@ -13,7 +13,7 @@ import {EventData} from 'src/client/modules/event/classes/event-data.class';
 export class NavPrimaryComponent {
 	/* Inputs */
 	public user_name = input.required<string | null>();
-    public user_error = input.required<boolean>();
+	public user_error = input.required<boolean>();
 	public active_section = input.required<string>();
 	public active_event = input.required<EventData | null>();
 	public enabled_bitcoin = input.required<boolean>();

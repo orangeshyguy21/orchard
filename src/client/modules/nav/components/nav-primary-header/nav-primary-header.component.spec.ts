@@ -22,6 +22,7 @@ describe('NavPrimaryHeaderComponent', () => {
 		fixture = TestBed.createComponent(NavPrimaryHeaderComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('user_name', 'TestUser');
+		fixture.componentRef.setInput('user_error', false);
 		fixture.componentRef.setInput('active', false);
 		fixture.componentRef.setInput('block_count', 0);
 		fixture.detectChanges();
