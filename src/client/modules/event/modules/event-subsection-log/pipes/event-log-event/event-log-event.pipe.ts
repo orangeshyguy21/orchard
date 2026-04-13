@@ -11,7 +11,7 @@ const ENTITY_TYPE_LABELS: Record<EventLogEntityType, string> = {
 	[EventLogEntityType.Nut04]: 'Nut04',
 	[EventLogEntityType.Nut05]: 'Nut05',
 	[EventLogEntityType.Quote]: 'Quote',
-	[EventLogEntityType.QuoteTtl]: 'Quote TTL',
+	[EventLogEntityType.QuoteTtl]: 'Quote Expiry',
 	[EventLogEntityType.Setting]: 'Setting',
 	[EventLogEntityType.Agent]: 'Agent',
 };
@@ -30,7 +30,7 @@ const TYPE_LABELS: Record<EventLogType, string> = {
 	pure: true,
 })
 export class EventLogEventPipe implements PipeTransform {
-	/** Transforms entity_type + type into a readable event string (e.g. "Quote TTL Updated") */
+	/** Transforms entity_type + type into a readable event string (e.g. "Quote Expiry Updated") */
 	transform(entity_type: EventLogEntityType, type: EventLogType): string {
 		return `${ENTITY_TYPE_LABELS[entity_type] ?? entity_type} ${TYPE_LABELS[type] ?? type}`;
 	}

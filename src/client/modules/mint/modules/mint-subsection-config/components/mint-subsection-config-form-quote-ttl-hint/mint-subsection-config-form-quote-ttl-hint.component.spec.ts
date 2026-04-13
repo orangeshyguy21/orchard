@@ -16,7 +16,6 @@ describe('MintSubsectionConfigFormQuoteTtlHintComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormQuoteTtlHintComponent);
 		component = fixture.componentInstance;
-		fixture.componentRef.setInput('deltas', []);
 		fixture.componentRef.setInput('quote_ttl', 0);
 		fixture.detectChanges();
 	});
