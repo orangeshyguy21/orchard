@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {readdirSync, readFileSync, statSync} from 'fs';
+import {readdirSync, readFileSync} from 'fs';
 import {join} from 'path';
 
 /**
@@ -19,11 +19,11 @@ describe('SCHEMA_ONLY guard', () => {
 	/** Recursively collect all .ts files (excluding specs and node_modules) */
 	function walk(dir: string): string[] {
 		const results: string[] = [];
-		for (const entry of readdirSync(dir)) {
-			const full = join(dir, entry);
-			if (statSync(full).isDirectory()) {
+		for (const entry of readdirSync(dir, {withFileTypes: true})) {
+			const full = join(dir, entry.name);
+			if (entry.isDirectory()) {
 				results.push(...walk(full));
-			} else if (full.endsWith('.ts') && !full.endsWith('.spec.ts') && !full.endsWith('.d.ts')) {
+			} else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts') && !entry.name.endsWith('.d.ts')) {
 				results.push(full);
 			}
 		}
