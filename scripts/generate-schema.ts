@@ -17,4 +17,4 @@ async function generateSchema() {
   console.log('Schema generated successfully');
 }
 
-generateSchema();
+generateSchema().then(() => process.exit(0));
