@@ -32,6 +32,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 	******************************************************** */
 
 	async onModuleInit(): Promise<void> {
+		if (process.env.SCHEMA_ONLY) return;
 		await this.initializeBot();
 	}
 

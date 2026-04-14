@@ -35,6 +35,7 @@ export class SettingService implements OnModuleInit {
 	 * This ensures all required settings exist in the database
 	 */
 	async onModuleInit(): Promise<void> {
+		if (process.env.SCHEMA_ONLY) return;
 		this.initializeEncryption();
 		await this.migrateEncryptionIfNeeded();
 		await this.initializeDefaults();

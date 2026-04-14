@@ -50,6 +50,7 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 	) {}
 
 	async onApplicationBootstrap() {
+		if (process.env.SCHEMA_ONLY) return;
 		const cashu_type = this.configService.get<string>('cashu.type');
 		if (!cashu_type) {
 			this.logger.log('Cashu not configured, skipping auto-backfill');
