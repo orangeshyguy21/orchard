@@ -56,6 +56,7 @@ export class LightningService implements OnModuleInit {
 	) {}
 
 	public async onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.type = this.configService.get('lightning.type');
 		this.initializeGrpcClients();
 	}

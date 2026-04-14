@@ -28,6 +28,7 @@ export class BitcoinRpcService implements OnModuleInit {
 	) {}
 
 	public async onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.type = this.configService.get('bitcoin.type');
 		this.initializeRpc();
 		await this.initializeChain();

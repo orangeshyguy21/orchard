@@ -63,6 +63,7 @@ export class AgentService implements OnModuleInit {
 	) {}
 
 	async onModuleInit(): Promise<void> {
+		if (process.env.SCHEMA_ONLY) return;
 		await this.seedBuiltInAgents();
 		await this.registerAllSchedules();
 	}

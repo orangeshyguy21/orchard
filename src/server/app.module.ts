@@ -67,12 +67,12 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
 				type: 'better-sqlite3',
-				database: process.env.SCHEMA_ONLY ? ':memory:' : configService.get('database.path'),
+				database: configService.get('mode.schema_only') ? ':memory:' : configService.get('database.path'),
 				entities: [],
-				synchronize: process.env.SCHEMA_ONLY ? true : configService.get('database.synchronize'),
+				synchronize: configService.get('mode.schema_only') ? true : configService.get('database.synchronize'),
 				autoLoadEntities: true,
-				migrations: process.env.SCHEMA_ONLY ? [] : ['dist/database/migrations/*.js'],
-				migrationsRun: process.env.SCHEMA_ONLY ? false : configService.get('mode.production'),
+				migrations: configService.get('mode.schema_only') ? [] : ['dist/database/migrations/*.js'],
+				migrationsRun: configService.get('mode.schema_only') ? false : configService.get('mode.production'),
 			}),
 			dataSourceFactory: async (options: DataSourceOptions) => {
 				const data_source = new DataSource(options);

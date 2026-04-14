@@ -34,6 +34,7 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 	) {}
 
 	async onApplicationBootstrap() {
+		if (process.env.SCHEMA_ONLY) return;
 		if (!this.lightningService.isConfigured()) {
 			this.logger.log('Lightning not configured, skipping bitcoin analytics auto-backfill');
 			return;

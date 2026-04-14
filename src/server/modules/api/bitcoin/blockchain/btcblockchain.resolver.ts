@@ -17,6 +17,7 @@ export class BitcoinBlockchainResolver {
 	constructor(private bitcoinBlockchainService: BitcoinBlockchainService) {}
 
 	// onModuleInit() {
+	// 	if (process.env.SCHEMA_ONLY) return;
 	// 	this.bitcoinBlockCountService.startBlockCountPolling();
 	// 	this.bitcoinBlockCountService.onBlockCountUpdate((block_count) => {
 	// 		this.logger.debug(`New Block Found!: ${block_count}`);

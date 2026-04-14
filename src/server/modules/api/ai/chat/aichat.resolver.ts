@@ -1,7 +1,6 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, OnModuleInit} from '@nestjs/common';
 import {Resolver, Subscription, Args, Mutation} from '@nestjs/graphql';
-import {OnModuleInit} from '@nestjs/common';
 /* Vendor Dependencies */
 import {PubSub} from 'graphql-subscriptions';
 /* Application Dependencies */
@@ -26,6 +25,7 @@ export class AiChatResolver implements OnModuleInit {
 	) {}
 
 	onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.aiChatService.onChatUpdate((chat_chunk: OrchardAiChatChunk) => {
 			pubSub.publish('ai_chat', {ai_chat: chat_chunk});
 		});

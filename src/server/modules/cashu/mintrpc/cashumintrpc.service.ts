@@ -25,6 +25,7 @@ export class CashuMintRpcService implements OnModuleInit {
 	) {}
 
 	public onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.type = this.configService.get('cashu.type');
 		this.initializeGrpcClient();
 	}
