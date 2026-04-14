@@ -28,6 +28,7 @@ export class BitcoinOracleResolver implements OnModuleInit {
 	) {}
 
 	onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.bitcoinOracleService.onBackfillUpdate((update: OrchardBitcoinOracleBackfillProgress) => {
 			pubSub.publish('bitcoin_oracle_backfill', {bitcoin_oracle_backfill: update});
 		});

@@ -50,6 +50,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	) {}
 
 	public async onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.type = this.configService.get('cashu.type');
 		this.database = this.configService.get('cashu.database');
 	}

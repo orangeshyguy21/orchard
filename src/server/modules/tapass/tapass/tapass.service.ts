@@ -21,6 +21,7 @@ export class TaprootAssetsService implements OnModuleInit {
 	) {}
 
 	public async onModuleInit() {
+		if (process.env.SCHEMA_ONLY) return;
 		this.type = this.configService.get('taproot_assets.type');
 		this.initializeGrpcClients();
 	}

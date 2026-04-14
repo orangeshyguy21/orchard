@@ -45,6 +45,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	) {}
 
 	async onApplicationBootstrap() {
+		if (process.env.SCHEMA_ONLY) return;
 		if (!this.lightningService.isConfigured()) {
 			this.logger.log('Lightning not configured, skipping auto-backfill');
 			return;
