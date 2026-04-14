@@ -100,26 +100,32 @@ const HKDF_INFO = 'settings-encryption';
 const CRYPTO_KEY_SALT = 'orchard-crypto-encryption';
 
 /**
+ * Derive a 256-bit key from raw key material using HKDF with the given salt.
+ * @param {Buffer} material - Pre-processed key material
+ * @param {string} salt - HKDF salt for domain separation
+ * @returns {Buffer} 32-byte derived encryption key
+ */
+const deriveFromMaterial = (material: Buffer, salt: string): Buffer => {
+	return Buffer.from(hkdfSync('sha256', material, salt, HKDF_INFO, 32));
+};
+
+/**
  * Derive a 256-bit encryption key from a secret string using HKDF.
  * Used for legacy migration from SETUP_KEY-based encryption.
  * @param {string} secret - The secret to derive from
  * @returns {Buffer} 32-byte derived encryption key
  */
 export const deriveEncryptionKey = (secret: string): Buffer => {
-	const key_material = createHash('sha256').update(secret).digest();
-	return Buffer.from(hkdfSync('sha256', key_material, HKDF_SALT, HKDF_INFO, 32));
+	return deriveFromMaterial(createHash('sha256').update(secret).digest(), HKDF_SALT);
 };
 
 /**
  * Derive a 256-bit encryption key from a hex-encoded crypto key using HKDF.
- * Unlike deriveEncryptionKey, the input is already 32 random bytes (hex-encoded),
- * so no SHA-256 pre-hash is needed.
  * @param {string} hex_key - Hex-encoded 32-byte crypto key (from data/crypto.key or CRYPTO_KEY env)
  * @returns {Buffer} 32-byte derived encryption key
  */
 export const deriveEncryptionKeyFromHex = (hex_key: string): Buffer => {
-	const key_material = Buffer.from(hex_key, 'hex');
-	return Buffer.from(hkdfSync('sha256', key_material, CRYPTO_KEY_SALT, HKDF_INFO, 32));
+	return deriveFromMaterial(Buffer.from(hex_key, 'hex'), CRYPTO_KEY_SALT);
 };
 
 /**
