@@ -151,7 +151,7 @@ export class AuthService {
 
 	public async validateSetupKey(setup_key: string): Promise<boolean> {
 		if (!setup_key) throw new UnauthorizedException('No setup key provided');
-		const key = this.configService.get('server.key');
+		const key = this.configService.get('server.setup_key');
 		if (setup_key !== key) return false;
 		return true;
 	}

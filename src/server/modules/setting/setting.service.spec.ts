@@ -10,7 +10,7 @@ import {SettingService} from './setting.service';
 import {Setting} from './setting.entity';
 import {SettingKey, SettingValue} from './setting.enums';
 import {DEFAULT_SETTINGS} from './setting.config';
-import {isEncrypted} from './setting.helpers';
+import {isEncrypted, deriveEncryptionKey, encryptValue} from './setting.helpers';
 
 /**
  * Test suite for SettingService
@@ -38,13 +38,27 @@ describe('SettingService', () => {
 		},
 	};
 
+	const test_crypto_key = 'ab'.repeat(32);
+	const test_setup_key = 'test-secret-key';
+
 	const mock_config_service = {
-		get: jest.fn().mockReturnValue('test-secret-key'),
+		get: jest.fn().mockImplementation((key: string) => {
+			if (key === 'server.crypto_key') return test_crypto_key;
+			if (key === 'server.setup_key') return test_setup_key;
+			return undefined;
+		}),
 	};
 
 	beforeEach(async () => {
 		// reset all mocks before each test
 		jest.clearAllMocks();
+
+		// restore default config mock
+		mock_config_service.get.mockImplementation((key: string) => {
+			if (key === 'server.crypto_key') return test_crypto_key;
+			if (key === 'server.setup_key') return test_setup_key;
+			return undefined;
+		});
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -77,6 +91,7 @@ describe('SettingService', () => {
 	describe('onModuleInit', () => {
 		it('should initialize default settings when module initializes', async () => {
 			// arrange
+			mock_repository.find.mockResolvedValue([]);
 			mock_repository.findOne.mockResolvedValue(null);
 			mock_repository.create.mockReturnValue(mock_setting);
 			mock_repository.save.mockResolvedValue(mock_setting);
@@ -92,6 +107,7 @@ describe('SettingService', () => {
 
 		it('should not duplicate existing settings', async () => {
 			// arrange
+			mock_repository.find.mockResolvedValue([]);
 			mock_repository.findOne.mockResolvedValue(mock_setting);
 
 			// act
@@ -105,6 +121,7 @@ describe('SettingService', () => {
 
 		it('should initialize only missing default settings', async () => {
 			// arrange - first setting exists, others don't
+			mock_repository.find.mockResolvedValue([]);
 			mock_repository.findOne
 				.mockResolvedValueOnce(mock_setting) // first call returns existing
 				.mockResolvedValue(null); // subsequent calls return null
@@ -460,7 +477,11 @@ describe('SettingService', () => {
 
 		it('should return empty value when decryption fails (key rotation)', async () => {
 			// arrange - simulate a value encrypted with a different key
-			mock_config_service.get.mockReturnValue('different-secret-key');
+			mock_config_service.get.mockImplementation((key: string) => {
+				if (key === 'server.crypto_key') return 'ff'.repeat(32);
+				if (key === 'server.setup_key') return undefined;
+				return undefined;
+			});
 			await service.onModuleInit();
 			const encrypted_with_old_key = {
 				key: SettingKey.AI_OPENROUTER_KEY,
@@ -477,9 +498,9 @@ describe('SettingService', () => {
 			expect(result.value).toBe('');
 		});
 
-		it('should skip encryption when server.key is not configured', async () => {
+		it('should skip encryption when crypto_key is not configured', async () => {
 			// arrange
-			mock_config_service.get.mockReturnValue(undefined);
+			mock_config_service.get.mockImplementation(() => undefined);
 			await service.onModuleInit();
 			const sensitive_setting = {
 				key: SettingKey.AI_OPENROUTER_KEY,
@@ -496,6 +517,79 @@ describe('SettingService', () => {
 			// assert - stored as plaintext
 			const saved = mock_repository.save.mock.calls[mock_repository.save.mock.calls.length - 1][0];
 			expect(saved.value).toBe('sk-or-v1-plaintext');
+		});
+	});
+
+	/* *******************************************************
+		Encryption Migration
+	******************************************************** */
+
+	describe('encryption migration', () => {
+		it('should re-encrypt settings from legacy SETUP_KEY to crypto key', async () => {
+			// arrange - encrypt a value with the old SETUP_KEY-derived key
+			const old_key = deriveEncryptionKey(test_setup_key);
+			const old_encrypted = encryptValue('sk-or-v1-secret', old_key);
+			const encrypted_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: old_encrypted,
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(null);
+			mock_repository.find.mockResolvedValue([encrypted_setting]);
+			mock_repository.create.mockReturnValue(mock_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// act
+			await service.onModuleInit();
+
+			// assert - the setting should have been re-encrypted with the new key
+			const save_calls = mock_repository.save.mock.calls;
+			const migration_saves = save_calls.filter((c: any) => c[0].key === SettingKey.AI_OPENROUTER_KEY);
+			expect(migration_saves).toHaveLength(1);
+			expect(isEncrypted(migration_saves[0][0].value)).toBe(true);
+			expect(migration_saves[0][0].value).not.toBe(old_encrypted);
+		});
+
+		it('should skip migration when no SETUP_KEY is configured', async () => {
+			// arrange
+			mock_config_service.get.mockImplementation((key: string) => {
+				if (key === 'server.crypto_key') return test_crypto_key;
+				if (key === 'server.setup_key') return undefined;
+				return undefined;
+			});
+			mock_repository.findOne.mockResolvedValue(null);
+			mock_repository.find.mockResolvedValue([]);
+			mock_repository.create.mockReturnValue(mock_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// act
+			await service.onModuleInit();
+
+			// assert - find should not have been called (migration skipped)
+			expect(mock_repository.find).not.toHaveBeenCalled();
+		});
+
+		it('should gracefully handle decryption failure during migration', async () => {
+			// arrange - a value encrypted with an unknown key
+			const encrypted_setting = {
+				key: SettingKey.AI_OPENROUTER_KEY,
+				value: 'enc:AAAAAAAAAAAAAAAA:AAAAAAAAAAAAAAAAAAAAAA==:AAAA',
+				value_type: SettingValue.STRING,
+				description: 'The OpenRouter API key',
+			};
+			mock_repository.findOne.mockResolvedValue(null);
+			mock_repository.find.mockResolvedValue([encrypted_setting]);
+			mock_repository.create.mockReturnValue(mock_setting);
+			mock_repository.save.mockImplementation((s: any) => Promise.resolve({...s}));
+
+			// act - should not throw
+			await service.onModuleInit();
+
+			// assert - save should only be called for defaults, not for failed migration
+			const save_calls = mock_repository.save.mock.calls;
+			const migration_saves = save_calls.filter((c: any) => c[0].key === SettingKey.AI_OPENROUTER_KEY);
+			expect(migration_saves).toHaveLength(0);
 		});
 	});
 });

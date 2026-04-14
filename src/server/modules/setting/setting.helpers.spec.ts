@@ -10,6 +10,7 @@ import {
 	maskSensitiveValue,
 	parseSettingValue,
 	deriveEncryptionKey,
+	deriveEncryptionKeyFromHex,
 	encryptValue,
 	decryptValue,
 	isEncrypted,
@@ -197,6 +198,35 @@ describe('Setting Helpers', () => {
 			const key1 = deriveEncryptionKey('secret-a');
 			const key2 = deriveEncryptionKey('secret-b');
 			expect(key1.equals(key2)).toBe(false);
+		});
+	});
+
+	describe('deriveEncryptionKeyFromHex', () => {
+		const hex_key = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
+
+		it('should derive a 32-byte key', () => {
+			const key = deriveEncryptionKeyFromHex(hex_key);
+			expect(key).toBeInstanceOf(Buffer);
+			expect(key.length).toBe(32);
+		});
+
+		it('should derive the same key for the same input', () => {
+			const key1 = deriveEncryptionKeyFromHex(hex_key);
+			const key2 = deriveEncryptionKeyFromHex(hex_key);
+			expect(key1.equals(key2)).toBe(true);
+		});
+
+		it('should derive different keys for different inputs', () => {
+			const key1 = deriveEncryptionKeyFromHex(hex_key);
+			const key2 = deriveEncryptionKeyFromHex('ff'.repeat(32));
+			expect(key1.equals(key2)).toBe(false);
+		});
+
+		it('should produce a different key than deriveEncryptionKey with equivalent input', () => {
+			const legacy_key = deriveEncryptionKey('test-secret');
+			const hex_input = Buffer.from('test-secret').toString('hex').padEnd(64, '0');
+			const new_key = deriveEncryptionKeyFromHex(hex_input);
+			expect(legacy_key.equals(new_key)).toBe(false);
 		});
 	});
 

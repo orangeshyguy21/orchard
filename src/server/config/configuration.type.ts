@@ -10,7 +10,8 @@ export type Config = {
 		path: string;
 		proxy: string | undefined;
 		log: string;
-		key: string;
+		setup_key: string;
+		crypto_key: string;
 		jwt_secret: string;
 		ttl: string;
 		limit: string;

@@ -97,17 +97,29 @@ const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 const HKDF_SALT = 'orchard-settings-encryption';
 const HKDF_INFO = 'settings-encryption';
+const CRYPTO_KEY_SALT = 'orchard-crypto-encryption';
 
 /**
- * Derive a 256-bit encryption key from the server's base key using HKDF.
- * Follows the same pattern as deriveSecret in configuration.ts but with
- * a distinct salt to produce a separate key from JWT secrets.
- * @param {string} base_key - The server.key value (SETUP_KEY or ADMIN_PASSWORD)
+ * Derive a 256-bit encryption key from a secret string using HKDF.
+ * Used for legacy migration from SETUP_KEY-based encryption.
+ * @param {string} secret - The secret to derive from
  * @returns {Buffer} 32-byte derived encryption key
  */
-export const deriveEncryptionKey = (base_key: string): Buffer => {
-	const key_material = createHash('sha256').update(base_key).digest();
+export const deriveEncryptionKey = (secret: string): Buffer => {
+	const key_material = createHash('sha256').update(secret).digest();
 	return Buffer.from(hkdfSync('sha256', key_material, HKDF_SALT, HKDF_INFO, 32));
+};
+
+/**
+ * Derive a 256-bit encryption key from a hex-encoded crypto key using HKDF.
+ * Unlike deriveEncryptionKey, the input is already 32 random bytes (hex-encoded),
+ * so no SHA-256 pre-hash is needed.
+ * @param {string} hex_key - Hex-encoded 32-byte crypto key (from data/crypto.key or CRYPTO_KEY env)
+ * @returns {Buffer} 32-byte derived encryption key
+ */
+export const deriveEncryptionKeyFromHex = (hex_key: string): Buffer => {
+	const key_material = Buffer.from(hex_key, 'hex');
+	return Buffer.from(hkdfSync('sha256', key_material, CRYPTO_KEY_SALT, HKDF_INFO, 32));
 };
 
 /**
