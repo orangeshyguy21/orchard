@@ -154,7 +154,8 @@ export class SettingAppService {
 		if (ai_openrouter_key) this.parsed_settings.ai_openrouter_key = this.toParsedSetting<string>(ai_openrouter_key);
 		if (messages_enabled) this.parsed_settings.messages_enabled = this.toParsedSetting<boolean>(messages_enabled);
 		if (messages_vendor) this.parsed_settings.messages_vendor = this.toParsedSetting<string>(messages_vendor);
-		if (messages_telegram_bot_token) this.parsed_settings.messages_telegram_bot_token = this.toParsedSetting<string>(messages_telegram_bot_token);
+		if (messages_telegram_bot_token)
+			this.parsed_settings.messages_telegram_bot_token = this.toParsedSetting<string>(messages_telegram_bot_token);
 		if (system_metrics) this.parsed_settings.system_metrics = this.toParsedSetting<boolean>(system_metrics);
 	}
 }

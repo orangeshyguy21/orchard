@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {expect} from '@jest/globals';
-import {existsSync, readFileSync, writeFileSync, mkdtempSync, rmSync, statSync, mkdirSync, chmodSync} from 'fs';
+import {existsSync, readFileSync, writeFileSync, mkdtempSync, rmSync, statSync} from 'fs';
 import {join} from 'path';
 import {tmpdir} from 'os';
 import {createHash} from 'crypto';

@@ -19,7 +19,7 @@ export class SettingsSubsectionAppAiMessagingComponent {
 	public form_group = input.required<FormGroup>();
 	public invalid = input<boolean>(false);
 	public dirty = input<boolean>(false);
-    public setting_telegram_bot_token = input<string | null>(null);
+	public setting_telegram_bot_token = input<string | null>(null);
 
 	public update = output<void>();
 	public cancel = output<string>();
