@@ -14,7 +14,7 @@ import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
 import {buildToolSummary} from '@client/modules/ai/helpers/ai-tool-summary.helper';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {FormPanelService} from '@client/modules/form/services/form-panel/form-panel.service';
-import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {ParsedAppSettings} from '@client/modules/settings/types/setting-app.types';
 import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {Config} from '@client/modules/config/types/config';
 /* Native Dependencies */
@@ -112,21 +112,21 @@ export class SettingsSubsectionAppAiComponent {
 			if (ai_enabled && !this.initialized_health) this.getAiHealth();
 		});
 		effect(() => {
-			const ai_vendor = this.app_settings()?.ai_vendor;
+			const ai_vendor = this.app_settings()?.ai_vendor?.value;
 			if (ai_vendor === this.set_vendor) return;
 			this.set_vendor = ai_vendor;
 			if (!ai_vendor || ai_vendor === '') return;
 			this.getAiModels();
 		});
 		effect(() => {
-			const ai_ollama_api = this.app_settings()?.ai_ollama_api;
-			const ai_openrouter_key = this.app_settings()?.ai_openrouter_key;
+			const ai_ollama_api = this.app_settings()?.ai_ollama_api?.value ?? null;
+			const ai_openrouter_key = this.app_settings()?.ai_openrouter_key?.value ?? null;
 			const ollama_changed = ai_ollama_api !== this.previous_ollama_api;
 			const openrouter_changed = ai_openrouter_key !== this.previous_openrouter_key;
 
 			if (ollama_changed || openrouter_changed) {
-				this.previous_ollama_api = ai_ollama_api ?? null;
-				this.previous_openrouter_key = ai_openrouter_key ?? null;
+				this.previous_ollama_api = ai_ollama_api;
+				this.previous_openrouter_key = ai_openrouter_key;
 				this.ai_health.set(null);
 			}
 		});
@@ -144,7 +144,7 @@ export class SettingsSubsectionAppAiComponent {
 					this.loading_health.set(false);
 				},
 				error: () => {
-					this.ai_health.set(new AiHealth({status: false, vendor: this.app_settings()?.ai_vendor ?? '', message: null}));
+					this.ai_health.set(new AiHealth({status: false, vendor: this.app_settings()?.ai_vendor?.value ?? '', message: null}));
 					this.loading_health.set(false);
 				},
 			});
@@ -214,7 +214,7 @@ export class SettingsSubsectionAppAiComponent {
 				models: this.ai_models(),
 				tools: this.ai_agent_tools(),
 				device_type: this.device_type(),
-				vendor: this.app_settings()?.ai_vendor ?? 'ollama',
+				vendor: this.app_settings()?.ai_vendor?.value ?? 'ollama',
 				favorites: this.ai_favorites(),
 				fullscreen_system_message: event.fullscreen_system_message ?? false,
 				app_settings: this.app_settings(),

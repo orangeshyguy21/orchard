@@ -33,7 +33,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 	) {
-		this.show_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+		this.show_oracle = this.settingAppService.getSetting('bitcoin_oracle').value;
 	}
 
 	ngOnInit(): void {

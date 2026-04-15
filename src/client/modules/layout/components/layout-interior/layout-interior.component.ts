@@ -121,8 +121,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private bitcoin_polling_active: boolean = false;
 
 	constructor() {
-		this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
-		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+		this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled').value);
+		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor').value);
 		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
 		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
 		this.enabled_lightning.set(this.configService.config.lightning.enabled);
@@ -335,8 +335,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.active_event.set(event_data);
 			if (this.active_section() === 'settings' && event_data?.type === 'SUCCESS') {
 				this.ai_model.set(this.settingDeviceService.getModel());
-				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
-				this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
+				this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor').value);
+				this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled').value);
 				if (this.ai_enabled()) {
 					if (this.ai_initialized) this.getModels();
 					else this.initAi();

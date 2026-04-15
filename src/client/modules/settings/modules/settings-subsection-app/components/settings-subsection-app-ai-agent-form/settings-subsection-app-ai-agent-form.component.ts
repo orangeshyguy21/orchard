@@ -17,7 +17,7 @@ import {FormPanelRef, FORM_PANEL_DATA} from '@client/modules/form/services/form-
 import {FormCronBuilderComponent} from '@client/modules/form/components/form-cron-builder/form-cron-builder.component';
 import {Config} from '@client/modules/config/types/config';
 import {DeviceType} from '@client/modules/layout/types/device.types';
-import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {ParsedAppSettings} from '@client/modules/settings/types/setting-app.types';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 /* Native Dependencies */
 import {AgentFormMode, ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';

@@ -12,7 +12,8 @@ import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {DeviceType} from '@client/modules/layout/types/device.types';
-import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {ParsedAppSettings} from '@client/modules/settings/types/setting-app.types';
 
 @Component({
 	selector: 'orc-settings-subsection-user',
@@ -117,7 +118,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	private updateMessagingDisabled(): void {
 		const parsed_settings = this.settings();
 		const telegram_control = this.form_user.get('telegram_chat_id');
-		if (!parsed_settings?.ai_enabled || !parsed_settings?.messages_enabled) {
+		if (!parsed_settings?.ai_enabled?.value || !parsed_settings?.messages_enabled?.value) {
 			telegram_control?.disable({emitEvent: false});
 		} else {
 			telegram_control?.enable({emitEvent: false});

@@ -95,7 +95,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		private cdr: ChangeDetectorRef,
 		private breakpointObserver: BreakpointObserver,
 	) {
-		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle').value;
 		this.mint_type = this.configService.config.mint.type;
 		this.form_keyset = new FormGroup({
 			unit: new FormControl(null, [Validators.required]),
@@ -123,7 +123,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	orchardOptionalInit(): void {
-		if (this.settingAppService.getSetting('ai_enabled')) {
+		if (this.settingAppService.getSetting('ai_enabled').value) {
 			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

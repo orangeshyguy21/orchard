@@ -20,7 +20,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subscription, forkJoin, of} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
-import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -28,6 +28,7 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
+import {ParsedAppSettings} from '@client/modules/settings/types/setting-app.types';
 import {OrchardValidators} from '@client/modules/form/validators';
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -202,20 +203,20 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 
 	private initSettingForms(settings: ParsedAppSettings): void {
 		this.form_bitcoin.patchValue({
-			oracle_enabled: settings.bitcoin_oracle,
+			oracle_enabled: settings.bitcoin_oracle.value,
 		});
 		this.form_ai.patchValue({
-			enabled: settings.ai_enabled,
-			vendor: settings.ai_vendor,
-			ollama_api: settings.ai_ollama_api,
-			openrouter_key: settings.ai_openrouter_key,
+			enabled: settings.ai_enabled.value,
+			vendor: settings.ai_vendor.value,
+			ollama_api: settings.ai_ollama_api.value,
+			openrouter_key: settings.ai_openrouter_key.is_sensitive ? '' : settings.ai_openrouter_key.value,
 		});
 		this.form_ai_messaging.patchValue({
-			enabled: settings.messages_enabled,
-			telegram_bot_token: settings.messages_telegram_bot_token,
+			enabled: settings.messages_enabled.value,
+			telegram_bot_token: settings.messages_telegram_bot_token.is_sensitive ? '' : settings.messages_telegram_bot_token.value,
 		});
-		this.toggleAiControls(settings.ai_enabled);
-		this.toggleMessagingControls(settings.messages_enabled);
+		this.toggleAiControls(settings.ai_enabled.value);
+		this.toggleMessagingControls(settings.messages_enabled.value);
 	}
 
 	/** Enables or disables AI vendor controls based on the enabled state */
@@ -370,8 +371,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		const initial_key = this.initial_value_map[path];
 		const initial_settings = this.initial_settings();
 		const control = form.get(event);
-		if (!initial_key || !initial_settings || !control) return;
-		control.setValue(initial_settings[initial_key]);
+		const parsed_setting = initial_key ? initial_settings?.[initial_key] : null;
+		if (!parsed_setting || !control) return;
+		control.setValue(parsed_setting.is_sensitive ? '' : parsed_setting.value);
 		control.markAsPristine();
 		control.markAsUntouched();
 		this.evaluateDirtyCount();

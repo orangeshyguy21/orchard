@@ -10,39 +10,32 @@ import {OrchardRes} from '@client/modules/api/types/api.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
-import {SettingsResponse, SettingsUpdateResponse} from '@client/modules/settings/types/setting-app.types';
+import {ParsedAppSettings, ParsedSetting, SettingsResponse, SettingsUpdateResponse} from '@client/modules/settings/types/setting-app.types';
 /* Local Dependencies */
 import {SETTINGS_QUERY, SETTINGS_UPDATE_MUTATION} from './setting-app.queries';
 /* Shared Dependencies */
 import {SettingKey, SettingValue} from '@shared/generated.types';
 
-export interface ParsedAppSettings {
-	bitcoin_oracle: boolean;
-	ai_enabled: boolean;
-	ai_vendor: string;
-	ai_ollama_api: string;
-	ai_openrouter_key: string;
-	messages_enabled: boolean;
-	messages_vendor: string;
-	messages_telegram_bot_token: string;
-	system_metrics: boolean;
-}
+/** Default ParsedSetting factory */
+const defaultSetting = <T>(value: T): ParsedSetting<T> => ({value, description: null, is_sensitive: false});
+
+const SETTING_DEFAULTS: ParsedAppSettings = {
+	bitcoin_oracle: defaultSetting(false),
+	ai_enabled: defaultSetting(false),
+	ai_vendor: defaultSetting('ollama'),
+	ai_ollama_api: defaultSetting('http://localhost:11434'),
+	ai_openrouter_key: defaultSetting(''),
+	messages_enabled: defaultSetting(false),
+	messages_vendor: defaultSetting('telegram'),
+	messages_telegram_bot_token: defaultSetting(''),
+	system_metrics: defaultSetting(true),
+};
 
 @Injectable({
 	providedIn: 'root',
 })
 export class SettingAppService {
-	private parsed_settings: ParsedAppSettings = {
-		bitcoin_oracle: false,
-		ai_enabled: false,
-		ai_vendor: 'ollama',
-		ai_ollama_api: 'http://localhost:11434',
-		ai_openrouter_key: '',
-		messages_enabled: false,
-		messages_vendor: 'telegram',
-		messages_telegram_bot_token: '',
-		system_metrics: true,
-	};
+	private parsed_settings: ParsedAppSettings = {...SETTING_DEFAULTS};
 
 	constructor(
 		private http: HttpClient,
@@ -90,12 +83,38 @@ export class SettingAppService {
 	}
 
 	/**
+	 * Get a specific parsed setting by key
+	 * @param {K} key - The setting key to look up
+	 * @returns {ParsedAppSettings[K]} The parsed setting (falls back to default)
+	 */
+	public getSetting<K extends keyof ParsedAppSettings>(key: K): ParsedAppSettings[K] {
+		return this.parsed_settings[key];
+	}
+
+	/**
+	 * Get a copy of all parsed settings
+	 */
+	public getParsedSettings(): ParsedAppSettings {
+		return {...this.parsed_settings};
+	}
+
+	/**
+	 * Build a ParsedSetting from a raw Setting entity
+	 */
+	private toParsedSetting<T>(setting: Setting): ParsedSetting<T> {
+		return {
+			value: this.parseSettingValue(setting) as T,
+			description: setting.description ?? null,
+			is_sensitive: setting.is_sensitive,
+		};
+	}
+
+	/**
 	 * Parse a setting value based on its type
-	 * @param {string} value - The string value to parse
-	 * @param {SettingValue} value_type - The type of the value
+	 * @param {Setting} setting - The setting to parse
 	 * @returns {boolean | number | string | any} The parsed value
 	 */
-	public parseSettingValue(setting: Setting): boolean | number | string | any {
+	private parseSettingValue(setting: Setting): boolean | number | string | any {
 		switch (setting.value_type) {
 			case SettingValue.Boolean:
 				return setting.value === 'true';
@@ -115,42 +134,27 @@ export class SettingAppService {
 	}
 
 	/**
-	 * Get a specific parsed setting value
-	 */
-	public getSetting<K extends keyof ParsedAppSettings>(key: K): ParsedAppSettings[K] {
-		return this.parsed_settings[key];
-	}
-
-	/**
-	 * Get a copy of all parsed settings
-	 */
-	public getParsedSettings(): ParsedAppSettings {
-		return {...this.parsed_settings};
-	}
-
-	/**
 	 * Update the parsed settings cache from raw settings
 	 */
 	private updateParsedSettings(settings: Setting[]): void {
-		const bitcoin_oracle = settings.find((s) => s.key === SettingKey.BitcoinOracle);
-		const ai_enabled = settings.find((s) => s.key === SettingKey.AiEnabled);
-		const ai_vendor = settings.find((s) => s.key === SettingKey.AiVendor);
-		const ai_ollama_api = settings.find((s) => s.key === SettingKey.AiOllamaApi);
-		const ai_openrouter_key = settings.find((s) => s.key === SettingKey.AiOpenrouterKey);
-		const messages_enabled = settings.find((s) => s.key === SettingKey.MessagesEnabled);
-		const messages_vendor = settings.find((s) => s.key === SettingKey.MessagesVendor);
-		const messages_telegram_bot_token = settings.find((s) => s.key === SettingKey.MessagesTelegramBotToken);
-		const system_metrics = settings.find((s) => s.key === SettingKey.SystemMetrics);
-
-		if (bitcoin_oracle) this.parsed_settings.bitcoin_oracle = this.parseSettingValue(bitcoin_oracle);
-		if (ai_enabled) this.parsed_settings.ai_enabled = this.parseSettingValue(ai_enabled);
-		if (ai_vendor) this.parsed_settings.ai_vendor = this.parseSettingValue(ai_vendor);
-		if (ai_ollama_api) this.parsed_settings.ai_ollama_api = this.parseSettingValue(ai_ollama_api);
-		if (ai_openrouter_key) this.parsed_settings.ai_openrouter_key = this.parseSettingValue(ai_openrouter_key);
-		if (messages_enabled) this.parsed_settings.messages_enabled = this.parseSettingValue(messages_enabled);
-		if (messages_vendor) this.parsed_settings.messages_vendor = this.parseSettingValue(messages_vendor);
-		if (messages_telegram_bot_token)
-			this.parsed_settings.messages_telegram_bot_token = this.parseSettingValue(messages_telegram_bot_token);
-		if (system_metrics) this.parsed_settings.system_metrics = this.parseSettingValue(system_metrics);
+		const find = (key: SettingKey): Setting | undefined => settings.find((s) => s.key === key);
+		const bitcoin_oracle = find(SettingKey.BitcoinOracle);
+		const ai_enabled = find(SettingKey.AiEnabled);
+		const ai_vendor = find(SettingKey.AiVendor);
+		const ai_ollama_api = find(SettingKey.AiOllamaApi);
+		const ai_openrouter_key = find(SettingKey.AiOpenrouterKey);
+		const messages_enabled = find(SettingKey.MessagesEnabled);
+		const messages_vendor = find(SettingKey.MessagesVendor);
+		const messages_telegram_bot_token = find(SettingKey.MessagesTelegramBotToken);
+		const system_metrics = find(SettingKey.SystemMetrics);
+		if (bitcoin_oracle) this.parsed_settings.bitcoin_oracle = this.toParsedSetting<boolean>(bitcoin_oracle);
+		if (ai_enabled) this.parsed_settings.ai_enabled = this.toParsedSetting<boolean>(ai_enabled);
+		if (ai_vendor) this.parsed_settings.ai_vendor = this.toParsedSetting<string>(ai_vendor);
+		if (ai_ollama_api) this.parsed_settings.ai_ollama_api = this.toParsedSetting<string>(ai_ollama_api);
+		if (ai_openrouter_key) this.parsed_settings.ai_openrouter_key = this.toParsedSetting<string>(ai_openrouter_key);
+		if (messages_enabled) this.parsed_settings.messages_enabled = this.toParsedSetting<boolean>(messages_enabled);
+		if (messages_vendor) this.parsed_settings.messages_vendor = this.toParsedSetting<string>(messages_vendor);
+		if (messages_telegram_bot_token) this.parsed_settings.messages_telegram_bot_token = this.toParsedSetting<string>(messages_telegram_bot_token);
+		if (system_metrics) this.parsed_settings.system_metrics = this.toParsedSetting<boolean>(system_metrics);
 	}
 }

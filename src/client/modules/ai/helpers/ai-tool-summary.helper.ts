@@ -1,7 +1,7 @@
 /* Application Dependencies */
 import {AiAgent} from '@client/modules/ai/classes/ai-agent.class';
 import {AiAgentTool} from '@client/modules/ai/classes/ai-agent-tool.class';
-import {ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {ParsedAppSettings} from '@client/modules/settings/types/setting-app.types';
 import {Config} from '@client/modules/config/types/config';
 /* Native Dependencies */
 import {ToolSummary} from '@client/modules/settings/modules/settings-subsection-app/types/settings-subsection-app.types';
@@ -39,8 +39,8 @@ export function buildToolSummary(
 		bitcoin: config?.bitcoin?.enabled ?? false,
 		lightning: config?.lightning?.enabled ?? false,
 		mint: config?.mint?.enabled ?? false,
-		message: settings?.messages_enabled ?? false,
-		system: settings?.system_metrics ?? true,
+		message: settings?.messages_enabled?.value ?? false,
+		system: settings?.system_metrics?.value ?? true,
 		health: true,
 		memory: true,
 	};

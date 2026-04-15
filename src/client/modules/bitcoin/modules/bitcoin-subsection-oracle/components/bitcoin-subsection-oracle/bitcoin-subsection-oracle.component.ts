@@ -111,7 +111,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.enabled_ai.set(this.settingAppService.getSetting('ai_enabled'));
+		this.enabled_ai.set(this.settingAppService.getSetting('ai_enabled').value);
 		this.locale.set(this.settingDeviceService.getLocale());
 		this.subscriptions.add(this.getBackfillSubscription());
 		this.subscriptions.add(this.getEventSubscription());
