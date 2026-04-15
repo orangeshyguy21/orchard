@@ -7,6 +7,7 @@ import compression from 'compression';
 import * as express from 'express';
 /* Application */
 import {AppModule} from './app.module';
+import {securityHeaders} from './middleware';
 import {BitcoinType} from './modules/bitcoin/bitcoin.enums';
 import {LightningType} from './modules/lightning/lightning.enums';
 import {TaprootAssetType} from './modules/tapass/tapass.enums';
@@ -24,6 +25,9 @@ const log_levels: Record<string, LogLevel[]> = {
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
+	const is_production = configService.get<boolean>('mode.production');
+	app.use(securityHeaders(is_production));
+	app.getHttpAdapter().getInstance().disable('x-powered-by');
 	const compression_enabled = configService.get<boolean>('server.compression');
 	if (compression_enabled) app.use(compression());
 	app.use(express.json({limit: '10mb'}));

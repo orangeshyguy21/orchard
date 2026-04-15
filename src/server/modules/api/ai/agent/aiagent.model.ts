@@ -2,7 +2,7 @@
 import {Field, ID, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {safeParse} from '@server/utils/safe-parse';
+import {safeParse} from '@server/modules/utilities';
 /* Native Dependencies */
 import {AgentKey, AgentRunStatus, AgentScheduleKind} from '@server/modules/ai/agent/agent.enums';
 import {Agent} from '@server/modules/ai/agent/agent.entity';

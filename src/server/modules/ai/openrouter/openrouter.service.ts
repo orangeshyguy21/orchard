@@ -5,7 +5,7 @@ import {Readable} from 'stream';
 import {FetchService} from '@server/modules/fetch/fetch.service';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
-import {safeParse} from '@server/utils/safe-parse';
+import {safeParse} from '@server/modules/utilities';
 /* Local Dependencies */
 import {AiVendor} from '../ai.vendor';
 import {AiModel, AiMessage, AiTool, AiStreamChunk, AiToolCall} from '../ai.types';

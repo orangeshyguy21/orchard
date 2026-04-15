@@ -11,7 +11,7 @@ import {DateTime} from 'luxon';
 import {AiService} from '@server/modules/ai/ai.service';
 import {AiMessage, AiTool, AiToolCall, AiStreamChunk} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
-import {safeParse} from '@server/utils/safe-parse';
+import {safeParse} from '@server/modules/utilities';
 /* Native Dependencies */
 import {ToolService} from '@server/modules/ai/tools/tool.service';
 import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
