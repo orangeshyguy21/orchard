@@ -234,7 +234,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	orchardOptionalInit(): void {
-		if (this.settingAppService.getSetting('ai_enabled')) {
+		if (this.settingAppService.getSetting('ai_enabled').value) {
 			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

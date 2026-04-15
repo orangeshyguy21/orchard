@@ -155,6 +155,12 @@
 								>
 									<mat-icon>{{ key_view() ? 'visibility_off' : 'visibility' }}</mat-icon>
 								</button>
+								<mat-hint class="flex flex-items-center flex-gap-0-5 orc-outline-color font-size-xs">
+									@if (setting_openrouter_key()) {
+										<span>key encrypted:</span>
+										<span>{{ setting_openrouter_key() }}</span>
+									}
+								</mat-hint>
 								<mat-error>
 									<orc-form-error [errors]="form_group().get('openrouter_key')?.errors">Invalid API Key</orc-form-error>
 								</mat-error>

@@ -10,8 +10,10 @@ import {DEFAULT_SETTINGS} from './setting.config';
 import {SettingKey} from './setting.enums';
 import {
 	isSettingSensitive,
+	isEncrypted,
 	maskSensitiveValue,
 	deriveEncryptionKey,
+	deriveEncryptionKeyFromHex,
 	encryptValue,
 	decryptValue,
 	parseSettingValue,
@@ -35,6 +37,7 @@ export class SettingService implements OnModuleInit {
 	async onModuleInit(): Promise<void> {
 		if (process.env.SCHEMA_ONLY) return;
 		this.initializeEncryption();
+		await this.migrateEncryptionIfNeeded();
 		await this.initializeDefaults();
 	}
 
@@ -43,15 +46,66 @@ export class SettingService implements OnModuleInit {
 	******************************************************** */
 
 	/**
-	 * Derive the encryption key from server.key
+	 * Derive the encryption key from the persisted crypto key
 	 */
 	private initializeEncryption(): void {
-		const base_key = this.configService.get<string>('server.key');
-		if (base_key) {
-			this.encryption_key = deriveEncryptionKey(base_key);
+		const crypto_key = this.configService.get<string>('server.crypto_key');
+		if (crypto_key) {
+			this.encryption_key = deriveEncryptionKeyFromHex(crypto_key);
 			this.logger.debug('Setting encryption initialized');
 		} else {
-			this.logger.warn('No server.key configured; sensitive settings will not be encrypted at rest');
+			this.logger.warn('No crypto key available; sensitive settings will not be encrypted at rest');
+		}
+	}
+
+	/**
+	 * One-time migration of encrypted settings from legacy SETUP_KEY derivation
+	 * to the new persisted crypto key.
+	 */
+	private async migrateEncryptionIfNeeded(): Promise<void> {
+		if (!this.encryption_key) return;
+
+		const setup_key = this.configService.get<string>('server.setup_key');
+		if (!setup_key) return;
+
+		const old_key = deriveEncryptionKey(setup_key);
+		if (old_key.equals(this.encryption_key)) return;
+
+		const all_settings = await this.settingRepository.find();
+		const encrypted_settings = all_settings.filter((s) => s.value && isEncrypted(s.value));
+		if (encrypted_settings.length === 0) return;
+
+		let migrated = 0;
+		for (const setting of encrypted_settings) {
+			if (this.tryDecrypt(setting.value, this.encryption_key)) continue;
+
+			const plaintext = this.tryDecrypt(setting.value, old_key);
+			if (!plaintext) {
+				this.logger.warn(`Failed to migrate encryption for setting [${setting.key}]`);
+				continue;
+			}
+
+			setting.value = encryptValue(plaintext, this.encryption_key);
+			await this.settingRepository.save(setting);
+			migrated++;
+		}
+
+		if (migrated > 0) {
+			this.logger.log(`Migrated ${migrated} encrypted setting(s) to crypto key`);
+		}
+	}
+
+	/**
+	 * Attempt to decrypt a value, returning the plaintext or null on failure.
+	 * @param {string} value - The encrypted value
+	 * @param {Buffer} key - The decryption key
+	 * @returns {string | null} Decrypted plaintext, or null if decryption fails
+	 */
+	private tryDecrypt(value: string, key: Buffer): string | null {
+		try {
+			return decryptValue(value, key);
+		} catch {
+			return null;
 		}
 	}
 

@@ -129,7 +129,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {
 		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
-		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle').value;
 		this.enabled_lightning = this.configService.config.lightning.enabled;
 		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
 		this.version = this.configService.config.mode.version;

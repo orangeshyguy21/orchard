@@ -1,21 +1,6 @@
-/* Core Dependencies */
-import {createHash, hkdfSync} from 'crypto';
 /* Local Dependencies */
 import {Config} from './configuration.type';
-
-/**
- * Derive a cryptographic secret from the base key using HKDF
- * @param {string} base_key - The base key to derive from
- * @param {string} info - Context info for derivation (e.g., 'jwt-access', 'jwt-refresh')
- * @returns {string} Derived key as base64 string
- */
-const deriveSecret = (base_key: string, info: string): string => {
-	const salt = 'orchard-jwt-derivation';
-	// lgtm[js/insufficient-password-hash] - This is key derivation for JWT secrets, not password storage
-	const key_material = createHash('sha256').update(base_key).digest();
-	const derived = Buffer.from(hkdfSync('sha256', key_material, salt, info, 32));
-	return derived.toString('base64');
-};
+import {loadOrCreateCryptoKey, generateEphemeralJwtSecret} from './crypto-key';
 
 const replaceLocalhostInDocker = (host: string | undefined): string | undefined => {
 	if (!host) return host;
@@ -36,7 +21,8 @@ const getMintRpcMtls = (): boolean => {
 };
 
 export const config = (): Config => {
-	const base_key = process.env.SETUP_KEY || process.env.ADMIN_PASSWORD;
+	const setup_key = process.env.SETUP_KEY || process.env.ADMIN_PASSWORD;
+	const crypto_key = loadOrCreateCryptoKey();
 
 	const mode = {
 		production: process.env.NODE_ENV === 'production',
@@ -51,8 +37,9 @@ export const config = (): Config => {
 		path: process.env.BASE_PATH || 'api',
 		proxy: process.env.TOR_PROXY_SERVER || undefined,
 		log: process.env.LOG_LEVEL || 'warn',
-		key: base_key,
-		jwt_secret: deriveSecret(base_key, 'jwt-access-token'),
+		setup_key,
+		crypto_key,
+		jwt_secret: mode.dev_auth_bypass ? crypto_key : generateEphemeralJwtSecret(),
 		ttl: process.env.THROTTLE_TTL || '60000',
 		limit: process.env.THROTTLE_LIMIT || '20',
 		compression: process.env.SERVER_COMPRESSION === 'true',

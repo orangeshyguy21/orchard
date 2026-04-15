@@ -78,6 +78,12 @@
 								>
 									<mat-icon>{{ key_view() ? 'visibility_off' : 'visibility' }}</mat-icon>
 								</button>
+								<mat-hint class="flex flex-items-center flex-gap-0-5 orc-outline-color font-size-xs">
+									@if (setting_telegram_bot_token()) {
+										<span>token encrypted:</span>
+										<span>{{ setting_telegram_bot_token() }}</span>
+									}
+								</mat-hint>
 								<mat-error>
 									<orc-form-error [errors]="form_group().get('telegram_bot_token')?.errors"
 										>Invalid Telegram Bot Token</orc-form-error

@@ -18,6 +18,7 @@ describe('AuthService', () => {
 	let jwtService: jest.Mocked<JwtService>;
 	let userService: jest.Mocked<UserService>;
 	let tokenBlacklistRepository: any;
+	let configService: jest.Mocked<ConfigService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -45,6 +46,7 @@ describe('AuthService', () => {
 		}).compile();
 
 		authService = module.get<AuthService>(AuthService);
+		configService = module.get(ConfigService);
 
 		jwtService = module.get(JwtService);
 		userService = module.get(UserService);
@@ -180,6 +182,35 @@ describe('AuthService', () => {
 			} as any);
 
 			await expect(authService.refreshToken('valid-token')).rejects.toThrow('User account has been deactivated');
+		});
+	});
+
+	/* *******************************************************
+		Setup Key Validation
+	******************************************************** */
+
+	describe('validateSetupKey', () => {
+		it('should return true when setup key matches server.setup_key', async () => {
+			configService.get.mockReturnValue('my-setup-key');
+			const result = await authService.validateSetupKey('my-setup-key');
+			expect(result).toBe(true);
+			expect(configService.get).toHaveBeenCalledWith('server.setup_key');
+		});
+
+		it('should return false when setup key does not match', async () => {
+			configService.get.mockReturnValue('correct-key');
+			const result = await authService.validateSetupKey('wrong-key');
+			expect(result).toBe(false);
+		});
+
+		it('should throw UnauthorizedException when setup key is empty', async () => {
+			await expect(authService.validateSetupKey('')).rejects.toBeInstanceOf(UnauthorizedException);
+		});
+
+		it('should return false when server has no setup key configured', async () => {
+			configService.get.mockReturnValue(undefined);
+			const result = await authService.validateSetupKey('any-key');
+			expect(result).toBe(false);
 		});
 	});
 });

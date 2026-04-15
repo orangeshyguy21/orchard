@@ -125,7 +125,7 @@ export class NavMobileComponent {
 	}
 
 	private getOracleEnabled(): void {
-		this.show_oracle.set(this.settingAppService.getSetting('bitcoin_oracle'));
+		this.show_oracle.set(this.settingAppService.getSetting('bitcoin_oracle').value);
 	}
 
 	private getSectionEnabled(section: string): boolean {

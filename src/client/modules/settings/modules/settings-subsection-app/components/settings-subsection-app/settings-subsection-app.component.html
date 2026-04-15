@@ -21,7 +21,7 @@
 			<div class="settings-box">
 				<orc-settings-subsection-app-bitcoin
 					[bitcoin_enabled]="bitcoin_enabled"
-					[bitcoin_oracle_enabled]="initial_settings()?.bitcoin_oracle ?? false"
+					[bitcoin_oracle_enabled]="initial_settings()?.bitcoin_oracle?.value ?? false"
 					[form_group]="form_bitcoin"
 					[device_type]="device_type()"
 					(update_oracle)="onUpdate()"
@@ -41,7 +41,7 @@
 			</div>
 			<div class="settings-box">
 				<orc-settings-subsection-app-ai
-					[ai_enabled]="initial_settings()?.ai_enabled ?? false"
+					[ai_enabled]="initial_settings()?.ai_enabled?.value ?? false"
 					[app_settings]="initial_settings()"
 					[config]="config"
 					[form_group_ai]="form_ai"

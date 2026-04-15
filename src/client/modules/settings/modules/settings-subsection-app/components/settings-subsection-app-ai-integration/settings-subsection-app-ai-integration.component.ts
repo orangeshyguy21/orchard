@@ -24,6 +24,7 @@ export class SettingsSubsectionAppAiIntegrationComponent {
 	public dirty_form = input<boolean>(false);
 	public dirty_ollama_api = input<boolean>(false);
 	public dirty_openrouter_key = input<boolean>(false);
+	public setting_openrouter_key = input<string | null>(null);
 
 	public update = output<void>();
 	public submit = output<string>();

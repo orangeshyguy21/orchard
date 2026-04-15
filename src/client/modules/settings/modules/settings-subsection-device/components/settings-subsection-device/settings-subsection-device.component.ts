@@ -99,7 +99,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 		private cdr: ChangeDetectorRef,
 	) {
 		this.version = this.configService.config.mode.version;
-		this.enabled_ai = this.settingAppService.getSetting('ai_enabled');
+		this.enabled_ai = this.settingAppService.getSetting('ai_enabled').value;
 	}
 
 	/* *******************************************************

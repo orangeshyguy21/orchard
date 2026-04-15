@@ -188,7 +188,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle').value;
 		this.lightning_enabled = this.configService.config.lightning.enabled;
 		this.mint_type = this.configService.config.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
@@ -216,7 +216,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (this.settingAppService.getSetting('ai_enabled')) {
+		if (this.settingAppService.getSetting('ai_enabled').value) {
 			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

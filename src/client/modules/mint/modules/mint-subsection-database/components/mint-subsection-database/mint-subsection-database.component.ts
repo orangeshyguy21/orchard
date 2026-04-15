@@ -126,7 +126,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private cdr: ChangeDetectorRef,
 	) {
 		this.lightning_enabled = this.configService.config.lightning.enabled;
-		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle').value;
 	}
 
 	/* *******************************************************
@@ -145,7 +145,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	orchardOptionalInit(): void {
-		if (this.settingAppService.getSetting('ai_enabled')) {
+		if (this.settingAppService.getSetting('ai_enabled').value) {
 			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
