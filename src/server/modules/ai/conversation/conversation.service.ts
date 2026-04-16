@@ -14,7 +14,7 @@ import {AiMessage} from '@server/modules/ai/ai.types';
 import {AiMessageRole} from '@server/modules/ai/ai.enums';
 import {AiAgentContext} from '@server/modules/ai/tools/tool.types';
 import {MessageService} from '@server/modules/message/message.service';
-import {safeParse} from '@server/utils/safe-parse';
+import {safeParse} from '@server/modules/utilities';
 import {
 	MESSAGE_INCOMING_EVENT,
 	MESSAGE_RESET_EVENT,
