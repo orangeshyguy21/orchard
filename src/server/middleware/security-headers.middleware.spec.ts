@@ -56,6 +56,16 @@ describe('securityHeaders', () => {
 		expect(headerValue('Referrer-Policy')).toBe('no-referrer');
 	});
 
+	it('should set Cross-Origin-Opener-Policy to same-origin', () => {
+		invoke(true);
+		expect(headerValue('Cross-Origin-Opener-Policy')).toBe('same-origin');
+	});
+
+	it('should set Cross-Origin-Resource-Policy to same-origin', () => {
+		invoke(true);
+		expect(headerValue('Cross-Origin-Resource-Policy')).toBe('same-origin');
+	});
+
 	it('should generate a per-request CSP nonce on res.locals', () => {
 		invoke(true);
 		const nonce = (res.locals as Record<string, string>)['csp_nonce'];

@@ -42,6 +42,8 @@ export function securityHeaders(production: boolean) {
 		res.setHeader('X-DNS-Prefetch-Control', 'off');
 		res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
 		res.setHeader('Referrer-Policy', 'no-referrer');
+		res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+		res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 		res.setHeader(csp_header, buildCsp(production, nonce));
 		next();
 	};
