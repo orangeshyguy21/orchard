@@ -4,6 +4,8 @@ import {Injectable} from '@angular/core';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+/* Native Dependencies */
+import {deriveWsScheme} from '@client/modules/api/helpers/api.helpers';
 
 @Injectable({
 	providedIn: 'root',
@@ -14,8 +16,9 @@ export class ApiService {
 
 	constructor(private configService: ConfigService) {
 		this.api = `${this.configService.config.api.proxy}/${this.configService.config.api.path}`;
+		const ws_scheme = deriveWsScheme(window.location.protocol);
 		this.gql_socket = webSocket({
-			url: `ws://${window.location.host}${this.api}`,
+			url: `${ws_scheme}//${window.location.host}${this.api}`,
 			protocol: 'graphql-ws',
 		});
 	}

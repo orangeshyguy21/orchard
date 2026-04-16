@@ -9,3 +9,8 @@ export function getApiQuery(query: string, variables?: any) {
 		variables: variables,
 	};
 }
+
+/** Derives the WebSocket scheme that matches the page protocol — `wss:` on HTTPS, `ws:` otherwise */
+export function deriveWsScheme(page_protocol: string): 'ws:' | 'wss:' {
+	return page_protocol === 'https:' ? 'wss:' : 'ws:';
+}
