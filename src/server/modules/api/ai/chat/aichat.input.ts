@@ -24,9 +24,6 @@ export class AiChatInput {
 	@Field({description: 'AI model to use for generation'})
 	model: string;
 
-	@Field({description: 'JWT access token for authentication'})
-	auth: string;
-
 	@Field(() => AiAssistant, {nullable: true, description: 'Optional assistant to use'})
 	assistant: AiAssistant | null;
 

@@ -3,11 +3,6 @@ import {Logger, OnModuleInit} from '@nestjs/common';
 import {Resolver, Subscription, Args, Mutation} from '@nestjs/graphql';
 /* Vendor Dependencies */
 import {PubSub} from 'graphql-subscriptions';
-/* Application Dependencies */
-import {AuthService} from '@server/modules/auth/auth.service';
-import {NoHeaders} from '@server/modules/auth/decorators/auth.decorator';
-import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {OrchardErrorCode} from '@server/modules/error/error.types';
 /* Local Dependencies */
 import {AiChatService} from './aichat.service';
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';
@@ -19,10 +14,7 @@ const pubSub = new PubSub();
 export class AiChatResolver implements OnModuleInit {
 	private readonly logger = new Logger(AiChatResolver.name);
 
-	constructor(
-		private aiChatService: AiChatService,
-		private authService: AuthService,
-	) {}
+	constructor(private aiChatService: AiChatService) {}
 
 	onModuleInit() {
 		if (process.env.SCHEMA_ONLY) return;
@@ -35,15 +27,9 @@ export class AiChatResolver implements OnModuleInit {
 		description: 'Subscribe to AI chat streaming chunks',
 		filter: (payload: {ai_chat: OrchardAiChatChunk}, variables: {ai_chat: AiChatInput}) => payload.ai_chat.id === variables.ai_chat.id,
 	})
-	@NoHeaders()
-	async ai_chat(@Args('ai_chat', {description: 'Chat input with model, messages, and authentication'}) ai_chat: AiChatInput) {
+	async ai_chat(@Args('ai_chat', {description: 'Chat input with model and messages'}) ai_chat: AiChatInput) {
 		const tag = `SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`;
 		this.logger.debug(tag);
-		try {
-			await this.authService.validateAccessToken(ai_chat.auth);
-		} catch {
-			throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
-		}
 		this.aiChatService.streamChat(tag, ai_chat);
 		return pubSub.asyncIterableIterator('ai_chat');
 	}

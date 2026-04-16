@@ -125,8 +125,8 @@ query BitcoinOraclePrice($start_date: UnixTimestamp, $end_date: UnixTimestamp) {
 }`;
 
 export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
-    subscription BitcoinOracleBackfill($id: String!, $auth: String!, $start_date: UnixTimestamp!, $end_date: UnixTimestamp) {
-        bitcoin_oracle_backfill(id: $id, auth: $auth, start_date: $start_date, end_date: $end_date) {
+    subscription BitcoinOracleBackfill($id: String!, $start_date: UnixTimestamp!, $end_date: UnixTimestamp) {
+        bitcoin_oracle_backfill(id: $id, start_date: $start_date, end_date: $end_date) {
             id
             status
             start_date
