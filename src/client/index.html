@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-		<script>
+		<script nonce="{{CSP_NONCE}}">
 			// Read theme preference before render to prevent flash
 			(function () {
 				var stored = localStorage.getItem('v0.setting.theme');
@@ -19,7 +19,7 @@
 				document.documentElement.classList.add(`orc-bootstrap-${theme}`);
 			})();
 		</script>
-		<style>
+		<style nonce="{{CSP_NONCE}}">
 			.orc-bootstrap-dark-mode .orc-bootstrap-overlay {
 				background-color: #151312;
 			}
@@ -689,6 +689,6 @@
 		</div>
 
 		<!-- Angular app -->
-		<orc-root></orc-root>
+		<orc-root ngCspNonce="{{CSP_NONCE}}"></orc-root>
 	</body>
 </html>
