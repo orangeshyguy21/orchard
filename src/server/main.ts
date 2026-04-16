@@ -7,7 +7,7 @@ import compression from 'compression';
 import * as express from 'express';
 /* Application */
 import {AppModule} from './app.module';
-import {securityHeaders, indexHtml} from './middleware';
+import {securityHeaders, indexHtml} from './modules/middleware';
 import {BitcoinType} from './modules/bitcoin/bitcoin.enums';
 import {LightningType} from './modules/lightning/lightning.enums';
 import {TaprootAssetType} from './modules/tapass/tapass.enums';

@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {randomBytes} from 'crypto';
 import {Request, Response, NextFunction} from 'express';
+/* Local Dependencies */
+import {CSP_NONCE_KEY} from './middleware.constants';
 
 const STATIC_DIRECTIVES = [
 	"default-src 'self'",
@@ -35,7 +37,7 @@ export function securityHeaders(production: boolean) {
 
 	return (_req: Request, res: Response, next: NextFunction): void => {
 		const nonce = randomBytes(16).toString('base64');
-		res.locals['csp_nonce'] = nonce;
+		res.locals[CSP_NONCE_KEY] = nonce;
 		res.setHeader('X-Content-Type-Options', 'nosniff');
 		res.setHeader('X-Frame-Options', 'DENY');
 		res.setHeader('X-XSS-Protection', '0');

@@ -2,9 +2,10 @@
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import {Request, Response, NextFunction} from 'express';
+/* Local Dependencies */
+import {CSP_NONCE_KEY, CSP_NONCE_PLACEHOLDER} from './middleware.constants';
 
 const CLIENT_INDEX_PATH = join(process.cwd(), 'dist', 'client', 'browser', 'index.html');
-const NONCE_PLACEHOLDER = /\{\{CSP_NONCE\}\}/g;
 
 /**
  * Caches the client index.html template once at startup and serves a per-request copy
@@ -26,8 +27,8 @@ export function indexHtml() {
 		if (req.method !== 'GET' && req.method !== 'HEAD') return next();
 		const accept = req.headers.accept || '';
 		if (!accept.includes('text/html')) return next();
-		const nonce = (res.locals['csp_nonce'] as string | undefined) ?? '';
-		const html = template!.replace(NONCE_PLACEHOLDER, nonce);
+		const nonce = (res.locals[CSP_NONCE_KEY] as string | undefined) ?? '';
+		const html = template!.replace(CSP_NONCE_PLACEHOLDER, nonce);
 		res.setHeader('Content-Type', 'text/html; charset=utf-8');
 		res.setHeader('Cache-Control', 'no-store');
 		res.send(html);
