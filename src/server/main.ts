@@ -25,7 +25,7 @@ const log_levels: Record<string, LogLevel[]> = {
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
-	const is_production = configService.get<boolean>('mode.production');
+	const is_production = configService.get<boolean>('mode.production') ?? false;
 	app.use(securityHeaders(is_production));
 	if (is_production) app.use(indexHtml());
 	app.getHttpAdapter().getInstance().disable('x-powered-by');
