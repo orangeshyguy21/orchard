@@ -2,6 +2,28 @@
 
 General behavioral guidelines for any AI agent working in this repository.
 
+## Deployment Context: Self-Hosted FOSS
+
+Orchard is free and open source software. Anyone can clone it, configure it, and run it — on a laptop, a VPS, a home server, behind Tor, behind a reverse proxy, on ARM, on x86, with lnd or cln, with cdk or nutshell, with or without tapd, with or without ollama. We ship the code; operators run it. **There is no production we control.**
+
+### What this means in practice
+
+- **No prod telemetry, no prod logs, no prod access.** We cannot SSH in, tail a log, query a DB, or reproduce an operator's exact state. Debugging starts from a GitHub issue, a user report, or a screenshot — never from our own observability stack.
+- **The deployment matrix is unbounded.** Node versions, OS, backend combinations (lnd+cdk, cln+nutshell, etc.), network topologies (clearnet, Tor, LAN-only), reverse proxies, TLS setups, and custom `.env` configs all vary. Any change must assume a configuration we've never seen.
+- **No coordinated upgrades.** Operators update when they feel like it. A fix shipped today may not reach a user for months. Breaking changes, migrations, and schema edits need to degrade gracefully or fail loudly with actionable errors — silent assumptions about "the latest version" will bite real users.
+- **No feature flags we control.** We can't hotfix, roll back, or gate rollouts per-operator. Once a release is cut and pulled, it runs. Bugs stick around until the operator updates.
+- **Error messages are the support channel.** Since we can't see their logs, errors surfaced in the UI or server logs must be self-explanatory enough for the operator to act on or paste into an issue. "Something went wrong" is useless; "cln socket at $PATH unreachable — check CLN_SOCKET" is actionable.
+- **Defaults matter more than in SaaS.** Whatever defaults ship are what most operators will run. A bad default is a bug replicated across every deployment.
+- **Backwards compatibility is load-bearing.** Users who skip versions still need migrations to run clean. DB migrations, config schema changes, and API contracts should assume jumps, not linear upgrades.
+
+### Decision-making implications
+
+- Prefer resilience over elegance when the two conflict. Code that tolerates weird environments beats code that only works in ours.
+- Surface config problems at startup with clear messages, not at request-time with stack traces.
+- Validate external inputs (backend RPCs, user config) defensively — these are system boundaries with unknowable operators on the other side.
+- When a bug is reported, ask for version + config + logs first, because we have no other way to narrow it down.
+- Avoid "we'll monitor it in prod" reasoning — there is no prod we can monitor.
+
 ## Workflow Orchestration
 
 ### 1. Plan Mode Default
