@@ -1,6 +1,6 @@
 /**
  * Playwright response matchers for GraphQL interception. Every fidelity spec
- * that drives the UI uses these to pick its target query out of the stream
+ * that drives the UI uses these to pick target queries out of the stream
  * of POSTs the client sends to `/api`.
  */
 
@@ -12,30 +12,30 @@ export function matchGql(queryName: string) {
 		response.url().endsWith('/api') && (response.request().postData() ?? '').includes(queryName);
 }
 
-/** Extract `data.<queryName>` from a Playwright response — throws on GraphQL errors.
- *  Assumes the response field matches the query name (no aliasing). */
-export async function gqlData<T = Record<string, unknown>>(response: Response, queryName: string): Promise<T> {
-	const body = await response.json();
-	if (body.errors?.length) {
-		throw new Error(`GraphQL error on ${queryName}: ${body.errors[0].message}`);
-	}
-	return body.data[queryName] as T;
-}
-
 /**
- * Navigate to `route` and return the intercepted response for each query fired
- * on load, in the order the caller listed them. Returns a record keyed by query
- * name so the spec reads left-to-right regardless of wire ordering.
+ * Navigate to `route` and return the parsed `data.<queryName>` payload for
+ * each query fired on load, keyed by query name.
  *
- *   const {bitcoin_blockchain_info, bitcoin_network_info} =
- *       await interceptOnNavigation(page, '/bitcoin', ['bitcoin_blockchain_info', 'bitcoin_network_info']);
+ * Each body is read *inside* its own waiter — the moment the response
+ * resolves — not after Promise.all finishes. Playwright can GC response
+ * bodies once the owning navigation settles, and on slow stacks that
+ * window is small enough to race a deferred `response.json()` call.
+ *
+ * Assumes `data.<queryName>` (no GraphQL aliases in the client).
  */
 export async function interceptOnNavigation<K extends string>(
 	page: Page,
 	route: string,
 	queryNames: readonly K[],
-): Promise<Record<K, Response>> {
-	const waiters = queryNames.map((name) => page.waitForResponse(matchGql(name)));
-	const [, ...responses] = await Promise.all([page.goto(route), ...waiters]);
-	return Object.fromEntries(queryNames.map((name, i) => [name, responses[i]])) as Record<K, Response>;
+): Promise<Record<K, Record<string, unknown>>> {
+	const waiters = queryNames.map(async (name) => {
+		const response = await page.waitForResponse(matchGql(name));
+		const body = await response.json();
+		if (body.errors?.length) {
+			throw new Error(`GraphQL error on ${name}: ${body.errors[0].message}`);
+		}
+		return [name, body.data[name]] as const;
+	});
+	const [, ...entries] = await Promise.all([page.goto(route), ...waiters]);
+	return Object.fromEntries(entries) as Record<K, Record<string, unknown>>;
 }

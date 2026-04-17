@@ -16,6 +16,7 @@ CONFIG="${2:-}"
 
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIGS_DIR="${HERE}/configs"
+VERSIONS_ENV="${HERE}/versions.env"
 
 list_configs() {
     (cd "$CONFIGS_DIR" && ls -1 -d */) 2>/dev/null | sed 's|/$||'
@@ -55,26 +56,36 @@ if [ ! -f "$COMPOSE" ]; then
     exit 1
 fi
 
+if [ ! -f "$VERSIONS_ENV" ]; then
+    echo "versions file not found: $VERSIONS_ENV" >&2
+    exit 1
+fi
+
 # cd into the config dir so compose's relative build contexts + volume
 # bind mounts resolve correctly.
 cd "$DIR"
 
+# Layer versions.env first, then the per-config env. Later --env-file
+# entries override earlier ones, so a config can pin its own tag.
+compose() {
+    docker compose --env-file "$VERSIONS_ENV" --env-file "$ENVFILE" -f "$COMPOSE" "$@"
+}
+
 case "$ACTION" in
     up)
         echo "==> building + bringing up $CONFIG"
-        docker compose --env-file "$ENVFILE" -f "$COMPOSE" \
-            up -d --build --wait --wait-timeout 300
+        compose up -d --build --wait --wait-timeout 300
         echo "==> $CONFIG is healthy"
-        docker compose --env-file "$ENVFILE" -f "$COMPOSE" ps
+        compose ps
         ;;
     down)
-        docker compose --env-file "$ENVFILE" -f "$COMPOSE" down -v
+        compose down -v
         ;;
     logs)
-        docker compose --env-file "$ENVFILE" -f "$COMPOSE" logs -f
+        compose logs -f
         ;;
     ps)
-        docker compose --env-file "$ENVFILE" -f "$COMPOSE" ps
+        compose ps
         ;;
     *)
         echo "unknown action: $ACTION (valid: up, down, logs, ps)" >&2

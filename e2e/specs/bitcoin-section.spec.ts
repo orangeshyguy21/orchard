@@ -15,39 +15,21 @@ import {getConfig} from '../helpers/config';
 import {loginViaUi} from '../helpers/auth';
 import {btc} from '../helpers/backend';
 import {agree, expectAllFieldsAgree} from '../helpers/agree';
-import {gqlData, interceptOnNavigation} from '../helpers/gql-intercept';
+import {interceptOnNavigation} from '../helpers/gql-intercept';
+import {BITCOIN_BLOCKCHAIN_INFO_FIELDS, BITCOIN_NETWORK_INFO_FIELDS} from '../helpers/query-fields';
 
 test('bitcoin section queries agree with bitcoind', async ({page}, testInfo) => {
 	const config = getConfig(testInfo.project.name);
 	await loginViaUi(page, config);
 
-	const responses = await interceptOnNavigation(page, '/bitcoin', [
+	const data = await interceptOnNavigation(page, '/bitcoin', [
 		'bitcoin_network_info',
 		'bitcoin_blockchain_info',
 	]);
 
-	const orchardNetwork = await gqlData(responses.bitcoin_network_info, 'bitcoin_network_info');
-	expectAllFieldsAgree('network', orchardNetwork, btc.getNetworkInfo(config), [
-		'version',
-		'subversion',
-		'protocolversion',
-		'networkactive',
-		'relayfee',
-		'incrementalfee',
-	]);
-
-	const orchardChain = await gqlData(responses.bitcoin_blockchain_info, 'bitcoin_blockchain_info');
-	expectAllFieldsAgree('chain', orchardChain, btc.getBlockchainInfo(config), [
-		'chain',
-		'blocks',
-		'headers',
-		'bestblockhash',
-		'difficulty',
-		'chainwork',
-		'pruned',
-		'initialblockdownload',
-	]);
+	expectAllFieldsAgree('network', data.bitcoin_network_info, btc.getNetworkInfo(config), BITCOIN_NETWORK_INFO_FIELDS);
+	expectAllFieldsAgree('chain', data.bitcoin_blockchain_info, btc.getBlockchainInfo(config), BITCOIN_BLOCKCHAIN_INFO_FIELDS);
 
 	// Cross-query sanity: both resolvers' views of the chain tip agree with bitcoind's.
-	agree('blockcount consistency', orchardChain.blocks, btc.blockCount(config));
+	agree('blockcount consistency', data.bitcoin_blockchain_info.blocks, btc.blockCount(config));
 });

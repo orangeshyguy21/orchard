@@ -22,7 +22,7 @@ volumes:
   shared:
 
 x-lnd-defaults: &lnd-defaults
-  image: polarlightning/lnd:0.20.0-beta
+  image: polarlightning/lnd:${LND_VERSION}
   restart: on-failure
   networks: [net]
   depends_on:
@@ -35,7 +35,7 @@ x-lnd-defaults: &lnd-defaults
 
 services:
   bitcoind:
-    image: polarlightning/bitcoind:30.0
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
     container_name: lnd-nutshell-sqlite-bitcoind
     restart: on-failure
     networks: [net]
@@ -141,7 +141,7 @@ services:
     restart: "no"
 
   nutshell:
-    image: cashubtc/nutshell:0.20.0
+    image: cashubtc/nutshell:${NUTSHELL_VERSION}
     container_name: lnd-nutshell-sqlite-nutshell
     restart: on-failure
     networks: [net]

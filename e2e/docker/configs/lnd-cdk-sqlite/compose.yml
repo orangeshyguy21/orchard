@@ -26,7 +26,7 @@ volumes:
   shared:
 
 x-lnd-defaults: &lnd-defaults
-  image: polarlightning/lnd:0.20.0-beta
+  image: polarlightning/lnd:${LND_VERSION}
   restart: on-failure
   networks: [net]
   depends_on:
@@ -38,7 +38,7 @@ x-lnd-defaults: &lnd-defaults
     retries: 30
 
 x-tapd-defaults: &tapd-defaults
-  image: polarlightning/tapd:0.7.0-alpha
+  image: polarlightning/tapd:${TAPD_VERSION}
   restart: on-failure
   networks: [net]
   healthcheck:
@@ -49,7 +49,7 @@ x-tapd-defaults: &tapd-defaults
 
 services:
   bitcoind:
-    image: polarlightning/bitcoind:30.0
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
     container_name: lnd-cdk-sqlite-bitcoind
     restart: on-failure
     networks: [net]
@@ -192,7 +192,7 @@ services:
     restart: "no"
 
   cdk-mintd:
-    image: cashubtc/mintd:v0.16.0
+    image: cashubtc/mintd:${CDK_MINTD_VERSION}
     container_name: lnd-cdk-sqlite-cdk-mintd
     restart: on-failure
     networks: [net]

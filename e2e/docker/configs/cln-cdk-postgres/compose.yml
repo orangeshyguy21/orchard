@@ -23,7 +23,7 @@ volumes:
   shared:
 
 x-cln-defaults: &cln-defaults
-  image: polarlightning/clightning:25.12
+  image: polarlightning/clightning:${CLN_VERSION}
   restart: on-failure
   networks: [net]
   depends_on:
@@ -36,7 +36,7 @@ x-cln-defaults: &cln-defaults
 
 services:
   bitcoind:
-    image: polarlightning/bitcoind:30.0
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
     container_name: cln-cdk-postgres-bitcoind
     restart: on-failure
     networks: [net]
@@ -67,7 +67,7 @@ services:
       retries: 30
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: cln-cdk-postgres-postgres
     restart: on-failure
     networks: [net]
@@ -124,7 +124,7 @@ services:
       --log-level=info
 
   lnd-carol:
-    image: polarlightning/lnd:0.20.0-beta
+    image: polarlightning/lnd:${LND_VERSION}
     container_name: cln-cdk-postgres-lnd-carol
     restart: on-failure
     networks: [net]
@@ -175,7 +175,7 @@ services:
     restart: "no"
 
   cdk-mintd:
-    image: cashubtc/mintd:v0.16.0
+    image: cashubtc/mintd:${CDK_MINTD_VERSION}
     container_name: cln-cdk-postgres-cdk-mintd
     restart: on-failure
     networks: [net]

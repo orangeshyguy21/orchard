@@ -242,25 +242,42 @@ Scope trimmed to **what the UI actually fires**. Resolvers the UI doesn't
 consume get deferred to a leaner supertest tier later (Phase 3.1b, if needed).
 
 **Done:**
+- [x] `e2e/specs/00-initialization.spec.ts` — first-run admin setup UI flow.
+      Renamed + prefixed to sort first within a project so on fresh stacks it
+      runs before any spec that needs an authed session. Skips gracefully on
+      already-initialized stacks.
 - [x] `e2e/specs/bitcoin-section.spec.ts` — `/bitcoin` section fires
       `bitcoin_network_info` + `bitcoin_blockchain_info` on load. Both
-      differentialed against `bitcoin-cli getnetworkinfo` / `getblockchaininfo`.
-      Note: the `/bitcoin` subsection dashboard is currently a stub; no other
-      queries fire there yet.
-- [x] Shared helpers relocated to `e2e/helpers/` (framework-agnostic):
-      `agree.ts` (uses `util.isDeepStrictEqual`, works in Jest + Playwright),
-      `backend.ts` (docker-exec readers), `gql-intercept.ts` (Playwright-only).
+      differentialed against `bitcoin-cli`. The subsection dashboard at
+      `/bitcoin` is a stub today; add intercepts when real content lands.
+- [x] `e2e/specs/index-dashboard.spec.ts` — `/` landing. Covers the
+      passthrough-friendly subset of the page's ~24-query forkJoin:
+      `bitcoin_blockchain_info`, `bitcoin_network_info`, `lightning_info`
+      (alias + version — LN shape diverges between lnd/cln for deeper fields).
+- [x] Shared helpers in `e2e/helpers/` (framework-agnostic): `agree.ts`,
+      `backend.ts` (docker-exec readers), `gql-intercept.ts`.
+      `interceptOnNavigation` eagerly reads each body *inside* its waiter —
+      Playwright GC's response bodies once the owning navigation settles,
+      racing any deferred `response.json()` on slower stacks.
 - [x] Deleted duplicate `e2e/supertest/specs/chain.e2e-spec.ts` — Playwright
       covers it via the consumer path.
 
 **Next up (by criticality):**
-- [ ] `/` index dashboard — blockchain_info, blockcount, lightning_info,
-      lightning_balance, mint_info, mint_activity_summary, taproot_assets_info
 - [ ] `/lightning` section — lightning_info, balance, wallet, channels, closed_channels
 - [ ] `/mint` section — mint_info, balances, keysets, keyset_counts, activity_summary
 - [ ] `/mint/keysets`, `/mint/config`, `/mint/database`
 - [ ] `/event`, `/crew`, `/settings/*`
 - [ ] `/bitcoin/oracle`, `/ecash`
+- [ ] Deeper index coverage once LN/mint helpers exist — lightning_balance,
+      lightning_channels, mint_*, taproot_assets_* (config.tapd only)
+
+**Known follow-ups:**
+- [ ] **Playwright `storageState` for login re-use.** Every spec currently
+      re-runs `loginViaUi` (~600ms × N specs × 4 configs). Idiomatic fix: a
+      per-config setup project that authenticates once and persists auth
+      state to a temp file, referenced by sibling test projects via
+      `use: {storageState: ...}`. Worth doing once spec count passes ~6
+      per config; negligible at 2 specs.
 
 **Each new page spec should:** 1) observe which queries *actually* fire
 (not what the service exports), 2) differential only direct-passthrough
