@@ -1,14 +1,17 @@
 #!/bin/sh
-# Orchard e2e pair2 — mines blocks, funds nodes, opens channel topology.
+# Orchard e2e — cln topology setup. Mines blocks, funds nodes, opens channels.
 #
 # Topology: cln-alice ⇄ cln-orchard ⇄ lnd-carol (cross-implementation)
 #
 # Driver strategy:
 #   - CLN nodes: `docker exec <container> lightning-cli ...` via mounted socket
-#   - lnd-carol: REST API (same pattern as pair1)
+#   - lnd-carol: REST API
 #   - bitcoind: JSON-RPC over HTTP
+#
+# CONFIG_NAME env var resolves sibling container names (${CONFIG_NAME}-cln-<node>).
 
 set -eu
+: "${CONFIG_NAME:?CONFIG_NAME must be set by compose (e.g. cln-cdk-sqlite)}"
 
 log() { printf '[setup] %s\n' "$*"; }
 
@@ -25,7 +28,7 @@ bcli() {
 # CLN via docker exec — "$1" is the short node name (orchard|alice).
 cln() {
     local node="$1"; shift
-    docker exec "pair2-cln-${node}" \
+    docker exec "${CONFIG_NAME}-cln-${node}" \
         lightning-cli --lightning-dir=/home/clightning/.lightning --network=regtest "$@"
 }
 
@@ -175,5 +178,19 @@ wait_for "lnd-carol channel active"   check_lnd_carol_channel_active
 sleep 3
 
 mkdir -p /shared
+
+# Optionally mint a rune for REST auth (used by nutshell when configured
+# as CLNRestWallet backend). CREATE_RUNE_FOR=<node> opts in.
+if [ -n "${CREATE_RUNE_FOR:-}" ]; then
+    log "creating rune on cln-${CREATE_RUNE_FOR} for REST auth"
+    rune=$(cln "${CREATE_RUNE_FOR}" createrune | jq -r '.rune')
+    if [ -z "$rune" ] || [ "$rune" = "null" ]; then
+        log "ERROR: failed to create rune on cln-${CREATE_RUNE_FOR}"
+        exit 1
+    fi
+    printf '%s' "$rune" > "/shared/${CREATE_RUNE_FOR}.rune"
+    log "rune written to /shared/${CREATE_RUNE_FOR}.rune"
+fi
+
 touch /shared/ready
 log "ALL DONE — channel topology ready"

@@ -1,5 +1,5 @@
 # ==============================================================
-# Orchard e2e — Pair 2 (cln + cdk + lnd-carol)
+# Orchard e2e — cln-cdk-postgres (cln + cdk-mintd + postgres)
 # ==============================================================
 # Consumed by docker compose (variable substitution + env_file for orchard).
 # All values are regtest-only — DO NOT reuse in any real deployment.
@@ -7,6 +7,11 @@
 # ----- bitcoind RPC -----
 BTC_RPC_USER=polar
 BTC_RPC_PASS=polar
+
+# ----- Postgres -----
+PG_USER=cashu
+PG_PASS=cashu
+PG_DB=cdk
 
 # ----- Channel funding defaults -----
 CHANNEL_CAPACITY_SAT=10000000    # 0.1 BTC per channel
@@ -35,7 +40,7 @@ LIGHTNING_RPC_PORT=11001
 # ----- Orchard → Mint (cdk-mintd) -----
 MINT_TYPE=cdk
 MINT_API=http://cdk-mintd:3339
-# MINT_DATABASE set inline in compose
+# MINT_DATABASE (postgres URL) set inline in compose
 MINT_RPC_HOST=cdk-mintd
 MINT_RPC_PORT=8086
 MINT_RPC_MTLS=false

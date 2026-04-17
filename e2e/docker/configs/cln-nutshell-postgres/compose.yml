@@ -1,0 +1,251 @@
+# Config: cln + nutshell + postgres
+#
+# Topology:
+#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (cross-implementation cln↔lnd)
+#   nutshell backend: cln-orchard (via clnrest + rune auth)
+#   nutshell database: postgres (shared instance)
+#   orchard mintdb target: postgres
+#
+# Non-default host ports (+100 from cln-cdk-postgres) so this can run
+# alongside the other cln config.
+
+name: orchard-e2e-cln-nutshell-postgres
+
+networks:
+  net:
+    name: orchard-e2e-cln-nutshell-postgres
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  cln-orchard-data:
+  cln-alice-data:
+  lnd-carol-data:
+  postgres-data:
+  nutshell-data:
+  orchard-data:
+  shared:
+
+x-cln-defaults: &cln-defaults
+  image: polarlightning/clightning:25.12
+  restart: on-failure
+  networks: [net]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  healthcheck:
+    test: ["CMD-SHELL", "lightning-cli --lightning-dir=/home/clightning/.lightning --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:30.0
+    container_name: cln-nutshell-postgres-bitcoind
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "28543:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: cln-nutshell-postgres-postgres
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "5632:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  cln-orchard:
+    <<: *cln-defaults
+    container_name: cln-nutshell-postgres-cln-orchard
+    ports: ["21101:11001"]
+    volumes:
+      - cln-orchard-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --clnrest-port=3010
+      --clnrest-host=0.0.0.0
+      --clnrest-protocol=http
+      --alias=orchard
+      --log-level=info
+
+  cln-alice:
+    <<: *cln-defaults
+    container_name: cln-nutshell-postgres-cln-alice
+    ports: ["21111:11001"]
+    volumes:
+      - cln-alice-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=alice
+      --log-level=info
+
+  lnd-carol:
+    image: polarlightning/lnd:0.20.0-beta
+    container_name: cln-nutshell-postgres-lnd-carol
+    restart: on-failure
+    networks: [net]
+    ports: ["20129:10009"]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - lnd-carol-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=carol --externalip=lnd-carol
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-carol --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+    healthcheck:
+      test: ["CMD-SHELL", "lncli --lnddir=/home/lnd/.lnd --network=regtest getinfo > /dev/null"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  setup:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-nutshell-postgres-setup
+    networks: [net]
+    depends_on:
+      cln-orchard:  { condition: service_healthy }
+      cln-alice:    { condition: service_healthy }
+      lnd-carol:    { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+      - shared:/shared
+    environment:
+      - CONFIG_NAME=cln-nutshell-postgres
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
+      - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+      - CHANNEL_PUSH_MSAT=${CHANNEL_PUSH_MSAT:-5000000000}
+      - CREATE_RUNE_FOR=orchard
+    entrypoint: ["/scripts/fund-cln-topology.sh"]
+    restart: "no"
+
+  nutshell:
+    image: cashubtc/nutshell:0.20.0
+    container_name: cln-nutshell-postgres-nutshell
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3340:3338"
+    depends_on:
+      setup:    { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
+    volumes:
+      - nutshell-data:/app/data
+      - shared:/shared:ro
+    environment:
+      - MINT_LISTEN_HOST=0.0.0.0
+      - MINT_LISTEN_PORT=3338
+      - MINT_BACKEND_BOLT11_SAT=CLNRestWallet
+      - MINT_CLNREST_URL=http://cln-orchard:3010
+      - MINT_DATABASE=postgres://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+      - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
+      - MINT_INFO_NAME=e2e-nutshell
+      - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres
+      - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+    # Rune is created at runtime by the setup service; read it from the
+    # shared volume and inject as env var before poetry runs the mint.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export MINT_CLNREST_RUNE="$$(cat /shared/orchard.rune)"
+        exec poetry run mint
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request,sys; sys.exit(0 if urllib.request.urlopen(\"http://localhost:3338/v1/info\").status==200 else 1)'"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../../../..
+      dockerfile: Dockerfile
+      target: final-mintdb-postgres
+    container_name: cln-nutshell-postgres-orchard
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3324:3321"
+    depends_on:
+      nutshell: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+      - cln-orchard-data:/certs/cln:ro
+    env_file:
+      - ./env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - LIGHTNING_CERT=/certs/cln/regtest/client.pem
+      - LIGHTNING_KEY=/certs/cln/regtest/client-key.pem
+      - LIGHTNING_CA=/certs/cln/regtest/ca.pem
+      - MINT_DATABASE=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30

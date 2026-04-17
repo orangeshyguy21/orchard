@@ -1,15 +1,16 @@
-# Pair 2: bitcoind + cln (2 nodes) + lnd-carol + cdk-mintd + orchard
+# Config: cln + cdk + postgres
 #
 # Topology:
-#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (no direct alice⇄carol channel)
+#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (cross-implementation cln↔lnd)
 #   cdk-mintd backend: cln-orchard (via unix socket at /cln/regtest/lightning-rpc)
-#   lnd-carol validates cross-implementation (cln↔lnd) payments
+#   cdk-mintd database: postgres (shared instance)
+#   orchard mintdb target: postgres
 
-name: orchard-e2e-pair2
+name: orchard-e2e-cln-cdk-postgres
 
 networks:
-  pair2:
-    name: orchard-e2e-pair2
+  net:
+    name: orchard-e2e-cln-cdk-postgres
     driver: bridge
 
 volumes:
@@ -17,14 +18,14 @@ volumes:
   cln-orchard-data:
   cln-alice-data:
   lnd-carol-data:
-  cdk-mintd-data:
+  postgres-data:
   orchard-data:
   shared:
 
 x-cln-defaults: &cln-defaults
   image: polarlightning/clightning:25.12
   restart: on-failure
-  networks: [pair2]
+  networks: [net]
   depends_on:
     bitcoind: { condition: service_healthy }
   healthcheck:
@@ -36,9 +37,9 @@ x-cln-defaults: &cln-defaults
 services:
   bitcoind:
     image: polarlightning/bitcoind:30.0
-    container_name: pair2-bitcoind
+    container_name: cln-cdk-postgres-bitcoind
     restart: on-failure
-    networks: [pair2]
+    networks: [net]
     ports:
       - "28443:18443"
     volumes:
@@ -65,9 +66,28 @@ services:
       timeout: 5s
       retries: 30
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: cln-cdk-postgres-postgres
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "5532:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
   cln-orchard:
     <<: *cln-defaults
-    container_name: pair2-cln-orchard
+    container_name: cln-cdk-postgres-cln-orchard
     ports: ["21001:11001"]
     volumes:
       - cln-orchard-data:/home/clightning/.lightning
@@ -86,7 +106,7 @@ services:
 
   cln-alice:
     <<: *cln-defaults
-    container_name: pair2-cln-alice
+    container_name: cln-cdk-postgres-cln-alice
     ports: ["21011:11001"]
     volumes:
       - cln-alice-data:/home/clightning/.lightning
@@ -105,9 +125,9 @@ services:
 
   lnd-carol:
     image: polarlightning/lnd:0.20.0-beta
-    container_name: pair2-lnd-carol
+    container_name: cln-cdk-postgres-lnd-carol
     restart: on-failure
-    networks: [pair2]
+    networks: [net]
     ports: ["20029:10009"]
     depends_on:
       bitcoind: { condition: service_healthy }
@@ -129,48 +149,48 @@ services:
       timeout: 5s
       retries: 30
 
-  # One-shot setup. Uses docker exec to drive CLN (simplest shell approach)
-  # + LND REST for lnd-carol. Docker socket mount is dev-only convenience.
   setup:
     build:
-      context: .
+      context: ../..
       dockerfile: setup.Dockerfile
-    container_name: pair2-setup
-    networks: [pair2]
+    container_name: cln-cdk-postgres-setup
+    networks: [net]
     depends_on:
       cln-orchard:  { condition: service_healthy }
       cln-alice:    { condition: service_healthy }
       lnd-carol:    { condition: service_healthy }
     volumes:
-      - ./scripts:/scripts:ro
+      - ../../scripts:/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - lnd-carol-data:/lnd/carol:ro
       - shared:/shared
     environment:
+      - CONFIG_NAME=cln-cdk-postgres
       - BTC_RPC_USER=${BTC_RPC_USER}
       - BTC_RPC_PASS=${BTC_RPC_PASS}
       - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
       - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
       - CHANNEL_PUSH_MSAT=${CHANNEL_PUSH_MSAT:-5000000000}
-    entrypoint: ["/scripts/fund-and-open-pair2.sh"]
+    entrypoint: ["/scripts/fund-cln-topology.sh"]
     restart: "no"
 
   cdk-mintd:
     image: cashubtc/mintd:v0.16.0
-    container_name: pair2-cdk-mintd
+    container_name: cln-cdk-postgres-cdk-mintd
     restart: on-failure
-    networks: [pair2]
+    networks: [net]
     ports:
       - "3339:3339"
       - "8086:8086"
     depends_on:
-      setup: { condition: service_completed_successfully }
+      setup:    { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
     volumes:
-      - cdk-mintd-data:/app/data
       - cln-orchard-data:/cln:ro
-      - ./config/cdk-mintd.toml:/config.toml:ro
+      - ./mintd.toml:/config.toml:ro
     environment:
-      - CDK_MINTD_WORK_DIR=/app/data
+      - CDK_MINTD_WORK_DIR=/tmp/cdk-mintd
+      - CDK_MINTD_DATABASE_URL=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
     command: ["cdk-mintd", "--config", "/config.toml"]
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3339/v1/info || exit 1"]
@@ -180,22 +200,21 @@ services:
 
   orchard:
     build:
-      context: ../..
+      context: ../../../..
       dockerfile: Dockerfile
-      target: final-mintdb-sqlite
-    container_name: pair2-orchard
+      target: final-mintdb-postgres
+    container_name: cln-cdk-postgres-orchard
     restart: on-failure
-    networks: [pair2]
+    networks: [net]
     ports:
       - "3322:3321"
     depends_on:
       cdk-mintd: { condition: service_healthy }
     volumes:
       - orchard-data:/app/data
-      - cdk-mintd-data:/mint-data:ro
       - cln-orchard-data:/certs/cln:ro
     env_file:
-      - ./pair2.env
+      - ./env
     environment:
       - NODE_ENV=production
       - DOCKER_ENV=true
@@ -204,7 +223,7 @@ services:
       - LIGHTNING_CERT=/certs/cln/regtest/client.pem
       - LIGHTNING_KEY=/certs/cln/regtest/client-key.pem
       - LIGHTNING_CA=/certs/cln/regtest/ca.pem
-      - MINT_DATABASE=/mint-data/cdk-mintd.sqlite
+      - MINT_DATABASE=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
       interval: 3s

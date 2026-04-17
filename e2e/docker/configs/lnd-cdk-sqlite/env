@@ -1,0 +1,46 @@
+# ==============================================================
+# Orchard e2e — lnd-cdk-sqlite (lnd + cdk-mintd + sqlite + tapd)
+# ==============================================================
+# Consumed by docker compose (variable substitution + env_file for orchard).
+# All values are regtest-only — DO NOT reuse in any real deployment.
+
+# ----- bitcoind RPC -----
+BTC_RPC_USER=polar
+BTC_RPC_PASS=polar
+
+# ----- Channel funding defaults (setup service) -----
+CHANNEL_CAPACITY_SAT=10000000    # 0.1 BTC per channel
+CHANNEL_PUSH_SAT=5000000         # 50/50 initial split
+
+# ----- Orchard server config -----
+SETUP_KEY=orchard-e2e-admin-key
+ADMIN_PASSWORD=orchard-e2e-admin-key
+LOG_LEVEL=warn
+BASE_PATH=api
+
+# ----- Orchard → Bitcoin -----
+BITCOIN_TYPE=core
+BITCOIN_RPC_HOST=bitcoind
+BITCOIN_RPC_PORT=18443
+BITCOIN_RPC_USER=polar
+BITCOIN_RPC_PASSWORD=polar
+
+# ----- Orchard → Lightning (lnd-orchard via gRPC) -----
+LIGHTNING_TYPE=lnd
+LIGHTNING_RPC_HOST=lnd-orchard
+LIGHTNING_RPC_PORT=10009
+# cert + macaroon paths set inline in compose
+
+# ----- Orchard → Taproot Assets (tapd-orchard) -----
+TAPROOT_ASSETS_TYPE=tapd
+TAPROOT_ASSETS_RPC_HOST=tapd-orchard
+TAPROOT_ASSETS_RPC_PORT=10029
+# cert + macaroon paths set inline in compose
+
+# ----- Orchard → Mint (cdk-mintd) -----
+MINT_TYPE=cdk
+MINT_API=http://cdk-mintd:3339
+# MINT_DATABASE set inline in compose
+MINT_RPC_HOST=cdk-mintd
+MINT_RPC_PORT=8086
+MINT_RPC_MTLS=false

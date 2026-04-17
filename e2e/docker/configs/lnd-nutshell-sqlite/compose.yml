@@ -1,16 +1,15 @@
-# Pair 1: bitcoind + lnd (3 nodes) + tapd (2 nodes) + nutshell + orchard
+# Config: lnd + nutshell + sqlite
 #
 # Topology:
 #   lnd-alice ⇄ lnd-orchard ⇄ lnd-bob     (no direct alice⇄bob channel)
-#   tapd-orchard attached to lnd-orchard
-#   tapd-alice   attached to lnd-alice
 #   nutshell backend: lnd-orchard (via REST)
+#   orchard mintdb target: sqlite
 
-name: orchard-e2e-pair1
+name: orchard-e2e-lnd-nutshell-sqlite
 
 networks:
-  pair1:
-    name: orchard-e2e-pair1
+  net:
+    name: orchard-e2e-lnd-nutshell-sqlite
     driver: bridge
 
 volumes:
@@ -18,8 +17,6 @@ volumes:
   lnd-orchard-data:
   lnd-alice-data:
   lnd-bob-data:
-  tapd-orchard-data:
-  tapd-alice-data:
   nutshell-data:
   orchard-data:
   shared:
@@ -27,7 +24,7 @@ volumes:
 x-lnd-defaults: &lnd-defaults
   image: polarlightning/lnd:0.20.0-beta
   restart: on-failure
-  networks: [pair1]
+  networks: [net]
   depends_on:
     bitcoind: { condition: service_healthy }
   healthcheck:
@@ -36,22 +33,12 @@ x-lnd-defaults: &lnd-defaults
     timeout: 5s
     retries: 30
 
-x-tapd-defaults: &tapd-defaults
-  image: polarlightning/tapd:0.7.0-alpha
-  restart: on-failure
-  networks: [pair1]
-  healthcheck:
-    test: ["CMD-SHELL", "tapcli --tapddir=/home/tap/.tapd --network=regtest getinfo > /dev/null"]
-    interval: 3s
-    timeout: 5s
-    retries: 30
-
 services:
   bitcoind:
     image: polarlightning/bitcoind:30.0
-    container_name: pair1-bitcoind
+    container_name: lnd-nutshell-sqlite-bitcoind
     restart: on-failure
-    networks: [pair1]
+    networks: [net]
     ports:
       - "18443:18443"
     volumes:
@@ -80,7 +67,7 @@ services:
 
   lnd-orchard:
     <<: *lnd-defaults
-    container_name: pair1-lnd-orchard
+    container_name: lnd-nutshell-sqlite-lnd-orchard
     ports: ["10009:10009"]
     volumes:
       - lnd-orchard-data:/home/lnd/.lnd
@@ -97,7 +84,7 @@ services:
 
   lnd-alice:
     <<: *lnd-defaults
-    container_name: pair1-lnd-alice
+    container_name: lnd-nutshell-sqlite-lnd-alice
     ports: ["10019:10009"]
     volumes:
       - lnd-alice-data:/home/lnd/.lnd
@@ -114,7 +101,7 @@ services:
 
   lnd-bob:
     <<: *lnd-defaults
-    container_name: pair1-lnd-bob
+    container_name: lnd-nutshell-sqlite-lnd-bob
     ports: ["10029:10009"]
     volumes:
       - lnd-bob-data:/home/lnd/.lnd
@@ -129,57 +116,18 @@ services:
       --tlsextradomain=lnd-bob --tlsextradomain=localhost
       --accept-keysend --debuglevel=info
 
-  tapd-orchard:
-    <<: *tapd-defaults
-    container_name: pair1-tapd-orchard
-    ports: ["10039:10029"]
-    depends_on:
-      lnd-orchard: { condition: service_healthy }
-    volumes:
-      - tapd-orchard-data:/home/tap/.tapd
-      - lnd-orchard-data:/lnd:ro
-    command: >
-      tapd --network=regtest --debuglevel=info
-      --tlsextradomain=tapd-orchard --tlsextradomain=localhost
-      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
-      --lnd.host=lnd-orchard:10009
-      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      --lnd.tlspath=/lnd/tls.cert
-      --allow-public-uni-proof-courier
-      --allow-public-stats
-      --universe.public-access=rw
-
-  tapd-alice:
-    <<: *tapd-defaults
-    container_name: pair1-tapd-alice
-    ports: ["10049:10029"]
-    depends_on:
-      lnd-alice: { condition: service_healthy }
-    volumes:
-      - tapd-alice-data:/home/tap/.tapd
-      - lnd-alice-data:/lnd:ro
-    command: >
-      tapd --network=regtest --debuglevel=info
-      --tlsextradomain=tapd-alice --tlsextradomain=localhost
-      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
-      --lnd.host=lnd-alice:10009
-      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      --lnd.tlspath=/lnd/tls.cert
-
-  # One-shot setup service. Image pre-bakes curl/jq/xxd so we don't pay
-  # an apk round-trip on every compose up.
   setup:
     build:
-      context: .
+      context: ../..
       dockerfile: setup.Dockerfile
-    container_name: pair1-setup
-    networks: [pair1]
+    container_name: lnd-nutshell-sqlite-setup
+    networks: [net]
     depends_on:
       lnd-orchard: { condition: service_healthy }
       lnd-alice:   { condition: service_healthy }
       lnd-bob:     { condition: service_healthy }
     volumes:
-      - ./scripts:/scripts:ro
+      - ../../scripts:/scripts:ro
       - lnd-orchard-data:/lnd/orchard:ro
       - lnd-alice-data:/lnd/alice:ro
       - lnd-bob-data:/lnd/bob:ro
@@ -189,14 +137,14 @@ services:
       - BTC_RPC_PASS=${BTC_RPC_PASS}
       - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
       - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
-    entrypoint: ["/scripts/fund-and-open.sh"]
+    entrypoint: ["/scripts/fund-lnd-topology.sh"]
     restart: "no"
 
   nutshell:
     image: cashubtc/nutshell:0.20.0
-    container_name: pair1-nutshell
+    container_name: lnd-nutshell-sqlite-nutshell
     restart: on-failure
-    networks: [pair1]
+    networks: [net]
     ports:
       - "3338:3338"
     depends_on:
@@ -214,7 +162,7 @@ services:
       - MINT_DATABASE=/app/data
       - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
       - MINT_INFO_NAME=e2e-nutshell
-      - MINT_INFO_DESCRIPTION=Orchard e2e pair1 mint
+      - MINT_INFO_DESCRIPTION=Orchard e2e lnd-nutshell-sqlite
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
     command: >
       poetry run mint
@@ -226,24 +174,22 @@ services:
 
   orchard:
     build:
-      context: ../..
+      context: ../../../..
       dockerfile: Dockerfile
       target: final-mintdb-sqlite
-    container_name: pair1-orchard
+    container_name: lnd-nutshell-sqlite-orchard
     restart: on-failure
-    networks: [pair1]
+    networks: [net]
     ports:
       - "3321:3321"
     depends_on:
-      nutshell:     { condition: service_healthy }
-      tapd-orchard: { condition: service_healthy }
+      nutshell: { condition: service_healthy }
     volumes:
       - orchard-data:/app/data
       - nutshell-data:/mint-data:ro
       - lnd-orchard-data:/certs/lnd:ro
-      - tapd-orchard-data:/certs/tapd:ro
     env_file:
-      - ./pair1.env
+      - ./env
     environment:
       - NODE_ENV=production
       - DOCKER_ENV=true
@@ -251,8 +197,6 @@ services:
       - SERVER_PORT=3321
       - LIGHTNING_CERT=/certs/lnd/tls.cert
       - LIGHTNING_MACAROON=/certs/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      - TAPROOT_ASSETS_CERT=/certs/tapd/tls.cert
-      - TAPROOT_ASSETS_MACAROON=/certs/tapd/data/regtest/admin.macaroon
       - MINT_DATABASE=/mint-data/mint.sqlite3
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
