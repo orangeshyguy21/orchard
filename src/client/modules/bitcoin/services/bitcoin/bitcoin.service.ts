@@ -3,14 +3,13 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError, Subject, Subscription, finalize} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError, Subject, finalize} from 'rxjs';
 /* Application Dependencies */
-import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery, hasGqlWsErrorCode} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
-import {OrchardRes, OrchardWsRes} from '@client/modules/api/types/api.types';
+import {OrchardRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
-import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 /* Native Dependencies */
 import {BitcoinBlockCount} from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
@@ -97,7 +96,7 @@ export class BitcoinService {
 	/* Observables for caching (rapid request caching) */
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
 	/* Observables for backfill */
-	private backfill_subscription?: Subscription;
+	private backfill_dispose_subscription?: () => void;
 	private backfill_subscription_id?: string | null;
 	private backfill_progress_subject = new Subject<BitcoinOracleBackfillProgress>();
 	private backfill_active_subject = new Subject<boolean>();
@@ -106,7 +105,6 @@ export class BitcoinService {
 		private http: HttpClient,
 		private cache: CacheService,
 		private apiService: ApiService,
-		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
 	) {
@@ -367,34 +365,16 @@ export class BitcoinService {
 	 */
 	public openBackfillSocket(start_date: number, end_date?: number | null): void {
 		const subscription_id = crypto.randomUUID();
-		const auth_token = this.localStorageService.getAuthToken();
 		this.backfill_subscription_id = subscription_id;
 		this.backfill_active_subject.next(true);
 
-		this.backfill_subscription = this.apiService.gql_socket.subscribe({
-			next: (response: OrchardWsRes<BitcoinOracleBackfillProgressResponse>) => {
-				if (response.type === 'data' && response.payload?.errors) {
-					const has_throttle_error = response.payload.errors.some((err: any) => err.extensions?.code === 10005);
-					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
-					if (has_auth_error) {
-						this.closeBackfillSocket();
-						this.retryBackfillSocket(start_date, end_date);
-						return;
-					}
-					if (has_throttle_error) {
-						const progress = new BitcoinOracleBackfillProgress({
-							id: subscription_id,
-							status: UtxOracleProgressStatus.Error,
-							error: 'Throttle limit reached. Please try again later.',
-						});
-						this.backfill_progress_subject.next(progress);
-						this.closeBackfillSocket();
-						return;
-					}
-				}
-				if (response.type === 'data' && response?.payload?.data?.bitcoin_oracle_backfill) {
-					const progress = new BitcoinOracleBackfillProgress(response.payload.data.bitcoin_oracle_backfill);
-					this.backfill_progress_subject.next(new BitcoinOracleBackfillProgress(progress));
+		this.backfill_dispose_subscription = this.apiService.gql_client.subscribe<BitcoinOracleBackfillProgressResponse>(
+			getApiQuery(BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION, {id: subscription_id, start_date, end_date}),
+			{
+				next: (response) => {
+					if (!response.data?.bitcoin_oracle_backfill) return;
+					const progress = new BitcoinOracleBackfillProgress(response.data.bitcoin_oracle_backfill);
+					this.backfill_progress_subject.next(progress);
 					if (
 						progress.status === UtxOracleProgressStatus.Completed ||
 						progress.status === UtxOracleProgressStatus.Error ||
@@ -402,29 +382,30 @@ export class BitcoinService {
 					) {
 						this.closeBackfillSocket();
 					}
-				}
-			},
-			error: (error) => {
-				console.error('Backfill socket error:', error);
-				this.backfill_subscription_id = null;
-				this.backfill_active_subject.next(false);
-			},
-		});
-
-		this.apiService.gql_socket.next({type: 'connection_init', payload: {}});
-		this.apiService.gql_socket.next({
-			id: subscription_id,
-			type: 'start',
-			payload: {
-				query: BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION,
-				variables: {
-					id: subscription_id,
-					auth: auth_token,
-					start_date: start_date,
-					end_date: end_date,
 				},
+				error: (error) => {
+					if (hasGqlWsErrorCode(error, 10002)) {
+						this.closeBackfillSocket();
+						this.retryBackfillSocket(start_date, end_date);
+						return;
+					}
+					if (hasGqlWsErrorCode(error, 10005)) {
+						this.backfill_progress_subject.next(
+							new BitcoinOracleBackfillProgress({
+								id: subscription_id,
+								status: UtxOracleProgressStatus.Error,
+								error: 'Throttle limit reached. Please try again later.',
+							}),
+						);
+						this.closeBackfillSocket();
+						return;
+					}
+					console.error('Backfill socket error:', error);
+					this.closeBackfillSocket();
+				},
+				complete: () => this.closeBackfillSocket(),
 			},
-		});
+		);
 	}
 
 	public abortBackfillSocket(): void {
@@ -448,18 +429,13 @@ export class BitcoinService {
 			.subscribe();
 	}
 
-	/**
-	 * Close the bitcoin oracle backfill websocket subscription
-	 */
 	private closeBackfillSocket(): void {
-		if (!this.backfill_subscription) return;
-		this.backfill_subscription?.unsubscribe();
-		this.apiService.gql_socket.next({
-			id: this.backfill_subscription_id,
-			type: 'stop',
-		});
+		const dispose = this.backfill_dispose_subscription;
+		if (!dispose) return;
+		this.backfill_dispose_subscription = undefined;
 		this.backfill_subscription_id = null;
 		this.backfill_active_subject.next(false);
+		dispose();
 	}
 
 	/**

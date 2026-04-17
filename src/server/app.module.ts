@@ -32,7 +32,6 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 		path: path,
 		subscriptions: {
 			'graphql-ws': true,
-			'subscriptions-transport-ws': false,
 		},
 		resolvers: {
 			UnixTimestamp: UnixTimestamp,

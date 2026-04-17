@@ -5,12 +5,8 @@ import {Throttle, minutes} from '@nestjs/throttler';
 /* Vendor Dependencies */
 import {PubSub} from 'graphql-subscriptions';
 /* Application Dependencies */
-import {AuthService} from '@server/modules/auth/auth.service';
-import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
-import {NoHeaders} from '@server/modules/auth/decorators/auth.decorator';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 /* Local Dependencies */
 import {OrchardBitcoinOraclePrice, OrchardBitcoinOracleBackfillProgress, OrchardBitcoinOracleBackfillStream} from './btcoracle.model';
@@ -22,10 +18,7 @@ const pubSub = new PubSub();
 export class BitcoinOracleResolver implements OnModuleInit {
 	private readonly logger = new Logger(BitcoinOracleResolver.name);
 
-	constructor(
-		private bitcoinOracleService: BitcoinOracleService,
-		private authService: AuthService,
-	) {}
+	constructor(private bitcoinOracleService: BitcoinOracleService) {}
 
 	onModuleInit() {
 		if (process.env.SCHEMA_ONLY) return;
@@ -47,23 +40,14 @@ export class BitcoinOracleResolver implements OnModuleInit {
 
 	@Subscription(() => OrchardBitcoinOracleBackfillProgress, {description: 'Subscribe to Bitcoin oracle backfill progress updates'})
 	@Throttle({default: {limit: 3, ttl: minutes(1)}})
-	@NoHeaders()
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	async bitcoin_oracle_backfill(
 		@Args('id', {type: () => String, description: 'Unique backfill stream identifier'}) id: string,
-		@Args('auth', {type: () => String, description: 'Access token for authentication'}) auth: string,
 		@Args('start_date', {type: () => UnixTimestamp, description: 'Start date for the backfill range'}) start_date: number,
 		@Args('end_date', {type: () => UnixTimestamp, nullable: true, description: 'End date for the backfill range'}) end_date?: number,
 	) {
 		const tag = `SUBSCRIPTION { bitcoin_oracle_backfill } stream ${id}`;
 		this.logger.debug(tag);
-		try {
-			const payload = await this.authService.validateAccessToken(auth);
-			const approved_roles = [UserRole.ADMIN, UserRole.MANAGER];
-			if (!approved_roles.includes(payload.role)) throw new OrchardApiError(OrchardErrorCode.AuthorizationError);
-		} catch (error) {
-			if (error instanceof OrchardApiError) throw error;
-			throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
-		}
 		this.bitcoinOracleService.streamBackfillOracle(tag, id, start_date, end_date);
 		return pubSub.asyncIterableIterator('bitcoin_oracle_backfill');
 	}

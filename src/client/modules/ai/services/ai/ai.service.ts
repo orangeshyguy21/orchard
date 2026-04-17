@@ -3,15 +3,13 @@ import {Injectable, signal, computed} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {Observable, catchError, Subscription, Subject, BehaviorSubject, of, map, tap, throwError, shareReplay, finalize} from 'rxjs';
+import {Observable, catchError, Subject, BehaviorSubject, of, map, tap, throwError, shareReplay, finalize} from 'rxjs';
 /* Application Dependencies */
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
-import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
-import {OrchardWsRes} from '@client/modules/api/types/api.types';
-import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery, hasGqlWsErrorCode} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
@@ -81,7 +79,7 @@ export class AiService {
 		return this.assistant_subject.asObservable();
 	}
 
-	private subscription?: Subscription;
+	private dispose_subscription?: () => void;
 	private subscription_id?: string | null;
 	private conversation_subject = new Subject<AiChatConversation | null>();
 	private message_subject = new Subject<AiChatChunk>();
@@ -103,7 +101,6 @@ export class AiService {
 		private cacheService: CacheService,
 		private apiService: ApiService,
 		private settingDeviceService: SettingDeviceService,
-		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
 		private http: HttpClient,
@@ -146,54 +143,37 @@ export class AiService {
 		const ai_model = this.settingDeviceService.getModel();
 		this.subscription_id = subscription_id;
 		this.active_subject.next(true);
-		this.subscription = this.apiService.gql_socket.subscribe({
-			next: (response: OrchardWsRes<AiChatResponse>) => {
-				if (response.type === 'data' && response.payload?.errors) {
-					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
-					if (has_auth_error) {
-						this.closeAiSocket();
-						this.retryAiSocket(assistant, content, context);
-						return;
-					}
-				}
-				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
-					const chunk = new AiChatChunk(response.payload.data.ai_chat, subscription_id);
-					this.message_subject.next(chunk);
-					chunk.message.tool_calls?.forEach((tool_call) => this.toolcall_subject.next(tool_call));
-					if (chunk.done) this.closeAiSocket();
-				}
-			},
-			error: (error) => {
-				console.error('Socket error:', error);
-				this.subscription_id = null;
-				this.active_subject.next(false);
-			},
-		});
 
 		const conversation = !this.conversation_cache
 			? this.createConversation(subscription_id, assistant, content, context)
 			: this.continueConversation(subscription_id, assistant, content, context);
 		this.conversation_subject.next(conversation);
 		const messages = conversation.getMessages();
-		const auth_token = this.localStorageService.getAuthToken();
 
-		this.apiService.gql_socket.next({type: 'connection_init', payload: {}});
-		this.apiService.gql_socket.next({
-			id: subscription_id,
-			type: 'start',
-			payload: {
-				query: AI_CHAT_SUBSCRIPTION,
-				variables: {
-					ai_chat: {
-						id: subscription_id,
-						messages,
-						model: ai_model,
-						assistant: assistant,
-						auth: auth_token,
-					},
+		this.dispose_subscription = this.apiService.gql_client.subscribe<AiChatResponse>(
+			getApiQuery(AI_CHAT_SUBSCRIPTION, {
+				ai_chat: {id: subscription_id, messages, model: ai_model, assistant},
+			}),
+			{
+				next: (response) => {
+					if (!response.data?.ai_chat) return;
+					const chunk = new AiChatChunk(response.data.ai_chat, subscription_id);
+					this.message_subject.next(chunk);
+					chunk.message.tool_calls?.forEach((tool_call) => this.toolcall_subject.next(tool_call));
+					if (chunk.done) this.closeAiSocket();
 				},
+				error: (error) => {
+					if (hasGqlWsErrorCode(error, 10002)) {
+						this.closeAiSocket();
+						this.retryAiSocket(assistant, content, context);
+						return;
+					}
+					console.error('Socket error:', error);
+					this.closeAiSocket();
+				},
+				complete: () => this.closeAiSocket(),
 			},
-		});
+		);
 	}
 
 	public abortAiSocket(id?: string): void {
@@ -219,14 +199,12 @@ export class AiService {
 	}
 
 	private closeAiSocket(): void {
-		if (!this.subscription) return;
-		this.subscription?.unsubscribe();
-		this.apiService.gql_socket.next({
-			id: this.subscription_id,
-			type: 'stop',
-		});
+		const dispose = this.dispose_subscription;
+		if (!dispose) return;
+		this.dispose_subscription = undefined;
 		this.subscription_id = null;
 		this.active_subject.next(false);
+		dispose();
 	}
 
 	public getAiHealth(): Observable<AiHealth> {
