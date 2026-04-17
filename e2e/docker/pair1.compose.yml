@@ -1,0 +1,260 @@
+# Pair 1: bitcoind + lnd (3 nodes) + tapd (2 nodes) + nutshell + orchard
+#
+# Topology:
+#   lnd-alice ⇄ lnd-orchard ⇄ lnd-bob     (no direct alice⇄bob channel)
+#   tapd-orchard attached to lnd-orchard
+#   tapd-alice   attached to lnd-alice
+#   nutshell backend: lnd-orchard (via REST)
+
+name: orchard-e2e-pair1
+
+networks:
+  pair1:
+    name: orchard-e2e-pair1
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  lnd-orchard-data:
+  lnd-alice-data:
+  lnd-bob-data:
+  tapd-orchard-data:
+  tapd-alice-data:
+  nutshell-data:
+  orchard-data:
+  shared:
+
+x-lnd-defaults: &lnd-defaults
+  image: polarlightning/lnd:0.20.0-beta
+  restart: on-failure
+  networks: [pair1]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  healthcheck:
+    test: ["CMD-SHELL", "lncli --lnddir=/home/lnd/.lnd --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+x-tapd-defaults: &tapd-defaults
+  image: polarlightning/tapd:0.7.0-alpha
+  restart: on-failure
+  networks: [pair1]
+  healthcheck:
+    test: ["CMD-SHELL", "tapcli --tapddir=/home/tap/.tapd --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:30.0
+    container_name: pair1-bitcoind
+    restart: on-failure
+    networks: [pair1]
+    ports:
+      - "18443:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  lnd-orchard:
+    <<: *lnd-defaults
+    container_name: pair1-lnd-orchard
+    ports: ["10009:10009"]
+    volumes:
+      - lnd-orchard-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=orchard --externalip=lnd-orchard
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-orchard --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+
+  lnd-alice:
+    <<: *lnd-defaults
+    container_name: pair1-lnd-alice
+    ports: ["10019:10009"]
+    volumes:
+      - lnd-alice-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=alice --externalip=lnd-alice
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-alice --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+
+  lnd-bob:
+    <<: *lnd-defaults
+    container_name: pair1-lnd-bob
+    ports: ["10029:10009"]
+    volumes:
+      - lnd-bob-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=bob --externalip=lnd-bob
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-bob --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+
+  tapd-orchard:
+    <<: *tapd-defaults
+    container_name: pair1-tapd-orchard
+    ports: ["10039:10029"]
+    depends_on:
+      lnd-orchard: { condition: service_healthy }
+    volumes:
+      - tapd-orchard-data:/home/tap/.tapd
+      - lnd-orchard-data:/lnd:ro
+    command: >
+      tapd --network=regtest --debuglevel=info
+      --tlsextradomain=tapd-orchard --tlsextradomain=localhost
+      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
+      --lnd.host=lnd-orchard:10009
+      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
+      --lnd.tlspath=/lnd/tls.cert
+      --allow-public-uni-proof-courier
+      --allow-public-stats
+      --universe.public-access=rw
+
+  tapd-alice:
+    <<: *tapd-defaults
+    container_name: pair1-tapd-alice
+    ports: ["10049:10029"]
+    depends_on:
+      lnd-alice: { condition: service_healthy }
+    volumes:
+      - tapd-alice-data:/home/tap/.tapd
+      - lnd-alice-data:/lnd:ro
+    command: >
+      tapd --network=regtest --debuglevel=info
+      --tlsextradomain=tapd-alice --tlsextradomain=localhost
+      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
+      --lnd.host=lnd-alice:10009
+      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
+      --lnd.tlspath=/lnd/tls.cert
+
+  # One-shot setup service. Image pre-bakes curl/jq/xxd so we don't pay
+  # an apk round-trip on every compose up.
+  setup:
+    build:
+      context: .
+      dockerfile: setup.Dockerfile
+    container_name: pair1-setup
+    networks: [pair1]
+    depends_on:
+      lnd-orchard: { condition: service_healthy }
+      lnd-alice:   { condition: service_healthy }
+      lnd-bob:     { condition: service_healthy }
+    volumes:
+      - ./scripts:/scripts:ro
+      - lnd-orchard-data:/lnd/orchard:ro
+      - lnd-alice-data:/lnd/alice:ro
+      - lnd-bob-data:/lnd/bob:ro
+      - shared:/shared
+    environment:
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
+      - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+    restart: "no"
+
+  nutshell:
+    image: cashubtc/nutshell:0.20.0
+    container_name: pair1-nutshell
+    restart: on-failure
+    networks: [pair1]
+    ports:
+      - "3338:3338"
+    depends_on:
+      setup: { condition: service_completed_successfully }
+    volumes:
+      - nutshell-data:/app/data
+      - lnd-orchard-data:/lnd:ro
+    environment:
+      - MINT_LISTEN_HOST=0.0.0.0
+      - MINT_LISTEN_PORT=3338
+      - MINT_BACKEND_BOLT11_SAT=LndRestWallet
+      - MINT_LND_REST_ENDPOINT=https://lnd-orchard:8080
+      - MINT_LND_REST_CERT=/lnd/tls.cert
+      - MINT_LND_REST_MACAROON=/lnd/data/chain/bitcoin/regtest/admin.macaroon
+      - MINT_DATABASE=/app/data
+      - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
+      - MINT_INFO_NAME=e2e-nutshell
+      - MINT_INFO_DESCRIPTION=Orchard e2e pair1 mint
+      - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+    command: >
+      poetry run mint
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request,sys; sys.exit(0 if urllib.request.urlopen(\"http://localhost:3338/v1/info\").status==200 else 1)'"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: final-mintdb-sqlite
+    container_name: pair1-orchard
+    restart: on-failure
+    networks: [pair1]
+    ports:
+      - "3321:3321"
+    depends_on:
+      nutshell:     { condition: service_healthy }
+      tapd-orchard: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+      - nutshell-data:/mint-data:ro
+      - lnd-orchard-data:/certs/lnd:ro
+      - tapd-orchard-data:/certs/tapd:ro
+    env_file:
+      - ./pair1.env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - LIGHTNING_CERT=/certs/lnd/tls.cert
+      - LIGHTNING_MACAROON=/certs/lnd/data/chain/bitcoin/regtest/admin.macaroon
+      - TAPROOT_ASSETS_CERT=/certs/tapd/tls.cert
+      - TAPROOT_ASSETS_MACAROON=/certs/tapd/data/regtest/admin.macaroon
+      - MINT_DATABASE=/mint-data/mint.sqlite3
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
