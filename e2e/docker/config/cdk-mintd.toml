@@ -1,0 +1,26 @@
+# cdk-mintd config for Orchard e2e pair2. Regtest only — mnemonic is the
+# famous BIP39 test seed, DO NOT reuse in any real deployment.
+
+[info]
+url = "http://cdk-mintd:3339"
+listen_host = "0.0.0.0"
+listen_port = 3339
+mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+[mint_info]
+name = "e2e-cdk"
+description = "Orchard e2e pair2 mint"
+
+[database]
+engine = "sqlite"
+
+[ln]
+ln_backend = "cln"
+
+[cln]
+rpc_path = "/cln/regtest/lightning-rpc"
+
+[mint_management_rpc]
+enabled = true
+address = "0.0.0.0"
+port = 8086

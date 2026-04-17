@@ -1,0 +1,212 @@
+# Pair 2: bitcoind + cln (2 nodes) + lnd-carol + cdk-mintd + orchard
+#
+# Topology:
+#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (no direct alice⇄carol channel)
+#   cdk-mintd backend: cln-orchard (via unix socket at /cln/regtest/lightning-rpc)
+#   lnd-carol validates cross-implementation (cln↔lnd) payments
+
+name: orchard-e2e-pair2
+
+networks:
+  pair2:
+    name: orchard-e2e-pair2
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  cln-orchard-data:
+  cln-alice-data:
+  lnd-carol-data:
+  cdk-mintd-data:
+  orchard-data:
+  shared:
+
+x-cln-defaults: &cln-defaults
+  image: polarlightning/clightning:25.12
+  restart: on-failure
+  networks: [pair2]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  healthcheck:
+    test: ["CMD-SHELL", "lightning-cli --lightning-dir=/home/clightning/.lightning --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:30.0
+    container_name: pair2-bitcoind
+    restart: on-failure
+    networks: [pair2]
+    ports:
+      - "28443:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  cln-orchard:
+    <<: *cln-defaults
+    container_name: pair2-cln-orchard
+    ports: ["21001:11001"]
+    volumes:
+      - cln-orchard-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=orchard
+      --log-level=info
+
+  cln-alice:
+    <<: *cln-defaults
+    container_name: pair2-cln-alice
+    ports: ["21011:11001"]
+    volumes:
+      - cln-alice-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=alice
+      --log-level=info
+
+  lnd-carol:
+    image: polarlightning/lnd:0.20.0-beta
+    container_name: pair2-lnd-carol
+    restart: on-failure
+    networks: [pair2]
+    ports: ["20029:10009"]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - lnd-carol-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=carol --externalip=lnd-carol
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-carol --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+    healthcheck:
+      test: ["CMD-SHELL", "lncli --lnddir=/home/lnd/.lnd --network=regtest getinfo > /dev/null"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # One-shot setup. Uses docker exec to drive CLN (simplest shell approach)
+  # + LND REST for lnd-carol. Docker socket mount is dev-only convenience.
+  setup:
+    build:
+      context: .
+      dockerfile: setup.Dockerfile
+    container_name: pair2-setup
+    networks: [pair2]
+    depends_on:
+      cln-orchard:  { condition: service_healthy }
+      cln-alice:    { condition: service_healthy }
+      lnd-carol:    { condition: service_healthy }
+    volumes:
+      - ./scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+      - shared:/shared
+    environment:
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
+      - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+      - CHANNEL_PUSH_MSAT=${CHANNEL_PUSH_MSAT:-5000000000}
+    entrypoint: ["/scripts/fund-and-open-pair2.sh"]
+    restart: "no"
+
+  cdk-mintd:
+    image: cashubtc/mintd:v0.16.0
+    container_name: pair2-cdk-mintd
+    restart: on-failure
+    networks: [pair2]
+    ports:
+      - "3339:3339"
+      - "8086:8086"
+    depends_on:
+      setup: { condition: service_completed_successfully }
+    volumes:
+      - cdk-mintd-data:/app/data
+      - cln-orchard-data:/cln:ro
+      - ./config/cdk-mintd.toml:/config.toml:ro
+    environment:
+      - CDK_MINTD_WORK_DIR=/app/data
+    command: ["cdk-mintd", "--config", "/config.toml"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3339/v1/info || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: final-mintdb-sqlite
+    container_name: pair2-orchard
+    restart: on-failure
+    networks: [pair2]
+    ports:
+      - "3322:3321"
+    depends_on:
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+      - cdk-mintd-data:/mint-data:ro
+      - cln-orchard-data:/certs/cln:ro
+    env_file:
+      - ./pair2.env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - LIGHTNING_CERT=/certs/cln/regtest/client.pem
+      - LIGHTNING_KEY=/certs/cln/regtest/client-key.pem
+      - LIGHTNING_CA=/certs/cln/regtest/ca.pem
+      - MINT_DATABASE=/mint-data/cdk-mintd.sqlite
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30

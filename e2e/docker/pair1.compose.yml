@@ -189,6 +189,7 @@ services:
       - BTC_RPC_PASS=${BTC_RPC_PASS}
       - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
       - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+    entrypoint: ["/scripts/fund-and-open.sh"]
     restart: "no"
 
   nutshell:

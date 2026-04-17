@@ -10,13 +10,17 @@ See [tasks/todo.md](../tasks/todo.md) for the full rollout plan.
 ```
 e2e/
 ├── docker/
-│   ├── pair1.compose.yml      # bitcoind + lnd*3 + tapd*2 + nutshell + orchard
-│   ├── pair1.env              # pair1 config (regtest only)
-│   ├── pair2.compose.yml      # (planned) bitcoind + cln*2 + lnd-carol + cdk-mintd + orchard
-│   ├── pair2.env              # (planned)
+│   ├── pair1.compose.yml            # bitcoind + lnd*3 + tapd*2 + nutshell + orchard
+│   ├── pair1.env
+│   ├── pair2.compose.yml            # bitcoind + cln*2 + lnd-carol + cdk-mintd + orchard
+│   ├── pair2.env
+│   ├── setup.Dockerfile             # shared alpine+tools image for both setup services
+│   ├── config/
+│   │   └── cdk-mintd.toml           # cdk-mintd config (pair2)
 │   └── scripts/
-│       ├── wait-healthy.sh    # docker compose up --wait wrapper
-│       └── fund-and-open.sh   # runs inside setup service: mines, funds, opens channels
+│       ├── wait-healthy.sh          # docker compose up --wait wrapper
+│       ├── fund-and-open.sh         # pair1 setup: mines, funds, opens channels
+│       └── fund-and-open-pair2.sh   # pair2 setup (CLN via docker exec + LND REST)
 └── README.md (this file)
 ```
 
@@ -31,11 +35,21 @@ lnd-alice ⇄ lnd-orchard ⇄ lnd-bob     (NO direct alice⇄bob — forces rout
                   orchard      (this repo, built from Dockerfile)
 ```
 
-## Running pair 1 locally
+## Pair 2 topology
+
+```
+cln-alice ⇄ cln-orchard ⇄ lnd-carol    (cross-implementation cln↔lnd)
+              ▲
+              └── cdk-mintd   (backend: cln-orchard via unix socket)
+                  orchard     (this repo, built from Dockerfile)
+```
+
+## Running locally
 
 ```bash
-# bring it up (blocks until healthy)
+# bring up (blocks until healthy)
 npm run e2e:pair1:up
+npm run e2e:pair2:up
 
 # watch logs
 npm run e2e:pair1:logs
@@ -45,9 +59,12 @@ npm run e2e:pair1:ps
 
 # tear down (removes all named volumes — fully clean)
 npm run e2e:pair1:down
+npm run e2e:pair2:down
 ```
 
-## Ports exposed to the host (pair 1)
+## Ports exposed to the host
+
+### Pair 1
 
 | Service       | Host port | Purpose                    |
 |---------------|-----------|----------------------------|
@@ -60,7 +77,18 @@ npm run e2e:pair1:down
 | nutshell      | 3338      | mint HTTP API              |
 | orchard       | 3321      | Orchard GraphQL + UI       |
 
-LND / tapd REST ports are not exposed to the host — they're used only inside the compose network by the setup script. All host-side interactions go through gRPC, Orchard, or the mint HTTP.
+### Pair 2
+
+| Service       | Host port | Purpose                    |
+|---------------|-----------|----------------------------|
+| bitcoind RPC  | 28443     | chain manipulation         |
+| cln-orchard   | 21001     | gRPC                       |
+| cln-alice     | 21011     | gRPC                       |
+| lnd-carol     | 20029     | gRPC                       |
+| cdk-mintd     | 3339/8086 | mint HTTP / management RPC |
+| orchard       | 3322      | Orchard GraphQL + UI       |
+
+Pair 1 and pair 2 can run concurrently — port ranges are disjoint. Pair 2's host ports are shifted into the 20k/28k range to avoid collisions with Polar Lightning (desktop app) which occupies 18443–18453 / 10000–13999 / 11000–11099.
 
 ## What the setup service does
 
