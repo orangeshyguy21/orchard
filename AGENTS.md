@@ -2,54 +2,33 @@
 
 General behavioral guidelines for any AI agent working in this repository.
 
-## Workflow Orchestration
+## Deployment Context: Self-Hosted FOSS
 
-### 1. Plan Mode Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately - don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
+Orchard is free and open source software. Anyone can clone it, configure it, and run it — on a laptop, a VPS, a home server, behind Tor, behind a reverse proxy, on ARM, on x86, with lnd or cln, with cdk or nutshell, with or without tapd, with or without ollama. We ship the code; operators run it. **There is no production we control.**
 
-### 2. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One task per subagent for focused execution
+### What this means in practice
 
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
+- **No prod telemetry, no prod logs, no prod access.** We cannot SSH in, tail a log, query a DB, or reproduce an operator's exact state. Debugging starts from a GitHub issue, a user report, or a screenshot — never from our own observability stack.
+- **The deployment matrix is unbounded.** Node versions, OS, backend combinations (lnd+cdk, cln+nutshell, etc.), network topologies (clearnet, Tor, LAN-only), reverse proxies, TLS setups, and custom `.env` configs all vary. Any change must assume a configuration we've never seen.
+- **No coordinated upgrades.** Operators update when they feel like it. A fix shipped today may not reach a user for months. Breaking changes, migrations, and schema edits need to degrade gracefully or fail loudly with actionable errors — silent assumptions about "the latest version" will bite real users.
+- **No feature flags we control.** We can't hotfix, roll back, or gate rollouts per-operator. Once a release is cut and pulled, it runs. Bugs stick around until the operator updates.
+- **Error messages are the support channel.** Since we can't see their logs, errors surfaced in the UI or server logs must be self-explanatory enough for the operator to act on or paste into an issue. "Something went wrong" is useless; "cln socket at $PATH unreachable — check CLN_SOCKET" is actionable.
+- **Defaults matter more than in SaaS.** Whatever defaults ship are what most operators will run. A bad default is a bug replicated across every deployment.
+- **Backwards compatibility is load-bearing.** Users who skip versions still need migrations to run clean. DB migrations, config schema changes, and API contracts should assume jumps, not linear upgrades.
 
-### 4. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
+### Decision-making implications
 
-### 5. Demand Elegance (Balanced)
-- For non-trivial changes: pause and ask "is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes - don't over-engineer
-- Challenge your own work before presenting it
+- Prefer resilience over elegance when the two conflict. Code that tolerates weird environments beats code that only works in ours.
+- Surface config problems at startup with clear messages, not at request-time with stack traces.
+- Validate external inputs (backend RPCs, user config) defensively — these are system boundaries with unknowable operators on the other side.
+- When a bug is reported, ask for version + config + logs first, because we have no other way to narrow it down.
+- Avoid "we'll monitor it in prod" reasoning — there is no prod we can monitor.
 
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests - then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
+## Workflow
 
-## Task Management
-
-1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `tasks/todo.md`
-6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
-
-> **Note:** If your tool has built-in memory or task tracking (e.g. Claude Code's persistent memory and todo system), prefer those over file-based tracking. The file-based approach above is the universal fallback.
+- **Verify before done.** Don't mark a task complete without proving it works — run tests, check logs, exercise the feature. If you can't verify (e.g. UI change with no way to test), say so explicitly.
+- **Bias toward fixing.** When given a bug report or failing test, just fix it — don't ask for hand-holding. Point at the error, resolve it, move on.
+- **Stop and re-plan when things go sideways.** If an approach isn't working, don't keep pushing — pause and reconsider before digging deeper.
 
 ## Core Principles
 
