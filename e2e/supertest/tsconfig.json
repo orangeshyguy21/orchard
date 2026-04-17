@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "ES2023",
+		"lib": ["ES2023"],
+		"types": ["jest", "node"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"skipLibCheck": true,
+		"strict": false,
+		"resolveJsonModule": true,
+		"isolatedModules": true
+	},
+	"include": ["**/*.ts", "../helpers/config.ts", "../helpers/docker-cli.ts", "../helpers/regtest.ts"]
+}

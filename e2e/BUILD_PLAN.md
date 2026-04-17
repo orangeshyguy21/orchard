@@ -164,12 +164,182 @@ Deferred to when first spec needs them:
 - [ ] `e2e/helpers/gql.ts` — authed Apollo + `graphql-ws` (phase 4 likely
       doesn't need this if backend coverage stays in Jest tier)
 
-### Phase 3 — Supertest tier integration
+### Phase 3 — Supertest tier: fidelity-first API coverage
 
-- [ ] Rewrite `src/server/test/app.e2e-spec.ts` stub → real auth + mint quote
-      API test against `lnd-nutshell-sqlite` backends
-- [ ] `test:server:e2e` runs after `e2e:up lnd-nutshell-sqlite` in CI
-- [ ] `DEV_AUTH_BYPASS=true` used only here, not in Playwright tier
+**Framing.** Orchard is a reporting + control surface over external source-of-truth
+systems (mint daemon, LN node, bitcoind, tapd, DB). The mint and node own funds;
+Orchard's job is to (a) **report truthfully** what the backends say, (b) **relay
+operator mutations** faithfully, (c) **aggregate event streams** correctly, and
+(d) **gate its own surface**. Orchard cannot lose funds — but it *can* lie about
+them, or drop mutations, or double-count events. Those are the regressions this
+tier exists to catch, and catch again every time a vendor (lnd, cln, bitcoind,
+nutshell, cdk, tapd) cuts a release.
+
+Every supertest is a **differential check**: query Orchard's GraphQL, query the
+backend directly (`docker exec lncli` / `lightning-cli` / `bitcoin-cli` /
+`cdk-mintd` REST / `psql` / `sqlite3`), assert they agree. Mutations assert the
+backend moved *and* Orchard's next read converged.
+
+#### Fidelity domains (priority order)
+
+- 🔴 **Read fidelity** — Orchard response == backend truth
+- 🔴 **Relay fidelity** — mutations reach backend, Orchard's next read converges
+- 🔴 **Event fidelity** — subscriptions emit every backend event, exactly once
+- 🟡 **Aggregate consistency** — analytics totals == deterministic sum of events; backfill == live
+- 🟡 **Auth surface integrity** — JWT, blacklist, roles, throttler, invite/signup
+- 🔴 **Resilience** — backend down → actionable error, not crash (per AGENTS.md)
+
+#### Phase 3.0 — Differential harness (prereq) ✅ DONE
+
+Tier lives at `e2e/supertest/`, colocated with docker configs and shared
+helpers (`e2e/helpers/`). One stack per jest run, selected via `E2E_CONFIG`
+(default `lnd-nutshell-sqlite`).
+
+- [x] `test:server:e2e` → `./e2e/supertest/scripts/run.sh` — iterates every
+      config in `e2e/docker/configs/`, sequential + fail-fast (stacks must
+      already be up via `npm run e2e:up all`). Per-config dispatch via
+      `E2E_CONFIG` env var; debug a single config with
+      `E2E_CONFIG=<name> npx jest --config ./e2e/supertest/jest.config.json`.
+- [x] Active config + URL resolver: `e2e/supertest/helpers/context.ts`
+- [x] HTTP GraphQL client: `gql()` — fetch-based, throws `GqlError` on errors
+- [x] Subscription client: `gqlSubscribe()` — graphql-ws over native WebSocket
+- [x] Real auth flow: `loginAsAdmin()` — `auth_initialization` → `auth_initialize`
+      (first-run, uses stack's SETUP_KEY) → `auth_authentication`. Memoized per
+      jest process. `DEV_AUTH_BYPASS` reserved but not required.
+- [x] Shared docker-exec primitives extracted to `e2e/helpers/docker-cli.ts`
+      (refactored out of `regtest.ts`); both tiers now share them.
+- [x] Backend wrappers `e2e/supertest/helpers/backend.ts` — `backend.btc.*`,
+      `backend.lnd.*`, `backend.cln.*`, `backend.ln.*` (dispatch by config.ln).
+      Phase 3.0 ships minimum surface (blockCount, getInfo); grows with 3.1+.
+- [x] Differential primitive: `agree(label, orchardValue, backendValue)` +
+      `expectAgree([...pairs])`. Unit conversions (sat↔msat) are caller-side
+      — explicit transforms at the call site read better than a transform DSL.
+- [x] Replaced broken `src/server/test/app.e2e-spec.ts` stub (tested a `/`
+      route that no longer exists). Live-server probe lives at
+      `e2e/supertest/specs/harness.e2e-spec.ts` — 5 checks, green in <1s:
+      public query, JWT issuance, bearer auth on guarded resolver, docker-exec
+      reachability, and a first differential (Orchard `bitcoin_blockcount`
+      agrees with `bitcoin-cli getblockcount`).
+
+#### Phase 3.1 — Read fidelity: static reads (🔴)
+
+Orchard query ↔ backend query, no state changes. Field-by-field differential.
+
+- [ ] **Mint info:** `mintInfo` / `mintInfoRpc` vs mint `/v1/info`
+- [ ] **Keysets:** `keysets`, `keysetCounts` vs mint `/v1/keysets` + mint DB counts
+- [ ] **Balances:** `mintBalances`, `issuedBalances`, `redeemedBalances` vs mint DB aggregates
+- [ ] **Proofs/promises:** `proofStats` vs mint DB `proof` / `promise` tables
+- [ ] **LN info / balance:** `lnInfo`, `lnBalance` vs `lncli getinfo` + `walletbalance` + `channelbalance`
+- [ ] **Channels / peers:** `lnChannels`, `lnClosedChannels`, `lnPeers` vs `lncli listchannels` / `listpeers` / `closedchannels`
+- [ ] **Wallet accounts:** `lnAccounts` vs `lncli wallet accounts list`
+- [ ] **Chain reads:** `blockCount`, `blockchainInfo`, `networkInfo`, `feeEstimates`,
+      `bitcoinBlock`, `mempoolTransactions`, `blockTemplate` vs `bitcoin-cli`
+- [ ] **Decode:** `lnRequest(bolt11)` vs `lncli decodepayreq`
+
+#### Phase 3.2 — Relay fidelity: mutation lifecycles (🔴)
+
+Orchard drives the mutation → assert backend state moved AND Orchard's next read converges.
+
+- [ ] **Mint quote:** `createMintQuote` → quote row in mint DB, invoice matches
+      → external node pays → poll/subscribe to `PAID` → proofs issued
+      → `mintBalances` matches mint aggregate
+- [ ] **Melt quote:** `createMeltQuote` → fees/amount agree → submit proofs
+      → LN payment visible on external node AND `lncli listpayments`
+      → both views show `PAID`
+- [ ] **Swap:** split proofs → old spent (mint DB + Orchard) → new valid
+- [ ] **Keyset rotation:** `rotateKeyset` → mint `/v1/keysets` shows new active
+      → Orchard converges → old keyset still resolves for legacy verification
+- [ ] **NUT-04/05 settings:** `updateNut04Settings` / `updateNut05Settings`
+      → mint config changed (restart-persistent) → Orchard read reflects
+- [ ] **Quote state:** `updateNut04QuoteState` / `updateNut05QuoteState`
+      → mint DB row changes, Orchard converges
+- [ ] **DB backup/restore:** `backupDatabase` produces valid dump
+      → `restoreDatabase` round-trip preserves a known quote+proof
+
+#### Phase 3.3 — Event fidelity: subscriptions (🔴)
+
+- [ ] `blockCountSubscription`: subscribe → `mine(5)` → exactly 5 emissions,
+      monotonically increasing, matching `bitcoin-cli getblockcount` at each step
+- [ ] `oracleBackfillSubscription`: trigger `backfillBitcoinOracle` → progress
+      monotonically advances → final count == oracle table row count
+- [ ] **No drops under load:** `mine(20)` rapidly → all 20 emissions received
+- [ ] **Reconnect:** drop WS mid-stream → resubscribe → document whether
+      Orchard dedupes or re-emits (test whichever is specified)
+
+#### Phase 3.4 — Aggregate consistency: analytics (🟡)
+
+Drive a **known** sequence of ops; assert totals match hand-computed expectation
+AND converge between live ingestion and backfill.
+
+- [ ] Seed N mints, M melts, K swaps with known amounts/fees
+- [ ] `operationAnalytics`, `meltAnalytics`, `swapAnalytics`, `feeAnalytics`,
+      `proofAnalytics`, `promiseAnalytics`, `balanceAnalytics`, `keysetAnalytics`,
+      `analyticsMetrics` equal hand-computed totals
+- [ ] `lnLocalBalanceAnalytics` / `lnRemoteBalanceAnalytics` reflect channel
+      state after a forwarded payment (delta == forward amount + fee)
+- [ ] `btcAnalytics` aligns with oracle table rows
+- [ ] **Backfill idempotency:** wipe analytics → run backfill → totals match
+      live-ingestion totals from the first run
+- [ ] `backfillStatus` across all three domains reports completion correctly
+- [ ] Open question from Phase 1 log: wait-for-ingestion helper — checkpoint
+      processing is async; may need `await settled()` primitive
+
+#### Phase 3.5 — Auth surface integrity (🟡)
+
+Orchard-internal (no backend differential); protects the relay surface above.
+
+- [ ] `authenticate` happy path + wrong password
+- [ ] `refreshToken` valid / reused (blacklisted) / expired
+- [ ] `revokeToken` blocks subsequent requests; blacklist persists across restart
+- [ ] `initialize` rejects second call; `SETUP_KEY` enforcement
+- [ ] `signup` requires valid unconsumed invite; consumed invite rejected
+- [ ] Admin-only resolvers reject user-role JWT (spot check: `updateSettings`,
+      `rotateKeyset`, `deleteCrewUser`, `backupDatabase`)
+- [ ] Unauthenticated → 401 on protected resolvers; public resolvers reachable
+- [ ] Throttler fires on burst; window resets
+- [ ] User CRUD: `updateUserPassword` stores bcrypt hash (verified by re-auth);
+      `deleteCrewUser` deactivates; `crewInvites` CRUD round-trip
+
+#### Phase 3.6 — Resilience (🔴, deferred until base is green)
+
+Per AGENTS.md — actionable errors, not stack traces.
+
+- [ ] `docker pause orchard-lnd` → `lnInfo` returns typed error with config
+      hint, no 500
+- [ ] `docker pause bitcoind` → `blockCount` surfaces "bitcoind at $HOST
+      unreachable" style message
+- [ ] `docker pause cdk-mintd` → `mintInfo` errors actionably
+- [ ] Postgres down (cln-cdk-postgres) → analytics writes don't crash server
+- [ ] Invalid state transitions (melt quote already paid, mint quote expired)
+      → typed error codes
+
+#### Phase 3.7 — Config-scoped differential (🟡)
+
+Run 3.1 + 3.2 against `lnd-cdk-sqlite` to catch cdk-vs-nutshell adapter drift.
+
+- [ ] Same differential assertions, swapped backend helpers
+- [ ] Tapass reads: `taprootAssetsInfo`, `taprootAssets`, `taprootAssetsUtxos`
+      vs `tapcli assets list` / `listutxos`
+- [ ] Postgres configs: defer unless differential reveals ORM-specific drift
+
+#### Phase 3.8 — Skip / defer to other tiers
+
+- AI chat / agents — non-deterministic, unit-test the adapter
+- System metrics — environmental
+- Event log — Orchard-internal; covered as side-effect assertions in 3.2
+- Public utilities (image proxy, port reachability) — low value
+- Scheduled cron handlers — unit-test the handler directly
+
+#### Vendor-release regression lever
+
+This tier exists to catch vendor-release drift. One CI workflow with inputs
+`lnd_tag`, `cln_tag`, `bitcoind_tag`, `nutshell_tag`, `cdk_tag`, `tapd_tag`
+re-runs 3.1–3.4 against bumped images. Differential passes → release safe to
+pin. Differential fails → the diff localizes which backend API drifted.
+
+- [ ] PR gate: 3.0–3.3 against `lnd-nutshell-sqlite` (<5 min)
+- [ ] Nightly: add 3.4–3.6
+- [ ] Vendor-bump matrix: 3.1–3.4 across all 4 configs with new image tags
 
 ### Phase 4 — Shared specs (all 4 configs)
 
@@ -214,6 +384,35 @@ Deferred to when first spec needs them:
   supertest (Phase 3). Smoke spec exercises helper chain end-to-end in ~4s.
   Helpers drive regtest via `docker exec` rather than shipping certs to the
   host — same pattern as the setup scripts.
+- **2026-04-17** — Phase 3.0 harness shipped. Chose `e2e/supertest/` over
+  `src/server/test/` so both e2e tiers (Playwright + supertest) share the
+  `e2e/helpers/` dir cleanly (no `../../../../` imports). Extracted
+  `btcCli`/`lndCli`/`clnCli` primitives from `regtest.ts` into shared
+  `docker-cli.ts` — backend wrappers now layer on top without duplication.
+  Auth flow uses real JWT path (no bypass) — every spec exercises
+  `auth_initialize` + `auth_authentication` as a side effect. Removed
+  `src/server/test/app.e2e-spec.ts` (stub tested a `/` route that no
+  longer exists). Probe passes 5/5 in ~0.5s against `lnd-nutshell-sqlite`.
+- **2026-04-17** — Phase 3.0 `/simplify` pass. Three review agents flagged
+  duplication + naming divergence; fixed the durable bits: extracted
+  `LnNode` + `containerForNode` + `isLnd` into `e2e/helpers/config.ts`
+  (shared between `regtest.ts` and `backend.ts`), consolidated admin creds
+  into `TEST_ADMIN` so Playwright + supertest tiers login as the same user
+  (was a latent cross-tier collision when both ran against one stack),
+  dropped premature `lnd`/`cln` namespaces from `backend.ts` in favor of
+  the unified `ln` dispatcher, and pruned WHAT-narrating header comments
+  across all new files. Also wired `test:server:e2e` to iterate every
+  config sequentially fail-fast via `scripts/run.sh`. Full matrix green:
+  20/20 tests across all 4 configs in ~2s.
+- **2026-04-17** — Phase 3 reframed as **fidelity-first**. Earlier framing
+  ("break = operator loses funds") was wrong: the mint and LN node own funds,
+  Orchard only reports/relays. Rewrote Phase 3 around four fidelity domains
+  (read, relay, event, aggregate) + auth-surface integrity + resilience.
+  Every supertest becomes a differential check: Orchard GraphQL vs direct
+  backend query (`docker exec` into lncli / lightning-cli / bitcoin-cli /
+  mintd REST / psql / sqlite3). Tier's primary CI purpose: catch vendor-
+  release drift (lnd, cln, bitcoind, nutshell, cdk, tapd) via an image-tag
+  matrix workflow.
 
 ---
 

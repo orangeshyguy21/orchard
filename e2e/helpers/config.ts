@@ -10,6 +10,13 @@ export type LnType = 'lnd' | 'cln';
 export type MintType = 'nutshell' | 'cdk';
 export type DbType = 'sqlite' | 'postgres';
 
+/** Named LN peer within a config's topology. `far` is always LND. */
+export type LnNode = 'orchard' | 'alice' | 'far';
+
+/** Seed admin used by both e2e tiers. Must match across tiers so the second
+ *  tier to run against a shared stack can log in with the same credentials. */
+export const TEST_ADMIN = {name: 'admin', password: 'orchard-e2e-admin-pw'} as const;
+
 export interface ConfigInfo {
 	name: ConfigName;
 	ln: LnType;
@@ -103,4 +110,22 @@ export function getConfig(name: string): ConfigInfo {
 		throw new Error(`Unknown config "${name}" — valid: ${Object.keys(CONFIGS).join(', ')}`);
 	}
 	return CONFIGS[name as ConfigName];
+}
+
+/** Resolve the docker container name for a named LN node in this config. */
+export function containerForNode(config: ConfigInfo, node: LnNode): string {
+	switch (node) {
+		case 'orchard':
+			return config.containers.lnOrchard;
+		case 'alice':
+			return config.containers.lnAlice;
+		case 'far':
+			return config.containers.lnFar;
+	}
+}
+
+/** True if the named node runs LND. `far` is always LND regardless of config.ln. */
+export function isLnd(config: ConfigInfo, node: LnNode): boolean {
+	if (node === 'far') return true;
+	return config.ln === 'lnd';
 }
