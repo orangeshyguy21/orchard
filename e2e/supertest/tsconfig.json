@@ -14,5 +14,12 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true
 	},
-	"include": ["**/*.ts", "../helpers/config.ts", "../helpers/docker-cli.ts", "../helpers/regtest.ts"]
+	"include": [
+		"**/*.ts",
+		"../helpers/config.ts",
+		"../helpers/docker-cli.ts",
+		"../helpers/regtest.ts",
+		"../helpers/backend.ts",
+		"../helpers/agree.ts"
+	]
 }

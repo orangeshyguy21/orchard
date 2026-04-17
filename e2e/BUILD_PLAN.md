@@ -221,20 +221,58 @@ helpers (`e2e/helpers/`). One stack per jest run, selected via `E2E_CONFIG`
       reachability, and a first differential (Orchard `bitcoin_blockcount`
       agrees with `bitcoin-cli getblockcount`).
 
-#### Phase 3.1 — Read fidelity: static reads (🔴)
+#### Phase 3.1 — Read fidelity, UI-first
 
-Orchard query ↔ backend query, no state changes. Field-by-field differential.
+**Reframed.** Originally scoped as "every read resolver Orchard exposes, tested
+via supertest differential." Walked back after realizing: (a) the client's
+query surface is the real API contract — resolvers Orchard exposes but the
+UI doesn't consume are dead code from the operator's perspective, (b) the
+client stores queries as plain string exports (no Apollo tag, zero runtime
+deps), making them observable on the wire, (c) Playwright can drive the
+real page and intercept responses via `page.waitForResponse()` + our existing
+`agree()` primitive — **zero query duplication anywhere**.
 
-- [ ] **Mint info:** `mintInfo` / `mintInfoRpc` vs mint `/v1/info`
-- [ ] **Keysets:** `keysets`, `keysetCounts` vs mint `/v1/keysets` + mint DB counts
-- [ ] **Balances:** `mintBalances`, `issuedBalances`, `redeemedBalances` vs mint DB aggregates
-- [ ] **Proofs/promises:** `proofStats` vs mint DB `proof` / `promise` tables
-- [ ] **LN info / balance:** `lnInfo`, `lnBalance` vs `lncli getinfo` + `walletbalance` + `channelbalance`
-- [ ] **Channels / peers:** `lnChannels`, `lnClosedChannels`, `lnPeers` vs `lncli listchannels` / `listpeers` / `closedchannels`
-- [ ] **Wallet accounts:** `lnAccounts` vs `lncli wallet accounts list`
-- [ ] **Chain reads:** `blockCount`, `blockchainInfo`, `networkInfo`, `feeEstimates`,
-      `bitcoinBlock`, `mempoolTransactions`, `blockTemplate` vs `bitcoin-cli`
-- [ ] **Decode:** `lnRequest(bolt11)` vs `lncli decodepayreq`
+New approach: one spec per page-or-section under `e2e/specs/`. Pattern:
+`loginViaUi` → attach `waitForResponse` listeners → single `page.goto` →
+differential each intercepted response against backend truth via
+`docker exec`. Helpers `matchGql(queryName)` + `gqlData(response, queryName)`
+in `e2e/helpers/gql-intercept.ts` keep the spec body terse.
+
+Scope trimmed to **what the UI actually fires**. Resolvers the UI doesn't
+consume get deferred to a leaner supertest tier later (Phase 3.1b, if needed).
+
+**Done:**
+- [x] `e2e/specs/bitcoin-section.spec.ts` — `/bitcoin` section fires
+      `bitcoin_network_info` + `bitcoin_blockchain_info` on load. Both
+      differentialed against `bitcoin-cli getnetworkinfo` / `getblockchaininfo`.
+      Note: the `/bitcoin` subsection dashboard is currently a stub; no other
+      queries fire there yet.
+- [x] Shared helpers relocated to `e2e/helpers/` (framework-agnostic):
+      `agree.ts` (uses `util.isDeepStrictEqual`, works in Jest + Playwright),
+      `backend.ts` (docker-exec readers), `gql-intercept.ts` (Playwright-only).
+- [x] Deleted duplicate `e2e/supertest/specs/chain.e2e-spec.ts` — Playwright
+      covers it via the consumer path.
+
+**Next up (by criticality):**
+- [ ] `/` index dashboard — blockchain_info, blockcount, lightning_info,
+      lightning_balance, mint_info, mint_activity_summary, taproot_assets_info
+- [ ] `/lightning` section — lightning_info, balance, wallet, channels, closed_channels
+- [ ] `/mint` section — mint_info, balances, keysets, keyset_counts, activity_summary
+- [ ] `/mint/keysets`, `/mint/config`, `/mint/database`
+- [ ] `/event`, `/crew`, `/settings/*`
+- [ ] `/bitcoin/oracle`, `/ecash`
+
+**Each new page spec should:** 1) observe which queries *actually* fire
+(not what the service exports), 2) differential only direct-passthrough
+fields, 3) note derived/synthetic fields in comments for later algorithmic-
+correctness coverage.
+
+#### Phase 3.1b — Non-UI API coverage (deferred)
+
+Resolvers the UI doesn't exercise yet (rare admin paths, subscriptions
+with specific timing needs, vendor-bump regression matrix where browser
+overhead is too slow). Addressed only after Phase 3.1 completes and we
+can identify the remaining gaps. Lives in the existing supertest tier.
 
 #### Phase 3.2 — Relay fidelity: mutation lifecycles (🔴)
 
@@ -393,6 +431,19 @@ pin. Differential fails → the diff localizes which backend API drifted.
   `auth_initialize` + `auth_authentication` as a side effect. Removed
   `src/server/test/app.e2e-spec.ts` (stub tested a `/` route that no
   longer exists). Probe passes 5/5 in ~0.5s against `lnd-nutshell-sqlite`.
+- **2026-04-17** — Phase 3.1 reframed **UI-first**. Original scope was
+  "every read resolver, tested via supertest differential." Walked back
+  after realizing the Angular client stores queries as plain string exports
+  (zero runtime deps, observable on the wire). Playwright can drive the
+  page, intercept the response, and differential — **no query duplication
+  anywhere**. Coverage now naturally tracks what operators actually consume;
+  dead-code resolvers defer to Phase 3.1b. Shared helpers (`agree`, `backend`)
+  moved to `e2e/helpers/` so both tiers can use them. New helper
+  `gql-intercept.ts` gives specs `matchGql(name)` + `gqlData(res, name)`.
+  First spec (`bitcoin-section.spec.ts`) passes 4/4 configs in ~800ms each,
+  covers both queries that fire on `/bitcoin`. Smoke spec renamed
+  `initialization.spec.ts` and narrowed to just the first-run UI flow
+  (skips gracefully on initialized stacks).
 - **2026-04-17** — Phase 3.0 `/simplify` pass. Three review agents flagged
   duplication + naming divergence; fixed the durable bits: extracted
   `LnNode` + `containerForNode` + `isLnd` into `e2e/helpers/config.ts`

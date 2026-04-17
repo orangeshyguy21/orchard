@@ -7,8 +7,10 @@
 import {getActiveConfig} from '../helpers/context';
 import {gql} from '../helpers/gql';
 import {loginAsAdmin} from '../helpers/login';
-import {btc} from '../helpers/backend';
-import {agree} from '../helpers/agree';
+
+/* Application Dependencies */
+import {btc} from '../../helpers/backend';
+import {agree} from '../../helpers/agree';
 
 describe('harness probe — supertest tier', () => {
 	const config = getActiveConfig();
