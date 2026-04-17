@@ -202,6 +202,7 @@ services:
       - MINT_CLNREST_URL=http://cln-orchard:3010
       - MINT_DATABASE=postgres://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
       - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
+      - MINT_INPUT_FEE_PPK=100
       - MINT_INFO_NAME=e2e-nutshell
       - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]

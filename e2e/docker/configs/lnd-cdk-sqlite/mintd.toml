@@ -6,6 +6,7 @@ url = "http://cdk-mintd:3339"
 listen_host = "0.0.0.0"
 listen_port = 3339
 mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+input_fee_ppk = 100
 
 [mint_info]
 name = "e2e-cdk"
