@@ -228,7 +228,7 @@ services:
     restart: on-failure
     networks: [net]
     ports:
-      - "3324:3321"
+      - "3325:3321"
     depends_on:
       nutshell: { condition: service_healthy }
     volumes:

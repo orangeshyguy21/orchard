@@ -224,7 +224,7 @@ services:
     restart: on-failure
     networks: [net]
     ports:
-      - "3323:3321"
+      - "3324:3321"
     depends_on:
       cdk-mintd:    { condition: service_healthy }
       tapd-orchard: { condition: service_healthy }

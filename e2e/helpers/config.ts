@@ -15,7 +15,12 @@ export type LnNode = 'orchard' | 'alice' | 'far';
 
 /** Seed admin used by both e2e tiers. Must match across tiers so the second
  *  tier to run against a shared stack can log in with the same credentials. */
-export const TEST_ADMIN = {name: 'admin', password: 'orchard-e2e-admin-pw'} as const;
+/** Password must be ≥6 chars — enforced by the auth-init + signup forms. */
+export const TEST_ADMIN = {name: 'admin', password: 'testere2e'} as const;
+
+const BASE = {
+	setupKey: 'orchard-e2e-admin-key',
+};
 
 export interface ConfigInfo {
 	name: ConfigName;
@@ -38,10 +43,6 @@ export interface ConfigInfo {
 	};
 }
 
-const BASE = {
-	setupKey: 'orchard-e2e-admin-key',
-};
-
 export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 	'lnd-nutshell-sqlite': {
 		name: 'lnd-nutshell-sqlite',
@@ -49,7 +50,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'nutshell',
 		db: 'sqlite',
 		tapd: false,
-		orchardUrl: 'http://localhost:3321',
+		orchardUrl: 'http://localhost:3322',
 		...BASE,
 		containers: {
 			bitcoind: 'lnd-nutshell-sqlite-bitcoind',
@@ -64,7 +65,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'cdk',
 		db: 'sqlite',
 		tapd: true,
-		orchardUrl: 'http://localhost:3323',
+		orchardUrl: 'http://localhost:3324',
 		...BASE,
 		containers: {
 			bitcoind: 'lnd-cdk-sqlite-bitcoind',
@@ -79,7 +80,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'cdk',
 		db: 'postgres',
 		tapd: false,
-		orchardUrl: 'http://localhost:3322',
+		orchardUrl: 'http://localhost:3323',
 		...BASE,
 		containers: {
 			bitcoind: 'cln-cdk-postgres-bitcoind',
@@ -94,7 +95,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'nutshell',
 		db: 'postgres',
 		tapd: false,
-		orchardUrl: 'http://localhost:3324',
+		orchardUrl: 'http://localhost:3325',
 		...BASE,
 		containers: {
 			bitcoind: 'cln-nutshell-postgres-bitcoind',

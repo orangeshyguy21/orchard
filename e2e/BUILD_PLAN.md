@@ -37,10 +37,10 @@ covering the LN × Mint × DB matrix operators deploy.
 
 | Config | LN | Mint | DB | Tapd | Orchard port |
 |---|---|---|---|---|---|
-| `lnd-nutshell-sqlite` | lnd | nutshell | sqlite | — | 3321 |
-| `lnd-cdk-sqlite` | lnd | cdk | sqlite | ✓ | 3323 |
-| `cln-cdk-postgres` | cln | cdk | postgres | — | 3322 |
-| `cln-nutshell-postgres` | cln | nutshell | postgres | — | 3324 |
+| `lnd-nutshell-sqlite` | lnd | nutshell | sqlite | — | 3322 |
+| `lnd-cdk-sqlite` | lnd | cdk | sqlite | ✓ | 3324 |
+| `cln-cdk-postgres` | cln | cdk | postgres | — | 3323 |
+| `cln-nutshell-postgres` | cln | nutshell | postgres | — | 3325 |
 
 ### Topologies
 

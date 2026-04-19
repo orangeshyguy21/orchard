@@ -207,7 +207,7 @@ services:
     restart: on-failure
     networks: [net]
     ports:
-      - "3322:3321"
+      - "3323:3321"
     depends_on:
       cdk-mintd: { condition: service_healthy }
     volumes:

@@ -30,19 +30,19 @@ export default defineConfig({
 	projects: [
 		{
 			name: 'lnd-nutshell-sqlite',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3321'},
-		},
-		{
-			name: 'lnd-cdk-sqlite',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3323'},
-		},
-		{
-			name: 'cln-cdk-postgres',
 			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3322'},
 		},
 		{
-			name: 'cln-nutshell-postgres',
+			name: 'lnd-cdk-sqlite',
 			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3324'},
+		},
+		{
+			name: 'cln-cdk-postgres',
+			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3323'},
+		},
+		{
+			name: 'cln-nutshell-postgres',
+			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3325'},
 		},
 	],
 });

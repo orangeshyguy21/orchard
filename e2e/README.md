@@ -91,7 +91,7 @@ npm run e2e:down cln-cdk-sqlite
 | lnd-alice    | 10019     | gRPC                 |
 | lnd-bob      | 10029     | gRPC                 |
 | nutshell     | 3338      | mint HTTP API        |
-| orchard      | 3321      | Orchard GraphQL + UI |
+| orchard      | 3322      | Orchard GraphQL + UI |
 
 ### lnd-cdk-sqlite (+ tapd)
 
@@ -104,7 +104,7 @@ npm run e2e:down cln-cdk-sqlite
 | tapd-orchard | 10139      | gRPC                       |
 | tapd-alice   | 10149      | gRPC                       |
 | cdk-mintd    | 3349/8096  | mint HTTP / management RPC |
-| orchard      | 3323       | Orchard GraphQL + UI       |
+| orchard      | 3324       | Orchard GraphQL + UI       |
 
 ### cln-cdk-postgres
 
@@ -116,7 +116,7 @@ npm run e2e:down cln-cdk-sqlite
 | lnd-carol    | 20029      | gRPC                       |
 | postgres     | 5532       | shared DB                  |
 | cdk-mintd    | 3339/8086  | mint HTTP / management RPC |
-| orchard      | 3322       | Orchard GraphQL + UI       |
+| orchard      | 3323       | Orchard GraphQL + UI       |
 
 ### cln-nutshell-postgres
 
@@ -128,7 +128,7 @@ npm run e2e:down cln-cdk-sqlite
 | lnd-carol    | 20129      | gRPC                       |
 | postgres     | 5632       | shared DB                  |
 | nutshell     | 3340       | mint HTTP API              |
-| orchard      | 3324       | Orchard GraphQL + UI       |
+| orchard      | 3325       | Orchard GraphQL + UI       |
 
 All four configs have disjoint port ranges and can run concurrently. Pair-2 / cln
 configs sit in the 20k/28k/55xx range to avoid collisions with Polar Lightning
