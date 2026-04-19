@@ -186,7 +186,7 @@ services:
       nutshell: { condition: service_healthy }
     volumes:
       - orchard-data:/app/data
-      - nutshell-data:/mint-data:ro
+      - nutshell-data:/mint-data
       - lnd-orchard-data:/certs/lnd:ro
     env_file:
       - ./env

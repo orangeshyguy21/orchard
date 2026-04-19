@@ -21,7 +21,7 @@ CHANNEL_PUSH_MSAT=5000000000     # CLN uses msat
 # ----- Orchard server config -----
 SETUP_KEY=orchard-e2e-admin-key
 ADMIN_PASSWORD=orchard-e2e-admin-key
-LOG_LEVEL=warn
+LOG_LEVEL=debug
 BASE_PATH=api
 
 # ----- Orchard → Bitcoin -----

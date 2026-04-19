@@ -1,5 +1,5 @@
 # ==============================================================
-# Orchard e2e — Pair 1 (lnd + nutshell + tapd)
+# Orchard e2e — Pair 1 (lnd + nutshell)
 # ==============================================================
 # Consumed by docker compose (variable substitution + env_file for orchard).
 # All values are regtest-only — DO NOT reuse in any real deployment.
@@ -15,7 +15,7 @@ CHANNEL_PUSH_SAT=5000000         # 50/50 initial split
 # ----- Orchard server config -----
 SETUP_KEY=orchard-e2e-admin-key
 ADMIN_PASSWORD=orchard-e2e-admin-key
-LOG_LEVEL=warn
+LOG_LEVEL=debug
 BASE_PATH=api
 
 # ----- Orchard → Bitcoin -----
@@ -30,12 +30,6 @@ LIGHTNING_TYPE=lnd
 LIGHTNING_RPC_HOST=lnd-orchard
 LIGHTNING_RPC_PORT=10009
 # cert + macaroon paths set inline in compose (volume-mount target paths)
-
-# ----- Orchard → Taproot Assets (tapd-orchard) -----
-TAPROOT_ASSETS_TYPE=tapd
-TAPROOT_ASSETS_RPC_HOST=tapd-orchard
-TAPROOT_ASSETS_RPC_PORT=10029
-# cert + macaroon paths set inline in compose
 
 # ----- Orchard → Mint (nutshell) -----
 MINT_TYPE=nutshell
