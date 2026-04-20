@@ -221,39 +221,38 @@ helpers (`e2e/helpers/`). One stack per jest run, selected via `E2E_CONFIG`
       reachability, and a first differential (Orchard `bitcoin_blockcount`
       agrees with `bitcoin-cli getblockcount`).
 
-#### Phase 3.1 — Read fidelity, UI-first
+#### Phase 3.1 — Feature coverage, UI-first
 
-**Reframed.** Originally scoped as "every read resolver Orchard exposes, tested
-via supertest differential." Walked back after realizing: (a) the client's
-query surface is the real API contract — resolvers Orchard exposes but the
-UI doesn't consume are dead code from the operator's perspective, (b) the
-client stores queries as plain string exports (no Apollo tag, zero runtime
-deps), making them observable on the wire, (c) Playwright can drive the
-real page and intercept responses via `page.waitForResponse()` + our existing
-`agree()` primitive — **zero query duplication anywhere**.
+**Reframed (again).** Originally scoped as fidelity differentials (query ↔
+backend). Pivoted to **feature-centric**: one spec per user-facing UI
+component, asserting that the component *works* — renders, shows the right
+data, reacts to input, navigates correctly. Fidelity gets validated as a
+side effect ("the displayed block height matches bitcoind") rather than as
+the goal.
 
-New approach: one spec per page-or-section under `e2e/specs/`. Pattern:
-`loginViaUi` → attach `waitForResponse` listeners → single `page.goto` →
-differential each intercepted response against backend truth via
-`docker exec`. Helpers `matchGql(queryName)` + `gqlData(response, queryName)`
-in `e2e/helpers/gql-intercept.ts` keep the spec body terse.
+Why the pivot: data-point fidelity was over-scoped (covered fields the UI
+doesn't render) and under-meaningful (didn't catch broken buttons, dead
+empty-states, navigation bugs). Feature specs exercise the operator's
+actual experience; if they pass, the operator can trust the feature.
 
-Scope trimmed to **what the UI actually fires**. Resolvers the UI doesn't
-consume get deferred to a leaner supertest tier later (Phase 3.1b, if needed).
+**Convention:** one spec per Angular component — file named
+`<component-identity>.spec.ts` (e.g., `bitcoin-general-info.spec.ts` tests
+`orc-bitcoin-general-info`). Each spec = `describe` with `beforeEach` that
+logs in + navigates to a page that hosts the component, plus N `test`s,
+each asserting one feature behavior.
+
+**Prior fidelity-only specs deleted** (`bitcoin-section.spec.ts`,
+`index-dashboard.spec.ts`) — feature specs will cover the same ground more
+meaningfully.
 
 **Done:**
 - [x] `e2e/specs/00-initialization.spec.ts` — first-run admin setup UI flow.
       Renamed + prefixed to sort first within a project so on fresh stacks it
       runs before any spec that needs an authed session. Skips gracefully on
       already-initialized stacks.
-- [x] `e2e/specs/bitcoin-section.spec.ts` — `/bitcoin` section fires
-      `bitcoin_network_info` + `bitcoin_blockchain_info` on load. Both
-      differentialed against `bitcoin-cli`. The subsection dashboard at
-      `/bitcoin` is a stub today; add intercepts when real content lands.
-- [x] `e2e/specs/index-dashboard.spec.ts` — `/` landing. Covers the
-      passthrough-friendly subset of the page's ~24-query forkJoin:
-      `bitcoin_blockchain_info`, `bitcoin_network_info`, `lightning_info`
-      (alias + version — LN shape diverges between lnd/cln for deeper fields).
+- [x] `e2e/specs/bitcoin-general-info.spec.ts` — the "Info" card. Asserts
+      card renders, displays chain name + block height matching bitcoind, and
+      "Open Bitcoin" button navigates via menu to `/bitcoin`.
 - [x] Shared helpers in `e2e/helpers/` (framework-agnostic): `agree.ts`,
       `backend.ts` (docker-exec readers), `gql-intercept.ts`.
       `interceptOnNavigation` eagerly reads each body *inside* its waiter —
@@ -262,14 +261,17 @@ consume get deferred to a leaner supertest tier later (Phase 3.1b, if needed).
 - [x] Deleted duplicate `e2e/supertest/specs/chain.e2e-spec.ts` — Playwright
       covers it via the consumer path.
 
-**Next up (by criticality):**
-- [ ] `/lightning` section — lightning_info, balance, wallet, channels, closed_channels
-- [ ] `/mint` section — mint_info, balances, keysets, keyset_counts, activity_summary
-- [ ] `/mint/keysets`, `/mint/config`, `/mint/database`
-- [ ] `/event`, `/crew`, `/settings/*`
-- [ ] `/bitcoin/oracle`, `/ecash`
-- [ ] Deeper index coverage once LN/mint helpers exist — lightning_balance,
-      lightning_channels, mint_*, taproot_assets_* (config.tapd only)
+**Next up (by page, criticality order):**
+
+`/` index page components:
+- [ ] `orc-bitcoin-general-wallet-summary` — lightning / tapd / oracle summary tile
+- [ ] `orc-index-subsection-dashboard-bitcoin-enabled-blockchain` — fee / block template tile
+- [ ] `orc-index-subsection-dashboard-bitcoin-enabled-syncing` — IBD/sync state
+- [ ] The mint section card on the index (component TBD on recon)
+- [ ] The lightning section card on the index
+
+`/bitcoin`, `/lightning`, `/mint`, `/event`, `/crew`, `/settings/*`, `/bitcoin/oracle`, `/ecash`:
+- [ ] Walk the component tree per page; one spec per user-visible component.
 
 **Known follow-ups:**
 - [ ] **Playwright `storageState` for login re-use.** Every spec currently
@@ -277,12 +279,13 @@ consume get deferred to a leaner supertest tier later (Phase 3.1b, if needed).
       per-config setup project that authenticates once and persists auth
       state to a temp file, referenced by sibling test projects via
       `use: {storageState: ...}`. Worth doing once spec count passes ~6
-      per config; negligible at 2 specs.
+      per config; real pain at 10+.
 
-**Each new page spec should:** 1) observe which queries *actually* fire
-(not what the service exports), 2) differential only direct-passthrough
-fields, 3) note derived/synthetic fields in comments for later algorithmic-
-correctness coverage.
+**Each new feature spec should:** 1) identify which Angular component it
+tests (filename = component identity), 2) assert render + visible content,
+3) assert interaction paths the operator actually uses (buttons, menus,
+navigation), 4) pull fidelity into assertions via visible text, not wire
+intercepts — unless a non-rendered field is load-bearing somewhere.
 
 #### Phase 3.1b — Non-UI API coverage (deferred)
 
@@ -448,6 +451,18 @@ pin. Differential fails → the diff localizes which backend API drifted.
   `auth_initialize` + `auth_authentication` as a side effect. Removed
   `src/server/test/app.e2e-spec.ts` (stub tested a `/` route that no
   longer exists). Probe passes 5/5 in ~0.5s against `lnd-nutshell-sqlite`.
+- **2026-04-19** — Phase 3.1 reframed again — **feature-centric** over
+  fidelity-centric. Previous fidelity specs validated that values agreed
+  across the wire but didn't validate the operator's experience (dead
+  buttons, wrong empty states, navigation bugs would all pass). Pivoted to
+  one spec per Angular component (`<component-identity>.spec.ts`),
+  asserting render + visible content + interaction paths. Fidelity falls
+  out of visible-text assertions rather than being the goal. Deleted
+  `bitcoin-section.spec.ts` and `index-dashboard.spec.ts`. First feature
+  spec: `bitcoin-general-info.spec.ts` covering the "Info" card on `/`.
+  Port-bump: e2e stacks moved +1 (3322–3325) so `3321` stays free for
+  local dev. Admin password now `testere2e` (6-char minimum enforced by
+  auth-init form).
 - **2026-04-17** — Phase 3.1 reframed **UI-first**. Original scope was
   "every read resolver, tested via supertest differential." Walked back
   after realizing the Angular client stores queries as plain string exports

@@ -10,8 +10,8 @@
         {
             "name": "client",
             "runtimeExecutable": ".claude/start.sh",
-            "runtimeArgs": ["run", "start:client", "--", "--port", "4201"],
-            "port": 4201
+            "runtimeArgs": ["run", "start:client", "--", "--port", "3326"],
+            "port": 3326
         }
     ]
 }

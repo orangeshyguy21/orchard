@@ -1,19 +1,47 @@
-import {defineConfig, devices} from '@playwright/test';
+import {defineConfig, devices, type Project} from '@playwright/test';
+import {CONFIGS, type ConfigInfo} from './helpers/config';
 
 /**
  * One project per Docker config. Stack must be running (`npm run e2e:up <config>`)
- * before `npm run e2e:test <config>` — there's no webServer hook because each
- * project's stack is bespoke.
+ * before `npm run e2e:test` — there's no webServer hook because each project's
+ * stack is bespoke.
  *
- * Scope: UI-only flows. Backend/API coverage lives in the Jest + supertest
- * tier (`test:server:e2e`).
+ * Each config gets TWO Playwright projects: a `setup-<config>` that exercises
+ * the auth flow once and writes storage state to `e2e/.auth/<config>.json`,
+ * and the real project that depends on it and loads that state. The split
+ * amortizes login across every spec — Orchard's auth throttler (~4 req/10s)
+ * would otherwise trip around the 5th login per config.
  *
  * `workers: 1` per project because within-project tests share Orchard state
  * (admin user, channels, wallet balances) and races produce flakes.
+ *
+ * Storage state path is cwd-relative; `npm run e2e:test` always runs from
+ * the repo root, so `e2e/.auth/<name>.json` lands under `e2e/.auth/` where
+ * `.gitignore` already excludes it.
  */
 
+function projectsFor(config: ConfigInfo): Project[] {
+	const setupName = `setup-${config.name}`;
+	const baseURL = config.orchardUrl;
+	const storageState = `e2e/.auth/${config.name}.json`;
+	return [
+		{
+			name: setupName,
+			testDir: './setup',
+			testMatch: /.*\.setup\.ts$/,
+			use: {...devices['Desktop Chrome'], baseURL},
+		},
+		{
+			name: config.name,
+			testDir: './specs',
+			testMatch: /.*\.spec\.ts$/,
+			dependencies: [setupName],
+			use: {...devices['Desktop Chrome'], baseURL, storageState},
+		},
+	];
+}
+
 export default defineConfig({
-	testDir: './specs',
 	outputDir: './test-results',
 	timeout: 30_000,
 	expect: {timeout: 5_000},
@@ -27,22 +55,5 @@ export default defineConfig({
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',
 	},
-	projects: [
-		{
-			name: 'lnd-nutshell-sqlite',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3322'},
-		},
-		{
-			name: 'lnd-cdk-sqlite',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3324'},
-		},
-		{
-			name: 'cln-cdk-postgres',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3323'},
-		},
-		{
-			name: 'cln-nutshell-postgres',
-			use: {...devices['Desktop Chrome'], baseURL: 'http://localhost:3325'},
-		},
-	],
+	projects: Object.values(CONFIGS).flatMap(projectsFor),
 });
