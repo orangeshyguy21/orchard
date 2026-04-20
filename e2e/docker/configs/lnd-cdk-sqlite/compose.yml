@@ -191,6 +191,29 @@ services:
     entrypoint: ["/scripts/fund-lnd-topology.sh"]
     restart: "no"
 
+  # Mints a test taproot asset on tapd-orchard so the wallet-summary spec has
+  # stable tapd state to observe. Gated behind the main LN funding so lnd-orchard
+  # has confirmed sats to fund the mint's anchor output. Only wired into the
+  # lnd-cdk-sqlite config — the other three stacks don't run tapd.
+  tapd-setup:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: lnd-cdk-sqlite-tapd-setup
+    networks: [net]
+    depends_on:
+      setup:        { condition: service_completed_successfully }
+      tapd-orchard: { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - tapd-orchard-data:/tapd:ro
+      - shared:/shared
+    environment:
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+    entrypoint: ["/scripts/fund-tapd.sh"]
+    restart: "no"
+
   cdk-mintd:
     image: cashubtc/mintd:${CDK_MINTD_VERSION}
     container_name: lnd-cdk-sqlite-cdk-mintd
@@ -201,6 +224,7 @@ services:
       - "8096:8086"
     depends_on:
       setup:        { condition: service_completed_successfully }
+      tapd-setup:   { condition: service_completed_successfully }
       tapd-orchard: { condition: service_healthy }
     volumes:
       - cdk-mintd-data:/app/data

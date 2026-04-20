@@ -80,6 +80,44 @@ npm run e2e:ps cln-cdk-sqlite
 npm run e2e:down cln-cdk-sqlite
 ```
 
+## Writing specs — tag conventions
+
+Every test under `e2e/specs/` must carry at least one tag declaring which
+stacks it's meaningful for. Each real project's `grep` is computed from its
+`ConfigInfo` — a test runs on a stack only if one of its tags is in the
+stack's grep set.
+
+| Tag | Meaning | Where it runs |
+|---|---|---|
+| `@canary` | config-agnostic feature | `lnd-nutshell-sqlite` only |
+| `@lnd` / `@cln` | LN-impl-sensitive | stacks with matching LN |
+| `@cdk` / `@nutshell` | mint-impl-sensitive | stacks with matching mint |
+| `@sqlite` / `@postgres` | DB-sensitive | stacks with matching DB |
+| `@tapd` | requires Taproot Assets | `lnd-cdk-sqlite` only |
+| `@all` | genuine matrix coverage | all four stacks |
+
+Apply tags at the `describe` level when every test in a file shares scope:
+
+```ts
+test.describe('feature name', {tag: '@canary'}, () => {
+    test('...', async ({page}) => { ... });
+});
+```
+
+Or per-test for mixed scopes:
+
+```ts
+test('tapd-specific flow', {tag: '@tapd'}, async ({page}) => { ... });
+test('general feature', {tag: '@canary'}, async ({page}) => { ... });
+```
+
+**Gotcha:** untagged tests match no project's grep → they silently don't
+run. A new spec that "passes" with zero tests executed probably just needs
+a tag annotation.
+
+Setup projects (`e2e/setup/*.setup.ts`) have no grep and run regardless —
+auth bootstrapping always happens.
+
 ## Ports exposed to the host
 
 ### lnd-nutshell-sqlite

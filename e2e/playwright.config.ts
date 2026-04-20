@@ -18,7 +18,42 @@ import {CONFIGS, type ConfigInfo} from './helpers/config';
  * Storage state path is cwd-relative; `npm run e2e:test` always runs from
  * the repo root, so `e2e/.auth/<name>.json` lands under `e2e/.auth/` where
  * `.gitignore` already excludes it.
+ *
+ * ## Tag-based scoping
+ *
+ * Specs declare which stacks a test is relevant to via tags. Each real
+ * project's `grep` is computed from its `ConfigInfo` — a test runs on a
+ * stack only if one of its tags matches the stack's grep.
+ *
+ * Tag vocabulary:
+ *
+ *   @canary              — config-agnostic; runs only on the canary stack
+ *                          (lnd-nutshell-sqlite). Most feature specs are @canary.
+ *   @lnd / @cln          — LN-impl-sensitive; runs on stacks with matching ln
+ *   @cdk / @nutshell     — mint-impl-sensitive; runs on stacks with matching mint
+ *   @sqlite / @postgres  — DB-sensitive; runs on stacks with matching db
+ *   @tapd                — requires tapd; runs only on lnd-cdk-sqlite
+ *   @all                 — genuine matrix coverage; runs on every stack
+ *
+ * Untagged tests match no project's grep → they don't run. If you see a new
+ * spec silently skipping, it probably needs a `{tag: '@canary'}` annotation
+ * on the test (or describe).
+ *
+ * Setup projects have no grep — their auth-flow tests always run.
  */
+
+const CANARY = 'lnd-nutshell-sqlite';
+
+function tagsFor(config: ConfigInfo): string[] {
+	const tags = ['@all', `@${config.ln}`, `@${config.mint}`, `@${config.db}`];
+	if (config.name === CANARY) tags.push('@canary');
+	if (config.tapd) tags.push('@tapd');
+	return tags;
+}
+
+function grepFor(config: ConfigInfo): RegExp {
+	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
+}
 
 function projectsFor(config: ConfigInfo): Project[] {
 	const setupName = `setup-${config.name}`;
@@ -36,6 +71,7 @@ function projectsFor(config: ConfigInfo): Project[] {
 			testDir: './specs',
 			testMatch: /.*\.spec\.ts$/,
 			dependencies: [setupName],
+			grep: grepFor(config),
 			use: {...devices['Desktop Chrome'], baseURL, storageState},
 		},
 	];

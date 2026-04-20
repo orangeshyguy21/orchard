@@ -42,4 +42,19 @@ export const ln = {
 		const container = containerForNode(config, node);
 		return isLnd(config, node) ? lndCliJson(container, ['getinfo']) : clnCliJson(container, ['getinfo']);
 	},
+
+	/**
+	 * Total on-chain wallet sats for the named node. Matches what Orchard's
+	 * `lightning_wallet` resolver aggregates (sum of addresses' balances) —
+	 * channel-committed funds live elsewhere.
+	 */
+	onchainSats(config: ConfigInfo, node: LnNode = 'orchard'): number {
+		const container = containerForNode(config, node);
+		if (isLnd(config, node)) {
+			const bal = lndCliJson<{total_balance: string}>(container, ['walletbalance']);
+			return parseInt(bal.total_balance, 10);
+		}
+		const funds = clnCliJson<{outputs: {amount_msat: number}[]}>(container, ['listfunds']);
+		return funds.outputs.reduce((sum, o) => sum + Math.floor(Number(o.amount_msat) / 1000), 0);
+	},
 };

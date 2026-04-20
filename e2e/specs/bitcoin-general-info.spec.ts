@@ -45,7 +45,7 @@ function formatBytes(bytes: number): string {
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${units[i]}`;
 }
 
-test.describe('bitcoin-general-info card', () => {
+test.describe('bitcoin-general-info card', {tag: '@canary'}, () => {
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
 	});

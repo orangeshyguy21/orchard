@@ -44,3 +44,10 @@ MINT_API=http://cdk-mintd:3339
 MINT_RPC_HOST=cdk-mintd
 MINT_RPC_PORT=8086
 MINT_RPC_MTLS=false
+
+# Throttler bumped above defaults so the Playwright suite's serial dashboard
+# navigations (6+ tests per spec across 4 stacks) do not trip the default
+# 20 req / 60s limit. Production stays on the defaults via
+# src/server/config/configuration.ts.
+THROTTLE_LIMIT=1000
+THROTTLE_TTL=60000
