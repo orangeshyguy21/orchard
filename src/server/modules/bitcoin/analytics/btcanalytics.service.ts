@@ -40,11 +40,9 @@ export class BitcoinAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		try {
-			await this.runStreamingBackfill();
-		} catch (error) {
+		this.runStreamingBackfill().catch((error) => {
 			this.logger.error('Error during bitcoin analytics auto-backfill', error);
-		}
+		});
 	}
 
 	/* *******************************************************

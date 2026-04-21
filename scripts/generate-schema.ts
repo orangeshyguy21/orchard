@@ -7,7 +7,7 @@ import { writeFileSync } from 'fs';
 import { AppModule } from '../src/server/app.module';
 
 async function generateSchema() {
-  const app = await NestFactory.create(AppModule, { logger: false });
+  const app = await NestFactory.create(AppModule, { logger: ['error'] });
   await app.init();
 
   const { schema } = app.get(GraphQLSchemaHost);
