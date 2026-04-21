@@ -51,12 +51,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			return;
 		}
 
-		try {
-			// Use streaming backfill which handles checkpoint-based resumption
-			await this.runStreamingBackfill();
-		} catch (error) {
+		this.runStreamingBackfill().catch((error) => {
 			this.logger.error('Error during lightning analytics auto-backfill', error);
-		}
+		});
 	}
 
 	/**

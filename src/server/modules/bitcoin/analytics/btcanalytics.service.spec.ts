@@ -81,6 +81,10 @@ describe('BitcoinAnalyticsService', () => {
 		checkpointRepo.findOne.mockResolvedValue(null);
 
 		await service.onApplicationBootstrap();
+		// Bootstrap is fire-and-forget so the port binds immediately; flush microtasks
+		// so the detached backfill promise advances to its first awaited RPC call.
+		await new Promise((resolve) => setImmediate(resolve));
+		await new Promise((resolve) => setImmediate(resolve));
 
 		expect(lightningService.getTransactions).toHaveBeenCalled();
 	});
