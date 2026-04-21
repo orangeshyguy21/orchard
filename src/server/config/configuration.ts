@@ -22,7 +22,7 @@ const getMintRpcMtls = (): boolean => {
 
 export const config = (): Config => {
 	const setup_key = process.env.SETUP_KEY || process.env.ADMIN_PASSWORD;
-	const crypto_key = loadOrCreateCryptoKey();
+	const crypto_key = process.env.SCHEMA_ONLY === 'true' ? '' : loadOrCreateCryptoKey();
 
 	const mode = {
 		production: process.env.NODE_ENV === 'production',
