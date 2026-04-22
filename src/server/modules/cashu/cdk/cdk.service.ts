@@ -33,6 +33,7 @@ import {
 	queryRows,
 	queryRow,
 	extractRequestString,
+	convertDateToUnixTimestamp,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
@@ -223,7 +224,13 @@ export class CdkService {
 			time_is_epoch_seconds: true,
 		});
 		try {
-			return queryRows<CashuMintMintQuote>(client, sql, params);
+			const rows = await queryRows<CashuMintMintQuote>(client, sql, params);
+			return rows.map((row) => ({
+				...row,
+				created_time: convertDateToUnixTimestamp(row.created_time),
+				issued_time: row.issued_time != null ? convertDateToUnixTimestamp(row.issued_time) : null,
+				paid_time: row.paid_time != null ? convertDateToUnixTimestamp(row.paid_time) : null,
+			}));
 		} catch (err) {
 			throw err;
 		}
@@ -244,7 +251,8 @@ export class CdkService {
 			FROM mint_quote WHERE id = ?`;
 		try {
 			const row = await queryRow<CashuMintMintQuote | undefined>(client, sql, [quote_id]);
-			return row ?? null;
+			if (!row) return null;
+			return {...row, created_time: convertDateToUnixTimestamp(row.created_time)};
 		} catch (err) {
 			throw err;
 		}
@@ -254,7 +262,12 @@ export class CdkService {
 		const sql = `SELECT * FROM melt_quote WHERE id = ?`;
 		try {
 			const row = await queryRow<CashuMintMeltQuote | undefined>(client, sql, [quote_id]);
-			return row ?? null;
+			if (!row) return null;
+			return {
+				...row,
+				created_time: convertDateToUnixTimestamp(row.created_time),
+				paid_time: row.paid_time != null ? convertDateToUnixTimestamp(row.paid_time) : null,
+			};
 		} catch (err) {
 			throw err;
 		}
@@ -278,7 +291,12 @@ export class CdkService {
 			const rows = await queryRows<CashuMintMeltQuote>(client, sql, params);
 			return rows.map((row) => {
 				const s = extractRequestString(row.request);
-				return s ? {...row, request: s} : row;
+				return {
+					...row,
+					request: s || row.request,
+					created_time: convertDateToUnixTimestamp(row.created_time),
+					paid_time: row.paid_time != null ? convertDateToUnixTimestamp(row.paid_time) : null,
+				};
 			});
 		} catch (err) {
 			throw err;
@@ -334,8 +352,8 @@ export class CdkService {
 			});
 
 			const proof_groups: CashuMintProofGroup[] = Object.values(groups).map((group: any) => ({
-				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-				created_time: group.created_time,
+				amount: group.amounts.flat().reduce((sum: number, amount: number) => sum + amount, 0),
+				created_time: convertDateToUnixTimestamp(group.created_time),
 				keyset_ids: group.keysets,
 				unit: group.unit,
 				state: group.state,
@@ -374,7 +392,8 @@ export class CdkService {
 			select_statement,
 			time_is_epoch_seconds: true,
 		});
-		return queryRows<CashuMintProof>(client, sql, params);
+		const rows = await queryRows<CashuMintProof>(client, sql, params);
+		return rows.map((row) => ({...row, created_time: convertDateToUnixTimestamp(row.created_time)}));
 	}
 
 	public async listPromises(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromise[]> {
@@ -402,7 +421,8 @@ export class CdkService {
 			select_statement,
 			time_is_epoch_seconds: true,
 		});
-		return queryRows<CashuMintPromise>(client, sql, params);
+		const rows = await queryRows<CashuMintPromise>(client, sql, params);
+		return rows.map((row) => ({...row, created_time: convertDateToUnixTimestamp(row.created_time)}));
 	}
 
 	public async countMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
@@ -542,6 +562,7 @@ export class CdkService {
 			return rows.map((row) => ({
 				...row,
 				keyset_ids: row.keyset_ids ? row.keyset_ids.split(',') : [],
+				created_time: convertDateToUnixTimestamp(row.created_time),
 			}));
 		} catch (err) {
 			throw err;

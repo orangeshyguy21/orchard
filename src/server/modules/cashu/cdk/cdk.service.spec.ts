@@ -16,6 +16,7 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
 	extractRequestString: jest.fn().mockImplementation((s: string) => s?.replace(/^.*:/, '')),
+	convertDateToUnixTimestamp: jest.fn((v: any) => (typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : null)),
 }));
 import * as helpers from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 
@@ -228,6 +229,172 @@ describe('CdkService', () => {
 			{created_time: 10, keyset_id: 'k1', unit: 'sat', state: 'SPENT', amounts: 'not-json'},
 		]);
 		await expect(cdkService.listProofGroups({} as any)).rejects.toThrow();
+	});
+
+	/* Postgres returns BIGINT columns as strings; CDK service must coerce timestamp fields to numbers so that
+	   downstream consumers (analytics, luxon) receive the declared `number` type. These tests feed string
+	   timestamps to simulate the pg transport and assert the service repairs the type at its boundary. */
+
+	it('listSwaps coerces string created_time from pg BIGINT to number', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{operation_id: 'op1', keyset_ids: 'k1,k2', unit: 'sat', amount: 100, created_time: '1745262864', fee: 0},
+		]);
+		const out = await cdkService.listSwaps({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+	});
+
+	it('listMeltQuotes coerces string created_time and paid_time to number', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{id: 'q1', request: 'bolt11:lnbc', unit: 'sat', state: 'PAID', created_time: '1745262864', paid_time: '1745262900'},
+		]);
+		const out = await cdkService.listMeltQuotes({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+		expect(out[0].paid_time).toBe(1745262900);
+	});
+
+	it('listMeltQuotes preserves null paid_time', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{id: 'q1', request: 'bolt11:lnbc', unit: 'sat', state: 'UNPAID', created_time: 1, paid_time: null},
+		]);
+		const out = await cdkService.listMeltQuotes({} as any);
+		expect(out[0].paid_time).toBeNull();
+	});
+
+	it('listMintQuotes coerces string timestamps and preserves nullable fields', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{
+				id: 'q1',
+				amount: 10,
+				unit: 'sat',
+				request: 'r',
+				state: 'UNPAID',
+				created_time: '1745262864',
+				issued_time: null,
+				paid_time: null,
+			},
+		]);
+		const out = await cdkService.listMintQuotes({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+		expect(out[0].issued_time).toBeNull();
+		expect(out[0].paid_time).toBeNull();
+	});
+
+	it('listProofs coerces string created_time', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{amount: 1, keyset_id: 'k1', unit: 'sat', state: 'SPENT', created_time: '1745262864'},
+		]);
+		const out = await cdkService.listProofs({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+	});
+
+	it('listPromises coerces string created_time', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{amount: 1, keyset_id: 'k1', unit: 'sat', created_time: '1745262864'}]);
+		const out = await cdkService.listPromises({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+	});
+
+	it('listProofGroups coerces string created_time on the grouped output', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{created_time: '1745262864', keyset_id: 'k1', unit: 'sat', state: 'SPENT', amounts: '[1]'},
+		]);
+		const out = await cdkService.listProofGroups({} as any);
+		expect(typeof out[0].created_time).toBe('number');
+		expect(out[0].created_time).toBe(1745262864);
+	});
+
+	it('listMintQuotes coerces string issued_time and paid_time when non-null', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{
+				id: 'q1',
+				amount: 10,
+				unit: 'sat',
+				request: 'r',
+				state: 'ISSUED',
+				created_time: '1745262864',
+				issued_time: '1745262900',
+				paid_time: '1745262899',
+			},
+		]);
+		const out = await cdkService.listMintQuotes({} as any);
+		expect(typeof out[0].issued_time).toBe('number');
+		expect(out[0].issued_time).toBe(1745262900);
+		expect(typeof out[0].paid_time).toBe('number');
+		expect(out[0].paid_time).toBe(1745262899);
+	});
+
+	it('listMintQuotes treats undefined nullable fields as null', async () => {
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
+			{id: 'q1', amount: 10, unit: 'sat', request: 'r', state: 'UNPAID', created_time: 1},
+		]);
+		const out = await cdkService.listMintQuotes({} as any);
+		expect(out[0].issued_time).toBeNull();
+		expect(out[0].paid_time).toBeNull();
+	});
+
+	it('lookupMintQuote coerces string created_time and returns null when not found', async () => {
+		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({
+			id: 'q1',
+			amount: 10,
+			unit: 'sat',
+			request: 'r',
+			state: 'UNPAID',
+			created_time: '1745262864',
+		});
+		const out = await cdkService.lookupMintQuote({} as any, 'q1');
+		expect(typeof out!.created_time).toBe('number');
+		expect(out!.created_time).toBe(1745262864);
+
+		(helpers.queryRow as jest.Mock).mockResolvedValueOnce(undefined);
+		const missing = await cdkService.lookupMintQuote({} as any, 'missing');
+		expect(missing).toBeNull();
+	});
+
+	it('lookupMeltQuote coerces string timestamps and preserves null paid_time', async () => {
+		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({
+			id: 'q1',
+			unit: 'sat',
+			amount: 10,
+			request: 'r',
+			fee_reserve: 0,
+			state: 'PAID',
+			payment_preimage: null,
+			request_lookup_id: null,
+			msat_to_pay: null,
+			created_time: '1745262864',
+			paid_time: '1745262900',
+			payment_method: 'bolt11',
+		});
+		const out = await cdkService.lookupMeltQuote({} as any, 'q1');
+		expect(typeof out!.created_time).toBe('number');
+		expect(out!.created_time).toBe(1745262864);
+		expect(typeof out!.paid_time).toBe('number');
+		expect(out!.paid_time).toBe(1745262900);
+
+		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({
+			id: 'q2',
+			unit: 'sat',
+			amount: 10,
+			request: 'r',
+			fee_reserve: 0,
+			state: 'UNPAID',
+			payment_preimage: null,
+			request_lookup_id: null,
+			msat_to_pay: null,
+			created_time: 1,
+			paid_time: null,
+			payment_method: 'bolt11',
+		});
+		const unpaid = await cdkService.lookupMeltQuote({} as any, 'q2');
+		expect(unpaid!.paid_time).toBeNull();
+
+		(helpers.queryRow as jest.Mock).mockResolvedValueOnce(undefined);
+		const missing = await cdkService.lookupMeltQuote({} as any, 'missing');
+		expect(missing).toBeNull();
 	});
 
 	it('countMintQuotes and countMeltQuotes return row.count', async () => {
