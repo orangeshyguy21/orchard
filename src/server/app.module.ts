@@ -72,6 +72,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 				autoLoadEntities: true,
 				migrations: configService.get('mode.schema_only') ? [] : ['dist/database/migrations/*.js'],
 				migrationsRun: configService.get('mode.schema_only') ? false : configService.get('mode.production'),
+				retryAttempts: configService.get('mode.schema_only') ? 0 : 10,
 			}),
 			dataSourceFactory: async (options: DataSourceOptions) => {
 				const data_source = new DataSource(options);
