@@ -1,10 +1,28 @@
-# Config: lnd + cdk + sqlite (+ tapd)
+# Config: lnd + cdk + sqlite (+ tapd, with asset channel)
 #
 # Topology:
-#   lnd-alice ⇄ lnd-orchard ⇄ lnd-bob     (no direct alice⇄bob channel)
-#   tapd-orchard attached to lnd-orchard
-#   tapd-alice   attached to lnd-alice
-#   cdk-mintd backend: lnd-orchard (via gRPC)
+#   litd-alice ⇄ litd-orchard ⇄ lnd-bob     (no direct alice⇄bob channel)
+#
+# litd (integrated tapd) wraps lnd on orchard + alice so `litcli ln fundchannel
+# --asset_id` can open asset-backed channels. Mirrors Polar's litd layout:
+#   - three volumes per node at /home/litd/.lit, /home/litd/.lnd, /home/litd/.tapd
+#     (polar's entrypoint chowns /home/litd recursively — keeps default lit-dir,
+#     lnddir, tapddir paths working without extra flags)
+#   - integrated lnd + tapd, no sub-server RPC port for tapd (litd proxies all
+#     tapd calls through its unified :8443 HTTPS/gRPC port)
+#   - mock price oracle + custom-message=17 + wumbo + simple-taproot-overlay-chans
+#     are asset-channel prerequisites lifted from Polar's constants.ts
+#   - proofcourieraddr points at a peer's litd :8443 (universe RPC is served
+#     there, not on a separate tapd port)
+#
+# lnd-bob stays stock — sat-routing only, never touches taproot assets.
+#
+# Hostname layout: service names are `lnd-orchard` / `lnd-alice` so
+# LIGHTNING_RPC_HOST=lnd-orchard works unchanged. tapd-orchard / tapd-alice
+# network aliases are retained for anything that still addresses them by name,
+# but orchard server now reads tapd via lnd-orchard:8443 (see env below).
+#
+#   cdk-mintd backend: lnd-orchard:10009 (litd's embedded lnd)
 #   orchard mintdb target: sqlite
 
 name: orchard-e2e-lnd-cdk-sqlite
@@ -21,6 +39,8 @@ volumes:
   lnd-bob-data:
   tapd-orchard-data:
   tapd-alice-data:
+  lit-orchard-data:
+  lit-alice-data:
   cdk-mintd-data:
   orchard-data:
   wallet-data:
@@ -38,12 +58,16 @@ x-lnd-defaults: &lnd-defaults
     timeout: 5s
     retries: 30
 
-x-tapd-defaults: &tapd-defaults
-  image: polarlightning/tapd:${TAPD_VERSION}
+x-litd-defaults: &litd-defaults
+  image: polarlightning/litd:${LITD_VERSION}
   restart: on-failure
   networks: [net]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  # Gate on embedded lnd getinfo. lncli needs explicit --lnddir because
+  # docker healthchecks run as root, whose $HOME doesn't match the litd user's.
   healthcheck:
-    test: ["CMD-SHELL", "tapcli --tapddir=/home/tap/.tapd --network=regtest getinfo > /dev/null"]
+    test: ["CMD-SHELL", "lncli --lnddir=/home/litd/.lnd --network=regtest getinfo > /dev/null"]
     interval: 3s
     timeout: 5s
     retries: 30
@@ -81,38 +105,142 @@ services:
       retries: 30
 
   lnd-orchard:
-    <<: *lnd-defaults
+    <<: *litd-defaults
     container_name: lnd-cdk-sqlite-lnd-orchard
-    ports: ["10109:10009"]
+    networks:
+      net:
+        aliases: [tapd-orchard]
+    ports:
+      - "10109:10009"
+      - "8443:8443"
     volumes:
-      - lnd-orchard-data:/home/lnd/.lnd
+      - lit-orchard-data:/home/litd/.lit
+      - lnd-orchard-data:/home/litd/.lnd
+      - tapd-orchard-data:/home/litd/.tapd
     command: >
-      lnd --noseedbackup --alias=orchard --externalip=lnd-orchard
-      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
-      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
-      --bitcoind.rpchost=bitcoind:18443
-      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
-      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
-      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
-      --tlsextradomain=lnd-orchard --tlsextradomain=localhost
-      --accept-keysend --debuglevel=info
+      litd
+      --httpslisten=0.0.0.0:8443
+      --enablerest
+      --uipassword=orchard-e2e-lit-ui-password
+      --network=regtest
+      --lnd-mode=integrated
+      --pool-mode=disable
+      --loop-mode=disable
+      --autopilot.disable
+      --tlsextradomain=lnd-orchard
+      --tlsextradomain=tapd-orchard
+      --tlsextradomain=localhost
+      --lnd.noseedbackup
+      --lnd.debuglevel=info
+      --lnd.alias=orchard
+      --lnd.externalip=lnd-orchard
+      --lnd.tlsextradomain=lnd-orchard
+      --lnd.tlsextradomain=tapd-orchard
+      --lnd.tlsextradomain=localhost
+      --lnd.listen=0.0.0.0:9735
+      --lnd.rpclisten=0.0.0.0:10009
+      --lnd.restlisten=0.0.0.0:8080
+      --lnd.bitcoin.active
+      --lnd.bitcoin.regtest
+      --lnd.bitcoin.node=bitcoind
+      --lnd.bitcoind.rpchost=bitcoind:18443
+      --lnd.bitcoind.rpcuser=${BTC_RPC_USER}
+      --lnd.bitcoind.rpcpass=${BTC_RPC_PASS}
+      --lnd.bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --lnd.bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --lnd.accept-keysend
+      --lnd.trickledelay=50
+      --lnd.gossip.sub-batch-delay=5ms
+      --lnd.caches.rpc-graph-cache-duration=100ms
+      --lnd.default-remote-max-htlcs=483
+      --lnd.dust-threshold=5000000
+      --lnd.protocol.option-scid-alias
+      --lnd.protocol.zero-conf
+      --lnd.protocol.simple-taproot-chans
+      --lnd.protocol.simple-taproot-overlay-chans
+      --lnd.protocol.wumbo-channels
+      --lnd.protocol.custom-message=17
+      --taproot-assets.allow-public-uni-proof-courier
+      --taproot-assets.universe.public-access=rw
+      --taproot-assets.universe.sync-all-assets
+      --taproot-assets.allow-public-stats
+      --taproot-assets.proofcourieraddr=universerpc://lnd-orchard:8443
+      --taproot-assets.universerpccourier.skipinitdelay
+      --taproot-assets.universerpccourier.backoffresetwait=1s
+      --taproot-assets.universerpccourier.numtries=5
+      --taproot-assets.universerpccourier.initialbackoff=300ms
+      --taproot-assets.universerpccourier.maxbackoff=600ms
+      --taproot-assets.experimental.rfq.priceoracleaddress=use_mock_price_oracle_service_promise_to_not_use_on_mainnet
+      --taproot-assets.experimental.rfq.mockoracleassetsperbtc=100000000
 
   lnd-alice:
-    <<: *lnd-defaults
+    <<: *litd-defaults
     container_name: lnd-cdk-sqlite-lnd-alice
-    ports: ["10119:10009"]
+    networks:
+      net:
+        aliases: [tapd-alice]
+    ports:
+      - "10119:10009"
+      - "8444:8443"
     volumes:
-      - lnd-alice-data:/home/lnd/.lnd
+      - lit-alice-data:/home/litd/.lit
+      - lnd-alice-data:/home/litd/.lnd
+      - tapd-alice-data:/home/litd/.tapd
     command: >
-      lnd --noseedbackup --alias=alice --externalip=lnd-alice
-      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
-      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
-      --bitcoind.rpchost=bitcoind:18443
-      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
-      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
-      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
-      --tlsextradomain=lnd-alice --tlsextradomain=localhost
-      --accept-keysend --debuglevel=info
+      litd
+      --httpslisten=0.0.0.0:8443
+      --enablerest
+      --uipassword=orchard-e2e-lit-ui-password
+      --network=regtest
+      --lnd-mode=integrated
+      --pool-mode=disable
+      --loop-mode=disable
+      --autopilot.disable
+      --tlsextradomain=lnd-alice
+      --tlsextradomain=tapd-alice
+      --tlsextradomain=localhost
+      --lnd.noseedbackup
+      --lnd.debuglevel=info
+      --lnd.alias=alice
+      --lnd.externalip=lnd-alice
+      --lnd.tlsextradomain=lnd-alice
+      --lnd.tlsextradomain=tapd-alice
+      --lnd.tlsextradomain=localhost
+      --lnd.listen=0.0.0.0:9735
+      --lnd.rpclisten=0.0.0.0:10009
+      --lnd.restlisten=0.0.0.0:8080
+      --lnd.bitcoin.active
+      --lnd.bitcoin.regtest
+      --lnd.bitcoin.node=bitcoind
+      --lnd.bitcoind.rpchost=bitcoind:18443
+      --lnd.bitcoind.rpcuser=${BTC_RPC_USER}
+      --lnd.bitcoind.rpcpass=${BTC_RPC_PASS}
+      --lnd.bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --lnd.bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --lnd.accept-keysend
+      --lnd.trickledelay=50
+      --lnd.gossip.sub-batch-delay=5ms
+      --lnd.caches.rpc-graph-cache-duration=100ms
+      --lnd.default-remote-max-htlcs=483
+      --lnd.dust-threshold=5000000
+      --lnd.protocol.option-scid-alias
+      --lnd.protocol.zero-conf
+      --lnd.protocol.simple-taproot-chans
+      --lnd.protocol.simple-taproot-overlay-chans
+      --lnd.protocol.wumbo-channels
+      --lnd.protocol.custom-message=17
+      --taproot-assets.allow-public-uni-proof-courier
+      --taproot-assets.universe.public-access=rw
+      --taproot-assets.universe.sync-all-assets
+      --taproot-assets.allow-public-stats
+      --taproot-assets.proofcourieraddr=universerpc://lnd-orchard:8443
+      --taproot-assets.universerpccourier.skipinitdelay
+      --taproot-assets.universerpccourier.backoffresetwait=1s
+      --taproot-assets.universerpccourier.numtries=5
+      --taproot-assets.universerpccourier.initialbackoff=300ms
+      --taproot-assets.universerpccourier.maxbackoff=600ms
+      --taproot-assets.experimental.rfq.priceoracleaddress=use_mock_price_oracle_service_promise_to_not_use_on_mainnet
+      --taproot-assets.experimental.rfq.mockoracleassetsperbtc=100000000
 
   lnd-bob:
     <<: *lnd-defaults
@@ -130,43 +258,6 @@ services:
       --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
       --tlsextradomain=lnd-bob --tlsextradomain=localhost
       --accept-keysend --debuglevel=info
-
-  tapd-orchard:
-    <<: *tapd-defaults
-    container_name: lnd-cdk-sqlite-tapd-orchard
-    ports: ["10139:10029"]
-    depends_on:
-      lnd-orchard: { condition: service_healthy }
-    volumes:
-      - tapd-orchard-data:/home/tap/.tapd
-      - lnd-orchard-data:/lnd:ro
-    command: >
-      tapd --network=regtest --debuglevel=info
-      --tlsextradomain=tapd-orchard --tlsextradomain=localhost
-      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
-      --lnd.host=lnd-orchard:10009
-      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      --lnd.tlspath=/lnd/tls.cert
-      --allow-public-uni-proof-courier
-      --allow-public-stats
-      --universe.public-access=rw
-
-  tapd-alice:
-    <<: *tapd-defaults
-    container_name: lnd-cdk-sqlite-tapd-alice
-    ports: ["10149:10029"]
-    depends_on:
-      lnd-alice: { condition: service_healthy }
-    volumes:
-      - tapd-alice-data:/home/tap/.tapd
-      - lnd-alice-data:/lnd:ro
-    command: >
-      tapd --network=regtest --debuglevel=info
-      --tlsextradomain=tapd-alice --tlsextradomain=localhost
-      --rpclisten=0.0.0.0:10029 --restlisten=0.0.0.0:8089
-      --lnd.host=lnd-alice:10009
-      --lnd.macaroonpath=/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      --lnd.tlspath=/lnd/tls.cert
 
   setup:
     build:
@@ -192,10 +283,10 @@ services:
     entrypoint: ["/scripts/fund-lnd-topology.sh"]
     restart: "no"
 
-  # Mints a test taproot asset on tapd-orchard so the wallet-summary spec has
-  # stable tapd state to observe. Gated behind the main LN funding so lnd-orchard
-  # has confirmed sats to fund the mint's anchor output. Only wired into the
-  # lnd-cdk-sqlite config — the other three stacks don't run tapd.
+  # Mints a test taproot asset on orchard's embedded tapd. Gated behind the
+  # main LN funding so lnd-orchard has confirmed sats to fund the mint's
+  # anchor output. Talks to tapd via litd's unified :8443 endpoint because
+  # integrated tapd doesn't expose its own RPC port.
   tapd-setup:
     build:
       context: ../..
@@ -203,16 +294,45 @@ services:
     container_name: lnd-cdk-sqlite-tapd-setup
     networks: [net]
     depends_on:
-      setup:        { condition: service_completed_successfully }
-      tapd-orchard: { condition: service_healthy }
+      setup:       { condition: service_completed_successfully }
+      lnd-orchard: { condition: service_healthy }
     volumes:
       - ../../scripts:/scripts:ro
       - tapd-orchard-data:/tapd:ro
+      - lit-orchard-data:/lit:ro
       - shared:/shared
     environment:
       - BTC_RPC_USER=${BTC_RPC_USER}
       - BTC_RPC_PASS=${BTC_RPC_PASS}
     entrypoint: ["/scripts/fund-tapd.sh"]
+    restart: "no"
+
+  # Opens an asset-backed LN channel lnd-orchard → lnd-alice using litcli
+  # against the litd integrated lnd + tapd on orchard. Gated behind tapd-setup
+  # so TESTASSET exists, and lnd-alice so the peer pubkey resolves.
+  tapass-channel-setup:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: lnd-cdk-sqlite-tapass-channel-setup
+    networks: [net]
+    depends_on:
+      tapd-setup: { condition: service_completed_successfully }
+      lnd-alice:  { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - tapd-orchard-data:/tapd-orchard:ro
+      - lit-orchard-data:/lit-orchard:ro
+      - lnd-alice-data:/lnd-alice:ro
+      - shared:/shared
+    environment:
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - LITD_CONTAINER=lnd-cdk-sqlite-lnd-orchard
+      - TAPASS_CHANNEL_ASSET_AMOUNT=${TAPASS_CHANNEL_ASSET_AMOUNT:-500}
+      - TAPASS_CHANNEL_SAT_PER_VBYTE=${TAPASS_CHANNEL_SAT_PER_VBYTE:-1}
+    entrypoint: ["/scripts/fund-tapass-channel.sh"]
     restart: "no"
 
   cdk-mintd:
@@ -224,9 +344,9 @@ services:
       - "3349:3339"
       - "8096:8086"
     depends_on:
-      setup:        { condition: service_completed_successfully }
-      tapd-setup:   { condition: service_completed_successfully }
-      tapd-orchard: { condition: service_healthy }
+      setup:       { condition: service_completed_successfully }
+      tapd-setup:  { condition: service_completed_successfully }
+      lnd-orchard: { condition: service_healthy }
     volumes:
       - cdk-mintd-data:/app/data
       - lnd-orchard-data:/lnd:ro
@@ -251,12 +371,14 @@ services:
     ports:
       - "3324:3321"
     depends_on:
-      cdk-mintd:    { condition: service_healthy }
-      tapd-orchard: { condition: service_healthy }
+      cdk-mintd:            { condition: service_healthy }
+      lnd-orchard:          { condition: service_healthy }
+      tapass-channel-setup: { condition: service_completed_successfully }
     volumes:
       - orchard-data:/app/data
       - cdk-mintd-data:/mint-data:ro
       - lnd-orchard-data:/certs/lnd:ro
+      - lit-orchard-data:/certs/lit:ro
       - tapd-orchard-data:/certs/tapd:ro
     env_file:
       - ./env
@@ -267,7 +389,7 @@ services:
       - SERVER_PORT=3321
       - LIGHTNING_CERT=/certs/lnd/tls.cert
       - LIGHTNING_MACAROON=/certs/lnd/data/chain/bitcoin/regtest/admin.macaroon
-      - TAPROOT_ASSETS_CERT=/certs/tapd/tls.cert
+      - TAPROOT_ASSETS_CERT=/certs/lit/tls.cert
       - TAPROOT_ASSETS_MACAROON=/certs/tapd/data/regtest/admin.macaroon
       - MINT_DATABASE=/mint-data/cdk-mintd.sqlite
     healthcheck:
@@ -278,19 +400,6 @@ services:
 
   # ──────────────────────────────────────────────────────────────
   # Wallet container — Cashu client only.
-  #
-  # Role: exercises the mint under test (mint → swap → melt).
-  # Never runs a mint daemon, never publishes ports.
-  #
-  # Image reuse: ships `cashu` CLI bundled with nutshell. The wallet
-  # is mint-agnostic (speaks NUT protocol), so the same container
-  # works against cdk-mintd or nutshell-as-mint — only the
-  # depends_on target changes per config.
-  #
-  # Usage from scripts:
-  #   docker compose exec wallet cashu invoice 100
-  #   docker compose exec wallet cashu balance
-  #   docker compose exec wallet cashu send 10
   # ──────────────────────────────────────────────────────────────
   wallet:
     image: cashubtc/nutshell:${NUTSHELL_VERSION}
@@ -306,8 +415,7 @@ services:
     entrypoint: ["sleep", "infinity"]
 
   # ──────────────────────────────────────────────────────────────
-  # Activity generator — one-shot. See activity-lnd-topology.sh
-  # for the full category breakdown and env-var knobs.
+  # Activity generator — one-shot.
   # ──────────────────────────────────────────────────────────────
   activity:
     build:

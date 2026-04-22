@@ -5,7 +5,8 @@
  * is enabled) and toggles between "all open channels" and "only active".
  *
  * Covers the states reachable from a healthy regtest fixture (both LND and
- * CLN, 2 active sat channels, no asset channels, oracle off):
+ * CLN, 2 active sat channels; lnd-cdk-sqlite also funds one asset channel
+ * between orchard↔alice via litcli ln fundchannel; oracle off):
  *   - structure: title, summary-type menu trigger default label
  *   - sat row: capacity glyph, "Total sat capacity" sub-label
  *   - expand/collapse: clicking the row flips `animation-expanded` on the
@@ -19,7 +20,8 @@
  *   - oracle card is NOT rendered (bitcoin oracle is off by default)
  *
  * States NOT covered here (out of scope, see .md):
- *   - Taproot-asset rows (no asset channels funded on any regtest fixture)
+ *   - Taproot-asset row content (structure only — lnd-cdk-sqlite funds one
+ *     asset channel, but per-row assertions live in a future tapass spec)
  *   - Zero-channel / brand-new node (fixture always ships 2 channels)
  *   - Inactive-channel divergence between "All" and "Active" modes (regtest
  *     fixture keeps both channels active)
@@ -57,9 +59,14 @@ function digitsFrom(text: string): number {
 }
 
 /** Read a count card (one of Channels / Active / Closed / Average) by its
- *  visible label text. Returns the big number above the label. */
-async function countCardValue(row: Locator, label: string): Promise<number> {
-	const wrapper = row.locator('.channel-details').getByText(label, {exact: true}).locator('..');
+ *  visible label text. The template pluralizes per count — "Channel" when
+ *  count === 1 else "Channels" — so pass the plural form and we try both.
+ *  Returns the big number above the label. */
+async function countCardValue(row: Locator, plural: string): Promise<number> {
+	const details = row.locator('.channel-details');
+	const singular = plural.replace(/s$/, '');
+	const label = details.getByText(plural, {exact: true}).or(details.getByText(singular, {exact: true}));
+	const wrapper = label.first().locator('..');
 	const value_text = (await wrapper.locator('.font-size-l').first().textContent())?.trim() ?? '';
 	return digitsFrom(value_text);
 }
@@ -83,11 +90,14 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 		await expect(trigger).toHaveText(/All channels/);
 	});
 
-	test('renders exactly one sat row labelled "Total sat capacity"', async ({page}) => {
+	test('renders a sat row labelled "Total sat capacity"', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
 		const card = await openSummary(page);
 		// Every regtest fixture funds two sat channels (alice↔orchard,
-		// orchard↔far) and no asset channels → one sat row, no tapass rows.
-		await expect(card.locator('.channel-summary-card')).toHaveCount(1);
+		// orchard↔far). lnd-cdk-sqlite additionally funds one asset channel,
+		// so that config shows a second (tapass) summary-card row.
+		const expected_rows = config.tapd ? 2 : 1;
+		await expect(card.locator('.channel-summary-card')).toHaveCount(expected_rows);
 		await expect(card.getByText('Total sat capacity', {exact: true})).toBeVisible();
 	});
 
@@ -131,10 +141,16 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 		await expect(details).not.toHaveClass(/\banimation-expanded\b/);
 	});
 
-	test('expanded sat row: Channels count matches num_active + num_inactive', async ({page}, testInfo) => {
+	test('expanded sat row: Channels count matches sat-only channel count', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
-		const info = ln.getInfo(config) as LnGetInfo;
-		const expected = (info.num_active_channels ?? 0) + (info.num_inactive_channels ?? 0);
+		// The sat row counts channels without taproot-asset metadata. For CLN
+		// (no asset-channel concept) we fall back to getinfo's active+inactive.
+		const expected = config.ln === 'lnd'
+			? ln.satChannelCount(config)
+			: (() => {
+					const info = ln.getInfo(config) as LnGetInfo;
+					return (info.num_active_channels ?? 0) + (info.num_inactive_channels ?? 0);
+				})();
 
 		const card = await openSummary(page);
 		const row = satRow(card);
@@ -143,9 +159,11 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 		expect(await countCardValue(row, 'Channels')).toBe(expected);
 	});
 
-	test('expanded sat row: Active count matches num_active_channels', async ({page}, testInfo) => {
+	test('expanded sat row: Active count matches active sat-only channel count', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
-		const info = ln.getInfo(config) as LnGetInfo;
+		const expected = config.ln === 'lnd'
+			? ln.satChannelCount(config, 'orchard', {activeOnly: true})
+			: ((ln.getInfo(config) as LnGetInfo).num_active_channels ?? 0);
 
 		const card = await openSummary(page);
 		const row = satRow(card);
@@ -153,8 +171,8 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 
 		// The "Active channels" card is derived from `sat_channels.filter(active)`
 		// regardless of summary_type, so in the default 'open' mode it still
-		// reports the active subset — matches `num_active_channels` exactly.
-		expect(await countCardValue(row, 'Active channels')).toBe(info.num_active_channels ?? 0);
+		// reports the active subset.
+		expect(await countCardValue(row, 'Active channels')).toBe(expected);
 	});
 
 	test('expanded sat row: Closed count is 0 on a fresh regtest stack', async ({page}) => {
@@ -192,5 +210,93 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 
 		await expect(row.locator('orc-graphic-oracle-icon')).toHaveCount(0);
 		await expect(row.getByText('Oracle', {exact: true})).toHaveCount(0);
+	});
+});
+
+/** Taproot-asset row. Only reachable on `lnd-cdk-sqlite` where `fund-tapd.sh`
+ *  + `fund-tapass-channel.sh` mint TESTASSET and open exactly one asset-backed
+ *  LN channel between orchard↔alice. Asserts the component's *second* summary
+ *  row exists, renders the asset unit, and counts exactly one channel. */
+test.describe('lightning-general-channel-summary card — taproot asset row', {tag: '@tapd'}, () => {
+	// Seeded by fund-tapd.sh (amount=100000, decimal_display=2, grouped) and
+	// fund-tapass-channel.sh (commits 500 TESTASSET to the channel). Keep in
+	// sync with those scripts.
+	const TEST_ASSET = 'TESTASSET';
+
+	/** Second `.channel-summary-card` — component emits bitcoin first, tapass
+	 *  rows after (one per group_key). The fixture only mints one asset, so
+	 *  index 1 is the TESTASSET row. */
+	function tapassRow(summary: Locator): Locator {
+		return summary.locator('.channel-summary-card').nth(1).locator('mat-card-content').first();
+	}
+
+	test.beforeEach(async ({page}) => {
+		await page.goto('/');
+	});
+
+	test('renders a second row labelled "Total TESTASSET capacity"', async ({page}) => {
+		const card = await openSummary(page);
+		await expect(card.locator('.channel-summary-card')).toHaveCount(2);
+		// Template: `Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity`
+		// → tapass row uses the asset name as the unit.
+		await expect(card.getByText(`Total ${TEST_ASSET} capacity`, {exact: true})).toBeVisible();
+	});
+
+	test('tapass row glyph uses the asset-unknown class (no registered svg for TESTASSET)', async ({page}) => {
+		const card = await openSummary(page);
+		// TESTASSET isn't in `constants.taproot_group_keys`, so `orc-graphic-asset`
+		// falls through to the `.graphic-asset-unknown` class (same behaviour
+		// documented in bitcoin-general-wallet-summary.spec.ts).
+		await expect(tapassRow(card).locator('.graphic-asset-unknown').first()).toBeVisible();
+	});
+
+	test('tapass row capacity renders a non-zero amount', async ({page}) => {
+		const card = await openSummary(page);
+		const amount_text = (await tapassRow(card).locator('.orc-amount').first().textContent())?.trim() ?? '';
+		// fund-tapass-channel.sh commits 500 TESTASSET; decimal_display=2 → '5.00'.
+		// Assert >0 rather than exact so a future script tweak (different amount
+		// or decimals) doesn't break this — the fidelity we care about is that
+		// asset data flowed lnd → orchard → UI at all.
+		expect(digitsFrom(amount_text)).toBeGreaterThan(0);
+	});
+
+	test('clicking the tapass row toggles expand/collapse classes', async ({page}) => {
+		const card = await openSummary(page);
+		const row = tapassRow(card);
+		const caret = row.locator('button.orc-animation-rotate-toggle');
+		const details = row.locator('.channel-details');
+
+		await expect(caret).not.toHaveClass(/\banimation-expanded\b/);
+		await row.click();
+		await expect(caret).toHaveClass(/\banimation-expanded\b/);
+		await expect(details).toHaveClass(/\banimation-expanded\b/);
+	});
+
+	test('expanded tapass row counts match the asset-channel fixture', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		// Differential: count the orchard node's real asset channels via lnd's
+		// custom_channel_data rather than hard-coding 1 — protects against a
+		// future fixture that opens a second asset channel.
+		const asset_count = ln.assetChannelCount(config);
+		const asset_active_count = ln.assetChannelCount(config, 'orchard', {activeOnly: true});
+
+		const card = await openSummary(page);
+		const row = tapassRow(card);
+		await row.click();
+
+		expect(await countCardValue(row, 'Channels')).toBe(asset_count);
+		expect(await countCardValue(row, 'Active channels')).toBe(asset_active_count);
+		expect(await countCardValue(row, 'Closed channels')).toBe(0);
+	});
+
+	test('tapass row has no oracle card (oracle only applies to sat rows)', async ({page}) => {
+		// Template gate: `@if (row.is_bitcoin && bitcoin_oracle_enabled())`.
+		// `is_bitcoin` is false for tapass rows, so even with the oracle on
+		// this section must not render. On regtest the oracle is also off.
+		const card = await openSummary(page);
+		const row = tapassRow(card);
+		await row.click();
+
+		await expect(row.locator('orc-graphic-oracle-icon')).toHaveCount(0);
 	});
 });

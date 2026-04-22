@@ -1,6 +1,6 @@
 /* Native Dependencies */
 import {btcCli, lndCli, clnCli} from './docker-cli';
-import {containerForNode, isLnd, type ConfigInfo, type LnNode} from './config';
+import {containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
 
 /** Mine `blocks` regtest blocks to a throwaway address. */
 export function mine(config: ConfigInfo, blocks: number): void {
@@ -17,7 +17,7 @@ export function chainHeight(config: ConfigInfo): number {
 export function payInvoice(config: ConfigInfo, node: LnNode, bolt11: string): void {
 	const container = containerForNode(config, node);
 	if (isLnd(config, node)) {
-		lndCli(container, ['payinvoice', '--force', bolt11]);
+		lndCli(container, ['payinvoice', '--force', bolt11], lndDirForNode(config, node));
 	} else {
 		clnCli(container, ['pay', bolt11]);
 	}
@@ -27,7 +27,7 @@ export function payInvoice(config: ConfigInfo, node: LnNode, bolt11: string): vo
 export function newInvoice(config: ConfigInfo, node: LnNode, amountSat: number, memo = 'e2e'): string {
 	const container = containerForNode(config, node);
 	if (isLnd(config, node)) {
-		const out = lndCli(container, ['addinvoice', '--amt', String(amountSat), '--memo', memo]);
+		const out = lndCli(container, ['addinvoice', '--amt', String(amountSat), '--memo', memo], lndDirForNode(config, node));
 		return JSON.parse(out).payment_request as string;
 	}
 	// CLN takes msat and requires a unique label per invoice.

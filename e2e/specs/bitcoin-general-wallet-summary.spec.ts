@@ -17,8 +17,8 @@
  *     second row, the asset glyph uses `graphic-asset-unknown` (no
  *     registered svg for that asset name), the row's amount equals
  *     `parseInt(tapd.amount) / 10^decimal_display`, and the expanded
- *     metadata card shows the group-key em-dash fallback (ungrouped
- *     asset), NORMAL asset type, and the version string.
+ *     metadata card shows the truncated group_key (grouped asset),
+ *     NORMAL asset type, and the version string.
  *
  * Selector notes (bugs this spec fixes from the previous draft):
  *   - Angular's `[unit]="row.unit"` is a *property* binding — it never
@@ -35,10 +35,10 @@
  *   - Oracle card rendering (requires flipping `bitcoin_oracle` + having
  *     a resolved oracle price — no oracle seeded on regtest).
  *   - Lightning / tapd error rows (requires `docker pause` — disruptive).
- *   - Grouped taproot asset rendering (`asset_group.tweaked_group_key`
- *     populated, truncated display). Requires minting under a group; the
- *     ungrouped case exercises the `@else` branch which is the interesting
- *     regression surface.
+ *   - Ungrouped taproot asset rendering (em-dash fallback under Group
+ *     key). fund-tapd.sh mints a grouped asset because grouped is the
+ *     primary/standard form for real operators; the ungrouped `@else`
+ *     branch would require a separate fixture.
  *   - USDT svg path (needs an asset whose `tweaked_group_key` matches
  *     `constants.taproot_group_keys.usdt`).
  */
@@ -54,6 +54,7 @@ import {ln} from '../helpers/backend';
 type TapdAssetsList = {
 	assets: Array<{
 		asset_genesis: {name: string; asset_id: string; asset_type: string};
+		asset_group?: {tweaked_group_key?: string};
 		amount: string;
 		decimal_display?: {decimal_display?: number};
 		version: string;
@@ -171,17 +172,28 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 
 	/** Read the minted asset's live tapd record. Used to differentially assert
 	 *  that Orchard's displayed amount matches `tapd.amount / 10^decimal_display`
-	 *  and that the metadata card reflects the real asset_type + version. */
+	 *  and that the metadata card reflects the real asset_type + version.
+	 *
+	 *  tapd runs integrated inside the litd container (lnd-cdk-sqlite-lnd-orchard)
+	 *  and doesn't bind its own gRPC port — tapcli reaches it via litd's unified
+	 *  :8443 endpoint using the litd TLS cert + tapd admin macaroon. */
 	function readTestAsset(): TapdAssetsList['assets'][number] {
 		const out = execFileSync(
 			'docker',
-			['exec', '-u', 'tap', 'lnd-cdk-sqlite-tapd-orchard', 'tapcli', '--network=regtest', '--tapddir=/home/tap/.tapd', 'assets', 'list'],
+			[
+				'exec', 'lnd-cdk-sqlite-lnd-orchard', 'tapcli',
+				'--rpcserver=localhost:8443',
+				'--tlscertpath=/home/litd/.lit/tls.cert',
+				'--macaroonpath=/home/litd/.tapd/data/regtest/admin.macaroon',
+				'--network=regtest',
+				'assets', 'list',
+			],
 			{encoding: 'utf8'},
 		);
 		const listed: TapdAssetsList = JSON.parse(out);
 		const asset = listed.assets.find((a) => a.asset_genesis.name === TEST_ASSET);
 		if (!asset) {
-			throw new Error(`Expected tapd-orchard to hold asset '${TEST_ASSET}' (seeded by fund-tapd.sh). Check the tapd-setup container logs.`);
+			throw new Error(`Expected litd-orchard's tapd to hold asset '${TEST_ASSET}' (seeded by fund-tapd.sh). Check the tapd-setup container logs.`);
 		}
 		return asset;
 	}
@@ -215,7 +227,7 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 		expect(digitsFrom(amount_text)).toBe(expected);
 	});
 
-	test('expanded taproot row shows metadata card: group-key em-dash, asset_type, asset_version', async ({page}) => {
+	test('expanded taproot row shows metadata card: group_key truncation, asset_type, asset_version', async ({page}) => {
 		const asset = readTestAsset();
 
 		const card = await openWalletSummary(page);
@@ -229,9 +241,12 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 		await expect(metadata_card.getByText('Asset type', {exact: true})).toBeVisible();
 		await expect(metadata_card.getByText('Asset version', {exact: true})).toBeVisible();
 
-		// Ungrouped asset — the template falls through to the mat-icon
-		// `check_indeterminate_small` em-dash fallback under "Group key".
-		await expect(metadata_card.locator('mat-icon')).toHaveText(/check_indeterminate_small/);
+		// Grouped asset — the template emits `group_key | dataTruncate: 12 : 6 : 6`
+		// which renders as first6 + "..." + last6 of the hex group_key.
+		const group_key = asset.asset_group?.tweaked_group_key;
+		if (!group_key) throw new Error(`tapd reported no asset_group.tweaked_group_key for ${TEST_ASSET}`);
+		const truncated = `${group_key.substring(0, 6)}...${group_key.substring(group_key.length - 6)}`;
+		await expect(metadata_card.getByText(truncated, {exact: true})).toBeVisible();
 
 		// Asset type + version come straight from the tapd response.
 		await expect(metadata_card.getByText(asset.asset_genesis.asset_type, {exact: true})).toBeVisible();

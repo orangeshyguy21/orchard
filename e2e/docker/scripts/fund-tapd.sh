@@ -23,22 +23,26 @@ bcli() {
         http://bitcoind:18443/ | jq -r '.result'
 }
 
+# tapd REST goes through litd's unified :8443 HTTPS endpoint in integrated
+# mode — integrated tapd doesn't bind its own 10029/8089 ports. Auth still
+# uses tapd's admin.macaroon; TLS verification uses litd's cert (the one
+# presented on 8443), not tapd's.
 tapd() {
     local method="$1" path="$2" body="${3:-}"
     local macaroon_hex
     macaroon_hex=$(xxd -p -c 10000 /tapd/data/regtest/admin.macaroon)
     if [ -n "$body" ]; then
         curl -sS --fail -X "$method" \
-            --cacert /tapd/tls.cert \
+            --cacert /lit/tls.cert \
             -H "Grpc-Metadata-macaroon: ${macaroon_hex}" \
             -H 'content-type: application/json' \
             -d "$body" \
-            "https://tapd-orchard:8089${path}"
+            "https://lnd-orchard:8443${path}"
     else
         curl -sS --fail -X "$method" \
-            --cacert /tapd/tls.cert \
+            --cacert /lit/tls.cert \
             -H "Grpc-Metadata-macaroon: ${macaroon_hex}" \
-            "https://tapd-orchard:8089${path}"
+            "https://lnd-orchard:8443${path}"
     fi
 }
 
@@ -86,14 +90,18 @@ if asset_exists; then
     exit 0
 fi
 
-log "minting ${ASSET_SUPPLY} ${ASSET_NAME} (decimal_display=${ASSET_DECIMAL})"
+log "minting ${ASSET_SUPPLY} ${ASSET_NAME} (decimal_display=${ASSET_DECIMAL}, grouped)"
+# new_grouped_asset=true so the mint emits a group_key. lnd's custom_channel_data
+# on asset-backed channels surfaces group_key at the top level; the orchard
+# server's parseLndCustomChannelData returns null for channels without one, so
+# the fixture has to mint a grouped asset to exercise that code path.
 tapd POST /v1/taproot-assets/assets "{
     \"asset\": {
         \"asset_version\": \"ASSET_VERSION_V0\",
         \"asset_type\": \"NORMAL\",
         \"name\": \"${ASSET_NAME}\",
         \"amount\": \"${ASSET_SUPPLY}\",
-        \"new_grouped_asset\": false,
+        \"new_grouped_asset\": true,
         \"decimal_display\": ${ASSET_DECIMAL}
     }
 }" > /dev/null

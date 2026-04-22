@@ -19,12 +19,14 @@ export function btcCliJson<T = unknown>(container: string, args: string[]): T {
 	return JSON.parse(btcCli(container, args)) as T;
 }
 
-export function lndCli(container: string, args: string[]): string {
-	return dockerExec(['exec', container, 'lncli', '--lnddir=/home/lnd/.lnd', '--network=regtest', ...args]);
+/** lnddir defaults to polar-lnd's layout. litd containers use /home/litd/.lnd
+ *  — callers resolve via lndDirForNode(config, node) in helpers/config.ts. */
+export function lndCli(container: string, args: string[], lnddir: string = '/home/lnd/.lnd'): string {
+	return dockerExec(['exec', container, 'lncli', `--lnddir=${lnddir}`, '--network=regtest', ...args]);
 }
 
-export function lndCliJson<T = unknown>(container: string, args: string[]): T {
-	return JSON.parse(lndCli(container, args)) as T;
+export function lndCliJson<T = unknown>(container: string, args: string[], lnddir?: string): T {
+	return JSON.parse(lndCli(container, args, lnddir)) as T;
 }
 
 export function clnCli(container: string, args: string[]): string {

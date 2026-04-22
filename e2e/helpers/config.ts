@@ -130,3 +130,13 @@ export function isLnd(config: ConfigInfo, node: LnNode): boolean {
 	if (node === 'far') return true;
 	return config.ln === 'lnd';
 }
+
+/** lnd's data dir inside the container. In lnd-cdk-sqlite, orchard+alice run
+ *  litd (embedded lnd at /home/litd/.lnd); bob and every other config use
+ *  the polar-lnd convention /home/lnd/.lnd. */
+export function lndDirForNode(config: ConfigInfo, node: LnNode): string {
+	if (config.name === 'lnd-cdk-sqlite' && (node === 'orchard' || node === 'alice')) {
+		return '/home/litd/.lnd';
+	}
+	return '/home/lnd/.lnd';
+}

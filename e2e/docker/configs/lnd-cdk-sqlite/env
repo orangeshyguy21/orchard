@@ -31,10 +31,13 @@ LIGHTNING_RPC_HOST=lnd-orchard
 LIGHTNING_RPC_PORT=10009
 # cert + macaroon paths set inline in compose
 
-# ----- Orchard → Taproot Assets (tapd-orchard) -----
+# ----- Orchard → Taproot Assets (litd integrated tapd) -----
+# litd proxies tapd gRPC through its unified :8443 HTTPS port. Integrated
+# tapd does not expose its own 10029 port. The TLS cert is litd's (served
+# on 8443); the macaroon is still tapd's admin.macaroon — see compose env.
 TAPROOT_ASSETS_TYPE=tapd
-TAPROOT_ASSETS_RPC_HOST=tapd-orchard
-TAPROOT_ASSETS_RPC_PORT=10029
+TAPROOT_ASSETS_RPC_HOST=lnd-orchard
+TAPROOT_ASSETS_RPC_PORT=8443
 # cert + macaroon paths set inline in compose
 
 # ----- Orchard → Mint (cdk-mintd) -----

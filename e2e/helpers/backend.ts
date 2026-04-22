@@ -5,7 +5,7 @@
 
 /* Native Dependencies */
 import {btcCli, btcCliJson, lndCliJson, clnCliJson} from './docker-cli';
-import {containerForNode, isLnd, type ConfigInfo, type LnNode} from './config';
+import {containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
 
 export const btc = {
 	blockCount(config: ConfigInfo): number {
@@ -40,7 +40,9 @@ export const btc = {
 export const ln = {
 	getInfo(config: ConfigInfo, node: LnNode = 'orchard'): Record<string, unknown> {
 		const container = containerForNode(config, node);
-		return isLnd(config, node) ? lndCliJson(container, ['getinfo']) : clnCliJson(container, ['getinfo']);
+		return isLnd(config, node)
+			? lndCliJson(container, ['getinfo'], lndDirForNode(config, node))
+			: clnCliJson(container, ['getinfo']);
 	},
 
 	/**
@@ -51,10 +53,41 @@ export const ln = {
 	onchainSats(config: ConfigInfo, node: LnNode = 'orchard'): number {
 		const container = containerForNode(config, node);
 		if (isLnd(config, node)) {
-			const bal = lndCliJson<{total_balance: string}>(container, ['walletbalance']);
+			const bal = lndCliJson<{total_balance: string}>(container, ['walletbalance'], lndDirForNode(config, node));
 			return parseInt(bal.total_balance, 10);
 		}
 		const funds = clnCliJson<{outputs: {amount_msat: number}[]}>(container, ['listfunds']);
 		return funds.outputs.reduce((sum, o) => sum + Math.floor(Number(o.amount_msat) / 1000), 0);
 	},
+
+	/** Count of the node's channels that do NOT carry taproot-asset metadata.
+	 *  Mirrors the orc-lightning-general-channel-summary component's sat-row
+	 *  filter (channels with empty `custom_channel_data`). LND only — CLN has
+	 *  no asset-channel concept. */
+	satChannelCount(config: ConfigInfo, node: LnNode = 'orchard', opts: {activeOnly?: boolean} = {}): number {
+		return countChannels(config, node, opts, (c) => !c.custom_channel_data || c.custom_channel_data === '');
+	},
+
+	/** Count of the node's channels that DO carry taproot-asset metadata
+	 *  (non-empty `custom_channel_data`). Mirrors the tapass-row filter in
+	 *  orc-lightning-general-channel-summary. LND-only (integrated tapd). */
+	assetChannelCount(config: ConfigInfo, node: LnNode = 'orchard', opts: {activeOnly?: boolean} = {}): number {
+		return countChannels(config, node, opts, (c) => !!c.custom_channel_data && c.custom_channel_data !== '');
+	},
 };
+
+function countChannels(
+	config: ConfigInfo,
+	node: LnNode,
+	opts: {activeOnly?: boolean},
+	predicate: (channel: {custom_channel_data?: string}) => boolean,
+): number {
+	if (!isLnd(config, node)) {
+		throw new Error(`channel counting only implemented for LND nodes (got ${config.ln})`);
+	}
+	const container = containerForNode(config, node);
+	const args = ['listchannels'];
+	if (opts.activeOnly) args.push('--active_only');
+	const listed = lndCliJson<{channels: Array<{custom_channel_data?: string}>}>(container, args, lndDirForNode(config, node));
+	return listed.channels.filter(predicate).length;
+}

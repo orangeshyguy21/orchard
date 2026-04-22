@@ -100,29 +100,61 @@ BOB_PK=$(lnd bob GET /v1/getinfo | jq -r '.identity_pubkey')
 log "orchard pubkey: ${ORCHARD_PK}"
 log "bob pubkey:     ${BOB_PK}"
 
-log "peering alice → orchard"
-lnd alice POST /v1/peers \
-    "{\"addr\":{\"pubkey\":\"${ORCHARD_PK}\",\"host\":\"lnd-orchard:9735\"},\"perm\":true}" \
-    >/dev/null
+# Idempotency helpers — lnd's REST returns 500 on "already connected"/"already
+# has channel" errors, which `curl --fail` turns into exit 22. Compose may
+# re-trigger setup when a new `up` is issued after partial teardown, so these
+# guards let the script be rerun safely against an already-funded topology.
+peer_exists() {
+    local node="$1" target_pk="$2"
+    lnd "$node" GET /v1/peers 2>/dev/null \
+        | jq -e --arg pk "$target_pk" '.peers[]? | select(.pub_key == $pk)' > /dev/null
+}
 
-log "peering orchard → bob"
-lnd orchard POST /v1/peers \
-    "{\"addr\":{\"pubkey\":\"${BOB_PK}\",\"host\":\"lnd-bob:9735\"},\"perm\":true}" \
-    >/dev/null
+channel_to_exists() {
+    local node="$1" target_pk="$2"
+    lnd "$node" GET /v1/channels 2>/dev/null \
+        | jq -e --arg pk "$target_pk" '.channels[]? | select(.remote_pubkey == $pk and (.capacity // "0") != "0")' > /dev/null
+}
 
-log "opening channel alice → orchard (${CHANNEL_CAPACITY_SAT} sat, push ${CHANNEL_PUSH_SAT})"
-lnd alice POST /v1/channels "{
-    \"node_pubkey_string\": \"${ORCHARD_PK}\",
-    \"local_funding_amount\": ${CHANNEL_CAPACITY_SAT},
-    \"push_sat\": ${CHANNEL_PUSH_SAT}
-}" >/dev/null
+if peer_exists alice "$ORCHARD_PK"; then
+    log "alice already peered with orchard"
+else
+    log "peering alice → orchard"
+    lnd alice POST /v1/peers \
+        "{\"addr\":{\"pubkey\":\"${ORCHARD_PK}\",\"host\":\"lnd-orchard:9735\"},\"perm\":true}" \
+        >/dev/null
+fi
 
-log "opening channel orchard → bob (${CHANNEL_CAPACITY_SAT} sat, push ${CHANNEL_PUSH_SAT})"
-lnd orchard POST /v1/channels "{
-    \"node_pubkey_string\": \"${BOB_PK}\",
-    \"local_funding_amount\": ${CHANNEL_CAPACITY_SAT},
-    \"push_sat\": ${CHANNEL_PUSH_SAT}
-}" >/dev/null
+if peer_exists orchard "$BOB_PK"; then
+    log "orchard already peered with bob"
+else
+    log "peering orchard → bob"
+    lnd orchard POST /v1/peers \
+        "{\"addr\":{\"pubkey\":\"${BOB_PK}\",\"host\":\"lnd-bob:9735\"},\"perm\":true}" \
+        >/dev/null
+fi
+
+if channel_to_exists alice "$ORCHARD_PK"; then
+    log "channel alice → orchard already open"
+else
+    log "opening channel alice → orchard (${CHANNEL_CAPACITY_SAT} sat, push ${CHANNEL_PUSH_SAT})"
+    lnd alice POST /v1/channels "{
+        \"node_pubkey_string\": \"${ORCHARD_PK}\",
+        \"local_funding_amount\": ${CHANNEL_CAPACITY_SAT},
+        \"push_sat\": ${CHANNEL_PUSH_SAT}
+    }" >/dev/null
+fi
+
+if channel_to_exists orchard "$BOB_PK"; then
+    log "channel orchard → bob already open"
+else
+    log "opening channel orchard → bob (${CHANNEL_CAPACITY_SAT} sat, push ${CHANNEL_PUSH_SAT})"
+    lnd orchard POST /v1/channels "{
+        \"node_pubkey_string\": \"${BOB_PK}\",
+        \"local_funding_amount\": ${CHANNEL_CAPACITY_SAT},
+        \"push_sat\": ${CHANNEL_PUSH_SAT}
+    }" >/dev/null
+fi
 
 log "mining 6 confirmations for channel funding txns"
 bcli generatetoaddress "[6, \"${MINER_ADDR}\"]" >/dev/null
