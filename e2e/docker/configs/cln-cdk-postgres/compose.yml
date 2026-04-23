@@ -15,6 +15,7 @@ networks:
 
 volumes:
   bitcoind-data:
+  bitcoind-peer-data:
   cln-orchard-data:
   cln-alice-data:
   lnd-carol-data:
@@ -67,6 +68,41 @@ services:
       timeout: 5s
       retries: 30
 
+  # Passive P2P peer. `-connect=bitcoind:18444` pins the topology — this node
+  # dials the primary and never auto-discovers. Gives the UI a real peer count
+  # (>0) and exercises mempool/block gossip without letting chains diverge.
+  # Never mines; not referenced as an RPC target by any LN node or setup script.
+  bitcoind-peer:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-cdk-postgres-bitcoind-peer
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - bitcoind-peer-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -fallbackfee=0.0002
+      -debug=0
+      -connect=bitcoind:18444
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bitcoin-cli -regtest
+          -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+          getpeerinfo | grep -q subver
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
   postgres:
     image: postgres:${POSTGRES_VERSION}
     container_name: cln-cdk-postgres-postgres
@@ -96,6 +132,7 @@ services:
       lightningd
       --network=regtest
       --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-orchard:9735
       --bitcoin-rpcconnect=bitcoind
       --bitcoin-rpcport=18443
       --bitcoin-rpcuser=${BTC_RPC_USER}
@@ -115,6 +152,7 @@ services:
       lightningd
       --network=regtest
       --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-alice:9735
       --bitcoin-rpcconnect=bitcoind
       --bitcoin-rpcport=18443
       --bitcoin-rpcuser=${BTC_RPC_USER}
@@ -157,9 +195,10 @@ services:
     container_name: cln-cdk-postgres-setup
     networks: [net]
     depends_on:
-      cln-orchard:  { condition: service_healthy }
-      cln-alice:    { condition: service_healthy }
-      lnd-carol:    { condition: service_healthy }
+      bitcoind-peer: { condition: service_healthy }
+      cln-orchard:   { condition: service_healthy }
+      cln-alice:     { condition: service_healthy }
+      lnd-carol:     { condition: service_healthy }
     volumes:
       - ../../scripts:/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -281,12 +320,15 @@ services:
       - CONFIG_NAME=cln-cdk-postgres
       - MINT_SERVICE=cdk-mintd
       - MINT_PORT=3339
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
       - ACTIVITY_FORWARDS=${ACTIVITY_FORWARDS:-6}
       - ACTIVITY_INBOUND=${ACTIVITY_INBOUND:-4}
       - ACTIVITY_OUTBOUND=${ACTIVITY_OUTBOUND:-4}
       - ACTIVITY_MINTS=${ACTIVITY_MINTS:-5}
       - ACTIVITY_SWAPS=${ACTIVITY_SWAPS:-4}
       - ACTIVITY_MELTS=${ACTIVITY_MELTS:-3}
+      - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-cln-topology.sh"]
     restart: "no"

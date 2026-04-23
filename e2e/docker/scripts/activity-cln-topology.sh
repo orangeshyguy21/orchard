@@ -34,6 +34,7 @@ ACTIVITY_OUTBOUND=${ACTIVITY_OUTBOUND:-4}
 ACTIVITY_MINTS=${ACTIVITY_MINTS:-5}
 ACTIVITY_SWAPS=${ACTIVITY_SWAPS:-4}
 ACTIVITY_MELTS=${ACTIVITY_MELTS:-3}
+ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
 
 log() { printf '[activity] %s\n' "$*"; }
 
@@ -41,6 +42,16 @@ if [ "${ACTIVITY_SKIP:-0}" = "1" ]; then
     log "ACTIVITY_SKIP=1 — exiting without generating activity"
     exit 0
 fi
+
+# ── bitcoind JSON-RPC wrapper (mirrors fund-cln-topology.sh). ──
+bcli() {
+    method="$1"; params="${2:-[]}"
+    curl -sS --fail \
+        -u "${BTC_RPC_USER}:${BTC_RPC_PASS}" \
+        -H 'content-type: application/json' \
+        -d "{\"jsonrpc\":\"1.0\",\"method\":\"${method}\",\"params\":${params}}" \
+        http://bitcoind:18443/ | jq -r '.result'
+}
 
 # ── CLN via docker exec (mirrors fund-cln-topology.sh). $1 = short node name. ──
 cln() {
@@ -253,4 +264,28 @@ if [ "$ACTIVITY_MELTS" -gt 0 ]; then
     done
 fi
 
-log "DONE — forwards=$ACTIVITY_FORWARDS inbound=$ACTIVITY_INBOUND outbound=$ACTIVITY_OUTBOUND mints=$ACTIVITY_MINTS swaps=$ACTIVITY_SWAPS melts=$ACTIVITY_MELTS"
+# ───── 7. Mempool fill — varied-fee unconfirmed self-sends ─────
+# Broadcasts ACTIVITY_MEMPOOL_PER_RATE × 6 tiny txs at fee rates
+# {1, 2, 5, 10, 25, 50} sat/vB and leaves them unconfirmed, so the UI's
+# fee / mempool / block-template panels have realistic input. Reuses the
+# bitcoind default wallet (113 coinbase outputs mined by fund-cln-topology,
+# first 100 mature by the time activity runs).
+if [ "$ACTIVITY_MEMPOOL_PER_RATE" -gt 0 ]; then
+    : "${BTC_RPC_USER:?BTC_RPC_USER must be set for mempool-fill}"
+    : "${BTC_RPC_PASS:?BTC_RPC_PASS must be set for mempool-fill}"
+    log "mempool fill: $ACTIVITY_MEMPOOL_PER_RATE × 6 rates"
+    for rate in 1 2 5 10 25 50; do
+        i=0
+        while [ "$i" -lt "$ACTIVITY_MEMPOOL_PER_RATE" ]; do
+            addr=$(bcli getnewaddress)
+            txid=$(bcli sendtoaddress "[\"$addr\", 0.0001, \"\", \"\", false, true, null, \"unset\", null, ${rate}]")
+            if [ -z "$txid" ] || [ "$txid" = "null" ]; then
+                log "  ${rate} sat/vB FAILED"
+            fi
+            i=$((i + 1))
+        done
+        log "  ${ACTIVITY_MEMPOOL_PER_RATE}× @ ${rate} sat/vB"
+    done
+fi
+
+log "DONE — forwards=$ACTIVITY_FORWARDS inbound=$ACTIVITY_INBOUND outbound=$ACTIVITY_OUTBOUND mints=$ACTIVITY_MINTS swaps=$ACTIVITY_SWAPS melts=$ACTIVITY_MELTS mempool=$((ACTIVITY_MEMPOOL_PER_RATE * 6))"
