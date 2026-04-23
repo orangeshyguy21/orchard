@@ -297,25 +297,28 @@ services:
   # Role: exercises the mint under test (mint → swap → melt).
   # Never runs a mint daemon, never publishes ports.
   #
-  # Image reuse: ships `cashu` CLI bundled with nutshell. The wallet
-  # is mint-agnostic (speaks NUT protocol), so the same container
-  # works against cdk-mintd or nutshell-as-mint — only the
+  # Built from wallet.Dockerfile (cdk-cli from crates.io). Same
+  # binary works against cdk-mintd or nutshell-as-mint — only the
   # depends_on target changes per config.
   #
   # Usage from scripts:
-  #   docker compose exec wallet cashu invoice 100
-  #   docker compose exec wallet cashu balance
-  #   docker compose exec wallet cashu send 10
+  #   docker compose exec wallet cdk-cli mint $MINT_URL 100
+  #   docker compose exec wallet cdk-cli balance
+  #   docker compose exec wallet cdk-cli send 10
   # ──────────────────────────────────────────────────────────────
   wallet:
-    image: cashubtc/nutshell:${NUTSHELL_VERSION}
+    build:
+      context: ../..
+      dockerfile: wallet.Dockerfile
+      args:
+        CDK_CLI_VERSION: ${CDK_CLI_VERSION}
     container_name: cln-nutshell-postgres-wallet
     restart: on-failure
     networks: [net]
     depends_on:
       nutshell: { condition: service_healthy }
     volumes:
-      - wallet-data:/root/.cashu
+      - wallet-data:/root/.cdk
     environment:
       - MINT_URL=http://nutshell:3338
     entrypoint: ["sleep", "infinity"]

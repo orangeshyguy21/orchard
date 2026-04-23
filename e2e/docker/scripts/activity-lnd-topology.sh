@@ -87,10 +87,11 @@ lnd_pay() {
     fi
 }
 
-# Run cashu CLI inside the wallet container. `-h` pins the mint so we don't
-# rely on the CLI's auto-config reading the container's env.
+# Run cdk-cli inside the wallet container. MINT_URL is passed per-subcommand
+# (cdk-cli tracks mints in its local DB; the first `mint <url>` call registers
+# the mint so subsequent commands resolve it).
 wallet() {
-    docker exec -i "${CONFIG_NAME}-wallet" poetry run cashu -h "$MINT_URL" "$@"
+    docker exec -i "${CONFIG_NAME}-wallet" cdk-cli "$@"
 }
 
 # Random sat amount in [min, max).
@@ -144,9 +145,9 @@ if [ "$ACTIVITY_OUTBOUND" -gt 0 ]; then
 fi
 
 # ───── 4. Wallet mints ─────
-# `cashu invoice N` fetches a mint quote, prints the bolt11, then polls until
-# paid and redeems. Run it backgrounded, extract the invoice, pay from alice,
-# wait for cashu to finish redeeming.
+# `cdk-cli mint <url> N` fetches a mint quote, prints the bolt11, then polls
+# until paid and redeems. Run it backgrounded, extract the invoice, pay from
+# alice, wait for cdk-cli to finish redeeming.
 if [ "$ACTIVITY_MINTS" -gt 0 ]; then
     log "wallet mints: $ACTIVITY_MINTS"
     i=0
@@ -154,7 +155,7 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
         amt=$(rand_sat 100 2000)
         tmp=$(mktemp)
 
-        wallet invoice "$amt" > "$tmp" 2>&1 &
+        wallet mint "$MINT_URL" "$amt" > "$tmp" 2>&1 &
         pid=$!
 
         bolt11=""
@@ -167,7 +168,7 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
         done
 
         if [ -z "$bolt11" ]; then
-            log "  mint ${amt} FAILED (no invoice in cashu output)"
+            log "  mint ${amt} FAILED (no invoice in cdk-cli output)"
             sed 's/^/    /' "$tmp" || true
             kill "$pid" 2>/dev/null || true
             rm -f "$tmp"
@@ -189,15 +190,15 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
 fi
 
 # ───── 5. Internal swaps (wallet → wallet) ─────
-# `cashu send N` splits proofs (= a mint swap) and outputs a token.
-# `cashu receive <token>` swaps again on the receiving side. Net balance
+# `cdk-cli send -a N` splits proofs (= a mint swap) and outputs a token.
+# `cdk-cli receive <token>` swaps again on the receiving side. Net balance
 # delta is zero but the mint records two swap operations.
 if [ "$ACTIVITY_SWAPS" -gt 0 ]; then
     log "wallet swaps: $ACTIVITY_SWAPS"
     i=0
     while [ "$i" -lt "$ACTIVITY_SWAPS" ]; do
         amt=$(rand_sat 10 100)
-        token=$(wallet send "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
+        token=$(wallet send -a "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
         if [ -z "$token" ]; then
             log "  swap ${amt} FAILED (no token)"
             i=$((i + 1))
@@ -220,7 +221,7 @@ if [ "$ACTIVITY_MELTS" -gt 0 ]; then
         amt=$(rand_sat 50 500)
         if [ $((i % 2)) -eq 0 ]; then dst=alice; else dst=bob; fi
         inv=$(lnd_invoice "$dst" "$amt")
-        if wallet pay "$inv" >/dev/null 2>&1; then
+        if wallet melt --mint-url "$MINT_URL" --invoice "$inv" >/dev/null 2>&1; then
             log "  melt ${amt} sat → ${dst}"
         else
             log "  melt ${amt} FAILED"

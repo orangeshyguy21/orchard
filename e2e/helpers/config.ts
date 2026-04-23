@@ -28,6 +28,9 @@ export interface ConfigInfo {
 	mint: MintType;
 	db: DbType;
 	tapd: boolean;
+	/** True if this stack can exercise bolt12 end-to-end (mint + LN backend
+	 *  both speak offers). */
+	bolt12: boolean;
 	/** Orchard URL (what Playwright `baseURL` resolves to). */
 	orchardUrl: string;
 	/** Admin seed used by fund/config; matches SETUP_KEY in the config's env file. */
@@ -50,6 +53,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'nutshell',
 		db: 'sqlite',
 		tapd: false,
+		bolt12: false,
 		orchardUrl: 'http://localhost:3322',
 		...BASE,
 		containers: {
@@ -65,6 +69,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'cdk',
 		db: 'sqlite',
 		tapd: true,
+		bolt12: false,
 		orchardUrl: 'http://localhost:3324',
 		...BASE,
 		containers: {
@@ -80,6 +85,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'cdk',
 		db: 'postgres',
 		tapd: false,
+		bolt12: true,
 		orchardUrl: 'http://localhost:3323',
 		...BASE,
 		containers: {
@@ -95,6 +101,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mint: 'nutshell',
 		db: 'postgres',
 		tapd: false,
+		bolt12: false,
 		orchardUrl: 'http://localhost:3325',
 		...BASE,
 		containers: {

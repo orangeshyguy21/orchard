@@ -33,6 +33,8 @@ import {CONFIGS, type ConfigInfo} from './helpers/config';
  *   @cdk / @nutshell     — mint-impl-sensitive; runs on stacks with matching mint
  *   @sqlite / @postgres  — DB-sensitive; runs on stacks with matching db
  *   @tapd                — requires tapd; runs only on lnd-cdk-sqlite
+ *   @bolt12              — requires bolt12-capable mint + LN; runs only on
+ *                          cln-cdk-postgres
  *   @all                 — genuine matrix coverage; runs on every stack
  *
  * Untagged tests match no project's grep → they don't run. If you see a new
@@ -51,6 +53,7 @@ function tagsFor(config: ConfigInfo): string[] {
 	const tags = ['@all', `@${config.ln}`, `@${config.mint}`, `@${config.db}`];
 	if (config.name === CANARY) tags.push('@canary');
 	if (config.tapd) tags.push('@tapd');
+	if (config.bolt12) tags.push('@bolt12');
 	return tags;
 }
 

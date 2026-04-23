@@ -436,17 +436,21 @@ services:
       retries: 30
 
   # ──────────────────────────────────────────────────────────────
-  # Wallet container — Cashu client only.
+  # Wallet container — Cashu client only (cdk-cli).
   # ──────────────────────────────────────────────────────────────
   wallet:
-    image: cashubtc/nutshell:${NUTSHELL_VERSION}
+    build:
+      context: ../..
+      dockerfile: wallet.Dockerfile
+      args:
+        CDK_CLI_VERSION: ${CDK_CLI_VERSION}
     container_name: lnd-cdk-sqlite-wallet
     restart: on-failure
     networks: [net]
     depends_on:
       cdk-mintd: { condition: service_healthy }
     volumes:
-      - wallet-data:/root/.cashu
+      - wallet-data:/root/.cdk
     environment:
       - MINT_URL=http://cdk-mintd:3339
     entrypoint: ["sleep", "infinity"]

@@ -11,9 +11,12 @@
 #   - ACTIVITY_FORWARDS — alice ⇄ carol via orchard (forwarded LN payments)
 #   - ACTIVITY_INBOUND  — alice/carol → orchard (inbound LN)
 #   - ACTIVITY_OUTBOUND — orchard → alice/carol (outbound LN)
-#   - ACTIVITY_MINTS    — wallet mints ecash; alice pays the mint's invoice
-#   - ACTIVITY_SWAPS    — wallet sends + receives to itself (internal swap)
-#   - ACTIVITY_MELTS    — wallet pays alice/carol invoice (burns ecash → LN)
+#   - ACTIVITY_MINTS        — wallet mints ecash; alice pays the mint's invoice
+#   - ACTIVITY_SWAPS        — wallet sends + receives to itself (internal swap)
+#   - ACTIVITY_MELTS        — wallet pays alice/carol invoice (burns ecash → LN)
+#   - ACTIVITY_BOLT12_MINTS — wallet mints via bolt12 offer (cln-cdk only;
+#                             requires mint NUT-25 support)
+#   - ACTIVITY_BOLT12_MELTS — wallet melts by paying an alice offer (cln-cdk only)
 #
 # Requires:
 #   - docker socket mounted (for exec into wallet + cln containers)
@@ -34,6 +37,8 @@ ACTIVITY_OUTBOUND=${ACTIVITY_OUTBOUND:-4}
 ACTIVITY_MINTS=${ACTIVITY_MINTS:-5}
 ACTIVITY_SWAPS=${ACTIVITY_SWAPS:-4}
 ACTIVITY_MELTS=${ACTIVITY_MELTS:-3}
+ACTIVITY_BOLT12_MINTS=${ACTIVITY_BOLT12_MINTS:-0}
+ACTIVITY_BOLT12_MELTS=${ACTIVITY_BOLT12_MELTS:-0}
 ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
 
 log() { printf '[activity] %s\n' "$*"; }
@@ -79,12 +84,15 @@ lnd_carol() {
     fi
 }
 
+# Random 10-digit ID for unique labels.
+rand_id() { od -An -N4 -tu4 < /dev/urandom | tr -cd '0-9'; }
+
 # Produce an invoice on a CLN node; echoes bolt11.
 # CLN `invoice` needs msat + unique label + description.
 cln_invoice() {
     node="$1"; amt_sat="$2"
     msat=$((amt_sat * 1000))
-    label="activity-${node}-$(od -An -N4 -tu4 < /dev/urandom | tr -cd '0-9')"
+    label="activity-${node}-$(rand_id)"
     cln "$node" invoice "$msat" "$label" "e2e-activity" | jq -r '.bolt11'
 }
 
@@ -126,9 +134,11 @@ any_pay() {
     esac
 }
 
-# Run cashu CLI inside the wallet container.
+# Run cdk-cli inside the wallet container. MINT_URL is passed per-subcommand
+# (cdk-cli tracks mints in its local DB; the first `mint <url>` call registers
+# the mint so subsequent commands resolve it).
 wallet() {
-    docker exec -i "${CONFIG_NAME}-wallet" poetry run cashu -h "$MINT_URL" "$@"
+    docker exec -i "${CONFIG_NAME}-wallet" cdk-cli "$@"
 }
 
 rand_sat() {
@@ -183,8 +193,8 @@ if [ "$ACTIVITY_OUTBOUND" -gt 0 ]; then
 fi
 
 # ───── 4. Wallet mints ─────
-# Same pattern as LND script: run `cashu invoice` backgrounded, extract the
-# bolt11 from stdout, pay it from alice, wait for cashu to redeem.
+# Run `cdk-cli mint` backgrounded, extract the bolt11 from stdout, pay it
+# from alice, wait for cdk-cli to redeem the proofs.
 if [ "$ACTIVITY_MINTS" -gt 0 ]; then
     log "wallet mints: $ACTIVITY_MINTS"
     i=0
@@ -192,7 +202,7 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
         amt=$(rand_sat 100 2000)
         tmp=$(mktemp)
 
-        wallet invoice "$amt" > "$tmp" 2>&1 &
+        wallet mint "$MINT_URL" "$amt" > "$tmp" 2>&1 &
         pid=$!
 
         bolt11=""
@@ -205,7 +215,7 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
         done
 
         if [ -z "$bolt11" ]; then
-            log "  mint ${amt} FAILED (no invoice in cashu output)"
+            log "  mint ${amt} FAILED (no invoice in cdk-cli output)"
             sed 's/^/    /' "$tmp" || true
             kill "$pid" 2>/dev/null || true
             rm -f "$tmp"
@@ -232,7 +242,7 @@ if [ "$ACTIVITY_SWAPS" -gt 0 ]; then
     i=0
     while [ "$i" -lt "$ACTIVITY_SWAPS" ]; do
         amt=$(rand_sat 10 100)
-        token=$(wallet send "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
+        token=$(wallet send -a "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
         if [ -z "$token" ]; then
             log "  swap ${amt} FAILED (no token)"
             i=$((i + 1))
@@ -255,7 +265,7 @@ if [ "$ACTIVITY_MELTS" -gt 0 ]; then
         amt=$(rand_sat 50 500)
         if [ $((i % 2)) -eq 0 ]; then dst=alice; else dst=carol; fi
         inv=$(any_invoice "$dst" "$amt")
-        if wallet pay "$inv" >/dev/null 2>&1; then
+        if wallet melt --mint-url "$MINT_URL" --invoice "$inv" >/dev/null 2>&1; then
             log "  melt ${amt} sat → ${dst}"
         else
             log "  melt ${amt} FAILED"
@@ -264,7 +274,84 @@ if [ "$ACTIVITY_MELTS" -gt 0 ]; then
     done
 fi
 
-# ───── 7. Mempool fill — varied-fee unconfirmed self-sends ─────
+# ───── 7. Wallet bolt12 mints ─────
+# cdk-cli with --method bolt12 asks the mint for a bolt12 offer. Alice's CLN
+# resolves the offer to a fresh bolt12 invoice via fetchinvoice (bolt12
+# requires an invoice_request handshake over LN onion messages), then pays it.
+# cdk-cli's NUT-17 subscription redeems proofs on arrival.
+#
+# cdk-cli keeps its websocket open indefinitely after a bolt12 mint rather
+# than exiting on proof receipt — we sleep briefly to let redemption land,
+# then SIGTERM. Proofs are already stored locally before we kill.
+if [ "$ACTIVITY_BOLT12_MINTS" -gt 0 ]; then
+    log "wallet bolt12 mints: $ACTIVITY_BOLT12_MINTS"
+    i=0
+    while [ "$i" -lt "$ACTIVITY_BOLT12_MINTS" ]; do
+        amt=$(rand_sat 100 2000)
+        tmp=$(mktemp)
+        cleanup() { kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; rm -f "$tmp"; }
+
+        wallet mint "$MINT_URL" "$amt" --method bolt12 > "$tmp" 2>&1 &
+        pid=$!
+
+        offer=""
+        tries=30
+        while [ "$tries" -gt 0 ]; do
+            offer=$(grep -oE 'lno1[0-9a-z]+' "$tmp" 2>/dev/null | head -1 || true)
+            [ -n "$offer" ] && break
+            sleep 0.5
+            tries=$((tries - 1))
+        done
+
+        if [ -z "$offer" ]; then
+            log "  bolt12 mint ${amt} FAILED (no offer)"
+            cleanup; i=$((i + 1)); continue
+        fi
+
+        msat=$((amt * 1000))
+        invoice=$(cln alice fetchinvoice "offer=$offer" "amount_msat=$msat" 2>/dev/null | jq -r '.invoice // ""')
+        if [ -z "$invoice" ] || [ "$invoice" = "null" ]; then
+            log "  bolt12 mint ${amt} FAILED (fetchinvoice)"
+            cleanup; i=$((i + 1)); continue
+        fi
+
+        if cln_pay alice "$invoice"; then
+            sleep 2
+            log "  bolt12 mint ${amt} sat"
+        else
+            log "  bolt12 mint ${amt} FAILED (pay)"
+        fi
+        cleanup
+        i=$((i + 1))
+    done
+fi
+
+# ───── 8. Wallet bolt12 melts ─────
+# Alice creates an offer (bolt12 string starting `lno1…`). Wallet sends the
+# offer to the mint, which fetchinvoice's it to alice, pays the resulting
+# bolt11, then tells the wallet to burn proofs.
+if [ "$ACTIVITY_BOLT12_MELTS" -gt 0 ]; then
+    log "wallet bolt12 melts: $ACTIVITY_BOLT12_MELTS"
+    i=0
+    while [ "$i" -lt "$ACTIVITY_BOLT12_MELTS" ]; do
+        amt=$(rand_sat 50 500)
+        label="bolt12-melt-$(rand_id)"
+        offer=$(cln alice offer "${amt}sat" "$label" 2>/dev/null | jq -r '.bolt12 // ""')
+        if [ -z "$offer" ] || [ "$offer" = "null" ]; then
+            log "  bolt12 melt ${amt} FAILED (offer creation)"
+            i=$((i + 1))
+            continue
+        fi
+        if wallet melt --mint-url "$MINT_URL" --method bolt12 --offer "$offer" >/dev/null 2>&1; then
+            log "  bolt12 melt ${amt} sat → alice"
+        else
+            log "  bolt12 melt ${amt} FAILED"
+        fi
+        i=$((i + 1))
+    done
+fi
+
+# ───── 9. Mempool fill — varied-fee unconfirmed self-sends ─────
 # Broadcasts ACTIVITY_MEMPOOL_PER_RATE × 6 tiny txs at fee rates
 # {1, 2, 5, 10, 25, 50} sat/vB and leaves them unconfirmed, so the UI's
 # fee / mempool / block-template panels have realistic input. Reuses the
@@ -288,4 +375,4 @@ if [ "$ACTIVITY_MEMPOOL_PER_RATE" -gt 0 ]; then
     done
 fi
 
-log "DONE — forwards=$ACTIVITY_FORWARDS inbound=$ACTIVITY_INBOUND outbound=$ACTIVITY_OUTBOUND mints=$ACTIVITY_MINTS swaps=$ACTIVITY_SWAPS melts=$ACTIVITY_MELTS mempool=$((ACTIVITY_MEMPOOL_PER_RATE * 6))"
+log "DONE — forwards=$ACTIVITY_FORWARDS inbound=$ACTIVITY_INBOUND outbound=$ACTIVITY_OUTBOUND mints=$ACTIVITY_MINTS swaps=$ACTIVITY_SWAPS melts=$ACTIVITY_MELTS bolt12_mints=$ACTIVITY_BOLT12_MINTS bolt12_melts=$ACTIVITY_BOLT12_MELTS mempool=$((ACTIVITY_MEMPOOL_PER_RATE * 6))"
