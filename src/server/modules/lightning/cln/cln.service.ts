@@ -275,8 +275,15 @@ export class ClnService {
 	}
 
 	public mapClnRequest(request: any): LightningRequest {
-		const payee = request?.payee;
-		const destination = payee ? (Buffer.isBuffer(payee) ? payee.toString('hex') : String(payee)) : null;
+		// BOLT11 decode populates `payee`; BOLT12 offers populate
+		// `offer_issuer_id` (the node the offer requests payment to) instead.
+		// Both identify the issuing node for backend-detection purposes, so
+		// we fall back rather than returning null on bolt12 offers. Field
+		// verified via `lightning-cli decode` on CLN 25.12 — the bolt12
+		// offer payload carries offer_issuer_id (not offer_node_id as older
+		// CLN docs sometimes claim).
+		const node_id = request?.payee ?? request?.offer_issuer_id;
+		const destination = node_id ? (Buffer.isBuffer(node_id) ? node_id.toString('hex') : String(node_id)) : null;
 		return {
 			type: mapRequestType(request?.item_type),
 			valid: request?.valid ?? false,

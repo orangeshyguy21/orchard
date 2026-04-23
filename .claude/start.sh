@@ -16,6 +16,7 @@ case "$STACK" in
   cln-cdk-postgres)     STACK_PORT=3323 ;;
   lnd-cdk-sqlite)       STACK_PORT=3324 ;;
   cln-nutshell-postgres) STACK_PORT=3325 ;;
+  fake-cdk-postgres)    STACK_PORT=3326 ;;
   *) STACK_PORT=3322 ;;
 esac
 

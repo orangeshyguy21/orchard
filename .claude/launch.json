@@ -42,6 +42,15 @@
                 "ORCHARD_STACK=cln-nutshell-postgres .claude/start.sh run start:client -- --port 3330"
             ],
             "port": 3330
+        },
+        {
+            "name": "client-fake-cdk-postgres",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=fake-cdk-postgres .claude/start.sh run start:client -- --port 3331"
+            ],
+            "port": 3331
         }
     ]
 }
