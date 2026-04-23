@@ -39,7 +39,10 @@ import {CONFIGS, type ConfigInfo} from './helpers/config';
  * spec silently skipping, it probably needs a `{tag: '@canary'}` annotation
  * on the test (or describe).
  *
- * Setup projects have no grep — their auth-flow tests always run.
+ * Setup projects use the same grep as their real project, so auth-flow
+ * tests are tag-scoped too. The happy-path `authenticate + persist state`
+ * test is tagged `@all` so it runs on every stack; the fresh-stack
+ * validation cases are tagged `@canary` so they only run on canary.
  */
 
 const CANARY = 'lnd-nutshell-sqlite';
@@ -55,8 +58,17 @@ function grepFor(config: ConfigInfo): RegExp {
 	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
 }
 
+/** Port is appended to project names (e.g. `cln-nutshell-postgres:3325`) so
+ *  the list reporter surfaces which Orchard instance each test ran against.
+ *  `getConfig()` strips the suffix when resolving back to a `ConfigInfo`. */
+function portFromUrl(url: string): string {
+	const m = /:(\d+)/.exec(url);
+	return m ? m[1] : '';
+}
+
 function projectsFor(config: ConfigInfo): Project[] {
-	const setupName = `setup-${config.name}`;
+	const projectName = `${config.name}:${portFromUrl(config.orchardUrl)}`;
+	const setupName = `setup-${projectName}`;
 	const baseURL = config.orchardUrl;
 	const storageState = `e2e/.auth/${config.name}.json`;
 	return [
@@ -64,10 +76,11 @@ function projectsFor(config: ConfigInfo): Project[] {
 			name: setupName,
 			testDir: './setup',
 			testMatch: /.*\.setup\.ts$/,
+			grep: grepFor(config),
 			use: {...devices['Desktop Chrome'], baseURL},
 		},
 		{
-			name: config.name,
+			name: projectName,
 			testDir: './specs',
 			testMatch: /.*\.spec\.ts$/,
 			dependencies: [setupName],

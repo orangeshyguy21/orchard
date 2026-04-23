@@ -106,11 +106,16 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 	},
 };
 
+/** Accepts bare config names (`cln-nutshell-postgres`) or Playwright project
+ *  names with a port suffix (`cln-nutshell-postgres:3325`) — the suffix is
+ *  decorative, added in `playwright.config.ts` so the list reporter surfaces
+ *  which Orchard instance a test ran against. */
 export function getConfig(name: string): ConfigInfo {
-	if (!(name in CONFIGS)) {
+	const bareName = name.replace(/:\d+$/, '');
+	if (!(bareName in CONFIGS)) {
 		throw new Error(`Unknown config "${name}" — valid: ${Object.keys(CONFIGS).join(', ')}`);
 	}
-	return CONFIGS[name as ConfigName];
+	return CONFIGS[bareName as ConfigName];
 }
 
 /** Resolve the docker container name for a named LN node in this config. */

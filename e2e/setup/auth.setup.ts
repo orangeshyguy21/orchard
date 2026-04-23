@@ -16,8 +16,9 @@ import {loginViaUi} from '../helpers/auth';
 
 const isSetupForm = (page: Page) => /\/auth\/setup/.test(page.url());
 
-/** Setup projects are named `setup-<config>`; strip the prefix to recover the config name. */
-const configNameFromProject = (testInfo: TestInfo) => testInfo.project.name.replace(/^setup-/, '');
+/** Setup projects are named `setup-<config>:<port>`; strip both the prefix
+ *  and the decorative port suffix to recover the bare config name. */
+const configNameFromProject = (testInfo: TestInfo) => testInfo.project.name.replace(/^setup-/, '').replace(/:\d+$/, '');
 const configFromProject = (testInfo: TestInfo) => getConfig(configNameFromProject(testInfo));
 const statePathForProject = (testInfo: TestInfo) => `e2e/.auth/${configNameFromProject(testInfo)}.json`;
 
@@ -26,7 +27,7 @@ async function gotoAuth(page: Page): Promise<void> {
 	await expect(page).toHaveURL(/\/auth/);
 }
 
-setup.describe('setup form validation (fresh stacks only)', () => {
+setup.describe('setup form validation (fresh stacks only)', {tag: '@canary'}, () => {
 	setup.beforeEach(async ({page}) => {
 		await gotoAuth(page);
 		setup.skip(!isSetupForm(page), 'stack already initialized');
@@ -64,7 +65,7 @@ setup.describe('setup form validation (fresh stacks only)', () => {
 	});
 });
 
-setup('authenticate + persist state', async ({page}, testInfo) => {
+setup('authenticate + persist state', {tag: '@all'}, async ({page}, testInfo) => {
 	await loginViaUi(page, configFromProject(testInfo));
 	await page.context().storageState({path: statePathForProject(testInfo)});
 });
