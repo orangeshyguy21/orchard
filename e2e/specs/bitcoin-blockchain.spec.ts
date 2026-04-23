@@ -6,29 +6,26 @@
  *
  * Covers the states reachable from a healthy regtest fixture:
  *   - structure: template column, divider, confirmed column, chained half
- *   - arrow indicator sits at `.next-block` position (regtest template has
- *     `feerate_low === 0`, which hits the early-return in `getTargetBlock()`
- *     and keeps `target_block = 0`)
+ *   - arrow indicator class matches the `getTargetBlock()` decision computed
+ *     from the same GraphQL payloads the component consumes (differential
+ *     against `bitcoin_block_template` + `bitcoin_transaction_fee_estimates`)
  *   - confirmed block shows height, byte size, and tx count that match
  *     `bitcoin-cli getblockcount` / `getblock <hash> 2`
  *   - template block renders with the "~10 min" next-block label
- *   - mempool is empty → no `.block-half.block-template` gradient appears
- *     to the left of the template block (mempool_depth snapshot === 0)
+ *   - mempool half-block presence matches the `mempool_depth` snapshot
+ *     (empty mempool → no `.block-half.block-template` gradient)
  *
  * States the component supports but this spec does NOT cover:
- *   - `.pool-block` indicator position (needs `txfee_estimate.feerate` below
- *     a non-zero `block_template.feerate_low` — regtest emits 0)
- *   - mempool-backed-up gradient half-block (needs >4 MWU of mempool at
- *     mount time — regtest mempool stays empty between blocks)
  *   - tip-change flash animation (hard to observe deterministically)
  *   - target-change emission (the `<mat-select>` that would emit it is
  *     commented out in the template)
  */
 
-import {test, expect, type Locator, type Page} from '@playwright/test';
+import {test, expect, type Locator, type Page, type Response} from '@playwright/test';
 
 import {getConfig} from '../helpers/config';
 import {btc} from '../helpers/backend';
+import {matchGql} from '../helpers/gql-intercept';
 
 /** Mirrors the client's `dataBytes` pipe — used to assert size rendering
  *  against `bitcoin-cli` output in the same unit the UI picks. */
@@ -81,11 +78,28 @@ test.describe('bitcoin-blockchain panel', {tag: '@canary'}, () => {
 		await expect(panel.locator('.blockchain-blocks-container')).toBeVisible();
 	});
 
-	test('arrow indicator sits at the `.next-block` position on regtest', async ({page}) => {
-		// On regtest bitcoind emits `block_template.feerate_low = 0`, which
-		// hits the early-return in `getTargetBlock()` and keeps target_block
-		// at 0. The indicator therefore gets the `.next-block` class, not
-		// `.pool-block` — hovering above the template block.
+	test('arrow indicator class matches `getTargetBlock()` applied to the live payloads', async ({page}) => {
+		// Mirrors the component's `getTargetBlock()` against the same GraphQL
+		// payloads it consumes: `.pool-block` iff both feerate values are
+		// truthy AND estimate ≤ template-low; `.next-block` otherwise. A
+		// reload is the simplest way to rehydrate both queries after the
+		// beforeEach navigation has already settled.
+		const readJsonAfterResponse = async (name: string): Promise<Record<string, unknown>> => {
+			const response: Response = await page.waitForResponse(matchGql(name));
+			const body = (await response.json()) as {data: Record<string, unknown>};
+			return body.data;
+		};
+		const [, templateData, feeData] = await Promise.all([
+			page.reload(),
+			readJsonAfterResponse('bitcoin_block_template'),
+			readJsonAfterResponse('bitcoin_transaction_fee_estimates'),
+		]);
+		const template = templateData.bitcoin_block_template as {feerate_low?: number | null} | null;
+		const estimates = feeData.bitcoin_transaction_fee_estimates as Array<{feerate?: number | null}> | null;
+		const feerate = estimates?.[0]?.feerate ?? 0;
+		const feerate_low = template?.feerate_low ?? 0;
+		const is_pool_block = !!feerate && !!feerate_low && feerate <= feerate_low;
+
 		const panel = await openBlockchain(page);
 		const indicator = panel.locator('.block-indicator');
 		// The outer `.block-indicator` is a zero-width absolutely-positioned
@@ -93,8 +107,13 @@ test.describe('bitcoin-blockchain panel', {tag: '@canary'}, () => {
 		// real dimensions and is the visually meaningful marker.
 		await expect(indicator).toBeAttached();
 		await expect(indicator.locator('mat-icon')).toBeVisible();
-		await expect(indicator).toHaveClass(/\bnext-block\b/);
-		await expect(indicator).not.toHaveClass(/\bpool-block\b/);
+		if (is_pool_block) {
+			await expect(indicator).toHaveClass(/\bpool-block\b/);
+			await expect(indicator).not.toHaveClass(/\bnext-block\b/);
+		} else {
+			await expect(indicator).toHaveClass(/\bnext-block\b/);
+			await expect(indicator).not.toHaveClass(/\bpool-block\b/);
+		}
 	});
 
 	test('confirmed block header shows the tip height from bitcoind', async ({page}, testInfo) => {

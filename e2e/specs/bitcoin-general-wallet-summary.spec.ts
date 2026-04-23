@@ -160,6 +160,32 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@all'}, (
 		await expect(row.locator('orc-graphic-oracle-icon')).toHaveCount(0);
 		await expect(row.getByText('Hot wallet value', {exact: true})).toHaveCount(0);
 	});
+
+	/* *******************************************************
+		Child component: orc-bitcoin-general-utxo-stack
+
+		The collapsed-row UTXO glyph. `asset_class` computed emits
+		`utxo-asset-btc` for sat/msat/btc units, `utxo-asset-tether` for the
+		USDT group_key, else `utxo-asset-unknown`. Coin-array length caps at
+		`limiter - 1` (9) with an overflow chip when `coins > limiter`.
+
+		Regtest stacks fund a single address on the LN wallet → `coins === 1`,
+		so the overflow-chip and multi-glyph branches are not reachable live
+		from this parent. Coverage here asserts the colour-class contract and
+		that the parent piped unit/group_key correctly into the child.
+
+		See bitcoin-general-wallet-summary.md → "Child components →
+		orc-bitcoin-general-utxo-stack" for the full enumeration.
+	******************************************************** */
+
+	test('bitcoin row utxo-stack carries the utxo-asset-btc class', async ({page}) => {
+		const card = await openWalletSummary(page);
+		const row = bitcoinRow(card);
+		// The child renders `utxo-asset-btc` on its primary coin glyph when
+		// unit is sat/msat/btc AND no usdt group_key. This is the stable
+		// hook verifying the parent passed `unit: 'sat'` through correctly.
+		await expect(row.locator('orc-bitcoin-general-utxo-stack .utxo-asset-btc').first()).toBeVisible();
+	});
 });
 
 test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@tapd'}, () => {
@@ -225,6 +251,17 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 		const tapd_row = card.locator('.wallet-summary-card').nth(1).locator('mat-card-content');
 		const amount_text = (await tapd_row.locator('.orc-amount').first().textContent())?.trim() ?? '';
 		expect(digitsFrom(amount_text)).toBe(expected);
+	});
+
+	test('taproot asset row utxo-stack carries the utxo-asset-unknown class', async ({page}) => {
+		// TESTASSET has no registered group_key in `taproot_group_keys`, so
+		// the utxo-stack child falls to `utxo-asset-unknown` for both the
+		// primary glyph and the overflow marker. This is the stable hook
+		// verifying the parent passed `unit: 'TESTASSET'` + a non-usdt
+		// group_key through to the child.
+		const card = await openWalletSummary(page);
+		const tapd_row = card.locator('.wallet-summary-card').nth(1).locator('mat-card-content');
+		await expect(tapd_row.locator('orc-bitcoin-general-utxo-stack .utxo-asset-unknown').first()).toBeVisible();
 	});
 
 	test('expanded taproot row shows metadata card: group_key truncation, asset_type, asset_version', async ({page}) => {

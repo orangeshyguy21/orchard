@@ -10,13 +10,19 @@
  *     LN backend's own `getinfo` (via lncli / lightning-cli)
  *   - URI block: chip renders when the LN node advertises at least one URI;
  *     skipped when the node returns an empty uris[]
+ *   - URI chip click → `NetworkConnectionComponent` dialog: opens, title +
+ *     subtitle + full URI + Close-button dismissal are all asserted end-to-end
+ *     (QR internals are left to the child's unit spec)
  *   - interaction: projected "Open Lightning" FAB navigates to /lightning
  *
  * States the component supports but this spec does NOT cover:
  *   - `offline` (requires `docker pause <ln-container>`, disruptive to siblings)
  *   - `syncing` (can't be synthesized on regtest without a synthetic stall)
- *   - URI chip click → `NetworkConnectionComponent` dialog (QR render is async
- *     and the image rasterisation is timing-sensitive)
+ *   - QR style slider + image toggle inside the dialog (raster timing-sensitive —
+ *     covered in `network-connection.component.spec.ts`)
+ *   - `data.type === 'tor'` in the dialog (regtest never emits onion URIs)
+ *   - `status === 'active'` / `'warning'` dialog subtitles (regtest probe always
+ *     returns `'inactive'` for the private-range container IP)
  *   - empty-URIs branch (LND/CLN always emit at least one address on regtest)
  *   - `backend === false` (every e2e config feeds its mint off this LN node)
  * See `lightning-general-info.md` for the full state machine.
@@ -49,6 +55,16 @@ async function openInfoCard(page: Page): Promise<Locator> {
 	const card = page.locator('orc-lightning-general-info');
 	await expect(card).toBeVisible();
 	return card;
+}
+
+/** Clicks the first URI chip and waits for `NetworkConnectionComponent` to mount.
+ *  The dialog renders in the CDK overlay container (page-scoped, not card-scoped). */
+async function openUriDialog(page: Page): Promise<Locator> {
+	const card = await openInfoCard(page);
+	await card.locator('mat-chip').first().click();
+	const dialog = page.locator('orc-network-connection');
+	await expect(dialog).toBeVisible();
+	return dialog;
 }
 
 /** Strip everything except digits. Handles "2", "12 Peers", etc. */
@@ -139,5 +155,77 @@ test.describe('lightning-general-info card', {tag: '@all'}, () => {
 		const card = await openInfoCard(page);
 		await card.getByRole('button', {name: /open lightning/i}).click();
 		await expect(page).toHaveURL(/\/lightning$/);
+	});
+
+	/* *******************************************************
+		Child component: NetworkConnectionComponent (URI dialog)
+
+		Opened by `onUriClick()` when the user clicks a URI chip. The chip
+		renders on any regtest backend that emits at least one URI (LND and
+		CLN both do — LND via `getinfo.uris[]`, CLN via server-built
+		`id@address:port`), so these tests run on every config.
+
+		Data contract the parent hands to the child (asserted per-field below):
+		  - section: literal 'lightning'     → title reads "Lightning …"
+		  - type:    'clearnet' (regtest)    → title reads "… clearnet connection"
+		  - uri:     full pubkey@address     → shown untruncated in .mega-string
+		  - status:  'inactive' (regtest)    → subtitle reads "Not reachable"
+
+		See lightning-general-info.md → "Child components → orc-network-connection"
+		for the full enumeration of child states.
+	******************************************************** */
+
+	test('clicking a URI chip opens the NetworkConnection dialog', async ({page}) => {
+		// The chip exists on any backend that rendered at least one URI. The
+		// openInfoCard + chip visibility both run auto-waiting, so a missing
+		// chip would fail here rather than at `click()`.
+		const card = await openInfoCard(page);
+		await expect(card.locator('mat-chip').first()).toBeVisible();
+		await card.locator('mat-chip').first().click();
+		await expect(page.locator('orc-network-connection')).toBeVisible();
+	});
+
+	test('dialog title reflects data.section + data.type ("Lightning clearnet connection" on regtest)', async ({page}) => {
+		// `section` is the literal string 'lightning' (passed by the parent);
+		// `type` is derived by `transformUri()` — `.onion` ⇒ 'tor', else
+		// 'clearnet'. Regtest URIs are all private-range IPv4, never .onion,
+		// so the type is deterministically 'clearnet' on every e2e config.
+		const dialog = await openUriDialog(page);
+		await expect(dialog.getByText('Lightning clearnet connection', {exact: true})).toBeVisible();
+	});
+
+	test('dialog URI row shows the full untruncated pubkey@address', async ({page}, testInfo) => {
+		// The chip label truncates pubkey to 11 chars (see component.ts:71),
+		// but the dialog's .mega-string must show the full URI so the user
+		// can scan/copy the whole thing. LND-only: on CLN the server builds
+		// the URI from pieces, and `ln.getInfo` doesn't return a pre-formatted
+		// uris[] to diff against.
+		const config = getConfig(testInfo.project.name);
+		test.skip(config.ln === 'cln', 'CLN getinfo does not expose a pre-formatted uris[] — server-built, not differentially assertable');
+		const info = ln.getInfo(config) as LnGetInfo;
+		test.skip(!info.uris || info.uris.length === 0, 'LN node advertises no URIs — nothing to open');
+
+		const dialog = await openUriDialog(page);
+		await expect(dialog.locator('.mega-string')).toHaveText(info.uris![0]);
+	});
+
+	test('dialog subtitle reflects the reachability probe ("Not reachable" on regtest private IPs)', async ({page}) => {
+		// `status_message` is a computed on `data.status`. The parent looks up
+		// `connections_status_map.get(address)` where `address = uri.split('@')[1]`.
+		// On regtest the LN container's host is a private-range 172.26.0.x IP;
+		// the server's port-reachability probe rejects private ranges with
+		// `reachable: false` ⇒ status `'inactive'` ⇒ subtitle `'Not reachable'`.
+		// This is the default live state on every e2e stack.
+		const dialog = await openUriDialog(page);
+		await expect(dialog.getByText('Not reachable', {exact: true})).toBeVisible();
+	});
+
+	test('dialog closes when the Close button is clicked', async ({page}) => {
+		// `Close` is `<button mat-button mat-dialog-close>Close</button>` — the
+		// `mat-dialog-close` directive dismisses via MatDialogRef, which
+		// detaches the component so `orc-network-connection` unmounts.
+		const dialog = await openUriDialog(page);
+		await dialog.getByRole('button', {name: 'Close', exact: true}).click();
+		await expect(page.locator('orc-network-connection')).toHaveCount(0);
 	});
 });

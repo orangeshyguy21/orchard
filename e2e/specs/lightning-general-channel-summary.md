@@ -94,7 +94,71 @@ Expand the same row with `bitcoin_oracle_enabled === false` (or `true` but `bitc
 
 ### 9. Summary-type menu — open
 
-Clicking the menu-trigger button opens a two-item menu rendered in the CDK overlay (outside the card). Both items always render; the current selection shows a `check` icon and the `active-summary-option` highlight. Verified: menu opens with `check All channels` + `Active channels` labels.
+Clicking the menu-trigger button opens a two-item menu rendered in the CDK overlay (outside the card). Both items always render; the current selection shows a `check` icon and the `active-summary-option` highlight. Verified: menu opens with `check All channels` + `Active channels` labels. Full enumeration of the menu as a child component lives under [Child components → `mat-menu`](#mat-menu-summary-type-selector).
+
+## Child components
+
+This card hosts several nested components, each with its own rendered state. The parent-owned `mat-menu` is the only *interaction-bearing* child; the rest are presentational graphics driven by the row data the parent builds.
+
+### `mat-menu` (summary-type selector)
+
+Defined inline at the bottom of the template ([lightning-general-channel-summary.component.html:158-167](../../src/client/modules/lightning/modules/lightning-general/components/lightning-general-channel-summary/lightning-general-channel-summary.component.html#L158)). Rendered in the CDK overlay container on trigger click, not inside the card.
+
+- **Template ID**: `#channel_summary_menu`, positioned `yPosition="below" xPosition="before"`.
+- **Items** (two, always both rendered):
+  - `All channels` → click fires `summary_type.set('open')`.
+  - `Active channels` → click fires `summary_type.set('active')`.
+- **Currently-selected item** (template gate `summary_type() === 'open'` / `'active'`):
+  - Button carries the CSS class `active-summary-option` (for styling highlight).
+  - The `<mat-icon>` on the left renders `check`; on the unselected item the icon renders empty text (still present in the DOM, but with no glyph).
+- **Close behaviour**: standard MatMenu — click any item fires its `(click)` and closes; click backdrop or `Esc` closes without mutating `summary_type`.
+- **Data contract with parent**: none via inputs. The menu reads `summary_type()` directly inside its template bindings.
+
+Verified live on the regtest fixture: opening the menu shows `check All channels` + `Active channels`; the second item has no leading glyph and no `active-summary-option` class.
+
+### `orc-lightning-general-channel` (flow graphic)
+
+Source: [lightning-general-channel.component.ts](../../src/client/modules/lightning/modules/lightning-general/components/lightning-general-channel/lightning-general-channel.component.ts). Presentational — no interactions, no outputs, no services beyond `ConfigService` for the taproot group-key lookup.
+
+- **Inputs** (all driven by the row):
+  - `size` — `string` default `'4rem'`, bound to the host `--ring-size` CSS var.
+  - `display_mode` — `'large' | 'small'`; parent sets `'large'` when `device_type === 'desktop'`, else `'small'`. Controls the `truncated` computed (`small` ⇒ `true`).
+  - `capacity`, `remote`, `local` — the row's sums.
+  - `unit` — the row's unit string (`'sat'`, asset name).
+  - `group_key` — optional; used for taproot-asset class matching.
+- **Reachable states** (via the `channel_class` computed):
+  - `unit === 'sat' | 'msat' | 'btc'` → `channel-btc` (orange/red split arcs — the sat row on every regtest fixture).
+  - `group_key === constants.taproot_group_keys.usdt` → `channel-tether` (USDT-specific teal-green fill).
+  - Anything else → `channel-unknown` (neutral grey split — the state the `TESTASSET` row lands in on `lnd-cdk-sqlite`).
+- **Percentage bars**: `percentage_local` + `percentage_remote` compute `local / capacity * 100` and `remote / capacity * 100`. On the live regtest fixture both are ~50% (10,000,809 local / 9,992,251 remote out of 20,000,000 capacity — the small asymmetry is channel-funding fees paid by the opener).
+- **Display mode difference**: `'large'` renders the full segment labels + numeric chips; `'small'` (`truncated: true`) drops the text labels to keep the graphic compact. The e2e preview on tablet (756px) sees `'small'`, as does mobile.
+
+### `orc-graphic-asset` (per-row asset glyph)
+
+Source: [graphic-asset.component.ts](../../src/client/modules/graphic/components/graphic-asset/graphic-asset.component.ts). Presentational.
+
+- **Inputs**: `unit` (required), `height` (default `'2rem'`; parent passes `'2.5rem'`), `custody` (parent passes `'lightning'`), `group_key` (from the row).
+- **Reachable states**:
+  - `unit_class` computed: `graphic-asset-btc` for `sat/msat/btc`, `graphic-asset-usd`, `graphic-asset-eur`, or `graphic-asset-unknown` for anything else (including `TESTASSET`).
+  - `unit_icon` computed: `currency_bitcoin` for `sat/msat/btc`, `attach_money` for `usd`, `euro` for `eur`, else `question_mark`.
+  - `custody_icon`: always `bolt` when rendered by this parent (it passes `custody="lightning"`).
+  - `supported_taproot_asset` / `taproot_asset_image`: true + image lookup for USDT (via `taproot_group_keys.usdt` config); false otherwise. Used to swap the inner glyph to the tether SVG when the asset matches.
+- **No state transitions** — this component does not mutate; it re-renders when inputs change.
+
+### `orc-chart-graphic-bars` (sparkline per count card)
+
+Source: [chart-graphic-bars.component.ts](../../src/client/modules/chart/components/chart-graphic-bars/chart-graphic-bars.component.ts). Three instances per expanded row (Channels / Active / Closed; the Average card does NOT wrap one).
+
+- **Input**: `bars: number[]`.
+- **`relative_bars` computed**: sorts descending, normalises to `value / max * 100`. Empty-input edge case returns `[]` (no bars rendered — exactly what the Closed card shows on a fresh regtest stack).
+- **Reachable states** (verified live on the regtest sat row, `channel_sizes = [10000000, 10000000]`):
+  - populated: two bars at `100, 100` (max normalisation produces both at full height).
+  - empty: zero bars (closed-channels sparkline on a fresh stack).
+- **No interaction** — the overlay sparkline is rendered at 33% opacity behind the count glyphs; it's visual density, not data a user interacts with.
+
+### `orc-high-card` · `orc-primary-card` · `orc-graphic-oracle-icon`
+
+Pure layout wrappers / single-glyph components. Four `orc-high-card`s wrap the count tiles (Channels / Active / Closed / Average). The Oracle block wraps content in an `orc-primary-card` and uses `orc-graphic-oracle-icon` for its header glyph. None of these have reachable state branches worth enumerating; they are specced here for completeness because a future `@if`/`@else` on the wrappers would widen the state surface.
 
 ## Unhappy / edge cases
 
@@ -143,8 +207,9 @@ Clicking the menu-trigger button opens a two-item menu rendered in the CDK overl
 | click `.channel-summary-row` | `matRipple` surface, whole row | `toggleExpanded(row.unit)` — flips `expanded[unit]`, slides the details region open/closed, rotates the chevron |
 | click chevron button | `mat-icon-button` inside the row | bubbles to the row's click (button has `tabindex="-1"`); toggles expand |
 | click menu-trigger | `button[matMenuTriggerFor]` | opens `mat-menu` in the CDK overlay with two items |
-| click "All channels" in menu | `mat-menu-item` | `summary_type.set('open')`, menu closes, label + rows rebuild |
-| click "Active channels" in menu | `mat-menu-item` | `summary_type.set('active')`, menu closes, label + rows rebuild |
+| click "All channels" *(inside `mat-menu`)* | `mat-menu-item` | `summary_type.set('open')`, menu closes, label + rows rebuild, item gains `active-summary-option` + `check` icon |
+| click "Active channels" *(inside `mat-menu`)* | `mat-menu-item` | `summary_type.set('active')`, menu closes, label + rows rebuild, item gains `active-summary-option` + `check` icon |
+| click backdrop / `Esc` *(inside `mat-menu`)* | CDK overlay backdrop | menu closes without mutating `summary_type` |
 | hover row | `matRipple` | ripple — no state change |
 
 Nothing navigates.

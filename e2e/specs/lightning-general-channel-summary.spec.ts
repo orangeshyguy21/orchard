@@ -200,6 +200,95 @@ test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
 		await expect(trigger).toHaveText(/Active channels/);
 	});
 
+	/* *******************************************************
+		Child component: mat-menu (summary-type selector)
+
+		The menu is declared inline in the parent's template but renders via
+		MatMenu into the CDK overlay on trigger click. Items are static — two
+		always render. The current selection carries `active-summary-option`
+		and a `check` mat-icon; the other item has the icon element but no
+		glyph text.
+
+		See lightning-general-channel-summary.md → "Child components → mat-menu"
+		for the full contract. Tests here assert: both items always present,
+		selection indicator flips, backdrop-click dismissal is non-mutating.
+	******************************************************** */
+
+	test('menu opens with both "All channels" and "Active channels" items', async ({page}) => {
+		const card = await openSummary(page);
+		await card.locator('button[aria-haspopup="menu"]').click();
+		// Both items always render — the current selection is only indicated
+		// by class + check icon, not by omission.
+		await expect(page.getByRole('menuitem', {name: /All channels/})).toBeVisible();
+		await expect(page.getByRole('menuitem', {name: /Active channels/})).toBeVisible();
+	});
+
+	test('menu: the currently-selected item carries the active-summary-option class and a check icon', async ({page}) => {
+		const card = await openSummary(page);
+		await card.locator('button[aria-haspopup="menu"]').click();
+
+		// Default `summary_type === 'open'` → "All channels" is selected.
+		const all_item = page.getByRole('menuitem', {name: /All channels/});
+		const active_item = page.getByRole('menuitem', {name: /Active channels/});
+
+		await expect(all_item).toHaveClass(/\bactive-summary-option\b/);
+		await expect(active_item).not.toHaveClass(/\bactive-summary-option\b/);
+
+		// The `<mat-icon>` inside the selected button renders `check`; the
+		// template emits an empty string for the other one, so the icon element
+		// exists but has no glyph text.
+		await expect(all_item.locator('mat-icon')).toHaveText('check');
+		await expect(active_item.locator('mat-icon')).toHaveText('');
+	});
+
+	test('menu: selection indicator swaps after clicking "Active channels"', async ({page}) => {
+		const card = await openSummary(page);
+		await card.locator('button[aria-haspopup="menu"]').click();
+		await page.getByRole('menuitem', {name: /Active channels/}).click();
+
+		// Re-open the menu and verify the check/highlight moved to the Active item.
+		await card.locator('button[aria-haspopup="menu"]').click();
+		const all_item = page.getByRole('menuitem', {name: /All channels/});
+		const active_item = page.getByRole('menuitem', {name: /Active channels/});
+
+		await expect(active_item).toHaveClass(/\bactive-summary-option\b/);
+		await expect(all_item).not.toHaveClass(/\bactive-summary-option\b/);
+		await expect(active_item.locator('mat-icon')).toHaveText('check');
+		await expect(all_item.locator('mat-icon')).toHaveText('');
+	});
+
+	test('menu: clicking backdrop closes without mutating summary_type', async ({page}) => {
+		const card = await openSummary(page);
+		const trigger = card.locator('button[aria-haspopup="menu"]');
+		await trigger.click();
+
+		// MatMenu uses a transparent CDK backdrop; pressing Escape is the
+		// portable dismissal that works regardless of backdrop hit-testing.
+		await expect(page.getByRole('menuitem', {name: /All channels/})).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('menuitem', {name: /All channels/})).toHaveCount(0);
+
+		// Label stayed at the default "All channels" — no mutation.
+		await expect(trigger).toHaveText(/All channels/);
+	});
+
+	/* *******************************************************
+		Child component: orc-lightning-general-channel (flow graphic)
+
+		Presentational — no interactions. Renders one instance per row.
+		The sat row applies `channel-btc` (orange/red split); the TESTASSET
+		row applies `channel-unknown` (no registered group_key → neutral).
+	******************************************************** */
+
+	test('sat row flow graphic carries the channel-btc class (unit === sat)', async ({page}) => {
+		const card = await openSummary(page);
+		const row = satRow(card);
+		// `channel_class` computed emits `channel-btc` for sat/msat/btc. Class
+		// binding is on a child of `orc-lightning-general-channel`, not the
+		// host — the component's template roots an element with this class.
+		await expect(row.locator('orc-lightning-general-channel .channel-btc').first()).toBeVisible();
+	});
+
 	test('oracle card is not rendered when the bitcoin oracle is off (default)', async ({page}) => {
 		// `bitcoin_oracle_enabled` is false on every regtest fixture (no oracle
 		// seeded). The `@if (row.is_bitcoin && bitcoin_oracle_enabled())` gate

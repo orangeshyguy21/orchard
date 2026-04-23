@@ -120,6 +120,92 @@ Not exercised live — would require a mint whose `tweaked_group_key` equals `co
 
 Bitcoin + ≥1 taproot asset. Each row's expanded state is independent (keyed by `unit`), but note the collision caveat under Unhappy cases.
 
+## Child components
+
+This card hosts six nested components. Three (`orc-graphic-asset`, `orc-chart-graphic-bars`, `orc-graphic-oracle-icon`) are shared with other spec'd cards and get brief treatment below; full enumeration of their reachable states lives in [lightning-general-channel-summary.md → Child components](./lightning-general-channel-summary.md#child-components). The bespoke children are `orc-bitcoin-general-utxo-stack` and `orc-error-resolve`.
+
+### `orc-bitcoin-general-utxo-stack` (collapsed-row UTXO glyph)
+
+Source: [bitcoin-general-utxo-stack.component.ts](../../src/client/modules/bitcoin/modules/bitcoin-general/components/bitcoin-general-utxo-stack/bitcoin-general-utxo-stack.component.ts). Presentational — no interactions. Renders a cluster of stacked coin glyphs on the right side of the collapsed row that visually encodes the UTXO count without needing expansion.
+
+#### Parent → child data contract
+
+Parent binds in the template ([bitcoin-general-wallet-summary.component.html:35-41](../../src/client/modules/bitcoin/modules/bitcoin-general/components/bitcoin-general-wallet-summary/bitcoin-general-wallet-summary.component.html#L35)):
+
+| Field | Source | Value for this parent |
+|---|---|---|
+| `unit` | `row.unit` | `'sat'` for the bitcoin row; the asset's genesis name (`'TESTASSET'`, `'USDT'`, etc.) for tapass rows |
+| `coins` | `row.utxos` | Count of non-zero addresses for bitcoin row; count of source assets folded into the group for tapass rows |
+| `group_key` | `row.group_key` | `undefined` for bitcoin row; `tweaked_group_key` or `asset_genesis.asset_id` for tapass rows |
+
+#### Child inputs / computed
+
+- `unit` (required), `coins` (required), `group_key` (optional).
+- `limiter = 10` — hard cap on how many coin glyphs render before the overflow marker takes over.
+- `asset_class` computed: `utxo-asset-tether` when `group_key === constants.taproot_group_keys.usdt`; else `utxo-asset-btc` for `sat/msat/btc` units; else `utxo-asset-unknown`.
+- `overflow_class` computed: `utxo-overflow-tether` / `utxo-overflow-btc` / `utxo-overflow-unknown` under the same rules.
+- `coin_array` computed: `Array.from({length: Math.min(coins - 1, limiter - 1)})` — yields `[0…n]` where `n` is capped at `limiter - 1`. Used as the `@for` source for stacked coins behind the "front" glyph.
+- `stack_min_width` computed: `coin_array.length * 0.5 + 2 + (coins > limiter ? 1.5 : 0)` rem — reserves horizontal space so the stack doesn't cause layout shift when the overflow marker appears.
+
+#### Reachable states (verified live on `lnd-nutshell-sqlite` + overrides)
+
+| `coins` | Rendered output |
+|---|---|
+| `0` | `coin_array` is `[-1]`-length which becomes empty; nothing renders. (Row itself is usually suppressed upstream for `utxos === 0` on the bitcoin row, but the child is defensive.) |
+| `1` | One primary coin glyph only (`coin_array` empty). Live state on the current fixture (single address funded). |
+| `2`–`10` | Primary glyph + `coins - 1` stacked glyphs behind it. `stack_min_width` grows linearly with count. |
+| `>10` | Primary glyph + 9 stacked glyphs (capped by `limiter - 1`) + an **overflow marker** glyph (UT·XO text chip) in the `overflow_*` colour class. Reserved width includes the extra 1.5 rem. Verified live via `coins: () => 15` override → 11 rendered DOM elements + the overflow chip. |
+
+#### Asset-class variants
+
+- `sat` / `msat` / `btc` → `utxo-asset-btc` (orange fill). Live on every stack.
+- `group_key === usdt_group_key` → `utxo-asset-tether` (teal). Unreachable on regtest (no USDT issuance).
+- Anything else → `utxo-asset-unknown` (neutral grey). Live on `lnd-cdk-sqlite` for the `TESTASSET` row.
+
+### `orc-error-resolve` (fallback row content on error)
+
+Source: [error-resolve.component.ts](../../src/client/modules/error/components/error-resolve/error-resolve.component.ts). Rendered by this parent inside the `@if (row.error)` branch of the row template, passing the first element of `errors_lightning` or `errors_taproot_assets` depending on row type.
+
+#### Parent → child data contract
+
+Two `@Input()`s (classic `@Input` decorator, not signal-input):
+
+| Field | Source | Value |
+|---|---|---|
+| `error` | `errors_lightning()[0]` for bitcoin rows / `errors_taproot_assets()[0]` for tapass rows | An `OrchardError` with `code: number` and `message: string` |
+| `mode` | literal | `"small"` — drives a compact chip layout (vs `"default"` full-card layout) |
+
+#### Reachable states
+
+The child has a static map of error codes → human titles/descriptions ([error-resolve.component.ts:35-76](../../src/client/modules/error/components/error-resolve/error-resolve.component.ts#L35)). Relevant to this parent:
+
+- `30001` LIGHTNING RPC ERROR — when `errors_lightning` contains an LN RPC failure. Covers the whole bitcoin row's left side.
+- `30002` LIGHTNING RPC ACTION ERROR — when an LN action (wallet balance call) fails.
+- `60001` TAPROOT ASSETS RPC ERROR — flips every tapass row into error mode.
+- `60002` TAPROOT ASSETS RPC ACTION ERROR — same.
+- **Unknown code fallback**: any code not in the map renders `'UNKNOWN ERROR'` as the title and `"{code} : {message}"` as the description — so an unmapped error is still actionable for the operator.
+
+Not exercised end-to-end from this parent (requires `docker pause <container>`, which breaks sibling specs). The error chip path is structurally verified by reading the branch; unit coverage for the code → message mapping lives in [`error-resolve.component.spec.ts`](../../src/client/modules/error/components/error-resolve/error-resolve.component.spec.ts).
+
+### `orc-graphic-asset` (row header glyph)
+
+Reused from the channel-summary card. For this parent:
+
+- `unit` ← `row.unit` (`'sat'` or asset genesis name).
+- `height` ← literal `'2.5rem'`.
+- `custody` ← literal `'hot'` → drives `custody_icon()` to `mode_heat` (a heat/flame glyph) — the visual marker that distinguishes the Hot Wallet tile's asset chip from the Lightning row's bolt-custody chip.
+- `group_key` ← `row.group_key` (undefined for bitcoin, tweaked group key for tapass).
+
+The key parent-specific detail: `custody === 'hot'` is unique to this card. Every other consumer of `orc-graphic-asset` passes `'lightning'` or leaves it null. A regression that swapped the custody input would be visually obvious but silent in property-binding-based selectors. See the full state machine in [lightning-general-channel-summary.md → Child components → `orc-graphic-asset`](./lightning-general-channel-summary.md#orc-graphic-asset-per-row-asset-glyph).
+
+### `orc-chart-graphic-bars` (UTXO-size sparkline)
+
+Reused. One instance per row, wrapped behind the expanded UTXO-count card at 33% opacity. Driven by `row.utxo_sizes`. Behaviour identical to the channel-summary card's sparkline — see that spec for the normalisation rules.
+
+### `orc-graphic-oracle-icon` (Oracle card glyph)
+
+Single-glyph presentational child, rendered only inside the bitcoin row's Oracle card when `enabled_oracle()` is true. No reachable state branches beyond the parent-passed `size` input. Not exercised on regtest (oracle off by default).
+
 ## Unhappy / edge cases
 
 - **Input changes after mount are ignored.** `init()` only runs in `ngOnInit`. If the parent later refreshes `lightning_accounts`, `taproot_assets`, `errors_*`, or oracle inputs, `rows` will NOT re-seed. Today the parent's dashboard queries resolve before mount and don't stream into this component, so this is invisible — but any refactor that feeds live subscriptions will silently stick on the first snapshot.
@@ -160,7 +246,7 @@ Bitcoin + ≥1 taproot asset. Each row's expanded state is independent (keyed by
 | click row | `mat-card-content.wallet-summary-row` | `toggleExpanded(row.unit)` — flips the row's entry in `expanded`; caret + details gain/lose `animation-expanded`. |
 | click caret | `button.orc-animation-rotate-toggle` | Click bubbles to the row's handler — identical effect to clicking the row body. |
 | hover row | `matRipple` | Material ripple animation only. No state change. |
-| click error chip | inside `orc-error-resolve` | Delegates to the error-resolve component's flow — not owned by this component. |
+| click error chip *(inside `orc-error-resolve`)* | child component root | Delegates to the error-resolve component's internal flow — this parent does not handle it. |
 
 ## Test fidelity hooks
 

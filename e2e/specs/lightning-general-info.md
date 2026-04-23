@@ -106,15 +106,111 @@ Node with mixed advertised addresses and not acting as a mint backend.
 
 ### 6. URI dialog (opened by clicking a chip)
 
-Rendered by [`NetworkConnectionComponent`](../../src/client/modules/network/components/network-connection/network-connection.component.ts), not by this component — but the click path originates in `onUriClick()` (`lightning-general-info.component.ts:81`).
+Clicking a chip calls `onUriClick(uri)` ([lightning-general-info.component.ts:81](../../src/client/modules/lightning/modules/lightning-general/components/lightning-general-info/lightning-general-info.component.ts#L81)), which rasterises a coloured-circle PNG from `lightning_info.color` (or `#000000` fallback) and opens `NetworkConnectionComponent`. See the dedicated **Child components → `orc-network-connection` (URI dialog)** section below for a full enumeration of reachable dialog states, interactions, and the parent-supplied data contract.
 
-- Title: `Lightning {type} connection` where `{type}` is `clearnet` or `tor`
-- Status subtitle: `Publicly reachable` / `Not reachable` / `API offline` / `Unknown status` (from `status_message` computed, keyed off the `connections_status_map` lookup for the chip's `host:port`)
-- URI row with `content_copy` button showing the full un-truncated pubkey@address
-- QR code with a **coloured circle** in the centre — PNG rasterised at 128 px from `lightning_info.color` via the private `createCirclePng()` helper (distinct from the Bitcoin card, which embeds a block-icon PNG)
-- Slider (QR module style) + toggle for showing the centre image
-- `Download` + `Close` actions
-- `name` field in the dialog data is the LN `alias`; `section` is `'lightning'`
+## Child components
+
+### `orc-network-connection` (URI dialog)
+
+Opened by `onUriClick(uri)` when the user clicks a URI chip. Rendered inside a `MatDialog` overlay. Same child component as the Bitcoin info card uses — the **difference is what the parent passes in**.
+
+- Source: [network-connection.component.ts](../../src/client/modules/network/components/network-connection/network-connection.component.ts) · [`.html`](../../src/client/modules/network/components/network-connection/network-connection.component.html)
+- Data type: [`NetworkConnection`](../../src/client/modules/network/types/network-connection.type.ts) — injected via `MAT_DIALOG_DATA`.
+
+#### Parent → child data contract
+
+The parent builds the `data` payload in `onUriClick` ([lightning-general-info.component.ts:84-94](../../src/client/modules/lightning/modules/lightning-general/components/lightning-general-info/lightning-general-info.component.ts#L84)):
+
+| Field | Source | Value for this parent |
+|---|---|---|
+| `uri` | `uri.uri` | Full `{pubkey}@{host}:{port}` — un-truncated, even when the chip label truncates pubkey to 11 chars |
+| `type` | `uri.type` | `'clearnet'` or `'tor'` — never `'insecure'`; `transformUri()` only emits these two |
+| `label` | `uri.label` | The truncated chip label (pubkey trimmed + optionally onion-shortened) — the child does not render it in this usage |
+| `image` | `await this.createCirclePng(lightning_info?.color ?? '#000000')` | PNG data-URI of a solid coloured circle, rasterised at 128 px from the **LN node's own `color` field**. Contrast with the Bitcoin parent which always passes a black block glyph |
+| `name` | `lightning_info?.alias` | e.g. `'orchard'` — drives the download filename (`{alias}_qr.png`) |
+| `section` | literal | `'lightning'` — rendered in the dialog title via `titlecase` → "Lightning …" |
+| `status` | `connections_status_map().get(address)` *(where `address = uri.uri.split('@')[1]`)* | `'active' \| 'inactive' \| 'warning' \| null`. **Important**: the lookup key is the address-only portion (`host:port`), not the full pubkey@address URI. This differs from the Bitcoin parent, whose URIs ARE just `host:port` and use the full `uri.uri` as the lookup key |
+| `device_type` | `device_type()` | `'desktop' \| 'tablet' \| 'mobile'` — controls QR size inside the child |
+
+#### Child inputs / outputs / signals
+
+- No `@Input()`s — all data arrives via `MAT_DIALOG_DATA`.
+- No `@Output()`s — dialog closure is handled by Material's `mat-dialog-close`.
+- `qr_canvas` — `viewChild<ElementRef>` that receives the `QRCodeStyling` DOM node in `ngAfterViewInit`.
+- `qr_options` — reactive `FormGroup` with two controls:
+  - `style` — `'0' | '1' | '2' | '3'` (slider, required, initial `'0'`)
+  - `image` — `boolean` (slide toggle, required, initial `true`)
+- `size` computed → `295` if `data.device_type === 'mobile'`, else `395`. Read at QR init time.
+- `status_message` computed → maps `data.status` to a human label: `'active'` → `"Publicly reachable"`, `'inactive'` → `"Not reachable"`, `'warning'` → `"API offline"`, anything else (including `null`) → `"Unknown status"`.
+
+#### Reachable child states
+
+The live regtest chip routes through this dialog with `status: 'inactive'` (the reachability probe blocks the private-range `172.26.0.5:9735`), so the **default state this parent produces is "Not reachable"**. The other status variants were captured via signal override on the same open dialog.
+
+##### `active` — publicly reachable
+
+- Title: `Lightning clearnet connection` / `Lightning tor connection`
+- Subtitle: `Publicly reachable`
+- Status icon tinted `orc-status-active-color` (green).
+- **Verified live** via override after mutating `connections` to flip the probe result.
+
+##### `inactive` — not reachable *(default live state on regtest)*
+
+- Subtitle: `Not reachable`
+- Status icon tinted `orc-status-inactive-color` (red).
+- This is the state the user sees on a fresh regtest stack: the LN node advertises a private-range IP (`172.26.0.x`), the reachability probe rejects private ranges, and the map entry becomes `'inactive'`.
+
+##### `warning` — API offline
+
+- Subtitle: `API offline`
+- Status icon tinted `orc-status-warning-color` (amber).
+- Reached when the reachability-probe backend itself is unavailable (not an LN node problem).
+
+##### `null` / unknown
+
+- Subtitle: `Unknown status`
+- Status icon falls to `orc-outline-color` (muted/grey) with a pulse animation (`!status()` branch in `network-connection-status.component.html:9`).
+- Reached when `connections_status_map` has no entry for the chip's `host:port` — e.g. fresh load before the first probe completes, or a URI whose address does not match any probe result.
+
+##### Type variant: `clearnet` vs `tor`
+
+- `data.type === 'tor'` — status component renders `svgIcon="tor"` (Tor onion glyph). Title reads `Lightning tor connection`. Chip-side label is shortened to `{first7chars}...onion:{port}` by `transformUri()`.
+- `data.type === 'clearnet'` — status component renders the `vpn_lock_2` Material icon (globe + padlock). Title reads `Lightning clearnet connection`. Chip-side label shows the full address.
+- `data.type === 'insecure'` — supported by the status child (`icon === 'language'`, bare globe) but unreachable from this parent. `transformUri()` only emits `'tor'` or `'clearnet'`.
+
+##### QR style slider (`qr_options.style`) and image toggle
+
+Four discrete styles (`'0'`–`'3'`), same as documented on the Bitcoin info card. See [bitcoin-general-info.md](./bitcoin-general-info.md#qr-style-slider-qr_optionsstyle) for the mapping — identical behaviour here, only the embedded image differs:
+
+- image `true` *(default)* — the centre 30% shows a solid coloured circle matching `lightning_info.color` (e.g. the LND default `#3399ff` blue on regtest), with `hideBackgroundDots: true` clearing QR modules behind it.
+- image `false` — circle disappears; QR re-renders with no centre graphic.
+
+##### Device size variants
+
+- `device_type === 'mobile'` → 295×295 QR, URI row capped to `max-width: 295px`.
+- `device_type === 'desktop'` or `'tablet'` → 395×395 QR.
+
+Changing `data.device_type` after the dialog is open does NOT resize the QR (set once in `ngAfterViewInit`).
+
+#### Child interactions
+
+| Gesture | Target | Result |
+|---|---|---|
+| copy URI | `orc-button-copy` wrapping `.mega-string` | copies the full pubkey@address `data.uri` (not the truncated label) to clipboard |
+| drag slider | `mat-slider[matSliderThumb]` bound to `qr_options.style` | fires `onStyleChange()` → `qr_code.update({dotsOptions, cornersSquareOptions})` |
+| toggle image | `mat-slide-toggle` bound to `qr_options.image` | fires `onImageChange($event)` → `qr_code.update({image: event.checked ? data.image : undefined})` |
+| click **Download** | `button[mat-stroked-button][mat-dialog-close]` | calls `qr_code.download({name: '{alias}_qr', extension: 'png'})` (e.g. `orchard_qr.png`) AND closes the dialog |
+| click **Close** | `button[mat-button][mat-dialog-close]` | closes the dialog via MatDialog overlay |
+| click backdrop / press `Esc` | Material overlay | default MatDialog dismissal |
+
+#### How the dialog closes + what propagates back
+
+The dialog returns no value to the parent. `onUriClick` does not `await` or subscribe to `afterClosed()`; the parent card is unaffected by dialog lifecycle. Reopening the same chip re-rasterises the circle PNG (every open is a fresh paint) and creates a new dialog instance.
+
+#### Further-nested children
+
+- `orc-network-connection-status` (title glyph) — pure presentational status icon. Three icon paths (`tor` svgIcon, `vpn_lock_2`, `language`); four status colour classes (`active`/`inactive`/`warning`/default-muted-with-pulse). Specced inline above.
+- `orc-button-copy` (URI copy) — shared copy-button component with its own ripple + transient "copied" confirmation. Not enumerated here.
 
 ## Unhappy / edge cases
 
@@ -149,6 +245,11 @@ Rendered by [`NetworkConnectionComponent`](../../src/client/modules/network/comp
 | click URI chip | `(click)` on `mat-chip` | calls `onUriClick()` → rasterises circle PNG → opens `NetworkConnectionComponent` dialog |
 | click projected "Open Lightning" button | parent FAB with `[routerLink]="['/lightning']"` | navigates to `/lightning` |
 | hover chip | `matRipple` on chip | ripple — no state change |
+| copy URI *(inside `orc-network-connection`)* | `orc-button-copy` | copies the full pubkey@address to clipboard |
+| drag QR style slider *(inside `orc-network-connection`)* | `mat-slider` | `onStyleChange()` swaps dot + corner-square types (`0`→`3`) |
+| toggle QR image *(inside `orc-network-connection`)* | `mat-slide-toggle` | `onImageChange()` adds/removes the coloured centre circle |
+| click Download *(inside `orc-network-connection`)* | stroked button | `qr_code.download({name: '{alias}_qr'})` + closes dialog |
+| click Close *(inside `orc-network-connection`)* | text button | closes dialog (no return value) |
 
 ## Test fidelity hooks
 
@@ -163,6 +264,16 @@ States worth adding to a new e2e spec:
 - `offline` rendering when `errors_lightning[]` is populated (pause the LN container)
 - `syncing` rendering (hard to trigger in regtest — would need a fixture that stalls graph sync)
 - empty-URIs branch: assert the absence of "No connections" text (regression guard — a future refactor that copies the bitcoin card's fallback would break this)
+
+Child-component states skipped by the current e2e spec (see `Child components → orc-network-connection`):
+
+- Dialog opens with `data.section === 'lightning'` → title reads `Lightning {type} connection`
+- Dialog opens with `data.status === 'inactive'` on regtest (the default) — visible red status glyph + `Not reachable` subtitle
+- `active` / `warning` / `null` `status_message` variants — require synthetic or differently-configured reachability probes
+- `data.type === 'tor'` svgIcon path — regtest never emits onion URIs, so the Tor title icon is only reachable via a non-regtest fixture
+- `data.name` → download filename (`{alias}_qr.png`) — easier to cover in the child's own unit spec than e2e
+- Centre-graphic colour contract: `createCirclePng(lightning_info.color)` renders a solid coloured circle matching the node's alias colour — regression guard if a future refactor swaps the image helper
+- `status` lookup key is the address-only portion (`uri.split('@')[1]`), not the full URI — worth a direct unit test against `onUriClick`, because silently switching to full-URI lookup would always return `null`
 
 ## Notes for implementers
 
