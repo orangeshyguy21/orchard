@@ -238,14 +238,23 @@ services:
     environment:
       - MINT_LISTEN_HOST=0.0.0.0
       - MINT_LISTEN_PORT=3338
+      # SAT via real LN; USD+EUR via FakeWallet (multi-unit without a real LSP).
       - MINT_BACKEND_BOLT11_SAT=CLNRestWallet
+      - MINT_BACKEND_BOLT11_USD=FakeWallet
+      - MINT_BACKEND_BOLT11_EUR=FakeWallet
+      - MINT_DERIVATION_PATH_LIST=["m/0'/0'/0'", "m/0'/2'/0'", "m/0'/3'/0'"]
       - MINT_CLNREST_URL=http://cln-orchard:3010
       - MINT_DATABASE=postgres://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
       - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
       - MINT_INPUT_FEE_PPK=100
       - MINT_INFO_NAME=e2e-nutshell
-      - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres
+      - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres (sat + usd + eur)
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+      # Disabled for e2e: activity-cln-topology + activity-fake hammer nutshell
+      # from the shared wallet container concurrently (sat on one, usd+eur on
+      # the other) and trip the default per-IP limit. Production deployments
+      # keep rate limiting on via the nutshell defaults.
+      - MINT_RATE_LIMIT=false
     # Rune is created at runtime by the setup service; read it from the
     # shared volume and inject as env var before poetry runs the mint.
     entrypoint: ["/bin/sh", "-c"]
@@ -355,4 +364,54 @@ services:
       - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-cln-topology.sh"]
+    restart: "no"
+
+  # One-shot: emits /shared/fake-bolt11s.json for activity-fake (usd+eur).
+  bolt11-gen:
+    build:
+      context: ../..
+      dockerfile: bolt11-gen.Dockerfile
+    container_name: cln-nutshell-postgres-bolt11-gen
+    networks: [net]
+    volumes:
+      - shared:/shared
+      - ../../scripts/gen-bolt11s.py:/gen-bolt11s.py:ro
+    entrypoint: ["python", "/gen-bolt11s.py", "/shared/fake-bolt11s.json"]
+    restart: "no"
+
+  # USD+EUR activity via nutshell FakeWallet. Runs alongside `activity`
+  # (which owns SAT + mempool); SAT and mempool counts pinned to 0 here
+  # to avoid double-dipping.
+  activity-fake:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-nutshell-postgres-activity-fake
+    networks: [net]
+    depends_on:
+      orchard:    { condition: service_healthy }
+      wallet:     { condition: service_started }
+      bolt11-gen: { condition: service_completed_successfully }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - shared:/shared:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CONFIG_NAME=cln-nutshell-postgres
+      - MINT_SERVICE=nutshell
+      - MINT_PORT=3338
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - ACTIVITY_MINTS_SAT=0
+      - ACTIVITY_SWAPS_SAT=0
+      - ACTIVITY_MELTS_SAT=0
+      - ACTIVITY_MINTS_USD=${ACTIVITY_MINTS_USD:-3}
+      - ACTIVITY_SWAPS_USD=${ACTIVITY_SWAPS_USD:-2}
+      - ACTIVITY_MELTS_USD=${ACTIVITY_MELTS_USD:-2}
+      - ACTIVITY_MINTS_EUR=${ACTIVITY_MINTS_EUR:-3}
+      - ACTIVITY_SWAPS_EUR=${ACTIVITY_SWAPS_EUR:-2}
+      - ACTIVITY_MELTS_EUR=${ACTIVITY_MELTS_EUR:-2}
+      - ACTIVITY_MEMPOOL_PER_RATE=0
+      - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
+    entrypoint: ["/scripts/activity-fake.sh"]
     restart: "no"

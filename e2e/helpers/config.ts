@@ -4,9 +4,9 @@
  * per-spec plumbing.
  */
 
-export type ConfigName = 'lnd-nutshell-sqlite' | 'lnd-cdk-sqlite' | 'cln-cdk-postgres' | 'cln-nutshell-postgres';
+export type ConfigName = 'lnd-nutshell-sqlite' | 'lnd-cdk-sqlite' | 'cln-cdk-postgres' | 'cln-nutshell-postgres' | 'fake-cdk-postgres';
 
-export type LnType = 'lnd' | 'cln';
+export type LnType = 'lnd' | 'cln' | 'fake';
 export type MintType = 'nutshell' | 'cdk';
 export type DbType = 'sqlite' | 'postgres';
 
@@ -22,28 +22,61 @@ const BASE = {
 	setupKey: 'orchard-e2e-admin-key',
 };
 
-export interface ConfigInfo {
+interface BaseConfigInfo {
 	name: ConfigName;
-	ln: LnType;
 	mint: MintType;
 	db: DbType;
 	tapd: boolean;
-	/** True if this stack can exercise bolt12 end-to-end (mint + LN backend
-	 *  both speak offers). */
+	/** Mint + LN backend both speak offers. */
 	bolt12: boolean;
-	/** Orchard URL (what Playwright `baseURL` resolves to). */
+	/** Stack ships a `compose.mainchain.yml` overlay. Gated on `E2E_MAINCHAIN=1`
+	 *  — the `@mainchain` grep tag is added under the same env, so specs
+	 *  skip cleanly on plain runs. */
+	mainchain: boolean;
 	orchardUrl: string;
-	/** Admin seed used by fund/config; matches SETUP_KEY in the config's env file. */
 	setupKey: string;
-	containers: {
-		bitcoind: string;
-		/** Orchard's managed LN node. */
-		lnOrchard: string;
-		/** External peer connected directly to orchard (inbound liquidity). */
-		lnAlice: string;
-		/** Far-side peer forcing routing through orchard (outbound / forwarding). */
-		lnFar: string;
-	};
+}
+
+/** Discriminated on `ln`: fake-LN stacks have no LN containers at all, so
+ *  accessing `lnOrchard` / `lnAlice` / `lnFar` on them is a compile error. */
+export type ConfigInfo =
+	| (BaseConfigInfo & {
+			ln: Exclude<LnType, 'fake'>;
+			containers: {
+				bitcoind: string;
+				/** Orchard's managed LN node. */
+				lnOrchard: string;
+				/** External peer connected directly to orchard (inbound liquidity). */
+				lnAlice: string;
+				/** Far-side peer forcing routing through orchard (outbound / forwarding). */
+				lnFar: string;
+			};
+	  })
+	| (BaseConfigInfo & {
+			ln: 'fake';
+			containers: {bitcoind: string};
+	  });
+
+/** The config-agnostic baseline stack. `@canary`-tagged tests run only here. */
+export const CANARY: ConfigName = 'lnd-nutshell-sqlite';
+
+/** Tags that match this stack's `grep`. Shared between `playwright.config.ts`
+ *  and reporters so the rules live in one place. */
+export function tagsFor(config: ConfigInfo): string[] {
+	const tags = ['@all', `@${config.ln}`, `@${config.mint}`, `@${config.db}`];
+	tags.push(config.ln === 'fake' ? '@no-lightning' : '@lightning');
+	if (config.name === CANARY) tags.push('@canary');
+	if (config.tapd) tags.push('@tapd');
+	if (config.bolt12) tags.push('@bolt12');
+	if (config.mainchain && process.env.E2E_MAINCHAIN === '1') tags.push('@mainchain');
+	return tags;
+}
+
+/** Port slice of a config's `orchardUrl` (the same suffix appended to
+ *  Playwright project names). Returns the digits only, no leading colon. */
+export function portOf(config: ConfigInfo): string {
+	const m = /:(\d+)/.exec(config.orchardUrl);
+	return m ? m[1] : '';
 }
 
 export const CONFIGS: Record<ConfigName, ConfigInfo> = {
@@ -54,6 +87,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		db: 'sqlite',
 		tapd: false,
 		bolt12: false,
+		mainchain: false,
 		orchardUrl: 'http://localhost:3322',
 		...BASE,
 		containers: {
@@ -70,6 +104,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		db: 'sqlite',
 		tapd: true,
 		bolt12: false,
+		mainchain: false,
 		orchardUrl: 'http://localhost:3324',
 		...BASE,
 		containers: {
@@ -86,6 +121,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		db: 'postgres',
 		tapd: false,
 		bolt12: true,
+		mainchain: false,
 		orchardUrl: 'http://localhost:3323',
 		...BASE,
 		containers: {
@@ -102,6 +138,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		db: 'postgres',
 		tapd: false,
 		bolt12: false,
+		mainchain: true,
 		orchardUrl: 'http://localhost:3325',
 		...BASE,
 		containers: {
@@ -109,6 +146,20 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'cln-nutshell-postgres-cln-orchard',
 			lnAlice: 'cln-nutshell-postgres-cln-alice',
 			lnFar: 'cln-nutshell-postgres-lnd-carol',
+		},
+	},
+	'fake-cdk-postgres': {
+		name: 'fake-cdk-postgres',
+		ln: 'fake',
+		mint: 'cdk',
+		db: 'postgres',
+		tapd: false,
+		bolt12: false,
+		mainchain: false,
+		orchardUrl: 'http://localhost:3326',
+		...BASE,
+		containers: {
+			bitcoind: 'fake-cdk-postgres-bitcoind',
 		},
 	},
 };
@@ -125,8 +176,13 @@ export function getConfig(name: string): ConfigInfo {
 	return CONFIGS[bareName as ConfigName];
 }
 
-/** Resolve the docker container name for a named LN node in this config. */
+/** Docker container name for a named LN node. Throws on fake-LN stacks —
+ *  callers should gate on `config.ln !== 'fake'` or rely on `@lnd`/`@cln`
+ *  grep to skip. */
 export function containerForNode(config: ConfigInfo, node: LnNode): string {
+	if (config.ln === 'fake') {
+		throw new Error(`no LN nodes on fake-LN stack ${config.name} — requested ${node}`);
+	}
 	switch (node) {
 		case 'orchard':
 			return config.containers.lnOrchard;
@@ -137,8 +193,9 @@ export function containerForNode(config: ConfigInfo, node: LnNode): string {
 	}
 }
 
-/** True if the named node runs LND. `far` is always LND regardless of config.ln. */
+/** True if the named node runs LND. `far` is always LND. */
 export function isLnd(config: ConfigInfo, node: LnNode): boolean {
+	if (config.ln === 'fake') return false;
 	if (node === 'far') return true;
 	return config.ln === 'lnd';
 }

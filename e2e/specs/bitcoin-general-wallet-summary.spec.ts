@@ -80,7 +80,8 @@ function digitsFrom(text: string): number {
 	return parseInt(text.replace(/\D/g, ''), 10);
 }
 
-test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@all'}, () => {
+/** Title renders on every stack — card presence + label is not LN-gated. */
+test.describe('bitcoin-general-wallet-summary — card', {tag: '@all'}, () => {
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
 	});
@@ -88,6 +89,18 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@all'}, (
 	test('renders the "Hot Wallet" title', async ({page}) => {
 		const card = await openWalletSummary(page);
 		await expect(card.getByText('Hot Wallet', {exact: true})).toBeVisible();
+	});
+});
+
+/** Bitcoin-row assertions below need an LN node's on-chain balance as
+ *  their source of truth (`ln.onchainSats(config)`). On `@no-lightning`
+ *  stacks (fake-cdk-postgres) the parent component renders the "Hot Wallet"
+ *  title but no `.wallet-summary-card` row, so every assertion in this
+ *  block would false-fail. `@lightning` scopes it to stacks with a real
+ *  LN backend. */
+test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightning'}, () => {
+	test.beforeEach(async ({page}) => {
+		await page.goto('/');
 	});
 
 	test('shows the bitcoin row with the sat asset glyph', async ({page}) => {

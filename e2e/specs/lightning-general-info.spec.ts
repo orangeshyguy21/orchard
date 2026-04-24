@@ -72,7 +72,7 @@ function digitsFrom(text: string): number {
 	return parseInt(text.replace(/\D/g, ''), 10);
 }
 
-test.describe('lightning-general-info card', {tag: '@all'}, () => {
+test.describe('lightning-general-info card', {tag: '@lightning'}, () => {
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
 	});

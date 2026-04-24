@@ -1,5 +1,5 @@
 import {defineConfig, devices, type Project} from '@playwright/test';
-import {CONFIGS, type ConfigInfo} from './helpers/config';
+import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
 
 /**
  * One project per Docker config. Stack must be running (`npm run e2e:up <config>`)
@@ -29,12 +29,25 @@ import {CONFIGS, type ConfigInfo} from './helpers/config';
  *
  *   @canary              — config-agnostic; runs only on the canary stack
  *                          (lnd-nutshell-sqlite). Most feature specs are @canary.
- *   @lnd / @cln          — LN-impl-sensitive; runs on stacks with matching ln
+ *   @lightning           — app-state: LIGHTNING_TYPE wired; runs on stacks
+ *                          with a real LN backend (config.ln !== 'fake')
+ *   @no-lightning        — app-state: Orchard booted without LIGHTNING_TYPE;
+ *                          runs on fake-cdk-postgres only
+ *   @lnd / @cln / @fake  — LN impl-name tags; runs on stacks with matching ln.
+ *                          Reserve for impl-specific behavior — most specs
+ *                          want @lightning / @no-lightning instead.
  *   @cdk / @nutshell     — mint-impl-sensitive; runs on stacks with matching mint
  *   @sqlite / @postgres  — DB-sensitive; runs on stacks with matching db
  *   @tapd                — requires tapd; runs only on lnd-cdk-sqlite
  *   @bolt12              — requires bolt12-capable mint + LN; runs only on
  *                          cln-cdk-postgres
+ *   @mainchain           — requires a real mainnet bitcoind wired into Orchard
+ *                          (oracle, mempool, block-tip, chain-sync code).
+ *                          Runs only on cln-nutshell-postgres, and only when
+ *                          the stack was brought up with `E2E_MAINCHAIN=1`
+ *                          (which loads `compose.mainchain.yml`). Without
+ *                          that env var the tag isn't added to grep and
+ *                          @mainchain specs skip cleanly.
  *   @all                 — genuine matrix coverage; runs on every stack
  *
  * Untagged tests match no project's grep → they don't run. If you see a new
@@ -47,30 +60,12 @@ import {CONFIGS, type ConfigInfo} from './helpers/config';
  * validation cases are tagged `@canary` so they only run on canary.
  */
 
-const CANARY = 'lnd-nutshell-sqlite';
-
-function tagsFor(config: ConfigInfo): string[] {
-	const tags = ['@all', `@${config.ln}`, `@${config.mint}`, `@${config.db}`];
-	if (config.name === CANARY) tags.push('@canary');
-	if (config.tapd) tags.push('@tapd');
-	if (config.bolt12) tags.push('@bolt12');
-	return tags;
-}
-
 function grepFor(config: ConfigInfo): RegExp {
 	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
 }
 
-/** Port is appended to project names (e.g. `cln-nutshell-postgres:3325`) so
- *  the list reporter surfaces which Orchard instance each test ran against.
- *  `getConfig()` strips the suffix when resolving back to a `ConfigInfo`. */
-function portFromUrl(url: string): string {
-	const m = /:(\d+)/.exec(url);
-	return m ? m[1] : '';
-}
-
 function projectsFor(config: ConfigInfo): Project[] {
-	const projectName = `${config.name}:${portFromUrl(config.orchardUrl)}`;
+	const projectName = `${config.name}:${portOf(config)}`;
 	const setupName = `setup-${projectName}`;
 	const baseURL = config.orchardUrl;
 	const storageState = `e2e/.auth/${config.name}.json`;
@@ -101,8 +96,8 @@ export default defineConfig({
 	retries: process.env.CI ? 1 : 0,
 	workers: 1,
 	reporter: process.env.CI
-		? [['list'], ['html', {open: 'never', outputFolder: './playwright-report'}]]
-		: [['list']],
+		? [['./helpers/summary-reporter.ts'], ['list'], ['html', {open: 'never', outputFolder: './playwright-report'}]]
+		: [['./helpers/summary-reporter.ts'], ['list']],
 	use: {
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',

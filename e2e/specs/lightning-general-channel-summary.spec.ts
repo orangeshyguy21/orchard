@@ -71,7 +71,7 @@ async function countCardValue(row: Locator, plural: string): Promise<number> {
 	return digitsFrom(value_text);
 }
 
-test.describe('lightning-general-channel-summary card', {tag: '@all'}, () => {
+test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () => {
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
 	});

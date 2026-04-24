@@ -1,0 +1,51 @@
+# ==============================================================
+# Orchard e2e — fake-cdk-postgres (cdk-mintd fake_wallet + postgres, no LN)
+# ==============================================================
+# Consumed by docker compose (variable substitution + env_file for orchard).
+# All values are regtest-only — DO NOT reuse in any real deployment.
+#
+# This stack has no Lightning node. cdk-mintd runs with fake_wallet serving
+# both sat and usd units; Orchard boots without a LIGHTNING_TYPE. Its job
+# is to exercise multi-unit mint flows (keysets, balances, mgmt RPC) and
+# Orchard UI surfaces that must tolerate an absent LN backend.
+
+# ----- bitcoind RPC -----
+BTC_RPC_USER=polar
+BTC_RPC_PASS=polar
+
+# ----- Postgres -----
+PG_USER=cashu
+PG_PASS=cashu
+PG_DB=cdk_fake
+
+# ----- Orchard server config -----
+SETUP_KEY=orchard-e2e-admin-key
+ADMIN_PASSWORD=orchard-e2e-admin-key
+LOG_LEVEL=debug
+BASE_PATH=api
+
+# ----- Orchard → Bitcoin -----
+BITCOIN_TYPE=core
+BITCOIN_RPC_HOST=bitcoind
+BITCOIN_RPC_PORT=18443
+BITCOIN_RPC_USER=polar
+BITCOIN_RPC_PASSWORD=polar
+
+# ----- Orchard → Lightning -----
+# Deliberately absent — this stack has no LN node. main.ts:61-64 only errors
+# on invalid LIGHTNING_TYPE values; omitting it is supported.
+
+# ----- Orchard → Mint (cdk-mintd, fake backend) -----
+MINT_TYPE=cdk
+MINT_API=http://cdk-mintd:3341
+# MINT_DATABASE (postgres URL) set inline in compose
+MINT_RPC_HOST=cdk-mintd
+MINT_RPC_PORT=8087
+MINT_RPC_MTLS=false
+
+# Throttler bumped above defaults so the Playwright suite's serial dashboard
+# navigations (6+ tests per spec across 5 stacks) do not trip the default
+# 20 req / 60s limit. Production stays on the defaults via
+# src/server/config/configuration.ts.
+THROTTLE_LIMIT=1000
+THROTTLE_TTL=60000
