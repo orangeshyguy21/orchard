@@ -69,11 +69,13 @@ export class ApiLightningAnalyticsService {
 
 			const positive_map = new Map<string, bigint>();
 			for (const p of agg_positive) {
-				positive_map.set(`${p.unit}:${p.date}`, BigInt(p.amount));
+				const key = `${p.unit}:${p.date}`;
+				positive_map.set(key, (positive_map.get(key) ?? BigInt(0)) + BigInt(p.amount));
 			}
 			const negative_map = new Map<string, bigint>();
 			for (const n of agg_negative) {
-				negative_map.set(`${n.unit}:${n.date}`, BigInt(n.amount));
+				const key = `${n.unit}:${n.date}`;
+				negative_map.set(key, (negative_map.get(key) ?? BigInt(0)) + BigInt(n.amount));
 			}
 
 			const all_keys = new Set([...Array.from(positive_map.keys()), ...Array.from(negative_map.keys())]);

@@ -47,11 +47,13 @@ export class MintAnalyticsService {
 
 			const issued_map = new Map<string, bigint>();
 			for (const i of agg_issued) {
-				issued_map.set(`${i.unit}:${i.date}`, BigInt(i.amount));
+				const key = `${i.unit}:${i.date}`;
+				issued_map.set(key, (issued_map.get(key) ?? BigInt(0)) + BigInt(i.amount));
 			}
 			const redeemed_map = new Map<string, bigint>();
 			for (const r of agg_redeemed) {
-				redeemed_map.set(`${r.unit}:${r.date}`, BigInt(r.amount));
+				const key = `${r.unit}:${r.date}`;
+				redeemed_map.set(key, (redeemed_map.get(key) ?? BigInt(0)) + BigInt(r.amount));
 			}
 
 			const all_keys = new Set([...Array.from(issued_map.keys()), ...Array.from(redeemed_map.keys())]);
