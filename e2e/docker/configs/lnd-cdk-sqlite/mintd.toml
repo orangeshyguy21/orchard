@@ -1,0 +1,29 @@
+# cdk-mintd config for Orchard e2e lnd-cdk-sqlite. Regtest only — mnemonic
+# is the famous BIP39 test seed, DO NOT reuse in any real deployment.
+
+[info]
+url = "http://cdk-mintd:3339"
+listen_host = "0.0.0.0"
+listen_port = 3339
+mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+input_fee_ppk = 100
+
+[mint_info]
+name = "e2e-cdk"
+description = "Orchard e2e lnd-cdk-sqlite"
+
+[database]
+engine = "sqlite"
+
+[ln]
+ln_backend = "lnd"
+
+[lnd]
+address = "https://lnd-orchard:10009"
+cert_file = "/lnd/tls.cert"
+macaroon_file = "/lnd/data/chain/bitcoin/regtest/admin.macaroon"
+
+[mint_management_rpc]
+enabled = true
+address = "0.0.0.0"
+port = 8086

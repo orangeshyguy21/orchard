@@ -186,6 +186,57 @@ describe('CashuMintAnalyticsService', () => {
 		});
 	});
 
+	/* *******************************************************
+		streamAndBucket final-batch boundary handling
+
+		Regression guard for a ~300-sat balance drift seen against a
+		nutshell mint: the streaming backfill defers rows at `last_time`
+		to the next batch so same-timestamp clusters don't split across
+		pages, but on the final batch (batch.length < BATCH_SIZE) there
+		is no next batch — without a final-batch exception those tail
+		rows at MAX(created_time) are silently dropped.
+	******************************************************** */
+
+	describe('streamAndBucket final-batch boundary handling', () => {
+		const HOUR = 3600;
+		const hour_aligned = 1750000800 - (1750000800 % HOUR);
+
+		beforeEach(() => {
+			(service as any).mint_pubkey = 'test-pubkey';
+		});
+
+		it('buckets records sharing MAX(created_time) when batch is final', async () => {
+			const current_hour = hour_aligned + HOUR;
+			const max_time = hour_aligned + 2700;
+			const proofs = [
+				...Array.from({length: 40}, (_, i) => ({
+					amount: 10,
+					keyset_id: 'ks1',
+					unit: 'sat',
+					created_time: hour_aligned + i,
+					state: 'SPENT',
+				})),
+				...Array.from({length: 5}, () => ({
+					amount: 61,
+					keyset_id: 'ks1',
+					unit: 'sat',
+					created_time: max_time,
+					state: 'SPENT',
+				})),
+			];
+
+			const inserter = jest.fn();
+			const fetcher = jest.fn().mockResolvedValueOnce(proofs).mockResolvedValueOnce([]);
+
+			await (service as any).streamAndBucket(current_hour, 'proofs', fetcher, inserter);
+
+			const inserted = inserter.mock.calls.flatMap((call: any[]) => call[1]);
+			expect(inserted).toHaveLength(45);
+			const total_amount = inserted.reduce((sum: number, r: any) => sum + r.amount, 0);
+			expect(total_amount).toBe(40 * 10 + 5 * 61);
+		});
+	});
+
 	it('getCachedAnalytics returns filtered results', async () => {
 		configService.get.mockImplementation((key: string) => {
 			if (key === 'cashu.pubkey') return 'test-pubkey';

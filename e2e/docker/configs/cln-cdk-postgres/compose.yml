@@ -1,0 +1,339 @@
+# Config: cln + cdk + postgres
+#
+# Topology:
+#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (cross-implementation cln↔lnd)
+#   cdk-mintd backend: cln-orchard (via unix socket at /cln/regtest/lightning-rpc)
+#   cdk-mintd database: postgres (shared instance)
+#   orchard mintdb target: postgres
+
+name: orchard-e2e-cln-cdk-postgres
+
+networks:
+  net:
+    name: orchard-e2e-cln-cdk-postgres
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  bitcoind-peer-data:
+  cln-orchard-data:
+  cln-alice-data:
+  lnd-carol-data:
+  postgres-data:
+  orchard-data:
+  wallet-data:
+  shared:
+
+x-cln-defaults: &cln-defaults
+  image: polarlightning/clightning:${CLN_VERSION}
+  restart: on-failure
+  networks: [net]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  healthcheck:
+    test: ["CMD-SHELL", "lightning-cli --lightning-dir=/home/clightning/.lightning --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-cdk-postgres-bitcoind
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "28443:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # Passive P2P peer. `-connect=bitcoind:18444` pins the topology — this node
+  # dials the primary and never auto-discovers. Gives the UI a real peer count
+  # (>0) and exercises mempool/block gossip without letting chains diverge.
+  # Never mines; not referenced as an RPC target by any LN node or setup script.
+  bitcoind-peer:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-cdk-postgres-bitcoind-peer
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - bitcoind-peer-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -fallbackfee=0.0002
+      -debug=0
+      -connect=bitcoind:18444
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bitcoin-cli -regtest
+          -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+          getpeerinfo | grep -q subver
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: cln-cdk-postgres-postgres
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "5532:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  cln-orchard:
+    <<: *cln-defaults
+    container_name: cln-cdk-postgres-cln-orchard
+    ports: ["21001:11001"]
+    volumes:
+      - cln-orchard-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-orchard:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=orchard
+      --log-level=info
+
+  cln-alice:
+    <<: *cln-defaults
+    container_name: cln-cdk-postgres-cln-alice
+    ports: ["21011:11001"]
+    volumes:
+      - cln-alice-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-alice:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=alice
+      --log-level=info
+
+  lnd-carol:
+    image: polarlightning/lnd:${LND_VERSION}
+    container_name: cln-cdk-postgres-lnd-carol
+    restart: on-failure
+    networks: [net]
+    ports: ["20029:10009"]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - lnd-carol-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=carol --externalip=lnd-carol
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-carol --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+    healthcheck:
+      test: ["CMD-SHELL", "lncli --lnddir=/home/lnd/.lnd --network=regtest getinfo > /dev/null"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  setup:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-cdk-postgres-setup
+    networks: [net]
+    depends_on:
+      bitcoind-peer: { condition: service_healthy }
+      cln-orchard:   { condition: service_healthy }
+      cln-alice:     { condition: service_healthy }
+      lnd-carol:     { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+      - shared:/shared
+    environment:
+      - CONFIG_NAME=cln-cdk-postgres
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
+      - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+      - CHANNEL_PUSH_MSAT=${CHANNEL_PUSH_MSAT:-5000000000}
+    entrypoint: ["/scripts/fund-cln-topology.sh"]
+    restart: "no"
+
+  cdk-mintd:
+    image: cashubtc/mintd:${CDK_MINTD_VERSION}
+    container_name: cln-cdk-postgres-cdk-mintd
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3339:3339"
+      - "8086:8086"
+    depends_on:
+      setup:    { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
+    volumes:
+      - cln-orchard-data:/cln:ro
+      - ./mintd.toml:/config.toml:ro
+    environment:
+      - CDK_MINTD_WORK_DIR=/tmp/cdk-mintd
+      - CDK_MINTD_DATABASE_URL=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    command: ["cdk-mintd", "--config", "/config.toml"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3339/v1/info || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../../../..
+      dockerfile: Dockerfile
+      target: final-mintdb-postgres
+    container_name: cln-cdk-postgres-orchard
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3323:3321"
+    depends_on:
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+      - cln-orchard-data:/certs/cln:ro
+    env_file:
+      - ./env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - LIGHTNING_CERT=/certs/cln/regtest/client.pem
+      - LIGHTNING_KEY=/certs/cln/regtest/client-key.pem
+      - LIGHTNING_CA=/certs/cln/regtest/ca.pem
+      - MINT_DATABASE=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # ──────────────────────────────────────────────────────────────
+  # Wallet container — Cashu client only.
+  #
+  # Role: exercises the mint under test (mint → swap → melt).
+  # Never runs a mint daemon, never publishes ports.
+  #
+  # Built from wallet.Dockerfile (cdk-cli from crates.io). Same
+  # binary works against cdk-mintd or nutshell-as-mint — only the
+  # depends_on target changes per config.
+  #
+  # Usage from scripts:
+  #   docker compose exec wallet cdk-cli mint $MINT_URL 100
+  #   docker compose exec wallet cdk-cli balance
+  #   docker compose exec wallet cdk-cli send 10
+  # ──────────────────────────────────────────────────────────────
+  wallet:
+    build:
+      context: ../..
+      dockerfile: wallet.Dockerfile
+      args:
+        CDK_CLI_VERSION: ${CDK_CLI_VERSION}
+    container_name: cln-cdk-postgres-wallet
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - wallet-data:/root/.cdk
+    environment:
+      - MINT_URL=http://cdk-mintd:3339
+    entrypoint: ["sleep", "infinity"]
+
+  # ──────────────────────────────────────────────────────────────
+  # Activity generator — one-shot. See activity-cln-topology.sh
+  # for the full category breakdown and env-var knobs.
+  # ──────────────────────────────────────────────────────────────
+  activity:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-cdk-postgres-activity
+    networks: [net]
+    depends_on:
+      orchard: { condition: service_healthy }
+      wallet:  { condition: service_started }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+    environment:
+      - CONFIG_NAME=cln-cdk-postgres
+      - MINT_SERVICE=cdk-mintd
+      - MINT_PORT=3339
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - ACTIVITY_FORWARDS=${ACTIVITY_FORWARDS:-6}
+      - ACTIVITY_INBOUND=${ACTIVITY_INBOUND:-4}
+      - ACTIVITY_OUTBOUND=${ACTIVITY_OUTBOUND:-4}
+      - ACTIVITY_MINTS=${ACTIVITY_MINTS:-5}
+      - ACTIVITY_SWAPS=${ACTIVITY_SWAPS:-4}
+      - ACTIVITY_MELTS=${ACTIVITY_MELTS:-3}
+      - ACTIVITY_BOLT12_MINTS=${ACTIVITY_BOLT12_MINTS:-3}
+      - ACTIVITY_BOLT12_MELTS=${ACTIVITY_BOLT12_MELTS:-2}
+      - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
+      - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
+    entrypoint: ["/scripts/activity-cln-topology.sh"]
+    restart: "no"

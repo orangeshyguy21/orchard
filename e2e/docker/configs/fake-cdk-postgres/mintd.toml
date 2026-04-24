@@ -1,0 +1,37 @@
+# cdk-mintd config for Orchard e2e fake-cdk-postgres. Regtest only — mnemonic
+# is the famous BIP39 test seed, DO NOT reuse in any real deployment.
+#
+# Multi-unit fake_wallet: cdk-mintd only supports one ln_backend at runtime,
+# but fake_wallet is the one backend that can serve multiple units in a
+# single mint. Sat + usd keysets are auto-provisioned from supported_units.
+# Delay values are zeroed so quotes auto-confirm immediately — there is no
+# real LN node behind this mint.
+
+[info]
+url = "http://cdk-mintd:3341"
+listen_host = "0.0.0.0"
+listen_port = 3341
+mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+input_fee_ppk = 100
+
+[mint_info]
+name = "e2e-cdk-fake"
+description = "Orchard e2e fake-cdk-postgres"
+
+[database]
+engine = "postgres"
+
+[ln]
+ln_backend = "fakewallet"
+
+[fake_wallet]
+supported_units = ["sat", "usd"]
+fee_percent = 0.0
+reserve_fee_min = 0
+min_delay_time = 0
+max_delay_time = 0
+
+[mint_management_rpc]
+enabled = true
+address = "0.0.0.0"
+port = 8087

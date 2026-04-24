@@ -1,0 +1,33 @@
+# cdk-mintd config for Orchard e2e cln-cdk-postgres. Regtest only — mnemonic
+# is the famous BIP39 test seed, DO NOT reuse in any real deployment.
+#
+# Note: database.postgres.url is also set via CDK_MINTD_DATABASE_URL env var
+# in compose. Env vars override this file per cdk-mintd precedence rules.
+
+[info]
+url = "http://cdk-mintd:3339"
+listen_host = "0.0.0.0"
+listen_port = 3339
+mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+[mint_info]
+name = "e2e-cdk"
+description = "Orchard e2e cln-cdk-postgres"
+
+[database]
+engine = "postgres"
+
+[database.postgres]
+url = "postgresql://cashu:cashu@postgres:5432/cdk"
+tls_mode = "disable"
+
+[ln]
+ln_backend = "cln"
+
+[cln]
+rpc_path = "/cln/regtest/lightning-rpc"
+
+[mint_management_rpc]
+enabled = true
+address = "0.0.0.0"
+port = 8086

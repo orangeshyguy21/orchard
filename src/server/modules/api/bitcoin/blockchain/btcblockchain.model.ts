@@ -50,7 +50,7 @@ export class OrchardBitcoinBlockchainInfo {
 	@Field(() => Boolean, {nullable: true, description: 'Whether automatic pruning is enabled'})
 	automatic_pruning: boolean;
 
-	@Field(() => Int, {nullable: true, description: 'Target size for pruning in bytes'})
+	@Field(() => Float, {nullable: true, description: 'Target size for pruning in bytes'})
 	prune_target_size: number;
 
 	@Field(() => [String], {description: 'Active network warnings'})

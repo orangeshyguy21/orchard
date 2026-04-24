@@ -8,10 +8,49 @@
             "port": 3322
         },
         {
-            "name": "client",
-            "runtimeExecutable": ".claude/start.sh",
-            "runtimeArgs": ["run", "start:client", "--", "--port", "4201"],
-            "port": 4201
+            "name": "client-lnd-nutshell-sqlite",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=lnd-nutshell-sqlite .claude/start.sh run start:client -- --port 3327"
+            ],
+            "port": 3327
+        },
+        {
+            "name": "client-cln-cdk-postgres",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=cln-cdk-postgres .claude/start.sh run start:client -- --port 3328"
+            ],
+            "port": 3328
+        },
+        {
+            "name": "client-lnd-cdk-sqlite",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=lnd-cdk-sqlite .claude/start.sh run start:client -- --port 3329"
+            ],
+            "port": 3329
+        },
+        {
+            "name": "client-cln-nutshell-postgres",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=cln-nutshell-postgres .claude/start.sh run start:client -- --port 3330"
+            ],
+            "port": 3330
+        },
+        {
+            "name": "client-fake-cdk-postgres",
+            "runtimeExecutable": "bash",
+            "runtimeArgs": [
+                "-c",
+                "ORCHARD_STACK=fake-cdk-postgres .claude/start.sh run start:client -- --port 3331"
+            ],
+            "port": 3331
         }
     ]
 }

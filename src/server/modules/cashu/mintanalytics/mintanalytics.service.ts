@@ -198,7 +198,20 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 		Stream Methods
 	******************************************************** */
 
-	/** Generic stream-and-bucket: uses cursor-based pagination to avoid OFFSET, buckets by hour, flushes metrics */
+	/**
+	 * Cursor-based streaming backfill. Pages through the mint DB ordered by `created_time`,
+	 * buckets records by hour, and flushes full hours to the inserter.
+	 *
+	 * Pagination avoids OFFSET by carrying `cursor = last_time` into the next query. To keep
+	 * same-timestamp clusters from being split across two pages, rows at `last_time` are
+	 * deferred to the next batch — except on the final batch (batch.length < BATCH_SIZE) or
+	 * when every record shares one timestamp, where they're included outright. Without the
+	 * final-batch exception the tail rows at MAX(created_time) are silently dropped.
+	 *
+	 * Progressive checkpoints are saved at the hour-aligned flush boundary so a resume never
+	 * starts mid-hour; a final checkpoint at current_hour advances past any buffered rows
+	 * skipped because hour >= current_hour.
+	 */
 	private async streamAndBucket<T extends {created_time: number}>(
 		current_hour: number,
 		data_type: CheckpointDataType,
@@ -218,9 +231,9 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			const first_time = batch[0].created_time;
 			const last_time = batch[batch.length - 1].created_time;
 			const all_same_timestamp = first_time === last_time;
-			const cutoff = all_same_timestamp ? Infinity : last_time;
+			const is_final_batch = batch.length < BATCH_SIZE;
+			const cutoff = all_same_timestamp || is_final_batch ? Infinity : last_time;
 
-			// Bucket records below the cutoff; boundary records are deferred to the next batch
 			for (const record of batch) {
 				if (record.created_time >= cutoff) continue;
 				const hour = DateTime.fromSeconds(record.created_time, {zone: 'UTC'}).startOf('hour').toUnixInteger();
@@ -230,7 +243,6 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			}
 
 			if (all_same_timestamp) {
-				// Edge case: entire batch shares one timestamp — advance cursor past it
 				if (batch.length >= BATCH_SIZE) {
 					this.logger.warn(`All ${batch.length} records in batch share timestamp ${last_time}, advancing cursor`);
 				}
@@ -239,7 +251,6 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				cursor = last_time;
 			}
 
-			// Safe boundary: only flush hours strictly before the earliest record in this batch
 			const safe_boundary = DateTime.fromSeconds(first_time, {zone: 'UTC'}).startOf('hour').toUnixInteger();
 			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
 			for (const hour of complete_hours.sort((a, b) => a - b)) {
@@ -248,10 +259,6 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 				this.recordProcessedHour(hour);
 			}
 
-			// Progressive checkpoint: resume from the flush boundary, not the raw cursor.
-			// `safe_boundary` is the earliest hour still in pending_bucket (everything before
-			// it has been written). Saving `cursor` (= last_time, mid-hour) would cause a
-			// resume to skip the buffered-but-unflushed hours between safe_boundary and cursor.
 			if (complete_hours.length > 0) {
 				await this.saveCheckpoint(data_type, safe_boundary);
 			}
@@ -261,10 +268,8 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
 		}
 
-		// Flush remaining complete hours (all < current_hour)
 		await this.flushBuckets(pending_bucket, inserter);
 
-		// Save final checkpoint so next run resumes from current hour
 		if (has_data) {
 			await this.saveCheckpoint(data_type, current_hour);
 		}

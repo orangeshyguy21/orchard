@@ -1,0 +1,53 @@
+# ==============================================================
+# Orchard e2e — cln-cdk-postgres (cln + cdk-mintd + postgres)
+# ==============================================================
+# Consumed by docker compose (variable substitution + env_file for orchard).
+# All values are regtest-only — DO NOT reuse in any real deployment.
+
+# ----- bitcoind RPC -----
+BTC_RPC_USER=polar
+BTC_RPC_PASS=polar
+
+# ----- Postgres -----
+PG_USER=cashu
+PG_PASS=cashu
+PG_DB=cdk
+
+# ----- Channel funding defaults -----
+CHANNEL_CAPACITY_SAT=10000000    # 0.1 BTC per channel
+CHANNEL_PUSH_SAT=5000000         # 50/50 initial split
+CHANNEL_PUSH_MSAT=5000000000     # CLN uses msat
+
+# ----- Orchard server config -----
+SETUP_KEY=orchard-e2e-admin-key
+ADMIN_PASSWORD=orchard-e2e-admin-key
+LOG_LEVEL=debug
+BASE_PATH=api
+
+# ----- Orchard → Bitcoin -----
+BITCOIN_TYPE=core
+BITCOIN_RPC_HOST=bitcoind
+BITCOIN_RPC_PORT=18443
+BITCOIN_RPC_USER=polar
+BITCOIN_RPC_PASSWORD=polar
+
+# ----- Orchard → Lightning (cln-orchard via gRPC) -----
+LIGHTNING_TYPE=cln
+LIGHTNING_RPC_HOST=cln-orchard
+LIGHTNING_RPC_PORT=11001
+# CLN gRPC uses mTLS with client.pem / client-key.pem / ca.pem — paths set inline in compose
+
+# ----- Orchard → Mint (cdk-mintd) -----
+MINT_TYPE=cdk
+MINT_API=http://cdk-mintd:3339
+# MINT_DATABASE (postgres URL) set inline in compose
+MINT_RPC_HOST=cdk-mintd
+MINT_RPC_PORT=8086
+MINT_RPC_MTLS=false
+
+# Throttler bumped above defaults so the Playwright suite's serial dashboard
+# navigations (6+ tests per spec across 4 stacks) do not trip the default
+# 20 req / 60s limit. Production stays on the defaults via
+# src/server/config/configuration.ts.
+THROTTLE_LIMIT=1000
+THROTTLE_TTL=60000

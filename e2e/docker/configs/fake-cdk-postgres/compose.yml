@@ -1,0 +1,227 @@
+# Config: fake + cdk + postgres
+#
+# Topology:
+#   no LN nodes                            — cdk-mintd runs with fake_wallet
+#   cdk-mintd backend: fake_wallet         — serves sat + usd units
+#   cdk-mintd database: postgres           — shared instance
+#   orchard mintdb target: postgres
+#   orchard LIGHTNING_TYPE: (absent)       — UI must tolerate no LN
+#
+# Disjoint port ranges (+1x00 from existing stacks) so this can run
+# concurrently with the four LN stacks.
+
+name: orchard-e2e-fake-cdk-postgres
+
+networks:
+  net:
+    name: orchard-e2e-fake-cdk-postgres
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  bitcoind-peer-data:
+  postgres-data:
+  orchard-data:
+  wallet-data:
+  shared:
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: fake-cdk-postgres-bitcoind
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "38443:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # Passive P2P peer. `-connect=bitcoind:18444` pins the topology — this node
+  # dials the primary and never auto-discovers. Gives the UI a real peer count
+  # (>0) and exercises mempool/block gossip without letting chains diverge.
+  bitcoind-peer:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: fake-cdk-postgres-bitcoind-peer
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - bitcoind-peer-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -fallbackfee=0.0002
+      -debug=0
+      -connect=bitcoind:18444
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bitcoin-cli -regtest
+          -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+          getpeerinfo | grep -q subver
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: fake-cdk-postgres-postgres
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "5732:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # No setup/funding service — there are no channels to fund.
+  # cdk-mintd depends directly on postgres + bitcoind being healthy.
+  cdk-mintd:
+    image: cashubtc/mintd:${CDK_MINTD_VERSION}
+    container_name: fake-cdk-postgres-cdk-mintd
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3341:3341"
+      - "8087:8087"
+    depends_on:
+      bitcoind: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+    volumes:
+      - ./mintd.toml:/config.toml:ro
+    environment:
+      - CDK_MINTD_WORK_DIR=/tmp/cdk-mintd
+      - CDK_MINTD_DATABASE_URL=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    command: ["cdk-mintd", "--config", "/config.toml"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3341/v1/info || exit 1"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../../../..
+      dockerfile: Dockerfile
+      target: final-mintdb-postgres
+    container_name: fake-cdk-postgres-orchard
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3326:3321"
+    depends_on:
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+    env_file:
+      - ./env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - MINT_DATABASE=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # Cashu client (cdk-cli); `--unit sat|usd` drives both keysets.
+  wallet:
+    build:
+      context: ../..
+      dockerfile: wallet.Dockerfile
+      args:
+        CDK_CLI_VERSION: ${CDK_CLI_VERSION}
+    container_name: fake-cdk-postgres-wallet
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - wallet-data:/root/.cdk
+    environment:
+      - MINT_URL=http://cdk-mintd:3341
+    entrypoint: ["sleep", "infinity"]
+
+  # One-shot: emits /shared/fake-bolt11s.json for activity-fake.
+  bolt11-gen:
+    build:
+      context: ../..
+      dockerfile: bolt11-gen.Dockerfile
+    container_name: fake-cdk-postgres-bolt11-gen
+    networks: [net]
+    volumes:
+      - shared:/shared
+      - ../../scripts/gen-bolt11s.py:/gen-bolt11s.py:ro
+    entrypoint: ["python", "/gen-bolt11s.py", "/shared/fake-bolt11s.json"]
+    restart: "no"
+
+  # One-shot. See activity-fake.sh for per-unit knobs.
+  activity:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: fake-cdk-postgres-activity
+    networks: [net]
+    depends_on:
+      orchard:    { condition: service_healthy }
+      wallet:     { condition: service_started }
+      bolt11-gen: { condition: service_completed_successfully }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - shared:/shared:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CONFIG_NAME=fake-cdk-postgres
+      - MINT_SERVICE=cdk-mintd
+      - MINT_PORT=3341
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - ACTIVITY_MINTS_SAT=${ACTIVITY_MINTS_SAT:-5}
+      - ACTIVITY_MINTS_USD=${ACTIVITY_MINTS_USD:-3}
+      - ACTIVITY_SWAPS_SAT=${ACTIVITY_SWAPS_SAT:-3}
+      - ACTIVITY_SWAPS_USD=${ACTIVITY_SWAPS_USD:-2}
+      - ACTIVITY_MELTS_SAT=${ACTIVITY_MELTS_SAT:-3}
+      - ACTIVITY_MELTS_USD=${ACTIVITY_MELTS_USD:-2}
+      - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
+      - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
+    entrypoint: ["/scripts/activity-fake.sh"]
+    restart: "no"

@@ -1,0 +1,71 @@
+# Overlay: adds a mainnet bitcoind and re-points Orchard's BITCOIN_RPC_* at
+# it, leaving the regtest bitcoind (used by LN/mint) untouched. Loaded only
+# when compose.sh sees E2E_MAINCHAIN=1. See e2e/README.md §"Mainchain overlay"
+# for the bootstrap flow and teardown semantics.
+
+volumes:
+  mainchain-data:
+
+services:
+  bitcoind-mainchain:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-nutshell-postgres-bitcoind-mainchain
+    restart: on-failure
+    networks: [net]
+    extra_hosts:
+      # Make host.docker.internal resolve on linux too (Docker Desktop on
+      # macOS/Windows already provides it).
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - mainchain-data:/home/bitcoin/.bitcoin
+      # Read-only mount of the host-generated UTXO snapshot.
+      - ../../../.mainchain:/snapshot:ro
+    command: >
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${MAINCHAIN_RPC_USER}
+      -rpcpassword=${MAINCHAIN_RPC_PASS}
+      -rpcport=8332
+      -prune=5000
+      -listen=0
+      -connect=host.docker.internal:${HOST_BITCOIN_P2P_PORT:-8333}
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli
+        -rpcuser=${MAINCHAIN_RPC_USER} -rpcpassword=${MAINCHAIN_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # One-shot: waits for headers to reach the snapshot tip, then loadtxoutset.
+  # /snapshot is also mounted here so the script's preflight can fail early
+  # with a clear message when the host forgot e2e:bootstrap-mainchain.
+  setup-mainchain:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-nutshell-postgres-setup-mainchain
+    networks: [net]
+    depends_on:
+      bitcoind-mainchain: { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - ../../../.mainchain:/snapshot:ro
+    environment:
+      - MAINCHAIN_RPC_USER=${MAINCHAIN_RPC_USER}
+      - MAINCHAIN_RPC_PASS=${MAINCHAIN_RPC_PASS}
+    entrypoint: ["/scripts/load-mainchain-snapshot.sh"]
+    restart: "no"
+
+  # Re-point Orchard's bitcoin RPC from the regtest bitcoind at the mainchain
+  # node. Everything else on orchard (LN, mint, DB) is unchanged.
+  orchard:
+    depends_on:
+      nutshell:        { condition: service_healthy }
+      setup-mainchain: { condition: service_completed_successfully }
+    environment:
+      - BITCOIN_RPC_HOST=bitcoind-mainchain
+      - BITCOIN_RPC_PORT=8332
+      - BITCOIN_RPC_USER=${MAINCHAIN_RPC_USER}
+      - BITCOIN_RPC_PASSWORD=${MAINCHAIN_RPC_PASS}

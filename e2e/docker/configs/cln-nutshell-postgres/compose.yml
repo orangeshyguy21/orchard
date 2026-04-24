@@ -1,0 +1,423 @@
+# Config: cln + nutshell + postgres
+#
+# Topology:
+#   cln-alice ⇄ cln-orchard ⇄ lnd-carol     (cross-implementation cln↔lnd)
+#   nutshell backend: cln-orchard (via clnrest + rune auth)
+#   nutshell database: postgres (shared instance)
+#   orchard mintdb target: postgres
+#
+# Non-default host ports (+100 from cln-cdk-postgres) so this can run
+# alongside the other cln config.
+
+name: orchard-e2e-cln-nutshell-postgres
+
+networks:
+  net:
+    name: orchard-e2e-cln-nutshell-postgres
+    driver: bridge
+
+volumes:
+  bitcoind-data:
+  bitcoind-peer-data:
+  cln-orchard-data:
+  cln-alice-data:
+  lnd-carol-data:
+  postgres-data:
+  nutshell-data:
+  orchard-data:
+  wallet-data:
+  shared:
+
+x-cln-defaults: &cln-defaults
+  image: polarlightning/clightning:${CLN_VERSION}
+  restart: on-failure
+  networks: [net]
+  depends_on:
+    bitcoind: { condition: service_healthy }
+  healthcheck:
+    test: ["CMD-SHELL", "lightning-cli --lightning-dir=/home/clightning/.lightning --network=regtest getinfo > /dev/null"]
+    interval: 3s
+    timeout: 5s
+    retries: 30
+
+services:
+  bitcoind:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-nutshell-postgres-bitcoind
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "28543:18443"
+    volumes:
+      - bitcoind-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -txindex=1
+      -zmqpubrawblock=tcp://0.0.0.0:28334
+      -zmqpubrawtx=tcp://0.0.0.0:28335
+      -fallbackfee=0.0002
+      -debug=0
+    healthcheck:
+      test: >
+        bitcoin-cli -regtest
+        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+        getblockchaininfo
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # Passive P2P peer. `-connect=bitcoind:18444` pins the topology — this node
+  # dials the primary and never auto-discovers. Gives the UI a real peer count
+  # (>0) and exercises mempool/block gossip without letting chains diverge.
+  # Never mines; not referenced as an RPC target by any LN node or setup script.
+  bitcoind-peer:
+    image: polarlightning/bitcoind:${BITCOIND_VERSION}
+    container_name: cln-nutshell-postgres-bitcoind-peer
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - bitcoind-peer-data:/home/bitcoin/.bitcoin
+    command: >
+      -regtest
+      -server=1
+      -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+      -rpcuser=${BTC_RPC_USER}
+      -rpcpassword=${BTC_RPC_PASS}
+      -rpcport=18443
+      -fallbackfee=0.0002
+      -debug=0
+      -connect=bitcoind:18444
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bitcoin-cli -regtest
+          -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
+          getpeerinfo | grep -q subver
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: cln-nutshell-postgres-postgres
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "5632:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  cln-orchard:
+    <<: *cln-defaults
+    container_name: cln-nutshell-postgres-cln-orchard
+    ports: ["21101:11001"]
+    volumes:
+      - cln-orchard-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-orchard:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --clnrest-port=3010
+      --clnrest-host=0.0.0.0
+      --clnrest-protocol=http
+      --alias=orchard
+      --log-level=info
+
+  cln-alice:
+    <<: *cln-defaults
+    container_name: cln-nutshell-postgres-cln-alice
+    ports: ["21111:11001"]
+    volumes:
+      - cln-alice-data:/home/clightning/.lightning
+    command: >
+      lightningd
+      --network=regtest
+      --bind-addr=0.0.0.0:9735
+      --announce-addr=cln-alice:9735
+      --bitcoin-rpcconnect=bitcoind
+      --bitcoin-rpcport=18443
+      --bitcoin-rpcuser=${BTC_RPC_USER}
+      --bitcoin-rpcpassword=${BTC_RPC_PASS}
+      --grpc-port=11001
+      --grpc-host=0.0.0.0
+      --alias=alice
+      --log-level=info
+
+  lnd-carol:
+    image: polarlightning/lnd:${LND_VERSION}
+    container_name: cln-nutshell-postgres-lnd-carol
+    restart: on-failure
+    networks: [net]
+    ports: ["20129:10009"]
+    depends_on:
+      bitcoind: { condition: service_healthy }
+    volumes:
+      - lnd-carol-data:/home/lnd/.lnd
+    command: >
+      lnd --noseedbackup --alias=carol --externalip=lnd-carol
+      --listen=0.0.0.0:9735 --rpclisten=0.0.0.0:10009 --restlisten=0.0.0.0:8080
+      --bitcoin.active --bitcoin.regtest --bitcoin.node=bitcoind
+      --bitcoind.rpchost=bitcoind:18443
+      --bitcoind.rpcuser=${BTC_RPC_USER} --bitcoind.rpcpass=${BTC_RPC_PASS}
+      --bitcoind.zmqpubrawblock=tcp://bitcoind:28334
+      --bitcoind.zmqpubrawtx=tcp://bitcoind:28335
+      --tlsextradomain=lnd-carol --tlsextradomain=localhost
+      --accept-keysend --debuglevel=info
+    healthcheck:
+      test: ["CMD-SHELL", "lncli --lnddir=/home/lnd/.lnd --network=regtest getinfo > /dev/null"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  setup:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-nutshell-postgres-setup
+    networks: [net]
+    depends_on:
+      bitcoind-peer: { condition: service_healthy }
+      cln-orchard:   { condition: service_healthy }
+      cln-alice:     { condition: service_healthy }
+      lnd-carol:     { condition: service_healthy }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+      - shared:/shared
+    environment:
+      - CONFIG_NAME=cln-nutshell-postgres
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - CHANNEL_CAPACITY_SAT=${CHANNEL_CAPACITY_SAT:-10000000}
+      - CHANNEL_PUSH_SAT=${CHANNEL_PUSH_SAT:-5000000}
+      - CHANNEL_PUSH_MSAT=${CHANNEL_PUSH_MSAT:-5000000000}
+      - CREATE_RUNE_FOR=orchard
+    entrypoint: ["/scripts/fund-cln-topology.sh"]
+    restart: "no"
+
+  nutshell:
+    image: cashubtc/nutshell:${NUTSHELL_VERSION}
+    container_name: cln-nutshell-postgres-nutshell
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3340:3338"
+    depends_on:
+      setup:    { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
+    volumes:
+      - nutshell-data:/app/data
+      - shared:/shared:ro
+    environment:
+      - MINT_LISTEN_HOST=0.0.0.0
+      - MINT_LISTEN_PORT=3338
+      # SAT via real LN; USD+EUR via FakeWallet (multi-unit without a real LSP).
+      - MINT_BACKEND_BOLT11_SAT=CLNRestWallet
+      - MINT_BACKEND_BOLT11_USD=FakeWallet
+      - MINT_BACKEND_BOLT11_EUR=FakeWallet
+      - MINT_DERIVATION_PATH_LIST=["m/0'/0'/0'", "m/0'/2'/0'", "m/0'/3'/0'"]
+      - MINT_CLNREST_URL=http://cln-orchard:3010
+      - MINT_DATABASE=postgres://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+      - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
+      - MINT_INPUT_FEE_PPK=100
+      - MINT_INFO_NAME=e2e-nutshell
+      - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres (sat + usd + eur)
+      - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+      # Disabled for e2e: activity-cln-topology + activity-fake hammer nutshell
+      # from the shared wallet container concurrently (sat on one, usd+eur on
+      # the other) and trip the default per-IP limit. Production deployments
+      # keep rate limiting on via the nutshell defaults.
+      - MINT_RATE_LIMIT=false
+      # Balance watchdog: shuts the mint down if mint<>backend balances
+      # diverge. Paired with the non-zero input_fee_ppk above so specs can
+      # exercise the "fees configured + watchdog supervising" operator mode.
+      # Production defaults leave this off; e2e flips it on so Orchard's
+      # watchdog-aware UI paths get covered.
+      - MINT_WATCHDOG_ENABLED=true
+    # Rune is created at runtime by the setup service; read it from the
+    # shared volume and inject as env var before poetry runs the mint.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export MINT_CLNREST_RUNE="$$(cat /shared/orchard.rune)"
+        exec poetry run mint
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request,sys; sys.exit(0 if urllib.request.urlopen(\"http://localhost:3338/v1/info\").status==200 else 1)'"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  orchard:
+    build:
+      context: ../../../..
+      dockerfile: Dockerfile
+      target: final-mintdb-postgres
+    container_name: cln-nutshell-postgres-orchard
+    restart: on-failure
+    networks: [net]
+    ports:
+      - "3325:3321"
+    depends_on:
+      nutshell: { condition: service_healthy }
+    volumes:
+      - orchard-data:/app/data
+      - cln-orchard-data:/certs/cln:ro
+    env_file:
+      - ./env
+    environment:
+      - NODE_ENV=production
+      - DOCKER_ENV=true
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3321
+      - LIGHTNING_CERT=/certs/cln/regtest/client.pem
+      - LIGHTNING_KEY=/certs/cln/regtest/client-key.pem
+      - LIGHTNING_CA=/certs/cln/regtest/ca.pem
+      - MINT_DATABASE=postgresql://${PG_USER}:${PG_PASS}@postgres:5432/${PG_DB}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3321/"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  # ──────────────────────────────────────────────────────────────
+  # Wallet container — Cashu client only.
+  #
+  # Role: exercises the mint under test (mint → swap → melt).
+  # Never runs a mint daemon, never publishes ports.
+  #
+  # Built from wallet.Dockerfile (cdk-cli from crates.io). Same
+  # binary works against cdk-mintd or nutshell-as-mint — only the
+  # depends_on target changes per config.
+  #
+  # Usage from scripts:
+  #   docker compose exec wallet cdk-cli mint $MINT_URL 100
+  #   docker compose exec wallet cdk-cli balance
+  #   docker compose exec wallet cdk-cli send 10
+  # ──────────────────────────────────────────────────────────────
+  wallet:
+    build:
+      context: ../..
+      dockerfile: wallet.Dockerfile
+      args:
+        CDK_CLI_VERSION: ${CDK_CLI_VERSION}
+    container_name: cln-nutshell-postgres-wallet
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      nutshell: { condition: service_healthy }
+    volumes:
+      - wallet-data:/root/.cdk
+    environment:
+      - MINT_URL=http://nutshell:3338
+    entrypoint: ["sleep", "infinity"]
+
+  # ──────────────────────────────────────────────────────────────
+  # Activity generator — one-shot. See activity-cln-topology.sh
+  # for the full category breakdown and env-var knobs.
+  # ──────────────────────────────────────────────────────────────
+  activity:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-nutshell-postgres-activity
+    networks: [net]
+    depends_on:
+      orchard: { condition: service_healthy }
+      wallet:  { condition: service_started }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lnd-carol-data:/lnd/carol:ro
+    environment:
+      - CONFIG_NAME=cln-nutshell-postgres
+      - MINT_SERVICE=nutshell
+      - MINT_PORT=3338
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - ACTIVITY_FORWARDS=${ACTIVITY_FORWARDS:-6}
+      - ACTIVITY_INBOUND=${ACTIVITY_INBOUND:-4}
+      - ACTIVITY_OUTBOUND=${ACTIVITY_OUTBOUND:-4}
+      - ACTIVITY_MINTS=${ACTIVITY_MINTS:-5}
+      - ACTIVITY_SWAPS=${ACTIVITY_SWAPS:-4}
+      - ACTIVITY_MELTS=${ACTIVITY_MELTS:-3}
+      - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
+      - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
+    entrypoint: ["/scripts/activity-cln-topology.sh"]
+    restart: "no"
+
+  # One-shot: emits /shared/fake-bolt11s.json for activity-fake (usd+eur).
+  bolt11-gen:
+    build:
+      context: ../..
+      dockerfile: bolt11-gen.Dockerfile
+    container_name: cln-nutshell-postgres-bolt11-gen
+    networks: [net]
+    volumes:
+      - shared:/shared
+      - ../../scripts/gen-bolt11s.py:/gen-bolt11s.py:ro
+    entrypoint: ["python", "/gen-bolt11s.py", "/shared/fake-bolt11s.json"]
+    restart: "no"
+
+  # USD+EUR activity via nutshell FakeWallet. Runs alongside `activity`
+  # (which owns SAT + mempool); SAT and mempool counts pinned to 0 here
+  # to avoid double-dipping.
+  activity-fake:
+    build:
+      context: ../..
+      dockerfile: setup.Dockerfile
+    container_name: cln-nutshell-postgres-activity-fake
+    networks: [net]
+    depends_on:
+      orchard:    { condition: service_healthy }
+      wallet:     { condition: service_started }
+      bolt11-gen: { condition: service_completed_successfully }
+    volumes:
+      - ../../scripts:/scripts:ro
+      - shared:/shared:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CONFIG_NAME=cln-nutshell-postgres
+      - MINT_SERVICE=nutshell
+      - MINT_PORT=3338
+      - BTC_RPC_USER=${BTC_RPC_USER}
+      - BTC_RPC_PASS=${BTC_RPC_PASS}
+      - ACTIVITY_MINTS_SAT=0
+      - ACTIVITY_SWAPS_SAT=0
+      - ACTIVITY_MELTS_SAT=0
+      - ACTIVITY_MINTS_USD=${ACTIVITY_MINTS_USD:-3}
+      - ACTIVITY_SWAPS_USD=${ACTIVITY_SWAPS_USD:-2}
+      - ACTIVITY_MELTS_USD=${ACTIVITY_MELTS_USD:-2}
+      - ACTIVITY_MINTS_EUR=${ACTIVITY_MINTS_EUR:-3}
+      - ACTIVITY_SWAPS_EUR=${ACTIVITY_SWAPS_EUR:-2}
+      - ACTIVITY_MELTS_EUR=${ACTIVITY_MELTS_EUR:-2}
+      - ACTIVITY_MEMPOOL_PER_RATE=0
+      - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
+    entrypoint: ["/scripts/activity-fake.sh"]
+    restart: "no"

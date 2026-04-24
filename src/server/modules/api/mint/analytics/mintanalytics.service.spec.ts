@@ -127,6 +127,30 @@ describe('MintAnalyticsService', () => {
 
 			expect(result).toEqual([]);
 		});
+
+		/**
+		 * Defensive guard mirroring the lightning-analytics getNetBalance fix:
+		 * multiple rows sharing (unit, hour) must accumulate, not overwrite.
+		 * Not hit in practice today (one issued_amount / redeemed_amount row per
+		 * (unit, hour) because keyset_id is always '' for these metrics), but the
+		 * shape of the code was identical to the buggy lightning version.
+		 */
+		it('sums multiple same-bucket issued/redeemed rows at hour interval instead of overwriting', async () => {
+			const hour = 1700000000;
+			mock_cashu_analytics.getCachedAnalytics.mockResolvedValueOnce([
+				{metric: MintAnalyticsMetric.issued_amount, unit: 'sat', amount: '1000', date: hour, count: 1, keyset_id: ''},
+				{metric: MintAnalyticsMetric.issued_amount, unit: 'sat', amount: '2500', date: hour, count: 1, keyset_id: ''},
+				{metric: MintAnalyticsMetric.redeemed_amount, unit: 'sat', amount: '200', date: hour, count: 1, keyset_id: ''},
+				{metric: MintAnalyticsMetric.redeemed_amount, unit: 'sat', amount: '100', date: hour, count: 1, keyset_id: ''},
+			]);
+
+			const result = await service.getMintAnalyticsBalances('test', {interval: AnalyticsInterval.hour});
+
+			// issued = 1000 + 2500 = 3500, redeemed = 200 + 100 = 300, balance = 3200
+			expect(result).toHaveLength(1);
+			expect(result[0].amount).toBe('3200');
+			expect(result[0].date).toBe(hour);
+		});
 	});
 
 	/* *******************************************************
