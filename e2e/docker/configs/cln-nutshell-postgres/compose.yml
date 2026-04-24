@@ -255,6 +255,12 @@ services:
       # the other) and trip the default per-IP limit. Production deployments
       # keep rate limiting on via the nutshell defaults.
       - MINT_RATE_LIMIT=false
+      # Balance watchdog: shuts the mint down if mint<>backend balances
+      # diverge. Paired with the non-zero input_fee_ppk above so specs can
+      # exercise the "fees configured + watchdog supervising" operator mode.
+      # Production defaults leave this off; e2e flips it on so Orchard's
+      # watchdog-aware UI paths get covered.
+      - MINT_WATCHDOG_ENABLED=true
     # Rune is created at runtime by the setup service; read it from the
     # shared volume and inject as env var before poetry runs the mint.
     entrypoint: ["/bin/sh", "-c"]
