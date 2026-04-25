@@ -1,17 +1,14 @@
 # ==============================================================
-# Orchard e2e — fake-cdk-postgres (cdk-mintd fake_wallet + postgres, no LN)
+# Orchard e2e — fake-cdk-postgres (cdk-mintd fake_wallet + postgres, no LN, no BTC)
 # ==============================================================
 # Consumed by docker compose (variable substitution + env_file for orchard).
 # All values are regtest-only — DO NOT reuse in any real deployment.
 #
-# This stack has no Lightning node. cdk-mintd runs with fake_wallet serving
-# both sat and usd units; Orchard boots without a LIGHTNING_TYPE. Its job
-# is to exercise multi-unit mint flows (keysets, balances, mgmt RPC) and
-# Orchard UI surfaces that must tolerate an absent LN backend.
-
-# ----- bitcoind RPC -----
-BTC_RPC_USER=polar
-BTC_RPC_PASS=polar
+# This stack has no Lightning node AND no Bitcoin node. cdk-mintd runs with
+# fake_wallet serving both sat and usd units; Orchard boots without a
+# LIGHTNING_TYPE and without a BITCOIN_TYPE. Its job is to exercise multi-
+# unit mint flows (keysets, balances, mgmt RPC) and to prove that Orchard
+# UI surfaces tolerate both optional services being absent.
 
 # ----- Postgres -----
 PG_USER=cashu
@@ -25,14 +22,11 @@ LOG_LEVEL=debug
 BASE_PATH=api
 
 # ----- Orchard → Bitcoin -----
-BITCOIN_TYPE=core
-BITCOIN_RPC_HOST=bitcoind
-BITCOIN_RPC_PORT=18443
-BITCOIN_RPC_USER=polar
-BITCOIN_RPC_PASSWORD=polar
+# Deliberately absent — this stack has no bitcoind. main.ts:59-60 only errors
+# on invalid BITCOIN_TYPE values; omitting it is supported.
 
 # ----- Orchard → Lightning -----
-# Deliberately absent — this stack has no LN node. main.ts:61-64 only errors
+# Deliberately absent — this stack has no LN node. main.ts:62-64 only errors
 # on invalid LIGHTNING_TYPE values; omitting it is supported.
 
 # ----- Orchard → Mint (cdk-mintd, fake backend) -----

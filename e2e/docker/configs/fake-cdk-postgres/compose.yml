@@ -1,11 +1,13 @@
 # Config: fake + cdk + postgres
 #
 # Topology:
+#   no bitcoind                            — Orchard BITCOIN_TYPE absent
 #   no LN nodes                            — cdk-mintd runs with fake_wallet
 #   cdk-mintd backend: fake_wallet         — serves sat + usd units
 #   cdk-mintd database: postgres           — shared instance
 #   orchard mintdb target: postgres
 #   orchard LIGHTNING_TYPE: (absent)       — UI must tolerate no LN
+#   orchard BITCOIN_TYPE: (absent)         — UI must tolerate no bitcoin
 #
 # Disjoint port ranges (+1x00 from existing stacks) so this can run
 # concurrently with the four LN stacks.
@@ -18,79 +20,12 @@ networks:
     driver: bridge
 
 volumes:
-  bitcoind-data:
-  bitcoind-peer-data:
   postgres-data:
   orchard-data:
   wallet-data:
   shared:
 
 services:
-  bitcoind:
-    image: polarlightning/bitcoind:${BITCOIND_VERSION}
-    container_name: fake-cdk-postgres-bitcoind
-    restart: on-failure
-    networks: [net]
-    ports:
-      - "38443:18443"
-    volumes:
-      - bitcoind-data:/home/bitcoin/.bitcoin
-    command: >
-      -regtest
-      -server=1
-      -rpcbind=0.0.0.0
-      -rpcallowip=0.0.0.0/0
-      -rpcuser=${BTC_RPC_USER}
-      -rpcpassword=${BTC_RPC_PASS}
-      -rpcport=18443
-      -txindex=1
-      -zmqpubrawblock=tcp://0.0.0.0:28334
-      -zmqpubrawtx=tcp://0.0.0.0:28335
-      -fallbackfee=0.0002
-      -debug=0
-    healthcheck:
-      test: >
-        bitcoin-cli -regtest
-        -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
-        getblockchaininfo
-      interval: 3s
-      timeout: 5s
-      retries: 30
-
-  # Passive P2P peer. `-connect=bitcoind:18444` pins the topology — this node
-  # dials the primary and never auto-discovers. Gives the UI a real peer count
-  # (>0) and exercises mempool/block gossip without letting chains diverge.
-  bitcoind-peer:
-    image: polarlightning/bitcoind:${BITCOIND_VERSION}
-    container_name: fake-cdk-postgres-bitcoind-peer
-    restart: on-failure
-    networks: [net]
-    depends_on:
-      bitcoind: { condition: service_healthy }
-    volumes:
-      - bitcoind-peer-data:/home/bitcoin/.bitcoin
-    command: >
-      -regtest
-      -server=1
-      -rpcbind=0.0.0.0
-      -rpcallowip=0.0.0.0/0
-      -rpcuser=${BTC_RPC_USER}
-      -rpcpassword=${BTC_RPC_PASS}
-      -rpcport=18443
-      -fallbackfee=0.0002
-      -debug=0
-      -connect=bitcoind:18444
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          bitcoin-cli -regtest
-          -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASS}
-          getpeerinfo | grep -q subver
-      interval: 3s
-      timeout: 5s
-      retries: 30
-
   postgres:
     image: postgres:${POSTGRES_VERSION}
     container_name: fake-cdk-postgres-postgres
@@ -111,7 +46,7 @@ services:
       retries: 30
 
   # No setup/funding service — there are no channels to fund.
-  # cdk-mintd depends directly on postgres + bitcoind being healthy.
+  # cdk-mintd depends only on postgres; fake_wallet needs no bitcoind.
   cdk-mintd:
     image: cashubtc/mintd:${CDK_MINTD_VERSION}
     container_name: fake-cdk-postgres-cdk-mintd
@@ -121,7 +56,6 @@ services:
       - "3341:3341"
       - "8087:8087"
     depends_on:
-      bitcoind: { condition: service_healthy }
       postgres: { condition: service_healthy }
     volumes:
       - ./mintd.toml:/config.toml:ro
@@ -213,15 +147,13 @@ services:
       - CONFIG_NAME=fake-cdk-postgres
       - MINT_SERVICE=cdk-mintd
       - MINT_PORT=3341
-      - BTC_RPC_USER=${BTC_RPC_USER}
-      - BTC_RPC_PASS=${BTC_RPC_PASS}
       - ACTIVITY_MINTS_SAT=${ACTIVITY_MINTS_SAT:-5}
       - ACTIVITY_MINTS_USD=${ACTIVITY_MINTS_USD:-3}
       - ACTIVITY_SWAPS_SAT=${ACTIVITY_SWAPS_SAT:-3}
       - ACTIVITY_SWAPS_USD=${ACTIVITY_SWAPS_USD:-2}
       - ACTIVITY_MELTS_SAT=${ACTIVITY_MELTS_SAT:-3}
       - ACTIVITY_MELTS_USD=${ACTIVITY_MELTS_USD:-2}
-      - ACTIVITY_MEMPOOL_PER_RATE=${ACTIVITY_MEMPOOL_PER_RATE:-4}
+      - ACTIVITY_MEMPOOL_PER_RATE=0
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-fake.sh"]
     restart: "no"

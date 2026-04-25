@@ -5,34 +5,34 @@
 
 /* Native Dependencies */
 import {btcCli, btcCliJson, lndCliJson, clnCliJson} from './docker-cli';
-import {containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
+import {containerBitcoind, containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
 
 export const btc = {
 	blockCount(config: ConfigInfo): number {
-		return btcCliJson<number>(config.containers.bitcoind, ['getblockcount']);
+		return btcCliJson<number>(containerBitcoind(config), ['getblockcount']);
 	},
 
 	getBlockchainInfo(config: ConfigInfo): Record<string, unknown> {
-		return btcCliJson(config.containers.bitcoind, ['getblockchaininfo']);
+		return btcCliJson(containerBitcoind(config), ['getblockchaininfo']);
 	},
 
 	getNetworkInfo(config: ConfigInfo): Record<string, unknown> {
-		return btcCliJson(config.containers.bitcoind, ['getnetworkinfo']);
+		return btcCliJson(containerBitcoind(config), ['getnetworkinfo']);
 	},
 
 	/** Verbose form — returns an object keyed by txid (Orchard flattens to an array). */
 	getRawMempool(config: ConfigInfo): Record<string, unknown> {
-		return btcCliJson(config.containers.bitcoind, ['getrawmempool', 'true']);
+		return btcCliJson(containerBitcoind(config), ['getrawmempool', 'true']);
 	},
 
 	getBestBlockHash(config: ConfigInfo): string {
 		// Raw output: bitcoin-cli returns the hash as a bare hex string, not JSON.
-		return btcCli(config.containers.bitcoind, ['getbestblockhash']);
+		return btcCli(containerBitcoind(config), ['getbestblockhash']);
 	},
 
 	/** Verbosity 2 — matches what Orchard's resolver uses. */
 	getBlock(config: ConfigInfo, hash: string): Record<string, unknown> {
-		return btcCliJson(config.containers.bitcoind, ['getblock', hash, '2']);
+		return btcCliJson(containerBitcoind(config), ['getblock', hash, '2']);
 	},
 };
 

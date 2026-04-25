@@ -52,9 +52,9 @@ NUTSHELL_PRIVATE_KEY=e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e0e2e
 THROTTLE_LIMIT=1000
 THROTTLE_TTL=60000
 
-# ----- Mainchain overlay (E2E_MAINCHAIN=1) -----
-# Only consumed by compose.mainchain.yml; harmless when the overlay is
-# not loaded. Internal-only creds between Orchard and bitcoind-mainchain —
-# the container's 8332 is never port-published to the host.
+# ----- Mainchain overlay -----
+# Consumed by compose.mainchain.yml. Internal-only creds between Orchard
+# and bitcoind-mainchain — the container's 8332 is never port-published
+# to the host.
 MAINCHAIN_RPC_USER=mainchain
 MAINCHAIN_RPC_PASS=mainchain

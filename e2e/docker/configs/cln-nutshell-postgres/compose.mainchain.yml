@@ -1,7 +1,7 @@
 # Overlay: adds a mainnet bitcoind and re-points Orchard's BITCOIN_RPC_* at
-# it, leaving the regtest bitcoind (used by LN/mint) untouched. Loaded only
-# when compose.sh sees E2E_MAINCHAIN=1. See e2e/README.md §"Mainchain overlay"
-# for the bootstrap flow and teardown semantics.
+# it, leaving the regtest bitcoind (used by LN/mint) untouched. Always loaded
+# by compose.sh when this file is present. See e2e/README.md §"Mainchain
+# overlay" for the bootstrap flow and teardown semantics.
 
 volumes:
   mainchain-data:

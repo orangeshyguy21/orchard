@@ -30,10 +30,12 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *   @canary              — config-agnostic; runs only on the canary stack
  *                          (lnd-nutshell-sqlite). Most feature specs are @canary.
  *   @lightning           — app-state: LIGHTNING_TYPE wired; runs on stacks
- *                          with a real LN backend (config.ln !== 'fake')
+ *                          with a real LN backend (config.ln !== false)
  *   @no-lightning        — app-state: Orchard booted without LIGHTNING_TYPE;
  *                          runs on fake-cdk-postgres only
- *   @lnd / @cln / @fake  — LN impl-name tags; runs on stacks with matching ln.
+ *   @no-bitcoin          — app-state: Orchard booted without BITCOIN_TYPE;
+ *                          runs on fake-cdk-postgres only
+ *   @lnd / @cln          — LN impl-name tags; runs on stacks with matching ln.
  *                          Reserve for impl-specific behavior — most specs
  *                          want @lightning / @no-lightning instead.
  *   @cdk / @nutshell     — mint-impl-sensitive; runs on stacks with matching mint
@@ -43,11 +45,9 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *                          cln-cdk-postgres
  *   @mainchain           — requires a real mainnet bitcoind wired into Orchard
  *                          (oracle, mempool, block-tip, chain-sync code).
- *                          Runs only on cln-nutshell-postgres, and only when
- *                          the stack was brought up with `E2E_MAINCHAIN=1`
- *                          (which loads `compose.mainchain.yml`). Without
- *                          that env var the tag isn't added to grep and
- *                          @mainchain specs skip cleanly.
+ *                          Runs only on cln-nutshell-postgres (the only stack
+ *                          that ships `compose.mainchain.yml`, which is always
+ *                          loaded when present).
  *   @all                 — genuine matrix coverage; runs on every stack
  *
  * Untagged tests match no project's grep → they don't run. If you see a new

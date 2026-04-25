@@ -1,16 +1,16 @@
 /* Native Dependencies */
 import {btcCli, lndCli, clnCli} from './docker-cli';
-import {containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
+import {containerBitcoind, containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
 
 /** Mine `blocks` regtest blocks to a throwaway address. */
 export function mine(config: ConfigInfo, blocks: number): void {
-	const addr = btcCli(config.containers.bitcoind, ['getnewaddress']);
-	btcCli(config.containers.bitcoind, ['generatetoaddress', String(blocks), addr]);
+	const addr = btcCli(containerBitcoind(config), ['getnewaddress']);
+	btcCli(containerBitcoind(config), ['generatetoaddress', String(blocks), addr]);
 }
 
 /** Return the current chain height. */
 export function chainHeight(config: ConfigInfo): number {
-	return parseInt(btcCli(config.containers.bitcoind, ['getblockcount']), 10);
+	return parseInt(btcCli(containerBitcoind(config), ['getblockcount']), 10);
 }
 
 /** Pay a bolt11 invoice from the named LN node. */

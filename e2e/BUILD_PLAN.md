@@ -461,7 +461,7 @@ pin. Differential fails → the diff localizes which backend API drifted.
   `bitcoin-section.spec.ts` and `index-dashboard.spec.ts`. First feature
   spec: `bitcoin-general-info.spec.ts` covering the "Info" card on `/`.
   Port-bump: e2e stacks moved +1 (3322–3325) so `3321` stays free for
-  local dev. Admin password now `testere2e` (6-char minimum enforced by
+  local dev. Admin password now `tester` (6-char minimum enforced by
   auth-init form).
 - **2026-04-17** — Phase 3.1 reframed **UI-first**. Original scope was
   "every read resolver, tested via supertest differential." Walked back
