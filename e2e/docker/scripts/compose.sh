@@ -17,7 +17,7 @@
 set -eu
 
 ACTION="${1:-}"
-CONFIG="${2:-}"
+CONFIG="${2:-all}"
 
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIGS_DIR="${HERE}/configs"
@@ -27,8 +27,8 @@ list_configs() {
     (cd "$CONFIGS_DIR" && ls -1 -d */) 2>/dev/null | sed 's|/$||'
 }
 
-if [ -z "$ACTION" ] || [ -z "$CONFIG" ]; then
-    echo "usage: $0 <up|down|logs|ps> <config-name|all>" >&2
+if [ -z "$ACTION" ]; then
+    echo "usage: $0 <up|down|logs|ps> [config-name|all]  (default: all)" >&2
     echo "configs:" >&2
     list_configs | sed 's|^|  |' >&2
     exit 1
