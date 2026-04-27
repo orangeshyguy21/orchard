@@ -6,7 +6,7 @@
 import type {Reporter, FullConfig, Suite} from '@playwright/test/reporter';
 
 /* Native Dependencies */
-import {CANARY, CONFIGS, mintUnitsFor, portOf, type ConfigInfo} from './config';
+import {CANARY, CONFIGS, featuresFor, mintUnitsFor, portOf} from './config';
 
 interface Stack {
 	name: string;
@@ -16,7 +16,7 @@ interface Stack {
 	mint: string;
 	db: string;
 	units: string;
-	flags: string;
+	features: string[];
 	count: number;
 	isCanary: boolean;
 }
@@ -30,14 +30,6 @@ const YELLOW = ansi('\x1b[33m');
 const GREEN = ansi('\x1b[32m');
 const MAGENTA = ansi('\x1b[35m');
 const RESET = ansi('\x1b[0m');
-
-function flagsFor(config: ConfigInfo): string {
-	const flags: string[] = [];
-	if (config.tapd) flags.push('tapd');
-	if (config.bolt12) flags.push('bolt12');
-	if (config.mainchain) flags.push('mainchain');
-	return flags.join('+');
-}
 
 function bareConfigName(projectName: string): string {
 	return projectName.replace(/^setup-/, '').replace(/:\d+$/, '');
@@ -77,7 +69,7 @@ export default class SummaryReporter implements Reporter {
 				mint: c.mint,
 				db: c.db,
 				units: mintUnitsFor(c).join(' '),
-				flags: flagsFor(c),
+				features: featuresFor(c),
 				count: counts.get(c.name) ?? 0,
 				isCanary: c.name === CANARY,
 			}))
@@ -93,11 +85,12 @@ export default class SummaryReporter implements Reporter {
 				s.mint.length,
 				s.db.length,
 				s.units.length,
-				(s.flags || '—').length,
+				...(s.features.length ? s.features.map((f) => f.length) : [1]),
 				String(s.count).length,
 				8,
 			),
 		);
+		const featureRows = Math.max(1, ...stacks.map((s) => s.features.length));
 
 		const border = (l: string, sep: string, r: string) =>
 			DIM + l + '─'.repeat(labelW + 2) + sep + colW.map((w) => '─'.repeat(w + 2)).join(sep) + r + RESET;
@@ -161,12 +154,18 @@ export default class SummaryReporter implements Reporter {
 				stacks.map((s) => `${DIM}${s.units}${RESET}`),
 			),
 		);
-		lines.push(
-			row(
-				`${BOLD}Features${RESET}`,
-				stacks.map((s) => (s.flags ? `${MAGENTA}${s.flags}${RESET}` : `${DIM}—${RESET}`)),
-			),
-		);
+		for (let i = 0; i < featureRows; i++) {
+			lines.push(
+				row(
+					i === 0 ? `${BOLD}Features${RESET}` : '',
+					stacks.map((s) => {
+						if (s.features.length === 0) return i === 0 ? `${DIM}—${RESET}` : '';
+						const f = s.features[i];
+						return f ? `${MAGENTA}${f}${RESET}` : '';
+					}),
+				),
+			);
+		}
 
 		lines.push(border('├', '┼', '┤'));
 		lines.push(

@@ -203,6 +203,9 @@ services:
       - MINT_INFO_DESCRIPTION=Orchard e2e lnd-nutshell-sqlite
       - MINT_INFO_URLS=["https://nut-sat-lite.cash"]
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+      # Disabled for e2e: Playwright fires ~25 `/v1/info` reads per spec run,
+      # tripping nutshell's per-IP limiter into `MintPublicApiError` (40001).
+      - MINT_RATE_LIMIT=false
     command: >
       poetry run mint
     healthcheck:

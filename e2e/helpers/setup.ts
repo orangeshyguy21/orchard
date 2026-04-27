@@ -1,5 +1,19 @@
-import {type Page, expect} from '@playwright/test';
-import {TEST_ADMIN, type ConfigInfo} from './config';
+import {type Page, type TestInfo, expect} from '@playwright/test';
+import {TEST_ADMIN, getConfig, type ConfigInfo} from './config';
+
+/** Setup-tier project name is `<prefix>-<config>:<port>` — strip both to
+ *  recover the bare config name. */
+function bareConfigName(testInfo: TestInfo, prefix: 'setup' | 'settings'): string {
+	return testInfo.project.name.replace(new RegExp(`^${prefix}-`), '').replace(/:\d+$/, '');
+}
+
+export function projectConfig(testInfo: TestInfo, prefix: 'setup' | 'settings'): ConfigInfo {
+	return getConfig(bareConfigName(testInfo, prefix));
+}
+
+export function projectStatePath(testInfo: TestInfo, prefix: 'setup' | 'settings'): string {
+	return `e2e/.auth/${bareConfigName(testInfo, prefix)}.json`;
+}
 
 /**
  * Call once per compose-stack lifetime. The uninitializedGuard redirects

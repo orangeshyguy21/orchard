@@ -246,6 +246,10 @@ services:
     container_name: cln-cdk-postgres-orchard
     restart: on-failure
     networks: [net]
+    # AI-on stack — ollama runs on the host. host.docker.internal resolves on
+    # macOS; this mapping makes it routable on Linux/CI.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3323:3321"
     depends_on:

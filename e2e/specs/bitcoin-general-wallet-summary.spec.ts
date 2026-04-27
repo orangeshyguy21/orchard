@@ -43,23 +43,10 @@
  *     `constants.taproot_group_keys.usdt`).
  */
 
-import {execFileSync} from 'node:child_process';
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
 import {getConfig} from '../helpers/config';
-import {ln} from '../helpers/backend';
-
-/** Shape we read from `tapcli assets list` via `docker exec`. Only the fields
- *  the spec inspects — tapd's actual response has many more. */
-type TapdAssetsList = {
-	assets: Array<{
-		asset_genesis: {name: string; asset_id: string; asset_type: string};
-		asset_group?: {tweaked_group_key?: string};
-		amount: string;
-		decimal_display?: {decimal_display?: number};
-		version: string;
-	}>;
-};
+import {ln, tap} from '../helpers/backend';
 
 async function openWalletSummary(page: Page): Promise<Locator> {
 	const card = page.locator('orc-bitcoin-general-wallet-summary');
@@ -108,14 +95,7 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 
 	test('shows the bitcoin row with the sat asset glyph', async ({page}) => {
 		const card = await openWalletSummary(page);
-		// `.graphic-asset-btc` is what `GraphicAssetComponent.unit_class()` emits
-		// for `sat`/`msat`/`btc` — the only stable DOM hook for "this is the
-		// bitcoin row". Angular property bindings like `[unit]` do NOT reflect
-		// as DOM attributes; selecting on `[unit="sat"]` would match nothing.
 		await expect(card.locator('.graphic-asset-btc').first()).toBeVisible();
-		// The bitcoin row's glyph carries a hot-wallet custody icon (mode_heat).
-		// First match is the bitcoin row; a tapd row, if present, would append
-		// its own custody-icon after.
 		await expect(card.locator('.graphic-asset-custody-icon').first()).toHaveText(/mode_heat/);
 	});
 
@@ -123,9 +103,6 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		const config = getConfig(testInfo.project.name);
 		const card = await openWalletSummary(page);
 		const row = bitcoinRow(card);
-		// `.orc-amount` is emitted inside the localAmount pipe output. The first
-		// match inside the row's summary is the row's own amount; avoid any
-		// nested `.orc-amount` an oracle card might emit in the expanded panel.
 		const amount_text = (await row.locator('.orc-amount').first().textContent())?.trim() ?? '';
 		expect(digitsFrom(amount_text)).toBe(ln.onchainSats(config));
 	});
@@ -136,7 +113,6 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		const caret = row.locator('button.orc-animation-rotate-toggle');
 		const details = row.locator('.channel-details');
 
-		// Collapsed state: neither element carries animation-expanded.
 		await expect(caret).not.toHaveClass(/\banimation-expanded\b/);
 		await expect(details).not.toHaveClass(/\banimation-expanded\b/);
 
@@ -162,10 +138,7 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		const utxos = digitsFrom(count_value);
 		expect(utxos).toBeGreaterThan(0);
 		expect(label).toBe(utxos === 1 ? 'UTXO' : 'UTXOs');
-
-		// Sanity: on-chain sats > 0 ⇒ there's at least one funded address, so
-		// the derived count must be > 0 — regressions where `utxos` gets
-		// zeroed while the amount stays non-zero fail here.
+		// Sanity: regressions where `utxos` gets zeroed while sats stay non-zero fail here.
 		expect(ln.onchainSats(config)).toBeGreaterThan(0);
 	});
 
@@ -197,48 +170,14 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 	test('bitcoin row utxo-stack carries the utxo-asset-btc class', async ({page}) => {
 		const card = await openWalletSummary(page);
 		const row = bitcoinRow(card);
-		// The child renders `utxo-asset-btc` on its primary coin glyph when
-		// unit is sat/msat/btc AND no usdt group_key. This is the stable
-		// hook verifying the parent passed `unit: 'sat'` through correctly.
 		await expect(row.locator('orc-bitcoin-general-utxo-stack .utxo-asset-btc').first()).toBeVisible();
 	});
 });
 
 test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@tapd'}, () => {
-	// Asset identity is seeded by `e2e/docker/scripts/fund-tapd.sh`, which
-	// runs from the `tapd-setup` compose service on the `lnd-cdk-sqlite`
-	// config. The script mints this asset with these exact parameters before
-	// Orchard boots, so by the time any test sees the dashboard, the row is
-	// already there. Keep these values in sync with the script.
+	// Asset identity is seeded by `e2e/docker/scripts/fund-tapd.sh` from the
+	// `tapd-setup` compose service on `lnd-cdk-sqlite`. Keep in sync.
 	const TEST_ASSET = 'TESTASSET';
-
-	/** Read the minted asset's live tapd record. Used to differentially assert
-	 *  that Orchard's displayed amount matches `tapd.amount / 10^decimal_display`
-	 *  and that the metadata card reflects the real asset_type + version.
-	 *
-	 *  tapd runs integrated inside the litd container (lnd-cdk-sqlite-lnd-orchard)
-	 *  and doesn't bind its own gRPC port — tapcli reaches it via litd's unified
-	 *  :8443 endpoint using the litd TLS cert + tapd admin macaroon. */
-	function readTestAsset(): TapdAssetsList['assets'][number] {
-		const out = execFileSync(
-			'docker',
-			[
-				'exec', 'lnd-cdk-sqlite-lnd-orchard', 'tapcli',
-				'--rpcserver=localhost:8443',
-				'--tlscertpath=/home/litd/.lit/tls.cert',
-				'--macaroonpath=/home/litd/.tapd/data/regtest/admin.macaroon',
-				'--network=regtest',
-				'assets', 'list',
-			],
-			{encoding: 'utf8'},
-		);
-		const listed: TapdAssetsList = JSON.parse(out);
-		const asset = listed.assets.find((a) => a.asset_genesis.name === TEST_ASSET);
-		if (!asset) {
-			throw new Error(`Expected litd-orchard's tapd to hold asset '${TEST_ASSET}' (seeded by fund-tapd.sh). Check the tapd-setup container logs.`);
-		}
-		return asset;
-	}
 
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
@@ -250,16 +189,14 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 	});
 
 	test('taproot asset row renders with the unknown-asset glyph', async ({page}) => {
+		// TESTASSET isn't in `taproot_group_keys`, so `unit_class()` falls to `.graphic-asset-unknown`.
 		const card = await openWalletSummary(page);
-		// TESTASSET is not one of the registered taproot_group_keys (USDT is),
-		// so `supported_taproot_asset` is false and `unit_class()` falls to
-		// `graphic-asset-unknown`. A recognized asset would render an <img>
-		// instead — that path is documented in the .md, not exercised here.
 		await expect(card.locator('.graphic-asset-unknown')).toBeVisible();
 	});
 
-	test('taproot asset row amount equals tapd amount descaled by decimal_display', async ({page}) => {
-		const asset = readTestAsset();
+	test('taproot asset row amount equals tapd amount descaled by decimal_display', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		const asset = tap.getAsset(config, TEST_ASSET);
 		const expected = parseInt(asset.amount, 10) / Math.pow(10, asset.decimal_display?.decimal_display ?? 0);
 
 		const card = await openWalletSummary(page);
@@ -270,38 +207,31 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 	});
 
 	test('taproot asset row utxo-stack carries the utxo-asset-unknown class', async ({page}) => {
-		// TESTASSET has no registered group_key in `taproot_group_keys`, so
-		// the utxo-stack child falls to `utxo-asset-unknown` for both the
-		// primary glyph and the overflow marker. This is the stable hook
-		// verifying the parent passed `unit: 'TESTASSET'` + a non-usdt
-		// group_key through to the child.
 		const card = await openWalletSummary(page);
 		const tapd_row = card.locator('.wallet-summary-card').nth(1).locator('mat-card-content');
 		await expect(tapd_row.locator('orc-bitcoin-general-utxo-stack .utxo-asset-unknown').first()).toBeVisible();
 	});
 
-	test('expanded taproot row shows metadata card: group_key truncation, asset_type, asset_version', async ({page}) => {
-		const asset = readTestAsset();
+	test('expanded taproot row shows metadata card: group_key truncation, asset_type, asset_version', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		const asset = tap.getAsset(config, TEST_ASSET);
 
 		const card = await openWalletSummary(page);
 		const tapd_row = card.locator('.wallet-summary-card').nth(1).locator('mat-card-content');
 		await tapd_row.click();
 
-		// Two high-cards after expand: UTXO count + tapd metadata. The metadata
-		// one is the second .orc-high-card under .channel-details.
+		// Two high-cards after expand: UTXO count (first) + tapd metadata (second).
 		const metadata_card = tapd_row.locator('.channel-details .orc-high-card').nth(1);
 		await expect(metadata_card.getByText('Group key', {exact: true})).toBeVisible();
 		await expect(metadata_card.getByText('Asset type', {exact: true})).toBeVisible();
 		await expect(metadata_card.getByText('Asset version', {exact: true})).toBeVisible();
 
-		// Grouped asset — the template emits `group_key | dataTruncate: 12 : 6 : 6`
-		// which renders as first6 + "..." + last6 of the hex group_key.
+		// Grouped asset — `dataTruncate: 12 : 6 : 6` renders first6 + "..." + last6.
 		const group_key = asset.asset_group?.tweaked_group_key;
 		if (!group_key) throw new Error(`tapd reported no asset_group.tweaked_group_key for ${TEST_ASSET}`);
 		const truncated = `${group_key.substring(0, 6)}...${group_key.substring(group_key.length - 6)}`;
 		await expect(metadata_card.getByText(truncated, {exact: true})).toBeVisible();
 
-		// Asset type + version come straight from the tapd response.
 		await expect(metadata_card.getByText(asset.asset_genesis.asset_type, {exact: true})).toBeVisible();
 		await expect(metadata_card.getByText(asset.version, {exact: true})).toBeVisible();
 	});

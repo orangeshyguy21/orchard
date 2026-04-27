@@ -35,11 +35,6 @@ import {test, expect, type Locator, type Page} from '@playwright/test';
 import {getConfig} from '../helpers/config';
 import {ln} from '../helpers/backend';
 
-type LnGetInfo = {
-	num_active_channels: number;
-	num_inactive_channels: number;
-};
-
 async function openSummary(page: Page): Promise<Locator> {
 	const card = page.locator('orc-lightning-general-channel-summary');
 	await expect(card).toBeVisible();
@@ -143,14 +138,7 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 
 	test('expanded sat row: Channels count matches sat-only channel count', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
-		// The sat row counts channels without taproot-asset metadata. For CLN
-		// (no asset-channel concept) we fall back to getinfo's active+inactive.
-		const expected = config.ln === 'lnd'
-			? ln.satChannelCount(config)
-			: (() => {
-					const info = ln.getInfo(config) as LnGetInfo;
-					return (info.num_active_channels ?? 0) + (info.num_inactive_channels ?? 0);
-				})();
+		const expected = ln.openSatChannelCount(config);
 
 		const card = await openSummary(page);
 		const row = satRow(card);
@@ -161,17 +149,14 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 
 	test('expanded sat row: Active count matches active sat-only channel count', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
-		const expected = config.ln === 'lnd'
-			? ln.satChannelCount(config, 'orchard', {activeOnly: true})
-			: ((ln.getInfo(config) as LnGetInfo).num_active_channels ?? 0);
+		const expected = ln.openSatChannelCount(config, {activeOnly: true});
 
 		const card = await openSummary(page);
 		const row = satRow(card);
 		await row.click();
 
-		// The "Active channels" card is derived from `sat_channels.filter(active)`
-		// regardless of summary_type, so in the default 'open' mode it still
-		// reports the active subset.
+		// "Active channels" card is derived from `sat_channels.filter(active)` regardless
+		// of summary_type — in the default 'open' mode it still reports the active subset.
 		expect(await countCardValue(row, 'Active channels')).toBe(expected);
 	});
 

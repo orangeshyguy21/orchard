@@ -6,11 +6,21 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  * before `npm run e2e:test` — there's no webServer hook because each project's
  * stack is bespoke.
  *
- * Each config gets TWO Playwright projects: a `setup-<config>` that exercises
- * the auth flow once and writes storage state to `e2e/.auth/<config>.json`,
- * and the real project that depends on it and loads that state. The split
- * amortizes login across every spec — Orchard's auth throttler (~4 req/10s)
- * would otherwise trip around the 5th login per config.
+ * Each config gets THREE Playwright projects, chained via `dependencies`:
+ *   1. `setup-<config>`     — runs `auth.setup.ts`, writes initial storage
+ *                             state to `e2e/.auth/<config>.json`.
+ *   2. `settings-<config>`  — depends on (1), loads that storage state, runs
+ *                             `settings.setup.ts` to apply the per-stack
+ *                             settings matrix via the `/settings/app` and
+ *                             `/settings/device` UIs, and writes the now-
+ *                             populated state back to the same file.
+ *   3. `<config>`           — depends on (2), loads the settings-augmented
+ *                             state, runs the actual specs.
+ * The auth split amortizes login across every spec — Orchard's auth throttler
+ * (~4 req/10s) would otherwise trip around the 5th login per config. The
+ * settings split keeps the operator-driven settings UI exercised once per
+ * stack lifetime instead of per-spec, and bakes its results into storageState
+ * so specs continue to start in a fully-configured Orchard.
  *
  * `workers: 1` per project because within-project tests share Orchard state
  * (admin user, channels, wallet balances) and races produce flakes.
@@ -58,6 +68,13 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *                          Runs only on cln-nutshell-postgres (the only stack
  *                          that ships `compose.mainchain.yml`, which is always
  *                          loaded when present).
+ *   @ai                  — config-state: settings setup turned `ai.enabled`
+ *                          on for this stack (cln-cdk-postgres only). Use
+ *                          for specs that need a live AI integration.
+ *   @oracle              — config-state: settings setup turned the bitcoin
+ *                          oracle on for this stack (cln-nutshell-postgres
+ *                          only — pairs with @mainchain). Use for specs that
+ *                          need a populated price feed.
  *   @all                 — genuine matrix coverage; runs on every stack
  *
  * Untagged tests match no project's grep → they don't run. If you see a new
@@ -67,7 +84,10 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  * Setup projects use the same grep as their real project, so auth-flow
  * tests are tag-scoped too. The happy-path `authenticate + persist state`
  * test is tagged `@all` so it runs on every stack; the fresh-stack
- * validation cases are tagged `@canary` so they only run on canary.
+ * validation cases are tagged `@canary` so they only run on canary. The
+ * `settings.setup.ts` test is tagged `@all` for the same reason — it runs
+ * on every stack, even canary (where it's a fast no-op since canary's
+ * matrix leaves all settings unset).
  */
 
 function grepFor(config: ConfigInfo): RegExp {
@@ -77,21 +97,30 @@ function grepFor(config: ConfigInfo): RegExp {
 function projectsFor(config: ConfigInfo): Project[] {
 	const projectName = `${config.name}:${portOf(config)}`;
 	const setupName = `setup-${projectName}`;
+	const settingsName = `settings-${projectName}`;
 	const baseURL = config.orchardUrl;
 	const storageState = `e2e/.auth/${config.name}.json`;
 	return [
 		{
 			name: setupName,
 			testDir: './setup',
-			testMatch: /.*\.setup\.ts$/,
+			testMatch: /auth\.setup\.ts$/,
 			grep: grepFor(config),
 			use: {...devices['Desktop Chrome'], baseURL},
+		},
+		{
+			name: settingsName,
+			testDir: './setup',
+			testMatch: /settings\.setup\.ts$/,
+			dependencies: [setupName],
+			grep: grepFor(config),
+			use: {...devices['Desktop Chrome'], baseURL, storageState},
 		},
 		{
 			name: projectName,
 			testDir: './specs',
 			testMatch: /.*\.spec\.ts$/,
-			dependencies: [setupName],
+			dependencies: [settingsName],
 			grep: grepFor(config),
 			use: {...devices['Desktop Chrome'], baseURL, storageState},
 		},

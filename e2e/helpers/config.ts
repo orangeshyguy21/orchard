@@ -14,6 +14,27 @@ export type MintType = 'nutshell' | 'cdk';
 export type DbType = 'sqlite' | 'postgres';
 export type MintUnit = 'sat' | 'usd' | 'eur';
 
+/** App-level (server-persisted) settings driven via `/settings/app`. Each
+ *  field is optional — `undefined` means the settings setup helper skips
+ *  the corresponding form entirely, leaving the server default in place. */
+export type AppSettingValues = {
+	bitcoin_oracle?: boolean;
+	ai_enabled?: boolean;
+	ai_vendor?: 'ollama' | 'openrouter';
+	ai_ollama_api?: string;
+};
+
+/** Device-level (localStorage) settings driven via `/settings/device`. Each
+ *  field is optional — `undefined` skips the form, leaving the localStorage
+ *  key absent so the app falls back to system defaults. */
+export type DeviceSettingValues = {
+	theme?: 'dark-mode' | 'light-mode';
+	locale?: string;
+	timezone?: string;
+	currency_btc?: 'code' | 'glyph';
+	currency_fiat?: 'code' | 'glyph';
+};
+
 /** Named LN peer within a config's topology. `far` is always LND. */
 export type LnNode = 'orchard' | 'alice' | 'far';
 
@@ -42,6 +63,12 @@ interface BaseConfigInfo {
 	mainchain: boolean;
 	orchardUrl: string;
 	setupKey: string;
+	/** Server-persisted settings the settings setup phase applies via
+	 *  `/settings/app`. Absent fields are skipped, leaving server defaults. */
+	appSettings?: AppSettingValues;
+	/** localStorage-persisted settings the settings setup phase applies via
+	 *  `/settings/device`. Absent fields are skipped, leaving system defaults. */
+	deviceSettings?: DeviceSettingValues;
 }
 
 /** Discriminated on `ln`: no-LN stacks (`ln: false`) have no LN containers
@@ -77,6 +104,19 @@ export type ConfigInfo =
 /** The config-agnostic baseline stack. `@canary`-tagged tests run only here. */
 export const CANARY: ConfigName = 'lnd-nutshell-sqlite';
 
+/** Bare feature names enabled on this stack. Single source of truth consumed
+ *  by `tagsFor()` (mapped to `@`-prefixed Playwright tags) and the summary
+ *  reporter's Features row. Add new features here only. */
+export function featuresFor(config: ConfigInfo): string[] {
+	const features: string[] = [];
+	if (config.tapd) features.push('tapd');
+	if (config.bolt12) features.push('bolt12');
+	if (config.mainchain) features.push('mainchain');
+	if (config.appSettings?.ai_enabled === true) features.push('ai');
+	if (config.appSettings?.bitcoin_oracle === true) features.push('oracle');
+	return features;
+}
+
 /** Tags that match this stack's `grep`. Shared between `playwright.config.ts`
  *  and reporters so the rules live in one place. */
 export function tagsFor(config: ConfigInfo): string[] {
@@ -89,9 +129,7 @@ export function tagsFor(config: ConfigInfo): string[] {
 	if (config.bitcoin) tags.push('@bitcoin');
 	else tags.push('@no-bitcoin');
 	if (config.name === CANARY) tags.push('@canary');
-	if (config.tapd) tags.push('@tapd');
-	if (config.bolt12) tags.push('@bolt12');
-	if (config.mainchain) tags.push('@mainchain');
+	for (const feature of featuresFor(config)) tags.push(`@${feature}`);
 	return tags;
 }
 
@@ -142,6 +180,13 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			mint: 'lnd-cdk-sqlite-cdk-mintd',
 		},
 		mintPort: 3339,
+		deviceSettings: {
+			theme: 'light-mode',
+			locale: 'en-GB',
+			timezone: 'America/New_York',
+			currency_btc: 'code',
+			currency_fiat: 'code',
+		},
 	},
 	'cln-cdk-postgres': {
 		name: 'cln-cdk-postgres',
@@ -162,6 +207,16 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			mint: 'cln-cdk-postgres-cdk-mintd',
 		},
 		mintPort: 3339,
+		appSettings: {
+			ai_enabled: true,
+			ai_vendor: 'ollama',
+			ai_ollama_api: 'http://host.docker.internal:11434',
+		},
+		deviceSettings: {
+			theme: 'dark-mode',
+			currency_btc: 'glyph',
+			currency_fiat: 'glyph',
+		},
 	},
 	'cln-nutshell-postgres': {
 		name: 'cln-nutshell-postgres',
@@ -182,6 +237,16 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			mint: 'cln-nutshell-postgres-nutshell',
 		},
 		mintPort: 3338,
+		appSettings: {
+			bitcoin_oracle: true,
+		},
+		deviceSettings: {
+			theme: 'light-mode',
+			locale: 'es-ES',
+			timezone: 'Asia/Tokyo',
+			currency_btc: 'code',
+			currency_fiat: 'glyph',
+		},
 	},
 	'fake-cdk-postgres': {
 		name: 'fake-cdk-postgres',
@@ -196,6 +261,13 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		...BASE,
 		containers: {mint: 'fake-cdk-postgres-cdk-mintd'},
 		mintPort: 3341,
+		deviceSettings: {
+			theme: 'dark-mode',
+			locale: 'de-DE',
+			timezone: 'UTC',
+			currency_btc: 'glyph',
+			currency_fiat: 'code',
+		},
 	},
 };
 
