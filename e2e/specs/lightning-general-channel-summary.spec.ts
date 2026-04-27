@@ -274,10 +274,9 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 		await expect(row.locator('orc-lightning-general-channel .channel-btc').first()).toBeVisible();
 	});
 
-	test('oracle card is not rendered when the bitcoin oracle is off (default)', async ({page}) => {
-		// `bitcoin_oracle_enabled` is false on every regtest fixture (no oracle
-		// seeded). The `@if (row.is_bitcoin && bitcoin_oracle_enabled())` gate
-		// inside the expanded row should therefore never render its children.
+	test('oracle card is not rendered when the bitcoin oracle is off (default)', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		test.skip(config.appSettings?.bitcoin_oracle === true, 'oracle is on for this stack — the off-default branch is unreachable here');
 		const card = await openSummary(page);
 		const row = satRow(card);
 		await row.click();

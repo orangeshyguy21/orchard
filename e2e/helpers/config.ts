@@ -104,6 +104,14 @@ export type ConfigInfo =
 /** The config-agnostic baseline stack. `@canary`-tagged tests run only here. */
 export const CANARY: ConfigName = 'lnd-nutshell-sqlite';
 
+/** Recover the bare config name from any Playwright project name in this
+ *  config — `setup-<config>:<port>`, `settings-<config>:<port>`, or the bare
+ *  `<config>:<port>` real project. Encodes the project-naming convention
+ *  defined in `playwright.config.ts`. */
+export function bareConfigName(projectName: string): string {
+	return projectName.replace(/^setup-/, '').replace(/^settings-/, '').replace(/:\d+$/, '');
+}
+
 /** Bare feature names enabled on this stack. Single source of truth consumed
  *  by `tagsFor()` (mapped to `@`-prefixed Playwright tags) and the summary
  *  reporter's Features row. Add new features here only. */

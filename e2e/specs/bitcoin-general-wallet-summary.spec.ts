@@ -142,7 +142,9 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		expect(ln.onchainSats(config)).toBeGreaterThan(0);
 	});
 
-	test('oracle card is not rendered when the oracle setting is off (default)', async ({page}) => {
+	test('oracle card is not rendered when the oracle setting is off (default)', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		test.skip(config.appSettings?.bitcoin_oracle === true, 'oracle is on for this stack — the off-default branch is unreachable here');
 		const card = await openWalletSummary(page);
 		const row = bitcoinRow(card);
 		await row.click();

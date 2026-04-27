@@ -1,4 +1,4 @@
-import {defineConfig, devices, type Project} from '@playwright/test';
+import {defineConfig, devices, type Project, type ReporterDescription} from '@playwright/test';
 import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
 
 /**
@@ -94,6 +94,19 @@ function grepFor(config: ConfigInfo): RegExp {
 	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
 }
 
+/** Reporter set is base + opt-in JSON (parallel runner sets the file path
+ *  per-child to aggregate) + opt-in HTML on CI. */
+function buildReporters(): ReporterDescription[] {
+	const r: ReporterDescription[] = [['./helpers/summary-reporter.ts'], ['list']];
+	if (process.env.PLAYWRIGHT_JSON_OUTPUT_FILE) {
+		r.push(['json', {outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_FILE}]);
+	}
+	if (process.env.CI) {
+		r.push(['html', {open: 'never', outputFolder: process.env.PLAYWRIGHT_HTML_REPORT_DIR || './e2e/playwright-report'}]);
+	}
+	return r;
+}
+
 function projectsFor(config: ConfigInfo): Project[] {
 	const projectName = `${config.name}:${portOf(config)}`;
 	const setupName = `setup-${projectName}`;
@@ -134,9 +147,7 @@ export default defineConfig({
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 1 : 0,
 	workers: 1,
-	reporter: process.env.CI
-		? [['./helpers/summary-reporter.ts'], ['list'], ['html', {open: 'never', outputFolder: './playwright-report'}]]
-		: [['./helpers/summary-reporter.ts'], ['list']],
+	reporter: buildReporters(),
 	use: {
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',
