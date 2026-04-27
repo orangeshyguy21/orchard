@@ -58,11 +58,20 @@ export type ConfigInfo =
 				lnAlice: string;
 				/** Far-side peer forcing routing through orchard (outbound / forwarding). */
 				lnFar: string;
+				/** The mint daemon container — `nutshell` or `cdk-mintd` flavour
+				 *  per `config.mint`. Used by `backend.mint.getInfo()` to fetch
+				 *  the daemon's live `/v1/info` (NUT-06) over a docker-exec'd
+				 *  curl/wget against the in-container loopback port. */
+				mint: string;
 			};
+			/** In-container port the mint daemon listens on. nutshell pins
+			 *  3338; cdk varies per stack via `mintd.toml`. */
+			mintPort: number;
 	  })
 	| (BaseConfigInfo & {
 			ln: false;
-			containers: Record<string, never>;
+			containers: {mint: string};
+			mintPort: number;
 	  });
 
 /** The config-agnostic baseline stack. `@canary`-tagged tests run only here. */
@@ -71,7 +80,7 @@ export const CANARY: ConfigName = 'lnd-nutshell-sqlite';
 /** Tags that match this stack's `grep`. Shared between `playwright.config.ts`
  *  and reporters so the rules live in one place. */
 export function tagsFor(config: ConfigInfo): string[] {
-	const tags = ['@all', `@${config.mint}`, `@${config.db}`];
+	const tags = ['@all', '@mint', `@${config.mint}`, `@${config.db}`];
 	if (config.ln === false) {
 		tags.push('@no-lightning');
 	} else {
@@ -110,7 +119,9 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'lnd-nutshell-sqlite-lnd-orchard',
 			lnAlice: 'lnd-nutshell-sqlite-lnd-alice',
 			lnFar: 'lnd-nutshell-sqlite-lnd-bob',
+			mint: 'lnd-nutshell-sqlite-nutshell',
 		},
+		mintPort: 3338,
 	},
 	'lnd-cdk-sqlite': {
 		name: 'lnd-cdk-sqlite',
@@ -128,7 +139,9 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'lnd-cdk-sqlite-lnd-orchard',
 			lnAlice: 'lnd-cdk-sqlite-lnd-alice',
 			lnFar: 'lnd-cdk-sqlite-lnd-bob',
+			mint: 'lnd-cdk-sqlite-cdk-mintd',
 		},
+		mintPort: 3339,
 	},
 	'cln-cdk-postgres': {
 		name: 'cln-cdk-postgres',
@@ -146,7 +159,9 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'cln-cdk-postgres-cln-orchard',
 			lnAlice: 'cln-cdk-postgres-cln-alice',
 			lnFar: 'cln-cdk-postgres-lnd-carol',
+			mint: 'cln-cdk-postgres-cdk-mintd',
 		},
+		mintPort: 3339,
 	},
 	'cln-nutshell-postgres': {
 		name: 'cln-nutshell-postgres',
@@ -164,7 +179,9 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'cln-nutshell-postgres-cln-orchard',
 			lnAlice: 'cln-nutshell-postgres-cln-alice',
 			lnFar: 'cln-nutshell-postgres-lnd-carol',
+			mint: 'cln-nutshell-postgres-nutshell',
 		},
+		mintPort: 3338,
 	},
 	'fake-cdk-postgres': {
 		name: 'fake-cdk-postgres',
@@ -177,7 +194,8 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		mainchain: false,
 		orchardUrl: 'http://localhost:3326',
 		...BASE,
-		containers: {},
+		containers: {mint: 'fake-cdk-postgres-cdk-mintd'},
+		mintPort: 3341,
 	},
 };
 

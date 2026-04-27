@@ -40,6 +40,11 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *                          would under-include.
  *   @no-bitcoin          — app-state: Orchard booted without BITCOIN_TYPE;
  *                          runs on fake-cdk-postgres only
+ *   @mint                — app-state: a mint backend (cdk or nutshell) is
+ *                          wired up. Every shipped stack has one today, so
+ *                          this currently matches `@all` — it exists so
+ *                          mint-feature specs read honestly and can be
+ *                          grepped on their own (`--grep @mint`).
  *   @lnd / @cln          — LN impl-name tags; runs on stacks with matching ln.
  *                          Reserve for impl-specific behavior — most specs
  *                          want @lightning / @no-lightning instead.

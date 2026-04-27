@@ -24,7 +24,7 @@
  *     in CI)
  *   - degenerate `block: null` empty-cell render (mid-flight first-paint
  *     state, hard to reach without query-timing manipulation)
- * See `index-subsection-dashboard-bitcoin-enabled-syncing.md` for the full
+ * See `bitcoin-syncing.md` for the full
  * state machine.
  */
 

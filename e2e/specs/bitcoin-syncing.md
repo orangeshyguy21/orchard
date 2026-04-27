@@ -145,7 +145,7 @@ The child is purely presentational: no inputs are reactive in the spinner itself
 
 ## Test fidelity hooks
 
-No e2e spec exists yet for this component — when added, the file should be `e2e/specs/index-subsection-dashboard-bitcoin-enabled-syncing.spec.ts` per the BUILD_PLAN colocation rule. The Karma unit spec [`index-subsection-dashboard-bitcoin-enabled-syncing.component.spec.ts`](../../src/client/modules/index/modules/index-subsection-dashboard/components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component.spec.ts) currently only asserts component creation.
+The e2e spec lives at `e2e/specs/bitcoin-syncing.spec.ts`. The Karma unit spec [`index-subsection-dashboard-bitcoin-enabled-syncing.component.spec.ts`](../../src/client/modules/index/modules/index-subsection-dashboard/components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component.spec.ts) currently only asserts component creation.
 
 The wrinkle for e2e: every shipped docker stack starts with bitcoind already in a fully-synced regtest state, so this card is **never live** in the default fixture. The spec **skips when the chain is synced** — each `test()` reads `bitcoind getblockchaininfo` directly via `btc.getBlockchainInfo(config)` in its body and calls `test.skip(is_synced, ...)` before any UI assertion. Cheap to write, zero false positives. The trade-off is that on a vanilla regtest stack the spec never actually exercises render logic — it'll only run when an operator (or a future fixture) starts the stack from a partially-synced state, e.g. by pointing bitcoind at an external mainchain peer (`compose.mainchain.yml`).
 

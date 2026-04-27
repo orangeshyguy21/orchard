@@ -7,7 +7,7 @@
 /* Core Dependencies */
 import {execFileSync} from 'child_process';
 
-function dockerExec(args: string[]): string {
+export function dockerExec(args: string[]): string {
 	return execFileSync('docker', args, {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']}).trim();
 }
 
