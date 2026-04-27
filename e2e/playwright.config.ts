@@ -33,6 +33,11 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *                          with a real LN backend (config.ln !== false)
  *   @no-lightning        — app-state: Orchard booted without LIGHTNING_TYPE;
  *                          runs on fake-cdk-postgres only
+ *   @bitcoin             — app-state: BITCOIN_TYPE wired; runs on stacks with
+ *                          a real bitcoind backend (config.bitcoin === true).
+ *                          Use for UI gated on the bitcoin tile mounting,
+ *                          where @lightning would over-include or @canary
+ *                          would under-include.
  *   @no-bitcoin          — app-state: Orchard booted without BITCOIN_TYPE;
  *                          runs on fake-cdk-postgres only
  *   @lnd / @cln          — LN impl-name tags; runs on stacks with matching ln.

@@ -80,8 +80,11 @@ function digitsFrom(text: string): number {
 	return parseInt(text.replace(/\D/g, ''), 10);
 }
 
-/** Title renders on every stack — card presence + label is not LN-gated. */
-test.describe('bitcoin-general-wallet-summary — card', {tag: '@all'}, () => {
+/** Title renders on every stack where the bitcoin tile mounts. The card lives
+ *  inside `orc-index-subsection-dashboard-bitcoin-enabled`, so on no-bitcoin
+ *  stacks (fake-cdk-postgres) it never renders — `@bitcoin` skips them via
+ *  the project grep, same way `@lightning` skips no-LN stacks below. */
+test.describe('bitcoin-general-wallet-summary — card', {tag: '@bitcoin'}, () => {
 	test.beforeEach(async ({page}) => {
 		await page.goto('/');
 	});

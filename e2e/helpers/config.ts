@@ -77,7 +77,8 @@ export function tagsFor(config: ConfigInfo): string[] {
 	} else {
 		tags.push(`@${config.ln}`, '@lightning');
 	}
-	if (!config.bitcoin) tags.push('@no-bitcoin');
+	if (config.bitcoin) tags.push('@bitcoin');
+	else tags.push('@no-bitcoin');
 	if (config.name === CANARY) tags.push('@canary');
 	if (config.tapd) tags.push('@tapd');
 	if (config.bolt12) tags.push('@bolt12');
