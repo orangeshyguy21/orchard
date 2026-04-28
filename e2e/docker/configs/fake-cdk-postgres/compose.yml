@@ -124,8 +124,8 @@ services:
     networks: [net]
     volumes:
       - shared:/shared
-      - ../../scripts/gen-bolt11s.py:/gen-bolt11s.py:ro
-    entrypoint: ["python", "/gen-bolt11s.py", "/shared/fake-bolt11s.json"]
+      - ../../scripts/gen-bolt11s.js:/app/gen-bolt11s.js:ro
+    entrypoint: ["node", "/app/gen-bolt11s.js", "/shared/fake-bolt11s.json"]
     restart: "no"
 
   # One-shot. See activity-fake.sh for per-unit knobs.
