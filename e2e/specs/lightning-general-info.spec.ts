@@ -63,7 +63,10 @@ async function openUriDialog(page: Page): Promise<Locator> {
 	const card = await openInfoCard(page);
 	await card.locator('mat-chip').first().click();
 	const dialog = page.locator('orc-network-connection');
-	await expect(dialog).toBeVisible();
+	// Wait for the component's data-bound content, not just the wrapper —
+	// Material mounts the wrapper before the inner template fills in, and
+	// under worker contention assertions can hit that gap.
+	await expect(dialog.locator('.mega-string')).toBeVisible();
 	return dialog;
 }
 

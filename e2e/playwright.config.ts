@@ -1,4 +1,4 @@
-import {defineConfig, devices, type Project, type ReporterDescription} from '@playwright/test';
+import {defineConfig, devices, type Project} from '@playwright/test';
 import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
 
 /**
@@ -22,8 +22,14 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  * stack lifetime instead of per-spec, and bakes its results into storageState
  * so specs continue to start in a fully-configured Orchard.
  *
- * `workers: 1` per project because within-project tests share Orchard state
- * (admin user, channels, wallet balances) and races produce flakes.
+ * `workers` is set to one slot per stack so all 5 stacks' setup chains run
+ * in parallel and the spec phase distributes spec files across stacks. The
+ * setup → settings → specs chain inside each stack is preserved by project
+ * `dependencies`, independent of worker count. Tests within a single spec
+ * file still run in source order on one worker (`fullyParallel: false`,
+ * Playwright's default) — if a spec file mutates shared Orchard state and
+ * flakes when run alongside other files, mark that file with
+ * `test.describe.configure({mode: 'serial'})`.
  *
  * Storage state path is cwd-relative; `npm run e2e:test` always runs from
  * the repo root, so `e2e/.auth/<name>.json` lands under `e2e/.auth/` where
@@ -94,19 +100,6 @@ function grepFor(config: ConfigInfo): RegExp {
 	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
 }
 
-/** Reporter set is base + opt-in JSON (parallel runner sets the file path
- *  per-child to aggregate) + opt-in HTML on CI. */
-function buildReporters(): ReporterDescription[] {
-	const r: ReporterDescription[] = [['./helpers/summary-reporter.ts'], ['list']];
-	if (process.env.PLAYWRIGHT_JSON_OUTPUT_FILE) {
-		r.push(['json', {outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_FILE}]);
-	}
-	if (process.env.CI) {
-		r.push(['html', {open: 'never', outputFolder: process.env.PLAYWRIGHT_HTML_REPORT_DIR || './e2e/playwright-report'}]);
-	}
-	return r;
-}
-
 function projectsFor(config: ConfigInfo): Project[] {
 	const projectName = `${config.name}:${portOf(config)}`;
 	const setupName = `setup-${projectName}`;
@@ -146,8 +139,10 @@ export default defineConfig({
 	expect: {timeout: 5_000},
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 1 : 0,
-	workers: 1,
-	reporter: buildReporters(),
+	workers: Object.keys(CONFIGS).length,
+	reporter: process.env.CI
+		? [['./helpers/summary-reporter.ts'], ['list'], ['html', {open: 'never', outputFolder: './e2e/playwright-report'}]]
+		: [['./helpers/summary-reporter.ts'], ['list']],
 	use: {
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',
