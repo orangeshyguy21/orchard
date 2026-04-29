@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output, signal} from '@angular/core';
 /* Application Dependencies */
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
@@ -20,7 +20,7 @@ import {MintUnit} from '@shared/generated.types';
 	styleUrl: './mint-general-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintGeneralBalanceSheetComponent implements OnChanges {
+export class MintGeneralBalanceSheetComponent {
 	public navigate = output<void>();
 
 	public balances = input.required<MintBalance[]>();
@@ -35,24 +35,11 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 	public device_type = input.required<DeviceType>();
 
 	public expanded = signal<Record<string, boolean>>({});
-	public rows = signal<MintGeneralBalanceRow[]>([]);
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading() === false) {
-			this.init();
-		}
-		if (changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
-			this.init();
-		}
-		if (changes['bitcoin_oracle_price'] && !changes['bitcoin_oracle_price'].firstChange && this.bitcoin_oracle_price() !== null) {
-			this.init();
-		}
-	}
-
-	private init(): void {
-		const rows = this.getRows();
-		this.rows.set(rows);
-	}
+	public readonly rows = computed<MintGeneralBalanceRow[]>(() => {
+		if (this.loading()) return [];
+		return this.computeRows();
+	});
 
 	private getAssetBalances(unit: MintUnit): number | null {
 		const lightning_balance = this.lightning_balance();
@@ -61,7 +48,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 		return null;
 	}
 
-	private getRows(): MintGeneralBalanceRow[] {
+	private computeRows(): MintGeneralBalanceRow[] {
 		const rows_by_unit: Record<string, MintGeneralBalanceRow> = {};
 		const keysets = this.keysets();
 		const balances = this.balances();
