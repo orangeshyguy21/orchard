@@ -11,7 +11,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {MAT_LUXON_DATE_ADAPTER_OPTIONS} from '@angular/material-luxon-adapter';
+import {MAT_LUXON_DATE_ADAPTER_OPTIONS, provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -62,6 +62,7 @@ import {BitcoinSubsectionOracleRunProgressSummaryComponent} from './components/b
 		OrcSettingsGeneralModule,
 	],
 	providers: [
+		provideLuxonDateAdapter(),
 		{
 			provide: MAT_LUXON_DATE_ADAPTER_OPTIONS,
 			useValue: {
