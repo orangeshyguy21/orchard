@@ -1,5 +1,6 @@
 import {defineConfig, devices, type Project} from '@playwright/test';
-import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
+import {CONFIGS, portOf, tagsFor} from './helpers/config';
+import type {ConfigInfo} from './types/config';
 
 /**
  * One project per Docker config. Stack must be running (`npm run e2e:up <config>`)
@@ -154,6 +155,7 @@ function projectsFor(config: ConfigInfo): Project[] {
 }
 
 export default defineConfig({
+	tsconfig: './tsconfig.json',
 	outputDir: './test-results',
 	timeout: 30_000,
 	expect: {timeout: 5_000},

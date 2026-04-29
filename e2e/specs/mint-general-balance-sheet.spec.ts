@@ -37,9 +37,9 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig, mintUnitsFor} from '../helpers/config';
-import {ln, mint, orchard} from '../helpers/backend';
-import {oracleHasRecentData, requireReady} from '../helpers/readiness';
+import {getConfig, mintUnitsFor} from '@e2e/helpers/config';
+import {ln, mint, orchard} from '@e2e/helpers/backend';
+import {oracleHasRecentData, requireReady} from '@e2e/helpers/ui/readiness';
 
 async function openSheet(page: Page): Promise<Locator> {
 	// Both `/` (dashboard tile) and `/mint` (subsection dashboard) host one

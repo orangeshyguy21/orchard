@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "ES2023",
+		"lib": ["ES2023", "dom"],
+		"types": ["node"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"baseUrl": "./",
+		"paths": {
+			"@e2e/*": ["./*"]
+		}
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["supertest/**/*", "test-results/**/*", "playwright-report/**/*"]
+}

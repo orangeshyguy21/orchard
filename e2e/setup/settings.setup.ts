@@ -7,8 +7,8 @@
  */
 
 import {test as setup} from '@playwright/test';
-import {applySettings} from '../helpers/settings';
-import {projectConfig, projectStatePath} from '../helpers/setup';
+import {applySettings} from '@e2e/helpers/ui/settings';
+import {projectConfig, projectStatePath} from '@e2e/helpers/ui/setup';
 
 setup('apply app + device settings', {tag: '@all'}, async ({page}, testInfo) => {
 	await applySettings(page, projectConfig(testInfo, 'settings'));

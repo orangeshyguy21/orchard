@@ -45,8 +45,8 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {ln, tap} from '../helpers/backend';
+import {getConfig} from '@e2e/helpers/config';
+import {ln, tap} from '@e2e/helpers/backend';
 
 async function openWalletSummary(page: Page): Promise<Locator> {
 	const card = page.locator('orc-bitcoin-general-wallet-summary');

@@ -11,9 +11,9 @@
  */
 
 import {test as setup, expect, type Page} from '@playwright/test';
-import {TEST_ADMIN} from '../helpers/config';
-import {loginViaUi} from '../helpers/auth';
-import {projectConfig, projectStatePath} from '../helpers/setup';
+import {TEST_ADMIN} from '@e2e/helpers/config';
+import {loginViaUi} from '@e2e/helpers/ui/auth';
+import {projectConfig, projectStatePath} from '@e2e/helpers/ui/setup';
 
 const isSetupForm = (page: Page) => /\/auth\/setup/.test(page.url());
 

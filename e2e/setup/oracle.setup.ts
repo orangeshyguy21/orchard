@@ -21,7 +21,7 @@
 
 import {test as setup, expect, type Page} from '@playwright/test';
 import {DateTime} from 'luxon';
-import {mainchainSynced, requireReady, oracleHasRecentData, getReadiness} from '../helpers/readiness';
+import {mainchainSynced, requireReady, oracleHasRecentData, getReadiness} from '@e2e/helpers/ui/readiness';
 
 const BACKFILL_TIMEOUT_MS = 5 * 60_000;
 

@@ -23,9 +23,9 @@
 
 import {test, expect, type Locator, type Page, type Response} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {btc} from '../helpers/backend';
-import {matchGql} from '../helpers/gql-intercept';
+import {getConfig} from '@e2e/helpers/config';
+import {btc} from '@e2e/helpers/backend';
+import {matchGql} from '@e2e/helpers/ui/gql-intercept';
 
 /** Mirrors the client's `dataBytes` pipe — used to assert size rendering
  *  against `bitcoin-cli` output in the same unit the UI picks. */

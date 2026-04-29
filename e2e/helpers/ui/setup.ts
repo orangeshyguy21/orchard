@@ -1,5 +1,6 @@
 import {type Page, type TestInfo, expect} from '@playwright/test';
-import {TEST_ADMIN, getConfig, type ConfigInfo} from './config';
+import {TEST_ADMIN, getConfig} from '@e2e/helpers/config';
+import type {ConfigInfo} from '@e2e/types/config';
 
 /** Setup-tier project name is `<prefix>-<config>:<port>` — strip both to
  *  recover the bare config name. */

@@ -1,6 +1,7 @@
 import {type Page, expect} from '@playwright/test';
-import {TEST_ADMIN, type ConfigInfo} from './config';
+import {TEST_ADMIN} from '@e2e/helpers/config';
 import {completeSetup} from './setup';
+import type {ConfigInfo} from '@e2e/types/config';
 
 /**
  * Ensures the page ends up authenticated as the seed admin, regardless of

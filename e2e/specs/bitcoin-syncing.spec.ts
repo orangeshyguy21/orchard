@@ -30,8 +30,8 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {btc} from '../helpers/backend';
+import {getConfig} from '@e2e/helpers/config';
+import {btc} from '@e2e/helpers/backend';
 
 interface BlockchainInfo {
 	initialblockdownload: boolean;

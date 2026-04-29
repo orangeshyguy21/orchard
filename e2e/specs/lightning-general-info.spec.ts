@@ -30,8 +30,8 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {ln} from '../helpers/backend';
+import {getConfig} from '@e2e/helpers/config';
+import {ln} from '@e2e/helpers/backend';
 
 /** Raw getinfo shape — we only read fields that LND and CLN both emit under
  *  the same name. Both backends expose these exact keys on regtest. */

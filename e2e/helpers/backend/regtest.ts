@@ -1,6 +1,7 @@
 /* Native Dependencies */
 import {btcCli, lndCli, clnCli} from './docker-cli';
-import {containerBitcoind, containerForNode, isLnd, lndDirForNode, type ConfigInfo, type LnNode} from './config';
+import {containerBitcoind, containerForNode, isLnd, lndDirForNode} from '@e2e/helpers/config';
+import type {ConfigInfo, LnNode} from '@e2e/types/config';
 
 /** Mine `blocks` regtest blocks to a throwaway address. */
 export function mine(config: ConfigInfo, blocks: number): void {

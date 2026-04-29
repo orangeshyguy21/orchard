@@ -61,8 +61,8 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {mint, type MintNutInfo} from '../helpers/backend';
+import {getConfig} from '@e2e/helpers/config';
+import {mint} from '@e2e/helpers/backend';
 
 async function openInfoCard(page: Page): Promise<Locator> {
 	// Dashboard tile renders the card with the "Open Mint" FAB projected.

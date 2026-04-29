@@ -9,7 +9,7 @@
  */
 
 import {expect, type Locator, type Page} from '@playwright/test';
-import {type AppSettingValues, type ConfigInfo, type DeviceSettingValues} from './config';
+import type {AppSettingValues, ConfigInfo, DeviceSettingValues} from '@e2e/types/config';
 
 /** Click the form-toggle inside `card` whose visible label matches. Sibling
  *  toggles render identical templates — scoping to the card is enough. */

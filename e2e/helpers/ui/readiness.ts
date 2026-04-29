@@ -9,26 +9,7 @@
  */
 
 import {type Page, test} from '@playwright/test';
-
-export interface BlockchainInfo {
-	verificationprogress: number;
-	initialblockdownload: boolean;
-	blocks: number;
-}
-
-export interface OraclePrice {
-	date: number;
-	price: number;
-}
-
-export interface Readiness {
-	bitcoin: BlockchainInfo;
-	oracle_recent: OraclePrice[];
-}
-
-export interface ReadinessPredicate {
-	(r: Readiness): {ok: boolean; reason: string};
-}
+import type {BlockchainInfo, OraclePrice, Readiness, ReadinessPredicate} from '@e2e/types/readiness';
 
 const BITCOIN_BLOCKCHAIN_INFO_QUERY = `{ bitcoin_blockchain_info { verificationprogress initialblockdownload blocks } }`;
 const BITCOIN_ORACLE_RECENT_QUERY = `query Recent($start_date: UnixTimestamp, $end_date: UnixTimestamp) {
