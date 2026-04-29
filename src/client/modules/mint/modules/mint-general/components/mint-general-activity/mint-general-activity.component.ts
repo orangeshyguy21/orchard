@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, output, signal} from '@angular/core';
 /* Vendor Dependencies */
 import {ChartConfiguration} from 'chart.js';
 /* Application Dependencies */
@@ -23,11 +23,12 @@ type PeriodOption = {
 	styleUrl: './mint-general-activity.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintGeneralActivityComponent implements OnChanges {
+export class MintGeneralActivityComponent {
 	// ── Injected dependencies ──
 	private readonly chartService = inject(ChartService);
 	private readonly themeService = inject(ThemeService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly cdr = inject(ChangeDetectorRef);
 
 	// ── Inputs / Outputs ──
 	public summary = input.required<MintActivitySummary | null>();
@@ -57,10 +58,14 @@ export class MintGeneralActivityComponent implements OnChanges {
 	public swap_chart_data: ChartConfiguration<'line'>['data'] | null = null;
 	public sparkline_options: ChartConfiguration<'line'>['options'] = this.buildSparklineOptions();
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && !changes['loading'].firstChange) {
-			if (this.loading() === false) this.initCharts();
-		}
+	constructor() {
+		effect(() => {
+			const summary = this.summary();
+			if (!summary) return;
+			if (this.loading() || this.error()) return;
+			this.initCharts();
+			this.cdr.markForCheck();
+		});
 	}
 
 	/** Handles period selection from the mat-menu */
