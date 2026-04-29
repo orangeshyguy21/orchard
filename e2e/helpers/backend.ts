@@ -107,6 +107,28 @@ export const ln = {
 		if (opts.activeOnly) return active;
 		return active + (info.num_inactive_channels ?? 0);
 	},
+
+	/** Normalized "is this LN node fully synced" boolean, matching what
+	 *  `orc-lightning-general-info`'s `state` computed renders:
+	 *    state = error ? 'offline' : (synced ? 'online' : 'syncing')
+	 *
+	 *  LND emits `synced_to_chain` / `synced_to_graph` directly. CLN has no
+	 *  such field — sync state is encoded as the *absence* of the
+	 *  `warning_lightningd_sync` / `warning_bitcoind_sync` fields on getinfo.
+	 *
+	 *  On regtest LND, `synced_to_chain` flips false when no fresh blocks
+	 *  have been mined recently (no continuous block flow), so this helper
+	 *  legitimately returns false on idle LND stacks. CLN's regtest behavior
+	 *  is gentler — its sync warnings only fire on real desync, not idle. */
+	synced(config: ConfigInfo, node: LnNode = 'orchard'): boolean {
+		const info = ln.getInfo(config, node);
+		if (isLnd(config, node)) {
+			const i = info as {synced_to_chain?: boolean; synced_to_graph?: boolean};
+			return !!i.synced_to_chain && !!i.synced_to_graph;
+		}
+		const i = info as {warning_lightningd_sync?: string | null; warning_bitcoind_sync?: string | null};
+		return !i.warning_lightningd_sync && !i.warning_bitcoind_sync;
+	},
 };
 
 /** NUT-06 `/v1/info` shape, narrowed to the fields the dashboard's mint

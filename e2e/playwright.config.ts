@@ -6,7 +6,7 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  * before `npm run e2e:test` — there's no webServer hook because each project's
  * stack is bespoke.
  *
- * Each config gets THREE Playwright projects, chained via `dependencies`:
+ * Each config gets FOUR Playwright projects, chained via `dependencies`:
  *   1. `setup-<config>`     — runs `auth.setup.ts`, writes initial storage
  *                             state to `e2e/.auth/<config>.json`.
  *   2. `settings-<config>`  — depends on (1), loads that storage state, runs
@@ -14,13 +14,20 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  *                             settings matrix via the `/settings/app` and
  *                             `/settings/device` UIs, and writes the now-
  *                             populated state back to the same file.
- *   3. `<config>`           — depends on (2), loads the settings-augmented
+ *   3. `oracle-<config>`    — depends on (2), runs `oracle.setup.ts` to
+ *                             stage backend state that downstream `@oracle`
+ *                             specs depend on (drives the Backfill Prices
+ *                             flow for yesterday). Tagged `@oracle` so it
+ *                             matches zero tests on stacks without the
+ *                             feature, completing instantly there.
+ *   4. `<config>`           — depends on (3), loads the settings-augmented
  *                             state, runs the actual specs.
  * The auth split amortizes login across every spec — Orchard's auth throttler
  * (~4 req/10s) would otherwise trip around the 5th login per config. The
  * settings split keeps the operator-driven settings UI exercised once per
  * stack lifetime instead of per-spec, and bakes its results into storageState
- * so specs continue to start in a fully-configured Orchard.
+ * so specs continue to start in a fully-configured Orchard. The oracle split
+ * stages backend state (price feed) without touching storageState.
  *
  * `workers` is set to one slot per stack so all 5 stacks' setup chains run
  * in parallel and the spec phase distributes spec files across stacks. The
@@ -97,13 +104,18 @@ import {CONFIGS, portOf, tagsFor, type ConfigInfo} from './helpers/config';
  */
 
 function grepFor(config: ConfigInfo): RegExp {
-	return new RegExp(tagsFor(config).map((t) => `(${t})`).join('|'));
+	return new RegExp(
+		tagsFor(config)
+			.map((t) => `(${t})`)
+			.join('|'),
+	);
 }
 
 function projectsFor(config: ConfigInfo): Project[] {
 	const projectName = `${config.name}:${portOf(config)}`;
 	const setupName = `setup-${projectName}`;
 	const settingsName = `settings-${projectName}`;
+	const oracleName = `oracle-${projectName}`;
 	const baseURL = config.orchardUrl;
 	const storageState = `e2e/.auth/${config.name}.json`;
 	return [
@@ -123,10 +135,18 @@ function projectsFor(config: ConfigInfo): Project[] {
 			use: {...devices['Desktop Chrome'], baseURL, storageState},
 		},
 		{
+			name: oracleName,
+			testDir: './setup',
+			testMatch: /oracle\.setup\.ts$/,
+			dependencies: [settingsName],
+			grep: grepFor(config),
+			use: {...devices['Desktop Chrome'], baseURL, storageState},
+		},
+		{
 			name: projectName,
 			testDir: './specs',
 			testMatch: /.*\.spec\.ts$/,
-			dependencies: [settingsName],
+			dependencies: [oracleName],
 			grep: grepFor(config),
 			use: {...devices['Desktop Chrome'], baseURL, storageState},
 		},
@@ -145,7 +165,9 @@ export default defineConfig({
 		: [['./helpers/summary-reporter.ts'], ['list']],
 	use: {
 		trace: 'retain-on-failure',
-		screenshot: 'only-on-failure',
+		screenshot: {mode: 'only-on-failure', fullPage: true},
+		// fullPage: failure screenshots capture the full scrollable document so
+		// rows that render below the viewport on tall dashboards are visible.
 	},
 	projects: Object.values(CONFIGS).flatMap(projectsFor),
 });
