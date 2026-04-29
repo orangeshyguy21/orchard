@@ -54,6 +54,39 @@ export const ln = {
 		});
 	},
 
+	/** Count of addresses on the orchard node's LN wallet that carry a non-zero
+	 *  balance. Mirrors the bitcoin-general-wallet-summary card's UTXO count
+	 *  (`row.utxos`), which the component derives from
+	 *  `lightning_accounts().flatMap(a => a.addresses).filter(b > 0).length` —
+	 *  i.e. the same `ListAddresses` data the server's
+	 *  `LightningWalletKitService.getLightningAddresses()` returns, mapped from
+	 *  the LN node's wallet directly. The label says "UTXO" but the underlying
+	 *  unit is "funded address" — multiple UTXOs at one address aggregate to
+	 *  one row. Cached: addresses are append-only and the regtest fixtures
+	 *  don't move funds between addresses mid-test.
+	 *
+	 *  LND: `lncli wallet addresses list` (the CLI form of the same RPC the
+	 *  server uses), flatten all accounts' addresses, count `balance > 0`.
+	 *  CLN: `lightning-cli listfunds.outputs` filtered by `status === 'confirmed'`,
+	 *  count distinct `address` — server-side `mapClnAddresses` builds a
+	 *  per-address sum from the same outputs and the resulting addresses-with-
+	 *  positive-balance match the distinct address count exactly. */
+	fundedAddressCount(config: ConfigInfo): number {
+		if (config.ln === false) throw new Error(`no LN on ${config.name}`);
+		return cached(`ln.fundedAddressCount:${config.name}`, () => {
+			const container = config.containers.lnOrchard;
+			if (config.ln === 'lnd') {
+				const out = lndCliJson<{
+					account_with_addresses: Array<{addresses: Array<{balance?: string}>}>;
+				}>(container, ['wallet', 'addresses', 'list'], lndDirForNode(config, 'orchard'));
+				return out.account_with_addresses.flatMap((a) => a.addresses).filter((x) => parseInt(x.balance ?? '0', 10) > 0).length;
+			}
+			const funds = clnCliJson<{outputs: Array<{address?: string; status?: string}>}>(container, ['listfunds']);
+			const distinct = new Set(funds.outputs.filter((o) => o.status === 'confirmed' && !!o.address).map((o) => o.address!));
+			return distinct.size;
+		});
+	},
+
 	/** Local channel balance (sats) on the orchard-side LN node, summed across
 	 *  open NON-asset channels. Matches what `orc-mint-general-balance-sheet`
 	 *  displays in the bitcoin row's assets cell — its
@@ -66,9 +99,14 @@ export const ln = {
 	 *  same non-asset filter `parseLndCustomChannelData` uses upstream). Note we
 	 *  do NOT use `lncli channelbalance` — it aggregates ALL channels including
 	 *  asset ones, which inflates the value on tapd-enabled stacks.
-	 *  CLN: sum `to_us_msat` across `listpeerchannels` rows in `CHANNELD_NORMAL`
-	 *  (CLN has no asset-channel concept, so no filter needed beyond state),
-	 *  then truncate-divide by 1000 to match the cln helper's sat conversion. */
+	 *  CLN: per-channel `floor(to_us_msat / 1000)` summed across
+	 *  `listpeerchannels` rows in `CHANNELD_NORMAL`. The truncate-per-channel
+	 *  step matters — `mapClnChannels` does `BigInt(to_us_msat) / 1000n` per
+	 *  row (BigInt integer division ⇒ floor) before summing, and the channel
+	 *  summary card sums those already-truncated sat values. Summing in msat
+	 *  first and truncating once at the end over-counts by up to 1 sat per
+	 *  channel with non-msat-aligned balances, which is enough to push the
+	 *  oracle USD-cents differential off by 1 cent on multi-channel fixtures. */
 	localChannelBalance(config: ConfigInfo): number {
 		if (config.ln === false) throw new Error(`no LN on ${config.name}`);
 		const container = config.containers.lnOrchard;
@@ -82,12 +120,104 @@ export const ln = {
 				.filter((c) => !c.custom_channel_data || c.custom_channel_data === '')
 				.reduce((sum, c) => sum + parseInt(c.local_balance ?? '0', 10), 0);
 		}
-		// cln
+		// cln — truncate per channel to match `mapClnChannels`' BigInt division.
 		const lpc = clnCliJson<{channels: Array<{state: string; to_us_msat: number}>}>(container, ['listpeerchannels']);
-		const total_msat = lpc.channels
+		return lpc.channels
 			.filter((c) => c.state === 'CHANNELD_NORMAL')
-			.reduce((sum, c) => sum + Number(c.to_us_msat ?? 0), 0);
-		return Math.floor(total_msat / 1000);
+			.reduce((sum, c) => sum + Math.floor(Number(c.to_us_msat ?? 0) / 1000), 0);
+	},
+
+	/** Remote channel balance (sats) on the orchard-side LN node, summed across
+	 *  open NON-asset channels. Mirror of `localChannelBalance` — used by the
+	 *  channel summary's oracle-card "Remote capacity" differential. NOT cached:
+	 *  same payment-flow rationale as `localChannelBalance`.
+	 *
+	 *  LND: `lncli listchannels` non-asset rows, sum `remote_balance`.
+	 *  CLN: per-channel `floor((total_msat - to_us_msat) / 1000)` summed across
+	 *  `CHANNELD_NORMAL` rows — same per-channel-truncate rationale as
+	 *  `localChannelBalance`. */
+	remoteChannelBalance(config: ConfigInfo): number {
+		if (config.ln === false) throw new Error(`no LN on ${config.name}`);
+		const container = config.containers.lnOrchard;
+		if (config.ln === 'lnd') {
+			const lc = lndCliJson<{channels: Array<{remote_balance?: string; custom_channel_data?: string}>}>(
+				container,
+				['listchannels'],
+				lndDirForNode(config, 'orchard'),
+			);
+			return lc.channels
+				.filter((c) => !c.custom_channel_data || c.custom_channel_data === '')
+				.reduce((sum, c) => sum + parseInt(c.remote_balance ?? '0', 10), 0);
+		}
+		const lpc = clnCliJson<{channels: Array<{state: string; total_msat: number; to_us_msat: number}>}>(container, ['listpeerchannels']);
+		return lpc.channels
+			.filter((c) => c.state === 'CHANNELD_NORMAL')
+			.reduce((sum, c) => sum + Math.floor((Number(c.total_msat ?? 0) - Number(c.to_us_msat ?? 0)) / 1000), 0);
+	},
+
+	/** Total capacity (sats) across the orchard node's open NON-asset channels.
+	 *  Mirrors the channel summary card's sat-row `size` aggregation: the sum of
+	 *  `channel.capacity` for `summary_type === 'open'`, or only the active
+	 *  channels for `'active'`. Cached — capacity is fixed at channel-open time
+	 *  and the regtest fixtures don't open new channels mid-run.
+	 *
+	 *  LND: `lncli listchannels` (or `--active_only`), filter empty
+	 *  `custom_channel_data`, sum `capacity`. CLN: sum `total_msat` across
+	 *  `CHANNELD_NORMAL` rows in `listpeerchannels` (filtered by
+	 *  `peer_connected` for `activeOnly`), then /1000. */
+	satChannelCapacity(config: ConfigInfo, opts: {activeOnly?: boolean} = {}): number {
+		if (config.ln === false) throw new Error(`no LN on ${config.name}`);
+		return cached(`ln.satChannelCapacity:${config.name}:${!!opts.activeOnly}`, () => {
+			const container = config.containers.lnOrchard;
+			if (config.ln === 'lnd') {
+				const args = ['listchannels'];
+				if (opts.activeOnly) args.push('--active_only');
+				const lc = lndCliJson<{channels: Array<{capacity?: string; custom_channel_data?: string}>}>(
+					container,
+					args,
+					lndDirForNode(config, 'orchard'),
+				);
+				return lc.channels
+					.filter((c) => !c.custom_channel_data || c.custom_channel_data === '')
+					.reduce((sum, c) => sum + parseInt(c.capacity ?? '0', 10), 0);
+			}
+			const lpc = clnCliJson<{channels: Array<{state: string; total_msat: number; peer_connected?: boolean}>}>(
+				container,
+				['listpeerchannels'],
+			);
+			let normal = lpc.channels.filter((c) => c.state === 'CHANNELD_NORMAL');
+			if (opts.activeOnly) normal = normal.filter((c) => !!c.peer_connected);
+			// Truncate per channel to match `mapClnChannels`' BigInt division —
+			// same rationale as `localChannelBalance` / `remoteChannelBalance`.
+			// (Capacity is normally msat-aligned at open time so this is
+			// usually a no-op, but consistency is cheap and safe.)
+			return normal.reduce((sum, c) => sum + Math.floor(Number(c.total_msat ?? 0) / 1000), 0);
+		});
+	},
+
+	/** Closed sat-channel count on the orchard node. Mirrors what Orchard's
+	 *  `lightning_closed_channels` resolver returns (filtered to non-asset
+	 *  channels for parity with the channel summary card's sat row). Cached —
+	 *  closures are append-only and the fixtures never close channels.
+	 *
+	 *  LND: `lncli closedchannels`, count rows with empty `custom_channel_data`.
+	 *  CLN: `lightning-cli listclosedchannels`, count `closedchannels` array
+	 *  (CLN has no asset-channel concept). */
+	closedChannelCount(config: ConfigInfo): number {
+		if (config.ln === false) throw new Error(`no LN on ${config.name}`);
+		return cached(`ln.closedChannelCount:${config.name}`, () => {
+			const container = config.containers.lnOrchard;
+			if (config.ln === 'lnd') {
+				const cc = lndCliJson<{channels: Array<{custom_channel_data?: string}>}>(
+					container,
+					['closedchannels'],
+					lndDirForNode(config, 'orchard'),
+				);
+				return cc.channels.filter((c) => !c.custom_channel_data || c.custom_channel_data === '').length;
+			}
+			const lcc = clnCliJson<{closedchannels: unknown[]}>(container, ['listclosedchannels']);
+			return (lcc.closedchannels ?? []).length;
+		});
 	},
 
 	/** Count of the node's channels that do NOT carry taproot-asset metadata.

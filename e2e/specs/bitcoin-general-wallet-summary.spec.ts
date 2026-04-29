@@ -3,22 +3,30 @@
  * on the dashboard. Flattens the LN on-chain balance and any Taproot Asset
  * UTXOs into one list of expandable rows.
  *
- * Coverage:
- *   - `@all`: the bitcoin row fundamentals — renders on every stack with
- *     LN enabled, amount matches the LN node's on-chain balance, expand
- *     toggle flips `animation-expanded` on caret + details, UTXO count
- *     card matches the number of funded addresses.
+ * Coverage by tag:
+ *   - `@bitcoin`: the card title (renders on every bitcoin-enabled stack
+ *     regardless of LN backend).
+ *   - `@lightning`: the bitcoin row — sat asset glyph, amount matches the
+ *     LN node's on-chain balance (differential), expand/collapse animation,
+ *     UTXO count differentially asserted against the LN node's funded-
+ *     address count, no-oracle default branch hides the Oracle subcard,
+ *     utxo-stack carries `utxo-asset-btc`.
+ *   - `@oracle`: the expanded bitcoin row's Oracle subcard — visibility +
+ *     "Hot wallet value" USD cents asserted via `satToUsdCents()` against
+ *     the LN node's on-chain sats and Orchard's stored oracle price.
+ *     Mirrors the mint balance sheet's three-figure differential pattern,
+ *     scaled down to the single figure this card surfaces.
  *   - `@tapd`: the taproot-asset row — only runs on `lnd-cdk-sqlite`. A
  *     dedicated `tapd-setup` compose service runs `fund-tapd.sh` at stack
  *     bring-up, which mints `TESTASSET` on tapd-orchard, mines the
  *     confirmation blocks, and blocks Orchard from booting until the
  *     asset is live. The spec reads the asset off tapd via `tapcli`
  *     (differential source of truth) and asserts that the card shows a
- *     second row, the asset glyph uses `graphic-asset-unknown` (no
- *     registered svg for that asset name), the row's amount equals
- *     `parseInt(tapd.amount) / 10^decimal_display`, and the expanded
- *     metadata card shows the truncated group_key (grouped asset),
- *     NORMAL asset type, and the version string.
+ *     second row, the asset glyph uses `graphic-asset-unknown`, the row's
+ *     amount equals `parseInt(tapd.amount) / 10^decimal_display`, the
+ *     UTXO count matches the number of tapd asset entries for that group,
+ *     and the expanded metadata card shows the truncated group_key
+ *     (grouped asset), NORMAL asset type, and the version string.
  *
  * Selector notes (bugs this spec fixes from the previous draft):
  *   - Angular's `[unit]="row.unit"` is a *property* binding — it never
@@ -31,9 +39,7 @@
  *     the `localAmount` pipe, not `.font-size-xl` (which wraps both the
  *     amount and an adjacent unit glyph).
  *
- * States NOT covered here (out of scope for e2e fidelity, see .md):
- *   - Oracle card rendering (requires flipping `bitcoin_oracle` + having
- *     a resolved oracle price — no oracle seeded on regtest).
+ * States the component supports but this spec does NOT cover:
  *   - Lightning / tapd error rows (requires `docker pause` — disruptive).
  *   - Ungrouped taproot asset rendering (em-dash fallback under Group
  *     key). fund-tapd.sh mints a grouped asset because grouped is the
@@ -41,12 +47,27 @@
  *     branch would require a separate fixture.
  *   - USDT svg path (needs an asset whose `tweaked_group_key` matches
  *     `constants.taproot_group_keys.usdt`).
+ *   - Oracle subcard NEVER rendering for tapd row — the only `@oracle`
+ *     stack is `cln-nutshell-postgres` which has no tapd, and the only
+ *     `@tapd` stack is `lnd-cdk-sqlite` which has no oracle, so this
+ *     branch is unreachable in the current matrix. The off-default
+ *     "no oracle card" assertion at the end of the @lightning describe
+ *     covers the inverse (oracle off ⇒ card hidden) for both row types.
  */
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
 import {getConfig} from '@e2e/helpers/config';
-import {ln, tap} from '@e2e/helpers/backend';
+import {ln, orchard, tap} from '@e2e/helpers/backend';
+import {oracleHasRecentData, requireReady} from '@e2e/helpers/ui/readiness';
+
+/** Mirror of `oracleConvertToUSDCents(_, _, 'sat')` from the client's oracle
+ *  helpers — round(sat / 1e8 × price × 100). Source-of-truth oracle for the
+ *  bitcoin row's Hot wallet value figure. Same shape as the mint balance
+ *  sheet and channel summary helpers. */
+function satToUsdCents(sat: number, price: number): number {
+	return Math.round((sat / 100_000_000) * price * 100);
+}
 
 async function openWalletSummary(page: Page): Promise<Locator> {
 	const card = page.locator('orc-bitcoin-general-wallet-summary');
@@ -125,8 +146,16 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		await expect(details).not.toHaveClass(/\banimation-expanded\b/);
 	});
 
-	test('expanded bitcoin row shows a UTXO count matching non-zero addresses', async ({page}, testInfo) => {
+	test('expanded bitcoin row UTXO count equals the LN node funded-address count', async ({page}, testInfo) => {
+		// Differential oracle for `row.utxos`. The component derives the count
+		// from `lightning_accounts().flatMap(a => a.addresses).filter(b > 0)`,
+		// which is the same `ListAddresses` data the server returns; on the
+		// e2e side we reach the LN node directly (LND `wallet addresses list`,
+		// CLN `listfunds.outputs` distinct confirmed). Pluralization label is
+		// derived from the count, so we also assert that against whatever the
+		// SOT yields rather than gating on `=== 1`.
 		const config = getConfig(testInfo.project.name);
+		const expected = ln.fundedAddressCount(config);
 		const card = await openWalletSummary(page);
 		const row = bitcoinRow(card);
 		await row.click();
@@ -136,10 +165,8 @@ test.describe('bitcoin-general-wallet-summary — bitcoin row', {tag: '@lightnin
 		const label = (await count_card.locator('.font-size-xs').first().textContent())?.trim() ?? '';
 
 		const utxos = digitsFrom(count_value);
-		expect(utxos).toBeGreaterThan(0);
+		expect(utxos, 'UTXO count should match orchard LN node funded-address count').toBe(expected);
 		expect(label).toBe(utxos === 1 ? 'UTXO' : 'UTXOs');
-		// Sanity: regressions where `utxos` gets zeroed while sats stay non-zero fail here.
-		expect(ln.onchainSats(config)).toBeGreaterThan(0);
 	});
 
 	test('oracle card is not rendered when the oracle setting is off (default)', async ({page}, testInfo) => {
@@ -214,6 +241,25 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 		await expect(tapd_row.locator('orc-bitcoin-general-utxo-stack .utxo-asset-unknown').first()).toBeVisible();
 	});
 
+	test('expanded taproot asset row UTXO count equals tapd asset entry count for the group', async ({page}, testInfo) => {
+		// Differential oracle for `row.utxos` on the tapass row. The component
+		// reduces `taproot_assets.assets` by `group_key || asset_id`, incrementing
+		// `utxos` once per asset entry that maps to the group — so the SOT is
+		// `tapcli assets list` filtered by the same name/group. After
+		// `fund-tapass-channel.sh` runs, tapd may report multiple entries (one
+		// in-channel, one outside); querying live keeps this honest.
+		const config = getConfig(testInfo.project.name);
+		const expected = tap.listAssets(config).filter((a) => a.asset_genesis.name === TEST_ASSET).length;
+		expect(expected, `tapd should report at least one ${TEST_ASSET} entry`).toBeGreaterThan(0);
+
+		const card = await openWalletSummary(page);
+		const tapd_row = card.locator('.wallet-summary-card').nth(1).locator('mat-card-content');
+		await tapd_row.click();
+		const count_card = tapd_row.locator('.channel-details .orc-high-card').first();
+		const count_value = (await count_card.locator('.font-size-l').first().textContent())?.trim() ?? '';
+		expect(digitsFrom(count_value), 'tapd row UTXO count should match tapcli asset entry count for the group').toBe(expected);
+	});
+
 	test('expanded taproot row shows metadata card: group_key truncation, asset_type, asset_version', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
 		const asset = tap.getAsset(config, TEST_ASSET);
@@ -236,5 +282,52 @@ test.describe('bitcoin-general-wallet-summary — taproot asset row', {tag: '@ta
 
 		await expect(metadata_card.getByText(asset.asset_genesis.asset_type, {exact: true})).toBeVisible();
 		await expect(metadata_card.getByText(asset.version, {exact: true})).toBeVisible();
+	});
+});
+
+test.describe('bitcoin-general-wallet-summary — oracle subcard', {tag: '@oracle'}, () => {
+	test.beforeEach(async ({page}) => {
+		await page.goto('/');
+		await requireReady(page, oracleHasRecentData);
+	});
+
+	test('expanded bitcoin row surfaces the Oracle subcard', async ({page}) => {
+		// Only runs on cln-nutshell-postgres — `appSettings.bitcoin_oracle: true`
+		// + the `compose.mainchain.yml` overlay together let Orchard resolve a
+		// real oracle price (staged by `oracle.setup.ts`). The oracle subcard
+		// in this component is gated on `row.type === 'bitcoin' && enabled_oracle()`.
+		const card = await openWalletSummary(page);
+		const row = bitcoinRow(card);
+		await row.click();
+		const oracle_card = row.locator('.channel-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+		await expect(oracle_card.getByText('Oracle', {exact: true})).toBeVisible();
+		await expect(oracle_card.locator('orc-graphic-oracle-icon')).toBeVisible();
+		await expect(oracle_card.getByText('Hot wallet value', {exact: true})).toBeVisible();
+	});
+
+	test('Oracle subcard "Hot wallet value" figure equals price × LN on-chain sats (USD cents)', async ({page}, testInfo) => {
+		// Differential oracle for `row.amount_oracle` — the component computes
+		// `oracleConvertToUSDCents(amount, price, 'sat')` → `round(sat / 1e8 *
+		// price * 100)`. Source-of-truth sat input is the LN node's on-chain
+		// balance (already differentially asserted by the @lightning describe),
+		// price is read from Orchard's utxoracle table. Same shape as the mint
+		// balance sheet's Oracle subcard differentials, scaled to the single
+		// figure this card surfaces.
+		const config = getConfig(testInfo.project.name);
+		const card = await openWalletSummary(page);
+		const row = bitcoinRow(card);
+		await row.click();
+		const oracle_card = row.locator('.channel-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(ln.onchainSats(config), price!);
+
+		const ui_text = await oracle_card.locator('.orc-amount').first().textContent();
+		expect(digitsFrom((ui_text ?? '').trim()), 'Hot wallet value should equal round(onchain_sats * price * 100 / 1e8)').toBe(
+			expected_cents,
+		);
 	});
 });

@@ -4,36 +4,46 @@
  * row per asset unit (sats always; one row per Taproot-asset group when tapass
  * is enabled) and toggles between "all open channels" and "only active".
  *
- * Covers the states reachable from a healthy regtest fixture (both LND and
- * CLN, 2 active sat channels; lnd-cdk-sqlite also funds one asset channel
- * between orchard↔alice via litcli ln fundchannel; oracle off):
- *   - structure: title, summary-type menu trigger default label
- *   - sat row: capacity glyph, "Total sat capacity" sub-label
- *   - expand/collapse: clicking the row flips `animation-expanded` on the
- *     caret + details container
- *   - expanded counts: `Channels` matches `num_active + num_inactive` from the
- *     LN node's own getinfo (differential)
- *   - expanded counts: `Active channels` matches `num_active_channels`
- *   - expanded counts: `Closed channels` — all 4 fixtures start with 0 closed
- *   - menu toggle: "Active channels" flips the trigger label and the rebuilt
- *     row's counts stay consistent
- *   - oracle card is NOT rendered (bitcoin oracle is off by default)
+ * Coverage by tag:
+ *   - `@lightning`: structure (title, menu trigger label), the sat row's
+ *     capacity (differential vs the LN node's `listchannels` capacity sum),
+ *     expand/collapse, all four count cards differentially asserted
+ *     (Channels, Active, Closed, Average channel size), the "Active channels"
+ *     menu toggle that rebuilds the row with the active-only count, and the
+ *     no-oracle default branch that hides the oracle subcard.
+ *   - `@oracle`: the expanded sat row's Oracle subcard — Total / Local /
+ *     Remote capacity USD figures all asserted via `satToUsdCents()` against
+ *     the LN node + Orchard's stored oracle price (mirrors the mint balance
+ *     sheet's three-figure differential pattern).
+ *   - `@tapd`: the second tapass row — structural assertions only; per-asset
+ *     capacity differential needs `custom_channel_data` parsing and is left
+ *     for a future tapass-focused spec.
  *
- * States NOT covered here (out of scope, see .md):
- *   - Taproot-asset row content (structure only — lnd-cdk-sqlite funds one
- *     asset channel, but per-row assertions live in a future tapass spec)
- *   - Zero-channel / brand-new node (fixture always ships 2 channels)
+ * States the component supports but this spec does NOT cover:
  *   - Inactive-channel divergence between "All" and "Active" modes (regtest
- *     fixture keeps both channels active)
- *   - Oracle card render (requires oracle seeding — none on regtest)
+ *     fixture keeps both channels active — exercising the row-rebuild path
+ *     is enough to lock the wiring, content divergence is a Karma concern).
  *   - Sat row suppression when both balances are 0 (needs a freshly-opened
- *     channel with zero push_amount before any activity)
+ *     channel with zero push_amount before any activity).
+ *   - `bitcoin_oracle_enabled === true` racing `bitcoin_oracle_price === null`
+ *     (transient — better in Karma).
+ *   - Per-asset tapd capacity / local / remote differentials (requires
+ *     parsing `custom_channel_data` from `lncli listchannels`).
  */
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
 import {getConfig} from '@e2e/helpers/config';
-import {ln} from '@e2e/helpers/backend';
+import {ln, orchard} from '@e2e/helpers/backend';
+import {oracleHasRecentData, requireReady} from '@e2e/helpers/ui/readiness';
+
+/** Mirror of `oracleConvertToUSDCents(_, _, 'sat')` from the client's oracle
+ *  helpers — round(sat / 1e8 × price × 100). Source-of-truth oracle for the
+ *  channel summary's three converted figures inside the Oracle subcard.
+ *  Same shape as the mint balance sheet's helper. */
+function satToUsdCents(sat: number, price: number): number {
+	return Math.round((sat / 100_000_000) * price * 100);
+}
 
 async function openSummary(page: Page): Promise<Locator> {
 	const card = page.locator('orc-lightning-general-channel-summary');
@@ -105,17 +115,19 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 		await expect(satRow(card).locator('.graphic-asset-btc').first()).toBeVisible();
 	});
 
-	test('sat row capacity renders a non-zero btc amount', async ({page}) => {
+	test('sat row capacity matches the sum of LN node sat-only channel capacities', async ({page}, testInfo) => {
+		// Differential oracle for the row's collapsed capacity cell. The
+		// component's `getSatSummary(false)` reduces non-asset channels'
+		// `capacity` into `row.size`; the localAmount pipe wraps the value in
+		// glyph/locale formatting. `.orc-amount` is the span the pipe emits —
+		// the first match inside the row header is the capacity total
+		// (`channel-details` is collapsed and any oracle amount lives inside it
+		// anyway).
+		const config = getConfig(testInfo.project.name);
+		const expected = ln.satChannelCapacity(config);
 		const card = await openSummary(page);
-		// `.orc-amount` is the span emitted by the `localAmount` pipe. The first
-		// match inside the row header is the capacity total; any oracle amount
-		// would be nested inside `.channel-details` and isn't rendered in the
-		// collapsed state anyway.
 		const amount_text = (await satRow(card).locator('.orc-amount').first().textContent())?.trim() ?? '';
-		// Regtest funds two 10M-sat channels → expect 20M sats. Allow any
-		// positive number so a future fund-script tweak doesn't break this —
-		// the fidelity check we care about is the `Channels` count below.
-		expect(digitsFrom(amount_text)).toBeGreaterThan(0);
+		expect(digitsFrom(amount_text), 'sat row capacity should match LN node listchannels capacity sum').toBe(expected);
 	});
 
 	test('clicking the sat row toggles expand/collapse classes', async ({page}) => {
@@ -160,17 +172,45 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 		expect(await countCardValue(row, 'Active channels')).toBe(expected);
 	});
 
-	test('expanded sat row: Closed count is 0 on a fresh regtest stack', async ({page}) => {
-		// All four fund-*.sh scripts open channels and leave them open for the
-		// test run. None close channels. If a future spec forces a close this
-		// assertion needs reworking; for now it guards the clean-fixture
-		// invariant and catches regressions where `lightningClosedChannels`
-		// leaks historical state from a prior Orchard instance.
+	test('expanded sat row: Closed count matches LN node closed sat-channel count', async ({page}, testInfo) => {
+		// Differential oracle for the Closed channels card. Reads the closed-
+		// channel count off the orchard-side LN node (LND: `closedchannels`,
+		// CLN: `listclosedchannels`) so a future fixture that closes a channel
+		// won't false-fail this — and a regression where `lightningClosedChannels`
+		// leaks historical state from a prior Orchard instance still trips.
+		const config = getConfig(testInfo.project.name);
+		const expected = ln.closedChannelCount(config);
+
 		const card = await openSummary(page);
 		const row = satRow(card);
 		await row.click();
 
-		expect(await countCardValue(row, 'Closed channels')).toBe(0);
+		expect(await countCardValue(row, 'Closed channels'), 'Closed count should match LN node closed channel list').toBe(expected);
+	});
+
+	test('expanded sat row: Average channel size matches round(capacity / count)', async ({page}, testInfo) => {
+		// Differential oracle for the Average channel size high-card. The row
+		// class computes `Math.round(size / channel_count)`; both inputs flow
+		// through helpers we already trust differentially (capacity sum +
+		// channel count), so a divergence here points at the rounding step.
+		// Skip if the fixture happens to have zero open channels — the
+		// component renders 0 in that case and the formula divides by zero.
+		const config = getConfig(testInfo.project.name);
+		const count = ln.openSatChannelCount(config);
+		test.skip(count === 0, 'no open sat channels on this stack — average is rendered as 0 by the row class');
+		const expected = Math.round(ln.satChannelCapacity(config) / count);
+
+		const card = await openSummary(page);
+		const row = satRow(card);
+		await row.click();
+
+		// "Average channel size" label is rendered in the 4th high-card. The
+		// value is run through `localAmount` so glyph/locale formatting wraps
+		// it — `digitsFrom` recovers the underlying integer the row stores.
+		const details = row.locator('.channel-details');
+		const avg_card = details.locator('.orc-high-card').filter({hasText: 'Average channel size'});
+		const value_text = (await avg_card.locator('.orc-amount').first().textContent())?.trim() ?? '';
+		expect(digitsFrom(value_text), 'Average channel size should equal round(total capacity / channel count)').toBe(expected);
 	});
 
 	test('toggling the menu to "Active channels" flips the trigger label', async ({page}) => {
@@ -183,6 +223,25 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 		await page.getByRole('menuitem', {name: /Active channels/}).click();
 
 		await expect(trigger).toHaveText(/Active channels/);
+	});
+
+	test('toggling to "Active channels" rebuilds the row with the active-only Channels count', async ({page}, testInfo) => {
+		// Locks the wiring between the menu and the rendered row. The row's
+		// `Channels` cell switches data sources between `summaries.open[0]`
+		// and `summaries.active[0]` — same key, different values. On regtest
+		// where every channel is active, this number doesn't actually move,
+		// so the assertion is "the active-mode count equals the active SOT
+		// from the LN node" rather than "differs from open mode".
+		const config = getConfig(testInfo.project.name);
+		const expected_active = ln.openSatChannelCount(config, {activeOnly: true});
+
+		const card = await openSummary(page);
+		await card.locator('button[aria-haspopup="menu"]').click();
+		await page.getByRole('menuitem', {name: /Active channels/}).click();
+
+		const row = satRow(card);
+		await row.click();
+		expect(await countCardValue(row, 'Channels'), 'Channels count after toggle should reflect active-only mode').toBe(expected_active);
 	});
 
 	/* *******************************************************
@@ -283,6 +342,83 @@ test.describe('lightning-general-channel-summary card', {tag: '@lightning'}, () 
 
 		await expect(row.locator('orc-graphic-oracle-icon')).toHaveCount(0);
 		await expect(row.getByText('Oracle', {exact: true})).toHaveCount(0);
+	});
+});
+
+test.describe('lightning-general-channel-summary card — oracle subcard', {tag: '@oracle'}, () => {
+	test.beforeEach(async ({page}) => {
+		await page.goto('/');
+		await requireReady(page, oracleHasRecentData);
+	});
+
+	/** Each of the 3 figures in the oracle subcard sits in a `.flex-1` panel
+	 *  with its sublabel underneath; this filters to the right one. The oracle
+	 *  card is an `orc-primary-card` inside `.channel-details`. */
+	function oraclePanel(row: Locator, sublabel: string): Locator {
+		return row.locator('.channel-details .orc-primary-card .flex-1').filter({hasText: sublabel});
+	}
+
+	test('expanded sat row surfaces the Oracle subcard', async ({page}) => {
+		// Only runs on cln-nutshell-postgres — `appSettings.bitcoin_oracle: true`
+		// + the `compose.mainchain.yml` overlay together let Orchard resolve a
+		// real oracle price (staged by `oracle.setup.ts`).
+		const card = await openSummary(page);
+		const row = satRow(card);
+		await row.click();
+		const oracle_card = row.locator('.channel-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+		await expect(oracle_card.getByText('Oracle', {exact: true})).toBeVisible();
+	});
+
+	test('Oracle subcard Total capacity figure equals price × LN sat capacity (USD cents)', async ({page}, testInfo) => {
+		// Differential oracle for `row.size_oracle` — `oracleConvertToUSDCents(size,
+		// price, 'sat')` → `round(sat / 1e8 * price * 100)`. Source-of-truth sat
+		// input is the LN node's non-asset channel capacity sum; price is read
+		// from Orchard's own utxoracle table.
+		const config = getConfig(testInfo.project.name);
+		const card = await openSummary(page);
+		const row = satRow(card);
+		await row.click();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(ln.satChannelCapacity(config), price!);
+
+		const ui_text = await oraclePanel(row, 'Total capacity').locator('.orc-amount').first().textContent();
+		expect(digitsFrom(ui_text ?? ''), 'Oracle Total capacity should equal round(capacity * price * 100 / 1e8)').toBe(expected_cents);
+	});
+
+	test('Oracle subcard Local capacity figure equals price × LN local channel balance (USD cents)', async ({page}, testInfo) => {
+		// Differential oracle for `row.local_oracle`. Source-of-truth sat input
+		// is the LN node's per-channel local_balance sum (non-asset channels),
+		// already exercised by the mint balance sheet's bitcoin-row assets cell.
+		const config = getConfig(testInfo.project.name);
+		const card = await openSummary(page);
+		const row = satRow(card);
+		await row.click();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(ln.localChannelBalance(config), price!);
+
+		const ui_text = await oraclePanel(row, 'Local capacity').locator('.orc-amount').first().textContent();
+		expect(digitsFrom(ui_text ?? ''), 'Oracle Local capacity should equal round(local * price * 100 / 1e8)').toBe(expected_cents);
+	});
+
+	test('Oracle subcard Remote capacity figure equals price × LN remote channel balance (USD cents)', async ({page}, testInfo) => {
+		// Differential oracle for `row.remote_oracle`. Mirror of the local-cap
+		// assertion above — sums each non-asset channel's `remote_balance`.
+		const config = getConfig(testInfo.project.name);
+		const card = await openSummary(page);
+		const row = satRow(card);
+		await row.click();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(ln.remoteChannelBalance(config), price!);
+
+		const ui_text = await oraclePanel(row, 'Remote capacity').locator('.orc-amount').first().textContent();
+		expect(digitsFrom(ui_text ?? ''), 'Oracle Remote capacity should equal round(remote * price * 100 / 1e8)').toBe(expected_cents);
 	});
 });
 
