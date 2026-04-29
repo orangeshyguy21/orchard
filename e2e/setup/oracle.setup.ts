@@ -25,25 +25,33 @@ import {mainchainSynced, requireReady, oracleHasRecentData, getReadiness} from '
 
 const BACKFILL_TIMEOUT_MS = 5 * 60_000;
 
-/** Open the date_start picker and click yesterday's cell — locale-independent
- *  (won't break under es-ES or any other matrix locale). Yesterday is always
- *  reachable from today's calendar view: same month except on the 1st. */
+/** Type yesterday-UTC into the date_start input. Bypasses the calendar
+ *  overlay (slow/flaky under matrix locales) and the form's date adapter
+ *  parses the typed string back into a Luxon DateTime via Material's
+ *  format 'D' (locale-dependent DATE_SHORT). The oracle module provides
+ *  `MAT_LUXON_DATE_ADAPTER_OPTIONS: { useUtc: true }`, so the parsed value
+ *  is UTC-zoned — `submitBackfill` then commits exactly yesterday-UTC.
+ *
+ *  Locale is read from the same localStorage key the app's `LOCALE_ID`
+ *  factory uses, so the string we produce matches the format the picker
+ *  expects. */
 async function pickYesterday(page: Page): Promise<void> {
-	const yesterday = DateTime.utc().minus({days: 1}).startOf('day');
-	const today = DateTime.utc().startOf('day');
+	const locale = await page.evaluate(() => {
+		try {
+			const item = localStorage.getItem('v0.setting.locale');
+			if (item) {
+				const parsed = JSON.parse(item) as {code?: string};
+				if (parsed?.code) return parsed.code;
+			}
+		} catch {}
+		return Intl.DateTimeFormat().resolvedOptions().locale;
+	});
 
-	const form = page.locator('orc-bitcoin-subsection-oracle-form');
-	await form.locator('mat-datepicker-toggle').first().click();
+	const date_str = DateTime.utc().minus({days: 1}).startOf('day').setLocale(locale).toLocaleString(DateTime.DATE_SHORT);
 
-	if (yesterday.month !== today.month) {
-		await page.locator('.mat-calendar-previous-button').click();
-	}
-
-	const cells = page.locator('.mat-calendar-body-cell-content');
-	await cells
-		.filter({hasText: new RegExp(`^${yesterday.day}$`)})
-		.first()
-		.click();
+	const input = page.locator('orc-bitcoin-subsection-oracle-form input[formControlName="date_start"]');
+	await input.fill(date_str);
+	await input.blur();
 }
 
 setup('compute yesterday oracle', {tag: '@oracle'}, async ({page}) => {

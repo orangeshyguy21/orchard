@@ -38,6 +38,7 @@
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
 import {getConfig, mintUnitsFor} from '../helpers/config';
+import {ln, mint, orchard} from '../helpers/backend';
 import {oracleHasRecentData, requireReady} from '../helpers/readiness';
 
 async function openSheet(page: Page): Promise<Locator> {
@@ -47,6 +48,23 @@ async function openSheet(page: Page): Promise<Locator> {
 	const sheet = page.locator('orc-mint-general-balance-sheet').first();
 	await expect(sheet).toBeVisible();
 	return sheet;
+}
+
+/** Parse an integer amount out of rendered text. The localAmount pipe wraps
+ *  the value in glyph/locale formatting (e.g. "₿ 2,095", "$24.98"); stripping
+ *  non-digits recovers the underlying integer the bs row stores (sat for
+ *  bitcoin units, cents for fiat). Returns 0 for empty/null text so callers
+ *  testing the legitimate "no value" case don't trip on NaN. */
+function amountFromText(text: string | null | undefined): number {
+	const stripped = (text ?? '').replace(/\D/g, '');
+	return stripped === '' ? 0 : parseInt(stripped, 10);
+}
+
+/** Mirror of `oracleConvertToUSDCents(_, _, 'sat')` from the client's oracle
+ *  helpers — round(sat / 1e8 × price × 100). Source-of-truth oracle for the
+ *  bs's three converted figures inside the Oracle subcard. */
+function satToUsdCents(sat: number, price: number): number {
+	return Math.round((sat / 100_000_000) * price * 100);
 }
 
 /** Wait for the row block to settle. The component sets `rows()` inside an
@@ -122,6 +140,86 @@ test.describe('mint-general-balance-sheet — card', {tag: '@mint'}, () => {
 		await expect(sublabels).toHaveCount(expected_units);
 	});
 
+	test('every row liabilities figure equals the mint database balance for that unit', async ({page}, testInfo) => {
+		// Differential oracle: read the source-of-truth liability per unit from the
+		// mint daemon's database (cdk: keyset_amounts; nutshell: balance view),
+		// and assert the rendered figure in each row matches exactly. Both `mintUnitsFor`
+		// and the component's `getRows` order rows sat → usd → eur, so unit and
+		// row index align. The localAmount pipe scales fiat to its display unit
+		// (cents → dollars), but stripping all non-digits from the rendered text
+		// recovers the underlying integer the DB holds.
+		const config = getConfig(testInfo.project.name);
+		const units = mintUnitsFor(config);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const cards = sheet.locator('.balance-sheet-card');
+		await expect(cards).toHaveCount(units.length);
+		for (let i = 0; i < units.length; i++) {
+			const unit = units[i];
+			const expected = mint.balance(config, unit);
+			const ui_text = await cards.nth(i).locator('.liabilities-cell .orc-amount').first().textContent();
+			expect(amountFromText(ui_text), `row ${i} (${unit}) liabilities should match mint DB`).toBe(expected);
+		}
+	});
+
+	test('every row keyset chip matches the highest-index keyset for that unit', async ({page}, testInfo) => {
+		// Differential oracle for the chip's three rendered fields:
+		//   - "Gen {N}"          ← keyset.derivation_path_index
+		//   - "{N} ppk"           ← keyset.input_fee_ppk (suppressed when 0)
+		//   - .keyset-active|inactive class on .keyset-status ← keyset.active
+		// Mirror the row class's per-unit aggregation: it sorts keysets by
+		// `b.derivation_path_index - a.derivation_path_index` (desc), so the row
+		// inherits the keyset metadata of the *highest* index for that unit.
+		const config = getConfig(testInfo.project.name);
+		const units = mintUnitsFor(config);
+		const all_keysets = mint.keysets(config);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const cards = sheet.locator('.balance-sheet-card');
+		await expect(cards).toHaveCount(units.length);
+		for (let i = 0; i < units.length; i++) {
+			const unit = units[i];
+			const expected = all_keysets
+				.filter((k) => k.unit === unit)
+				.sort((a, b) => b.derivation_path_index - a.derivation_path_index)[0];
+			expect(expected, `no keyset for unit ${unit} in mint DB`).toBeDefined();
+			const chip = cards.nth(i).locator('orc-mint-general-keyset').first();
+			await expect(chip).toContainText(`Gen ${expected!.derivation_path_index}`);
+			if (expected!.input_fee_ppk > 0) {
+				await expect(chip).toContainText(`${expected!.input_fee_ppk} ppk`);
+			} else {
+				// Template only renders the ppk span when input_fee_ppk > 0.
+				await expect(chip.locator('.mint-keyset-fee span')).toHaveCount(0);
+			}
+			const status = chip.locator('.keyset-status');
+			await expect(status).toHaveClass(expected!.active ? /\bkeyset-active\b/ : /\bkeyset-inactive\b/);
+		}
+	});
+
+	test('every expanded row Fee revenue figure equals the mint database fees for that unit', async ({page}, testInfo) => {
+		// Differential oracle for the per-unit Fee revenue high-card inside the
+		// expanded panel. cdk: keyset_amounts.fee_collected; nutshell:
+		// keysets.fees_paid — both summed per unit to mirror the component's
+		// per-unit aggregation. The card is only present after expansion, so
+		// click the row first.
+		const config = getConfig(testInfo.project.name);
+		const units = mintUnitsFor(config);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const cards = sheet.locator('.balance-sheet-card');
+		await expect(cards).toHaveCount(units.length);
+		for (let i = 0; i < units.length; i++) {
+			const unit = units[i];
+			const card = cards.nth(i);
+			await card.locator('.balance-sheet-row').click();
+			const fee_card = card.locator('.balance-sheet-details .orc-high-card').filter({hasText: 'Fee revenue'});
+			await expect(fee_card).toBeVisible();
+			const expected = mint.feesPaid(config, unit);
+			const ui_text = await fee_card.locator('.orc-amount').first().textContent();
+			expect(amountFromText(ui_text), `row ${i} (${unit}) Fee revenue should match mint DB`).toBe(expected);
+		}
+	});
+
 	test('clicking a row toggles the .animation-expanded class on .balance-sheet-details', async ({page}) => {
 		const sheet = await openSheet(page);
 		await waitForRows(sheet);
@@ -162,18 +260,19 @@ test.describe('mint-general-balance-sheet — bitcoin row', {tag: '@lightning'},
 		await expect(row.locator('.assets-cell').getByText('Lightning local capacity', {exact: false})).toBeVisible();
 	});
 
-	test('shows a non-zero amount in the assets cell', async ({page}) => {
-		// `lightning_balance.open.local_balance` from the lightningBalance query.
-		// A backend differential against `lncli channelbalance` belongs here once
-		// `ln.localChannelBalance(config)` exists in `e2e/helpers/backend.ts`
-		// (flagged in mint-general-balance-sheet.md → Differential oracles).
+	test('assets cell amount equals the LN node local channel balance', async ({page}, testInfo) => {
+		// Differential oracle: read the source-of-truth open-channel local balance
+		// from the orchard-side LN node and assert the rendered figure matches.
+		// LND: `lncli channelbalance.local_balance.sat`. CLN: sum of `to_us_msat`
+		// across `CHANNELD_NORMAL` peer channels, truncate-divided by 1000.
+		const config = getConfig(testInfo.project.name);
 		const sheet = await openSheet(page);
 		await waitForRows(sheet);
 		const row = bitcoinRow(sheet);
 		await waitForBitcoinAssetsSettled(row);
-		const amount_text = (await row.locator('.assets-cell .orc-amount').first().textContent())?.trim() ?? '';
-		const digits = parseInt(amount_text.replace(/\D/g, ''), 10);
-		expect(digits).toBeGreaterThan(0);
+		const expected = ln.localChannelBalance(config);
+		const ui_text = await row.locator('.assets-cell .orc-amount').first().textContent();
+		expect(amountFromText(ui_text), 'bitcoin row assets should match LN node local balance').toBe(expected);
 	});
 
 	test('renders the visual coin stacks on desktop', async ({page}) => {
@@ -218,6 +317,34 @@ test.describe('mint-general-balance-sheet — bitcoin row', {tag: '@lightning'},
 		await expect(high_cards.getByText('Mint unit', {exact: true})).toBeVisible();
 		await expect(high_cards.getByText('Liability coverage', {exact: true})).toBeVisible();
 		await expect(high_cards.getByText('Fee revenue', {exact: true})).toBeVisible();
+	});
+
+	test('expanded row Liability coverage figure equals ceil(assets) / liabilities', async ({page}, testInfo) => {
+		// Differential oracle for `row.reserve` (rendered as `{{ row.reserve }}x`
+		// inside the Liability coverage high-card). The row class computes:
+		//   const multiple = Math.ceil(assets) / liabilities
+		//   reserve = multiple < 5 ? Math.round(multiple * 10) / 10 : Math.round(multiple)
+		// Both sources flow through helpers we already trust differentially —
+		// LN local balance for assets, mint DB for liabilities — so a divergence
+		// here would point at the rounding logic in the row class itself.
+		const config = getConfig(testInfo.project.name);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const row = bitcoinRow(sheet);
+		await waitForBitcoinAssetsSettled(row);
+		const sat_assets = ln.localChannelBalance(config);
+		const sat_liabilities = mint.balance(config, 'sat');
+		test.skip(sat_liabilities === 0, 'reserve getter returns null when liabilities are zero — UI hides the card');
+		const multiple = Math.ceil(sat_assets) / sat_liabilities;
+		const expected = multiple < 5 ? Math.round(multiple * 10) / 10 : Math.round(multiple);
+
+		await row.locator('.balance-sheet-row').click();
+		const reserve_card = row.locator('.balance-sheet-details .orc-high-card').filter({hasText: 'Liability coverage'});
+		await expect(reserve_card).toBeVisible();
+		const ui_text = (await reserve_card.locator('.font-size-l').first().textContent())?.trim() ?? '';
+		// Template renders as `{{ row.reserve }}x` — drop the trailing 'x', parseFloat handles both "1.5" and "5".
+		const ui_value = parseFloat(ui_text.replace(/x$/, ''));
+		expect(ui_value, 'Liability coverage should equal the row class reserve formula').toBe(expected);
 	});
 
 	test('expanded row hides the Oracle subcard when the oracle setting is off', async ({page}, testInfo) => {
@@ -349,5 +476,77 @@ test.describe('mint-general-balance-sheet — oracle subcard', {tag: '@oracle'},
 		const oracle_card = details.locator('.orc-primary-card');
 		await expect(oracle_card).toBeVisible();
 		await expect(oracle_card.getByText('Oracle', {exact: true})).toBeVisible();
+	});
+
+	test('Oracle subcard Liabilities figure equals price × mint DB sat (USD cents)', async ({page}, testInfo) => {
+		// Differential oracle for the converted Liabilities figure inside the
+		// Oracle subcard. The component computes `liabilities_oracle` via
+		// `oracleConvertToUSDCents(sat_liabilities, price_usd, 'sat')` —
+		// `round(sat / 1e8 * price * 100)`. We replicate that with the
+		// source-of-truth sat balance from the mint DB and the latest price
+		// from Orchard's own DB, then assert against the rendered cents.
+		const config = getConfig(testInfo.project.name);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const row = bitcoinRow(sheet);
+		await row.locator('.balance-sheet-row').click();
+		const oracle_card = row.locator('.balance-sheet-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(mint.balance(config, 'sat'), price!);
+
+		// Each of the 3 figures in the subcard sits in a `.flex-1` panel with
+		// its sublabel underneath; filter to the Liabilities one.
+		const lia_panel = oracle_card.locator('.flex-1').filter({hasText: 'Liabilities'});
+		const ui_text = await lia_panel.locator('.orc-amount').first().textContent();
+		expect(amountFromText(ui_text), 'Oracle subcard Liabilities should equal round(sat * price * 100 / 1e8)').toBe(expected_cents);
+	});
+
+	test('Oracle subcard Assets figure equals price × LN local channel balance (USD cents)', async ({page}, testInfo) => {
+		// Same conversion as the Liabilities differential, but the source-of-truth
+		// sat input comes from the LN node (`ln.localChannelBalance`) instead of
+		// the mint DB. The component's `assets_oracle` is computed from the bs
+		// row's `assets` (= `lightning_balance.open.local_balance`) via
+		// `oracleConvertToUSDCents(assets, price, 'sat')`.
+		const config = getConfig(testInfo.project.name);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const row = bitcoinRow(sheet);
+		await waitForBitcoinAssetsSettled(row);
+		await row.locator('.balance-sheet-row').click();
+		const oracle_card = row.locator('.balance-sheet-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(ln.localChannelBalance(config), price!);
+
+		const assets_panel = oracle_card.locator('.flex-1').filter({hasText: 'Assets'});
+		const ui_text = await assets_panel.locator('.orc-amount').first().textContent();
+		expect(amountFromText(ui_text), 'Oracle subcard Assets should equal round(ln_local * price * 100 / 1e8)').toBe(expected_cents);
+	});
+
+	test('Oracle subcard Fee revenue figure equals price × mint DB sat fees (USD cents)', async ({page}, testInfo) => {
+		// Same conversion shape as the other two oracle differentials. Source
+		// is the per-unit fees collected by the mint daemon for the sat keyset(s);
+		// the component computes `fees_oracle` via
+		// `oracleConvertToUSDCents(fees, price, 'sat')`.
+		const config = getConfig(testInfo.project.name);
+		const sheet = await openSheet(page);
+		await waitForRows(sheet);
+		const row = bitcoinRow(sheet);
+		await row.locator('.balance-sheet-row').click();
+		const oracle_card = row.locator('.balance-sheet-details .orc-primary-card');
+		await expect(oracle_card).toBeVisible();
+
+		const price = orchard.oraclePrice(config);
+		expect(price, 'utxoracle should have a row — readiness gate above should have caught this').not.toBeNull();
+		const expected_cents = satToUsdCents(mint.feesPaid(config, 'sat'), price!);
+
+		const fees_panel = oracle_card.locator('.flex-1').filter({hasText: 'Fee revenue'});
+		const ui_text = await fees_panel.locator('.orc-amount').first().textContent();
+		expect(amountFromText(ui_text), 'Oracle subcard Fee revenue should equal round(sat_fees * price * 100 / 1e8)').toBe(expected_cents);
 	});
 });
