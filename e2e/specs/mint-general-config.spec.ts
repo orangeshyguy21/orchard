@@ -9,16 +9,26 @@
  * mint container) and asserts the rendered card matches that truth —
  * chip set, chip palettes, pill states, limit rows, min/max values.
  *
+ * Chip set is schema-driven, not daemon-driven. The component iterates
+ * `Object.entries(info.nuts)` over the GraphQL response, and the
+ * `MINT_INFO_QUERY` always selects every nullable `nutN` field on the
+ * `OrchardNuts` type. So every fixture renders 16 chips today
+ * (4, 5, 7-12, 14, 15, 17, 19, 20, 21, 22, 29) — one per schema field —
+ * regardless of which subset the daemon actually publishes. Chip dot
+ * status is what does branch by daemon: a `null` GraphQL value (e.g.
+ * nutshell's nut19/21/22/29 or cdk's nut21/22) lands in the `disabled`
+ * palette via `getNutStatus`, while a populated object lands in
+ * `enabled` (or `active` for NUT-04/05 when `disabled: false`).
+ *
  * Per-fixture branching. cdk publishes explicit min=1/max=500_000 and
- * `nut19: {…}`; nutshell publishes both bounds as `null` and serves
- * `nut19: null`. The component renders `1` for null mins and `∞` for
- * null maxes, and pushes a `null` `nut19` into the `disabled` palette
- * (grey dot) — both branches asserted below from the helper truth.
+ * `nut19/29: {…}`; nutshell publishes both bounds as `null` and omits
+ * `nut19/21/22/29` entirely. The component renders `1` for null mins
+ * and `∞` for null maxes — both branches asserted below from the
+ * helper truth.
  *
  * Covers states reachable from a healthy regtest fixture:
  *   - structure: title, mat-card, supported-nuts caption
- *   - chip set: one chip per `nutN` key in `info.nuts`, in numeric
- *     order with the parsed number rendered, dot palette per
+ *   - chip set: 16 chips in schema order, dot palette per
  *     `getNutStatus()`'s rules (active for NUT-04/05 not-disabled,
  *     enabled for any other supported NUT, disabled for `null`)
  *   - status pills: "Minting enabled|disabled" and
@@ -40,6 +50,9 @@
  *     per direction on every fixture; covered in unit tests instead)
  *   - mixed-units rendering (sat + usd) — only fake-cdk-postgres
  *     advertises usd and that stack is not in the e2e mint matrix
+ *   - NUT-21 / NUT-22 populated chip palette (`enabled` branch) — no
+ *     fixture publishes auth-enabled nut21/22 today, so only the `null`
+ *     → `disabled` branch is reachable here
  *   - `info()` null fallthrough — parent only mounts the card after
  *     the resolver succeeds, so this is dead from production parents
  * See `mint-general-config.md` for the full state machine.
@@ -90,29 +103,35 @@ const STATUS_BG_CLASS: Record<ReturnType<typeof expectedNutStatus>, string> = {
 };
 
 /** NUT numbers Orchard's GraphQL schema (`OrchardNuts`) exposes to the
- *  client. The daemon's `/v1/info` emits the cashu-spec numeric keys
- *  (`"4"`, `"5"`, …) and may include NUTs not in this list (e.g. cdk
- *  publishes NUT-29); Orchard's resolver maps the schema-known keys to
- *  `nutN` properties and drops the rest. The card therefore only renders
- *  chips for the intersection — assertions filter the daemon truth to
- *  this same set so a future daemon-side NUT addition doesn't fail the
- *  spec until Orchard's schema catches up. */
-const ORCHARD_NUTS = [4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 19, 20] as const;
+ *  client, in the order they appear in `MINT_INFO_QUERY`. Every field is
+ *  `nullable: true` past NUT-04/05 — the resolver returns `null` when the
+ *  daemon doesn't publish that NUT — but the *key* is always present in
+ *  the GraphQL response, so the component's `Object.entries(info.nuts)`
+ *  iteration always yields one chip per schema field. This list is the
+ *  source of truth for the chip count and order; the daemon's `/v1/info`
+ *  only determines each chip's *status* (the dot palette). When Orchard
+ *  exposes a new NUT in the schema, append it here and the spec will pick
+ *  up the new chip without further edits. */
+const ORCHARD_NUTS = [4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 19, 20, 21, 22, 29] as const;
 
-/** Sorted `[number, value]` pairs for every Orchard-exposed NUT the
- *  daemon publishes. Accepts either raw cashu keys (`"4"`) or
- *  Orchard-schema keys (`"nut4"`) — `mint.getInfo()` returns the
- *  daemon's raw shape, but the helper is forgiving so a future change
- *  to swap the helper to a GraphQL-backed source doesn't ripple here. */
+/** One entry per schema-known NUT, paired with whatever value the daemon
+ *  published under that key in `/v1/info`. Daemon keys may be raw cashu
+ *  numerics (`"4"`) or Orchard `nutN` form — both are accepted. NUTs the
+ *  daemon doesn't publish surface as `value: null`, mirroring how the
+ *  GraphQL resolver fills missing fields and how the component's
+ *  `getNutStatus(num, null)` interprets them as `'disabled'`. Always
+ *  returns `ORCHARD_NUTS.length` entries (never filters), so chip-count
+ *  and chip-order assertions are stable across daemons. */
 function nutEntries(nuts: MintNutsBlock | undefined): Array<{number: number; value: unknown}> {
-	if (!nuts) return [];
 	const by_number = new Map<number, unknown>();
-	for (const [key, value] of Object.entries(nuts)) {
-		const m = key.match(/^(?:nut)?(\d+)$/);
-		if (!m) continue;
-		by_number.set(parseInt(m[1], 10), value);
+	if (nuts) {
+		for (const [key, value] of Object.entries(nuts)) {
+			const m = key.match(/^(?:nut)?(\d+)$/);
+			if (!m) continue;
+			by_number.set(parseInt(m[1], 10), value);
+		}
 	}
-	return ORCHARD_NUTS.filter((n) => by_number.has(n)).map((n) => ({number: n, value: by_number.get(n)}));
+	return ORCHARD_NUTS.map((n) => ({number: n, value: by_number.has(n) ? by_number.get(n) : null}));
 }
 
 /** Strip non-digits to recover the integer the daemon stored. The
@@ -191,37 +210,32 @@ test.describe('mint-general-config card', {tag: '@mint'}, () => {
 		await expect(card.locator('mat-card')).toHaveCount(1);
 	});
 
-	test('renders one chip per `nut*` key advertised by the daemon', async ({page}, testInfo) => {
-		const config = getConfig(testInfo.project.name);
-		const info = mint.getInfo(config);
-		const entries = nutEntries(info.nuts);
-		test.skip(entries.length === 0, 'daemon publishes no `nut*` keys — chip block dead from this fixture');
-
+	test('renders one chip per schema-exposed `nutN` field', async ({page}) => {
+		// Chip count is schema-driven: every nullable `nutN` field on
+		// `OrchardNuts` is selected by `MINT_INFO_QUERY`, so the GraphQL
+		// response always includes all 16 keys (some as `null`) and the
+		// component renders one chip per key. This holds on every fixture
+		// regardless of which subset the daemon publishes.
 		const card = await openConfigCard(page);
-		await expect(card.locator('.nut-card')).toHaveCount(entries.length);
+		await expect(card.locator('.nut-card')).toHaveCount(ORCHARD_NUTS.length);
 	});
 
-	test('chip numbers match the daemon `nut*` keys in numeric order', async ({page}, testInfo) => {
-		const config = getConfig(testInfo.project.name);
-		const info = mint.getInfo(config);
-		const entries = nutEntries(info.nuts);
-		test.skip(entries.length === 0, 'daemon publishes no `nut*` keys');
-
+	test('chip numbers match the schema NUT order', async ({page}) => {
 		const card = await openConfigCard(page);
 		const numbers = await card.locator('.nut-card .font-weight-semi-bold').allTextContents();
-		expect(numbers.map((n) => parseInt(n.trim(), 10))).toEqual(entries.map((e) => e.number));
+		expect(numbers.map((n) => parseInt(n.trim(), 10))).toEqual([...ORCHARD_NUTS]);
 	});
 
 	test('chip dot palette matches the daemon nut value (active/enabled/disabled)', async ({page}, testInfo) => {
 		// Differential. NUT-04 + NUT-05 are `active` (green) when not
 		// `disabled`; every other supported NUT is `enabled` (primary
-		// dot); a key the daemon emits as `null` (e.g. nutshell's nut19)
-		// becomes `disabled` (grey). The mapping is locale-independent
-		// and fixture-stable.
+		// dot); a key the daemon doesn't publish (or publishes as `null`,
+		// e.g. nutshell's nut19/21/22/29 or cdk's nut21/22) becomes
+		// `disabled` (grey). The mapping is locale-independent and
+		// fixture-stable.
 		const config = getConfig(testInfo.project.name);
 		const info = mint.getInfo(config);
 		const entries = nutEntries(info.nuts);
-		test.skip(entries.length === 0, 'daemon publishes no `nut*` keys');
 
 		const card = await openConfigCard(page);
 		const chips = card.locator('.nut-card');
@@ -232,9 +246,86 @@ test.describe('mint-general-config card', {tag: '@mint'}, () => {
 		}
 	});
 
+	test('chips for NUTs the daemon omits render with the disabled palette', async ({page}, testInfo) => {
+		// Schema-decoupled assertion: any NUT past 4/5 whose daemon value
+		// is missing or null must land in the grey `disabled` palette.
+		// This is the failure mode an operator sees when running an older
+		// daemon against a schema that's grown — the chip stays in the
+		// row but signals "your daemon doesn't speak this NUT" without
+		// silently dropping. nutshell guarantees coverage of nut19/21/22/29
+		// and cdk covers nut21/22; together every fixture exercises the
+		// branch even though no single fixture covers all four.
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const entries = nutEntries(info.nuts);
+		const missing = entries
+			.map((e, i) => ({...e, idx: i}))
+			.filter((e) => e.number !== 4 && e.number !== 5 && (e.value === null || e.value === undefined));
+		test.skip(missing.length === 0, 'daemon publishes every schema NUT — disabled-palette branch unreachable');
+
+		const card = await openConfigCard(page);
+		const chips = card.locator('.nut-card');
+		for (const e of missing) {
+			await expect(chips.nth(e.idx).locator('.indicator-circle')).toHaveClass(/orc-outline-variant-bg/);
+		}
+	});
+
+	test('chips for NUTs the daemon publishes (past 4/5) render with the enabled palette', async ({page}, testInfo) => {
+		// Mirror of the disabled-palette test — every schema NUT past 4/5
+		// whose daemon value is a populated object must land in the
+		// primary `enabled` palette. cdk publishes nut7-12, 14, 15, 17,
+		// 19, 20, 29 as objects; nutshell publishes nut7-12, 14, 15, 17,
+		// 20. Each fixture therefore exercises the branch on a different
+		// subset, but together cover every reachable enabled chip.
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const entries = nutEntries(info.nuts);
+		const present = entries
+			.map((e, i) => ({...e, idx: i}))
+			.filter((e) => e.number !== 4 && e.number !== 5 && e.value !== null && typeof e.value === 'object');
+		test.skip(present.length === 0, 'daemon publishes no NUTs past 4/5 — enabled branch unreachable');
+
+		const card = await openConfigCard(page);
+		const chips = card.locator('.nut-card');
+		for (const e of present) {
+			await expect(chips.nth(e.idx).locator('.indicator-circle')).toHaveClass(/orc-primary-bg/);
+		}
+	});
+
+	test('NUT-04 and NUT-05 chips carry the active palette when not disabled', async ({page}, testInfo) => {
+		// NUT-04/05 use a different palette than every other NUT: green
+		// (`active`) when `disabled: false`, red (`inactive`) when
+		// `disabled: true`. No fixture toggles `disabled: true`, so the
+		// `inactive` branch is fixture-only and covered in the karma spec
+		// instead. This test pins the live `active` branch on every stack.
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const nut4 = nutBlock(info.nuts, 4);
+		const nut5 = nutBlock(info.nuts, 5);
+		test.skip(!nut4 || !nut5, 'daemon does not publish nut4 or nut5');
+		test.skip(nut4!.disabled || nut5!.disabled, 'fixture toggles disabled: true — covered in karma');
+
+		const card = await openConfigCard(page);
+		const chips = card.locator('.nut-card');
+		await expect(chips.nth(0).locator('.indicator-circle')).toHaveClass(/orc-status-active-bg/);
+		await expect(chips.nth(1).locator('.indicator-circle')).toHaveClass(/orc-status-active-bg/);
+	});
+
 	test('renders the "Supported Nuts" caption beneath the chip row', async ({page}) => {
 		const card = await openConfigCard(page);
 		await expect(card.getByText('Supported Nuts', {exact: true})).toBeVisible();
+	});
+
+	test('chip numbers are unique', async ({page}) => {
+		// Defends against the schema-drift gotcha called out in the
+		// component spec: a malformed `nutNa`-like key would still match
+		// `key.startsWith('nut')` and `parseInt('Na', 10)` would yield a
+		// duplicate of an existing chip. If a duplicate ever appears the
+		// chip block is silently lying about coverage.
+		const card = await openConfigCard(page);
+		const numbers = await card.locator('.nut-card .font-weight-semi-bold').allTextContents();
+		const parsed = numbers.map((n) => parseInt(n.trim(), 10));
+		expect(new Set(parsed).size).toBe(parsed.length);
 	});
 
 	test('minting status pill reflects nut4.disabled', async ({page}, testInfo) => {
@@ -248,6 +339,22 @@ test.describe('mint-general-config card', {tag: '@mint'}, () => {
 		await expect(card.getByText(expected_text, {exact: true})).toBeVisible();
 	});
 
+	test('minting pill dot carries the active palette when nut4.disabled is false', async ({page}, testInfo) => {
+		// Pill dot uses the same `active`/`inactive` palette as the
+		// NUT-04 chip — green when minting is on. Asserts the pill
+		// graphic and the chip stay coherent (both bound to the same
+		// `nut4.disabled` source) so a regression that flips one but
+		// not the other surfaces here.
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const nut4 = nutBlock(info.nuts, 4);
+		test.skip(!nut4 || nut4.disabled, 'fixture toggles nut4.disabled — covered in karma');
+
+		const card = await openConfigCard(page);
+		const pill = card.getByText('Minting enabled', {exact: true}).locator('..');
+		await expect(pill.locator('.indicator-circle')).toHaveClass(/orc-status-active-bg/);
+	});
+
 	test('melting status pill reflects nut5.disabled', async ({page}, testInfo) => {
 		const config = getConfig(testInfo.project.name);
 		const info = mint.getInfo(config);
@@ -257,6 +364,17 @@ test.describe('mint-general-config card', {tag: '@mint'}, () => {
 		const card = await openConfigCard(page);
 		const expected_text = nut5!.disabled ? 'Melting disabled' : 'Melting enabled';
 		await expect(card.getByText(expected_text, {exact: true})).toBeVisible();
+	});
+
+	test('melting pill dot carries the active palette when nut5.disabled is false', async ({page}, testInfo) => {
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const nut5 = nutBlock(info.nuts, 5);
+		test.skip(!nut5 || nut5.disabled, 'fixture toggles nut5.disabled — covered in karma');
+
+		const card = await openConfigCard(page);
+		const pill = card.getByText('Melting enabled', {exact: true}).locator('..');
+		await expect(pill.locator('.indicator-circle')).toHaveClass(/orc-status-active-bg/);
 	});
 
 	test('renders one minting-limit row per `nut4.methods[]` entry', async ({page}, testInfo) => {
@@ -375,5 +493,25 @@ test.describe('mint-general-config card', {tag: '@mint'}, () => {
 			expect(min).toBe(expectedMinDisplay(nut5!.methods[i]));
 			expect(max).toBe(expectedMaxDisplay(nut5!.methods[i]));
 		}
+	});
+
+	test('limit row track bar renders at 100% width on every fixture', async ({page}, testInfo) => {
+		// `getTrackWidthPercent` runs the bar to 100% in three live cases:
+		//   - the row's own `max_amount` is null (nutshell, both rows)
+		//   - the unit's largest max in the union is null (same case)
+		//   - the row IS the unit's largest (cdk, single sat row hits 100)
+		// All current fixtures have one method per direction in the `sat`
+		// unit, so every visible bar should render at 100%. Asserts the
+		// inline style is set by Angular (the `[style.width.%]` binding
+		// produces `width: 100%`) — guards against a regression that
+		// silently leaves the bar unbound.
+		const config = getConfig(testInfo.project.name);
+		const info = mint.getInfo(config);
+		const nut4 = nutBlock(info.nuts, 4);
+		test.skip(!nut4 || nut4.methods.length === 0, 'daemon publishes no nut4 methods');
+
+		const card = await openConfigCard(page);
+		const bars = card.locator('.limit-range-bar');
+		await expect(bars.first()).toHaveAttribute('style', /width:\s*100%/);
 	});
 });

@@ -38,7 +38,7 @@ export class LocalStorageService {
 		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
 		MINT_DASHBOARD_KEY: 'v3.mint.dashboard.settings',
-		MINT_CONFIG_KEY: 'v0.mint.config.settings',
+		MINT_CONFIG_KEY: 'v1.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v1.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */

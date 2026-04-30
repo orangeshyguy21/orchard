@@ -10,6 +10,7 @@ import {
 	CashuNut5Method,
 	CashuNut15Method,
 	CashuNutSupported,
+	CashuProtectedEndpoint,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
 import {CashuMintInfoRpc} from '@server/modules/cashu/mintrpc/cashumintrpc.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
@@ -95,6 +96,52 @@ export class OrchardNut19 {
 	}
 }
 
+@ObjectType({description: 'NUT-21 clear authentication configuration'})
+export class OrchardNut21 {
+	@Field({description: 'OpenID Connect discovery URL'})
+	openid_discovery: string;
+
+	@Field({description: 'OpenID Connect client ID'})
+	client_id: string;
+
+	@Field(() => [OrchardProtectedEndpoint], {description: 'Endpoints requiring clear authentication'})
+	protected_endpoints: OrchardProtectedEndpoint[];
+
+	constructor(nut21: CashuMintInfo['nuts']['21']) {
+		this.openid_discovery = nut21.openid_discovery;
+		this.client_id = nut21.client_id;
+		this.protected_endpoints = nut21.protected_endpoints.map((endpoint) => new OrchardProtectedEndpoint(endpoint));
+	}
+}
+
+@ObjectType({description: 'NUT-22 blind authentication configuration'})
+export class OrchardNut22 {
+	@Field({description: 'Maximum number of BATs that can be minted in a single request'})
+	bat_max_mint: number;
+
+	@Field(() => [OrchardProtectedEndpoint], {description: 'Endpoints requiring blind authentication'})
+	protected_endpoints: OrchardProtectedEndpoint[];
+
+	constructor(nut22: CashuMintInfo['nuts']['22']) {
+		this.bat_max_mint = nut22.bat_max_mint;
+		this.protected_endpoints = nut22.protected_endpoints.map((endpoint) => new OrchardProtectedEndpoint(endpoint));
+	}
+}
+
+@ObjectType({description: 'NUT-29 batched minting configuration'})
+export class OrchardNut29 {
+	@Field({nullable: true, description: 'Maximum number of quotes allowed per batch'})
+	max_batch_size?: number;
+
+	@Field(() => [String], {nullable: true, description: 'Payment methods supported for batch minting'})
+	methods?: string[];
+
+	constructor(nut29: CashuMintInfo['nuts']['29']) {
+		this.max_batch_size = nut29.max_batch_size;
+		this.methods = nut29.methods;
+	}
+}
+
 @ObjectType({description: 'Cashu NUT support matrix'})
 export class OrchardNuts {
 	@Field({description: 'NUT-04 minting configuration'})
@@ -103,22 +150,22 @@ export class OrchardNuts {
 	@Field({description: 'NUT-05 melting configuration'})
 	nut5: OrchardNut5;
 
-	@Field({description: 'NUT-07 token state check support'})
+	@Field({nullable: true, description: 'NUT-07 token state check support'})
 	nut7: OrchardNutSupported;
 
-	@Field({description: 'NUT-08 lightning fee return support'})
+	@Field({nullable: true, description: 'NUT-08 lightning fee return support'})
 	nut8: OrchardNutSupported;
 
-	@Field({description: 'NUT-09 restore support'})
+	@Field({nullable: true, description: 'NUT-09 restore support'})
 	nut9: OrchardNutSupported;
 
-	@Field({description: 'NUT-10 spending conditions support'})
+	@Field({nullable: true, description: 'NUT-10 spending conditions support'})
 	nut10: OrchardNutSupported;
 
-	@Field({description: 'NUT-11 pay-to-pubkey support'})
+	@Field({nullable: true, description: 'NUT-11 pay-to-pubkey support'})
 	nut11: OrchardNutSupported;
 
-	@Field({description: 'NUT-12 DLEQ proofs support'})
+	@Field({nullable: true, description: 'NUT-12 DLEQ proofs support'})
 	nut12: OrchardNutSupported;
 
 	@Field({nullable: true, description: 'NUT-14 hashed timelock contracts support'})
@@ -136,20 +183,32 @@ export class OrchardNuts {
 	@Field({nullable: true, description: 'NUT-20 signature on mint quote support'})
 	nut20: OrchardNutSupported;
 
+	@Field({nullable: true, description: 'NUT-21 clear authentication configuration'})
+	nut21: OrchardNut21;
+
+	@Field({nullable: true, description: 'NUT-22 blind authentication configuration'})
+	nut22: OrchardNut22;
+
+	@Field({nullable: true, description: 'NUT-29 batched minting configuration'})
+	nut29: OrchardNut29;
+
 	constructor(nuts: CashuMintInfo['nuts']) {
 		this.nut4 = new OrchardNut4(nuts['4']);
 		this.nut5 = new OrchardNut5(nuts['5']);
-		this.nut7 = new OrchardNutSupported(nuts['7']);
-		this.nut8 = new OrchardNutSupported(nuts['8']);
-		this.nut9 = new OrchardNutSupported(nuts['9']);
-		this.nut10 = new OrchardNutSupported(nuts['10']);
-		this.nut11 = new OrchardNutSupported(nuts['11']);
-		this.nut12 = new OrchardNutSupported(nuts['12']);
+		this.nut7 = nuts['7'] ? new OrchardNutSupported(nuts['7']) : null;
+		this.nut8 = nuts['8'] ? new OrchardNutSupported(nuts['8']) : null;
+		this.nut9 = nuts['9'] ? new OrchardNutSupported(nuts['9']) : null;
+		this.nut10 = nuts['10'] ? new OrchardNutSupported(nuts['10']) : null;
+		this.nut11 = nuts['11'] ? new OrchardNutSupported(nuts['11']) : null;
+		this.nut12 = nuts['12'] ? new OrchardNutSupported(nuts['12']) : null;
 		this.nut14 = nuts['14'] ? new OrchardNutSupported(nuts['14']) : null;
 		this.nut15 = nuts['15'] ? new OrchardNut15(nuts['15']) : null;
 		this.nut17 = nuts['17'] ? new OrchardNut17(nuts['17']) : null;
 		this.nut19 = nuts['19'] ? new OrchardNut19(nuts['19']) : null;
 		this.nut20 = nuts['20'] ? new OrchardNutSupported(nuts['20']) : null;
+		this.nut21 = nuts['21'] ? new OrchardNut21(nuts['21']) : null;
+		this.nut22 = nuts['22'] ? new OrchardNut22(nuts['22']) : null;
+		this.nut29 = nuts['29'] ? new OrchardNut29(nuts['29']) : null;
 	}
 }
 
@@ -312,6 +371,20 @@ export class OrchardCachedEndpoint {
 	constructor(cached_endpoint: CashuCachedEndpoint) {
 		this.method = cached_endpoint.method;
 		this.path = cached_endpoint.path;
+	}
+}
+
+@ObjectType({description: 'Protected endpoint requiring authentication'})
+export class OrchardProtectedEndpoint {
+	@Field({description: 'HTTP method'})
+	method: string;
+
+	@Field({description: 'Endpoint path (may end with * wildcard)'})
+	path: string;
+
+	constructor(protected_endpoint: CashuProtectedEndpoint) {
+		this.method = protected_endpoint.method;
+		this.path = protected_endpoint.path;
 	}
 }
 

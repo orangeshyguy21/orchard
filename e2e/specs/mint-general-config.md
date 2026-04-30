@@ -65,7 +65,7 @@ Implemented at [mint-general-config.component.ts:81-89](../../src/client/modules
 ## Happy path
 
 1. Parent route resolves `mint_info`; the dashboard component renders `<orc-mint-general-config [info]="mint_info">`.
-2. Top block: 13 nut chips render in numeric order — `4 5 7 8 9 10 11 12 14 15 17 19 20`. Each chip has a colored dot above its number; NUT-04 and NUT-05 are green (`active`), every other listed NUT is a primary-tinted dot (`enabled`), and any nut whose value is `null` (e.g. nutshell omits NUT-19) is muted/grey (`disabled`).
+2. Top block: 16 nut chips render in schema order — `4 5 7 8 9 10 11 12 14 15 17 19 20 21 22 29`. The chip *count and order* are schema-driven (`MINT_INFO_QUERY` selects every nullable `nutN` field on `OrchardNuts`, so the GraphQL response always carries all 16 keys); the chip *status* is daemon-driven. NUT-04 and NUT-05 are green (`active`), every NUT past 4/5 the daemon publishes as an object is a primary-tinted dot (`enabled`), and any nut whose value is `null` (e.g. nutshell's nut19/21/22/29, cdk's nut21/22) is muted/grey (`disabled`).
 3. "Supported Nuts" caption sits below the chip row.
 4. Below: two row-pills. Left = "Minting enabled" (green dot) when `nuts.nut4.disabled === false`, "Minting disabled" (red dot) otherwise. Right = same for melting / NUT-05.
 5. Below: two columns side by side. Left "Minting Limits" (NUT-04 methods), right "Melting Limits" (NUT-05 methods). Each column renders one row per `(method, unit)` tuple from the daemon's `methods` array. A row has the unit asset glyph + payment-method badge ("BOLT 11" / "BOLT 12" / raw method string) on top, and a min → bar → max line below. Min defaults to `1` when the daemon publishes `null`; max renders `∞` when the daemon publishes `null`.
@@ -73,17 +73,17 @@ Implemented at [mint-general-config.component.ts:81-89](../../src/client/modules
 
 ## Reachable states
 
-### 1. Live (cdk): explicit min/max, all 13 NUTs supported
+### 1. Live (cdk): explicit min/max, 14 NUTs supported
 
 - Stack: `lnd-cdk-sqlite` / `cln-cdk-postgres`.
-- All 13 chips render. NUT-04 / NUT-05 = green; NUT-07, 08, 09, 10, 11, 12, 14, 15, 17, 19, 20 = primary; nothing greyed.
+- All 16 chips render. NUT-04 / NUT-05 = green; NUT-07, 08, 09, 10, 11, 12, 14, 15, 17, 19, 20, 29 = primary; **NUT-21 / NUT-22 = grey** (cdk-mintd doesn't publish auth in the e2e fixtures).
 - Both pills: "Minting enabled" / "Melting enabled" (green dots).
 - Single row each side: BOLT 11 / sat with `min_amount=1` and `max_amount=500_000` ⇒ "₿ 1 ─── ₿ 500,000". Both bars at 100% width (sole entries in the `sat` unit). This is the state the user's reference screenshot captures.
 
-### 2. Live (nutshell): unlimited min/max, NUT-19 absent
+### 2. Live (nutshell): unlimited min/max, NUT-19 / 21 / 22 / 29 absent
 
 - Stack: `lnd-nutshell-sqlite` / `cln-nutshell-postgres`.
-- 13 chips render. NUT-04 / NUT-05 = green; NUT-07–12, 14, 15, 17, 20 = primary; **NUT-19 = grey** because nutshell's `/v1/info` returns `nut19: null` and `getNutStatus` emits `'disabled'` for `null`.
+- 16 chips render. NUT-04 / NUT-05 = green; NUT-07–12, 14, 15, 17, 20 = primary; **NUT-19, NUT-21, NUT-22, NUT-29 = grey** because nutshell's `/v1/info` omits these keys, the resolver fills `null`, and `getNutStatus` emits `'disabled'` for `null`.
 - Both pills enabled.
 - Single row each side: BOLT 11 / sat with `min_amount=null` ⇒ "₿ 1" (defaulted), `max_amount=null` ⇒ "∞". `max_by_unit.get('sat')` is also null ⇒ `getTrackWidthPercent` returns 100 ⇒ both bars 100% width.
 
@@ -228,8 +228,8 @@ Implemented at [mint-general-config.component.ts:81-89](../../src/client/modules
 
 | State | `lnd-nutshell-sqlite` | `lnd-cdk-sqlite` | `cln-cdk-postgres` | `cln-nutshell-postgres` |
 |---|---|---|---|---|
-| 1. Live cdk (min=1, max=500k, NUT-19 enabled) | — stack-only | ✓ live | ✓ live | — stack-only |
-| 2. Live nutshell (unlimited limits, NUT-19 grey) | ✓ live | — stack-only | — stack-only | ✓ live |
+| 1. Live cdk (min=1, max=500k, NUT-19/29 enabled, NUT-21/22 grey) | — stack-only | ✓ live | ✓ live | — stack-only |
+| 2. Live nutshell (unlimited limits, NUT-19/21/22/29 grey) | ✓ live | — stack-only | — stack-only | ✓ live |
 | 3. Minting disabled | — synthetic | — synthetic | — synthetic | — synthetic |
 | 4. Melting disabled | — synthetic | — synthetic | — synthetic | — synthetic |
 | 5. Both disabled | — synthetic | — synthetic | — synthetic | — synthetic |
@@ -246,8 +246,8 @@ The card root locator is `card = page.locator('orc-mint-general-config')`. Every
 |---|---|---|
 | Card mount | `card.locator('mat-card')` visible | `await expect(card).toBeVisible()` |
 | Title | `card.getByText('Config', {exact: true})` | exactly one |
-| 1. cdk live | `card.locator('.nut-card')` count = 13; `.limit-range` count = 2 | each chip's number + dot class matches `mint.getInfo()` truth; min cell innerHTML contains `1`, max cell contains `500,000` per row |
-| 2. nutshell live | same chip count = 13 | NUT-19 chip's `orc-graphic-status .indicator-circle` carries `orc-outline-variant-bg`; both max cells render literal `∞` |
+| 1. cdk live | `card.locator('.nut-card')` count = 16; `.limit-range` count = 2 | each chip's number + dot class matches `mint.getInfo()` truth; min cell innerHTML contains `1`, max cell contains `500,000` per row; NUT-21/22 chip dots `orc-outline-variant-bg` |
+| 2. nutshell live | same chip count = 16 | NUT-19/21/22/29 chip dots all `orc-outline-variant-bg`; both max cells render literal `∞` |
 | 3. Minting disabled | `card.getByText('Minting disabled')` visible | NUT-04 chip's status dot has `orc-status-inactive-bg`; pill text reads `Minting disabled` |
 | 4. Melting disabled | `card.getByText('Melting disabled')` visible | mirror over NUT-05 |
 | 5. Both disabled | both above | both pills red, both NUT-4/5 dots red |
@@ -262,7 +262,7 @@ Locator probe verification (run on live cdk during spec authoring, all returned 
 document.querySelectorAll('orc-mint-general-config mat-card').length            // 1
 Array.from(document.querySelectorAll('orc-mint-general-config .title-l'))
   .filter(e => e.textContent.trim() === 'Config').length                         // 1
-document.querySelectorAll('orc-mint-general-config .nut-card').length            // 13
+document.querySelectorAll('orc-mint-general-config .nut-card').length            // 16
 document.querySelectorAll('orc-mint-general-config orc-mint-general-payment-method').length  // 2
 document.querySelectorAll('orc-mint-general-config orc-graphic-asset').length    // 2
 document.querySelectorAll('orc-mint-general-config .limit-range').length         // 2
