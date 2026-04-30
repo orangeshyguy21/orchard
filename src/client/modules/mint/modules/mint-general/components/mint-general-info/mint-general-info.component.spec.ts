@@ -1,8 +1,10 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
+import {DomSanitizer} from '@angular/platform-browser';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
+import {MatIconRegistry} from '@angular/material/icon';
 /* Application Dependencies */
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
@@ -43,6 +45,10 @@ describe('MintGeneralInfoComponent', () => {
 			imports: [OrcMintGeneralModule],
 			providers: [provideRouter([])],
 		}).compileComponents();
+
+		const icon_registry = TestBed.inject(MatIconRegistry);
+		const sanitizer = TestBed.inject(DomSanitizer);
+		icon_registry.addSvgIconLiteral('tor', sanitizer.bypassSecurityTrustHtml('<svg></svg>'));
 
 		fixture = TestBed.createComponent(MintGeneralInfoComponent);
 		component = fixture.componentInstance;

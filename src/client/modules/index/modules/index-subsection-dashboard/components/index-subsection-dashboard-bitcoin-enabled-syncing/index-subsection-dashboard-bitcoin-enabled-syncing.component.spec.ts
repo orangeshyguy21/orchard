@@ -111,10 +111,7 @@ describe('IndexSubsectionDashboardBitcoinEnabledSyncingComponent', () => {
 			expect(component.polling_block).toBeTrue();
 
 			// Now mutate every field and confirm each fires its animator.
-			fixture.componentRef.setInput(
-				'blockchain_info',
-				makeInfo({headers: 946820, verificationprogress: 0.92}),
-			);
+			fixture.componentRef.setInput('blockchain_info', makeInfo({headers: 946820, verificationprogress: 0.92}));
 			fixture.componentRef.setInput(
 				'block',
 				makeBlock({
@@ -144,10 +141,7 @@ describe('IndexSubsectionDashboardBitcoinEnabledSyncingComponent', () => {
 
 		it('returns early when blockchain_info reports is_synced', fakeAsync(() => {
 			// is_synced getter is true when !initialblockdownload && headers === blocks.
-			fixture.componentRef.setInput(
-				'blockchain_info',
-				makeInfo({initialblockdownload: false, blocks: 100, headers: 100}),
-			);
+			fixture.componentRef.setInput('blockchain_info', makeInfo({initialblockdownload: false, blocks: 100, headers: 100}));
 			fixture.detectChanges();
 			tick(2000);
 			expect(component.polling_block).toBeFalse();

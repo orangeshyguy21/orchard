@@ -40,10 +40,29 @@ import {SettingAppService} from './modules/settings/services/setting-app/setting
 import {AppComponent} from './app.component';
 
 for (const data of [
-	localeAr, localeBn, localeDa, localeDe, localeEs, localeFi, localeFr,
-	localeHe, localeHi, localeId, localeIt, localeJa, localeKo, localeNl,
-	localeNo, localePl, localePt, localeRu, localeSv, localeTh, localeTr,
-	localeVi, localeZh,
+	localeAr,
+	localeBn,
+	localeDa,
+	localeDe,
+	localeEs,
+	localeFi,
+	localeFr,
+	localeHe,
+	localeHi,
+	localeId,
+	localeIt,
+	localeJa,
+	localeKo,
+	localeNl,
+	localeNo,
+	localePl,
+	localePt,
+	localeRu,
+	localeSv,
+	localeTh,
+	localeTr,
+	localeVi,
+	localeZh,
 ]) {
 	registerLocaleData(data);
 }
