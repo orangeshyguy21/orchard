@@ -341,3 +341,25 @@ services:
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-cln-topology.sh"]
     restart: "no"
+
+  # ──────────────────────────────────────────────────────────────
+  # SQLite reader sidecar — see lnd-nutshell-sqlite/compose.yml
+  # for the full rationale. cdk-mintd lives in postgres on this
+  # stack so only orchard's own sqlite is exposed via /orchard.
+  # ──────────────────────────────────────────────────────────────
+  sqlite-reader:
+    image: alpine:${ALPINE_VERSION}
+    container_name: cln-cdk-postgres-sqlite-reader
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      orchard: { condition: service_healthy }
+    volumes:
+      - orchard-data:/orchard
+    command: sh -c "apk add --no-cache sqlite && exec tail -f /dev/null"
+    healthcheck:
+      test: ["CMD", "sqlite3", "--version"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s

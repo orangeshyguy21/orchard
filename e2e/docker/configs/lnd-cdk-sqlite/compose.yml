@@ -489,3 +489,30 @@ services:
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-lnd-topology.sh"]
     restart: "no"
+
+  # ──────────────────────────────────────────────────────────────
+  # SQLite reader sidecar — see lnd-nutshell-sqlite/compose.yml
+  # for the full rationale. cdk-mintd writes its DB at
+  # /app/data/cdk-mintd.sqlite inside its own container; the
+  # sidecar mounts that volume at /mint and the orchard volume at
+  # /orchard so helpers/backend/_sql.ts can `docker exec sqlite3`
+  # against either without copying files.
+  # ──────────────────────────────────────────────────────────────
+  sqlite-reader:
+    image: alpine:${ALPINE_VERSION}
+    container_name: lnd-cdk-sqlite-sqlite-reader
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      orchard:   { condition: service_healthy }
+      cdk-mintd: { condition: service_healthy }
+    volumes:
+      - orchard-data:/orchard
+      - cdk-mintd-data:/mint
+    command: sh -c "apk add --no-cache sqlite && exec tail -f /dev/null"
+    healthcheck:
+      test: ["CMD", "sqlite3", "--version"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s

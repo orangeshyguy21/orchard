@@ -1,13 +1,16 @@
 /**
  * Shared SQL transport primitives for backend readers that need to query
- * the mint daemon's database or Orchard's own database. The cdk/nutshell/
- * orchard containers don't ship a sqlite3 binary, so sqlite reads go via
- * `docker cp` into /tmp + a host-side `sqlite3` invocation. Postgres reads
- * go via `docker exec psql -tAc`.
+ * the mint daemon's database or Orchard's own database.
+ *
+ * Postgres reads go via `docker exec psql -tAc` against the postgres
+ * container. SQLite reads go via `docker exec sqlite3 ...` against the
+ * stack's `sqlite-reader` sidecar (alpine + sqlite, defined in each
+ * compose.yml). The sidecar shares the relevant data volume with the
+ * writer container, so SQLite's WAL coordination just works — no
+ * `docker cp` of `.sqlite + -wal + -shm`, no torn-page or stale-sidecar
+ * races, no host-side `sqlite3` dependency.
  */
 
-/* Core Dependencies */
-import {execFileSync} from 'child_process';
 /* Native Dependencies */
 import {dockerExec} from './docker-cli';
 import type {ConfigInfo} from '@e2e/types/config';
@@ -20,31 +23,52 @@ const MINT_PG_DB: Partial<Record<ConfigInfo['name'], string>> = {
 	'cln-nutshell-postgres': 'nutshell',
 };
 
-/** Path to the mint daemon's sqlite file inside its container. cdk-mintd
- *  writes a single `cdk-mintd.sqlite`; nutshell writes `mint.sqlite3`. */
+/** Path to the mint daemon's sqlite file as exposed inside the
+ *  `sqlite-reader` sidecar — each stack's sidecar mounts the mint data
+ *  volume at `/mint`. cdk-mintd writes a single `cdk-mintd.sqlite`;
+ *  nutshell writes `mint.sqlite3`. */
 const MINT_SQLITE_PATH: Record<'cdk' | 'nutshell', string> = {
-	cdk: '/app/data/cdk-mintd.sqlite',
-	nutshell: '/app/data/mint.sqlite3',
+	cdk: '/mint/cdk-mintd.sqlite',
+	nutshell: '/mint/mint.sqlite3',
 };
 
-/** Path to Orchard's own sqlite database inside the orchard container —
- *  where Orchard persists settings, oracle backfills, analytics checkpoints,
- *  users. Distinct from the mint daemon's DB. */
-const ORCHARD_SQLITE_PATH = '/app/data/orchard.db';
+/** Path to Orchard's own sqlite database as exposed inside the
+ *  `sqlite-reader` sidecar — every stack's sidecar mounts orchard's data
+ *  volume at `/orchard`. Distinct from the mint daemon's DB; this is
+ *  where Orchard persists settings, oracle backfills, analytics
+ *  checkpoints, users. */
+const ORCHARD_SQLITE_PATH = '/orchard/orchard.db';
 
-/** Copy a WAL-mode sqlite db out of a container (main + `-wal`/`-shm` sidecars)
- *  and query it with local `sqlite3`. The cdk/nutshell/orchard containers
- *  don't ship a sqlite3 binary, so we have to query host-side. The sidecars
- *  matter — without them the cp'd db looks empty until the writer checkpoints. */
-function sqliteCopyAndQuery(container: string, remote: string, local: string, sql: string): string {
-	for (const suffix of ['', '-wal', '-shm']) {
-		try {
-			dockerExec(['cp', `${container}:${remote}${suffix}`, `${local}${suffix}`]);
-		} catch {
-			// sidecars may legitimately not exist if the writer has checkpointed
-		}
-	}
-	return execFileSync('sqlite3', [local, sql], {encoding: 'utf8'}).trim();
+/** Container name of the per-stack sqlite reader sidecar. Defined in
+ *  each `e2e/docker/configs/<stack>/compose.yml` and named to match. */
+function sqliteReaderContainer(config: ConfigInfo): string {
+	return `${config.name}-sqlite-reader`;
+}
+
+/** Run a SQL read inside the sqlite-reader sidecar. The sidecar shares
+ *  fs + page cache with the writer (mount of the same docker volume),
+ *  so a `SELECT` here observes the writer's committed state with full
+ *  WAL coordination — no copy-out, no `-wal`/`-shm` mismatches.
+ *
+ *  `-readonly` plus `-bail` keeps the connection from accidentally
+ *  attempting to checkpoint or write back, and makes any SQL error
+ *  surface as a non-zero exit (otherwise sqlite3 prints the error and
+ *  returns 0, hiding bugs from the helper). Output is on stdout in
+ *  the default pipe-separated format with no headers (`-noheader`,
+ *  `-separator |`) — same shape every existing caller already parses. */
+function sqliteContainerQuery(config: ConfigInfo, db_path: string, sql: string): string {
+	return dockerExec([
+		'exec',
+		sqliteReaderContainer(config),
+		'sqlite3',
+		'-readonly',
+		'-bail',
+		'-noheader',
+		'-separator',
+		'|',
+		db_path,
+		sql,
+	]);
 }
 
 /** Parse the boolean text emitted by either `psql -tA` (`'t'` / `'f'`) or
@@ -55,7 +79,7 @@ export function parseSqlBoolean(s: string): boolean {
 
 /** Run a one-shot SQL read against the stack's mint database, returning the
  *  raw stdout (whitespace-trimmed). Postgres uses `psql -tAc` for terse
- *  output; sqlite goes through `sqliteCopyAndQuery`. */
+ *  output; sqlite goes through the sqlite-reader sidecar. */
 export function mintDbQuery(config: ConfigInfo, sql: string): string {
 	if (config.db === 'postgres') {
 		const db = MINT_PG_DB[config.name];
@@ -63,14 +87,14 @@ export function mintDbQuery(config: ConfigInfo, sql: string): string {
 		const container = `${config.name}-postgres`;
 		return dockerExec(['exec', container, 'psql', '-U', 'cashu', '-d', db, '-tAc', sql]);
 	}
-	return sqliteCopyAndQuery(
-		config.containers.mint,
-		MINT_SQLITE_PATH[config.mint],
-		`/tmp/orc-e2e-mint-${config.name}.sqlite3`,
-		sql,
-	);
+	return sqliteContainerQuery(config, MINT_SQLITE_PATH[config.mint], sql);
 }
 
+/** Run a one-shot SQL read against Orchard's own sqlite database. Every
+ *  stack's sqlite-reader sidecar mounts the orchard volume at /orchard,
+ *  so this works on postgres-mint stacks too — orchard's own state
+ *  (settings, oracle backfill, analytics checkpoints) is always sqlite
+ *  regardless of the mint backend. */
 export function orchardDbQuery(config: ConfigInfo, sql: string): string {
-	return sqliteCopyAndQuery(`${config.name}-orchard`, ORCHARD_SQLITE_PATH, `/tmp/orc-e2e-orchard-${config.name}.db`, sql);
+	return sqliteContainerQuery(config, ORCHARD_SQLITE_PATH, sql);
 }
