@@ -110,82 +110,66 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public tertiary_nav_items: Record<TertiaryNav, NavTertiaryItem> = {
 		[TertiaryNav.Nut4]: {
 			title: 'Minting',
-			subtitle: 'Nut 4',
 			status: undefined,
 		},
 		[TertiaryNav.Nut5]: {
 			title: 'Melting',
-			subtitle: 'Nut 5',
 			status: undefined,
 		},
 		[TertiaryNav.Nut7]: {
 			title: 'Token check',
-			subtitle: 'Nut 7',
 			status: undefined,
 		},
 		[TertiaryNav.Nut8]: {
 			title: 'Lightning fee',
-			subtitle: 'Nut 8',
 			status: undefined,
 		},
 		[TertiaryNav.Nut9]: {
 			title: 'Restore signatures',
-			subtitle: 'Nut 9',
 			status: undefined,
 		},
 		[TertiaryNav.Nut10]: {
 			title: 'Spending conditions',
-			subtitle: 'Nut 10',
 			status: undefined,
 		},
 		[TertiaryNav.Nut11]: {
 			title: 'P2Pk',
-			subtitle: 'Nut 11',
 			status: undefined,
 		},
 		[TertiaryNav.Nut12]: {
 			title: 'Offline validation',
-			subtitle: 'Nut 12',
 			status: undefined,
 		},
 		[TertiaryNav.Nut14]: {
 			title: 'HTLCs',
-			subtitle: 'Nut 14',
 			status: undefined,
 		},
 		[TertiaryNav.Nut15]: {
 			title: 'PMP payments',
-			subtitle: 'Nut 15',
 			status: undefined,
 		},
 		[TertiaryNav.Nut17]: {
 			title: 'Websockets',
-			subtitle: 'Nut 17',
 			status: undefined,
 		},
 		[TertiaryNav.Nut19]: {
 			title: 'Cached responses',
-			subtitle: 'Nut 19',
 			status: undefined,
 		},
 		[TertiaryNav.Nut20]: {
 			title: 'Quote signature',
-			subtitle: 'Nut 20',
 			status: undefined,
 		},
 		[TertiaryNav.Nut21]: {
-			title: 'Clear authentication',
-			subtitle: 'Nut 21',
+			title: 'Clear auth',
 			status: undefined,
 		},
 		[TertiaryNav.Nut22]: {
-			title: 'Blind authentication',
-			subtitle: 'Nut 22',
+			title: 'Blind auth',
 			status: undefined,
 		},
 		[TertiaryNav.Nut29]: {
 			title: 'Batched minting',
-			subtitle: 'Nut 29',
 			status: undefined,
 		},
 	};
