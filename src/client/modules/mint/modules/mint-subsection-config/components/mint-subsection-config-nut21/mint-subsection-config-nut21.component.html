@@ -6,12 +6,14 @@
 					<div class="flex flex-column">
 						<form class="flex-grow">
 							<orc-form-field-dynamic [info]="true" (inform)="help_status_openid.set(!help_status_openid())">
-								<mat-form-field
-									appearance="fill"
-									class="w-full orc-dynamic-form-field orc-cold-form-field"
-								>
+								<mat-form-field appearance="fill" class="w-full orc-dynamic-form-field orc-cold-form-field">
 									<mat-label>OpenID Discovery URL</mat-label>
-                                     <textarea [value]="nut21()?.openid_discovery" matInput [disabled]="true" [formAutogrow]="true"></textarea>
+									<textarea
+										[value]="nut21()?.openid_discovery"
+										matInput
+										[disabled]="true"
+										[formAutogrow]="true"
+									></textarea>
 								</mat-form-field>
 							</orc-form-field-dynamic>
 						</form>
@@ -20,27 +22,24 @@
 								<div class="flex p-b-1">
 									<orc-form-help-text class="orc-surface-container-high-bg">
 										<div>
-											The OpenID Connect discovery endpoint that issues clear auth tokens (CATs). Wallets fetch it
-											to learn the provider's authorization, token, and JWKS endpoints, so it must be reachable from
-											any wallet connecting to the mint.
+											The OpenID Connect discovery endpoint that issues clear auth tokens (CATs). Wallets fetch it to
+											learn the provider's authorization, token, and JWKS endpoints, so it must be reachable from any
+											wallet connecting to the mint.
 										</div>
 									</orc-form-help-text>
 								</div>
 							</div>
 						</div>
 					</div>
-                    <div class="flex flex-column">
+					<div class="flex flex-column">
 						<form class="flex-grow">
 							<orc-form-field-dynamic [info]="true" (inform)="help_status_client_id.set(!help_status_client_id())">
-                                <div class="orc-small-form-field-wrapper">
-                                    <mat-form-field
-                                        appearance="fill"
-                                        class="w-full orc-dynamic-form-field orc-cold-form-field"
-                                    >
-                                        <mat-label>Client ID</mat-label>
-                                        <input type="text" [value]="nut21()?.client_id" matInput [disabled]="true" />
-                                    </mat-form-field>
-                                </div>
+								<div class="orc-small-form-field-wrapper">
+									<mat-form-field appearance="fill" class="w-full orc-dynamic-form-field orc-cold-form-field">
+										<mat-label>Client ID</mat-label>
+										<input type="text" [value]="nut21()?.client_id" matInput [disabled]="true" />
+									</mat-form-field>
+								</div>
 							</orc-form-field-dynamic>
 						</form>
 						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status_client_id()">
@@ -48,9 +47,9 @@
 								<div class="flex p-b-1 w-max-36">
 									<orc-form-help-text class="orc-surface-container-high-bg">
 										<div>
-											The OAuth 2.0 client identifier wallets must present when authenticating with the OIDC
-											provider. The client should be registered as public (no client secret) with PKCE enabled and
-											the wallet redirect URLs allowlisted.
+											The OAuth 2.0 client identifier wallets must present when authenticating with the OIDC provider.
+											The client should be registered as public (no client secret) with PKCE enabled and the wallet
+											redirect URLs allowlisted.
 										</div>
 									</orc-form-help-text>
 								</div>

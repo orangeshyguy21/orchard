@@ -7,14 +7,11 @@
 						<form class="flex-grow">
 							<orc-form-field-dynamic [info]="true" (inform)="help_status.set(!help_status())">
 								<div class="orc-small-form-field-wrapper">
-                                    <mat-form-field
-                                        appearance="fill"
-                                        class="w-full orc-dynamic-form-field orc-cold-form-field"
-                                    >
-                                        <mat-label>BAT max mint</mat-label>
-                                        <input type="number" [value]="nut22()?.bat_max_mint" matInput [disabled]="true" />
-                                    </mat-form-field>
-                                </div>
+									<mat-form-field appearance="fill" class="w-full orc-dynamic-form-field orc-cold-form-field">
+										<mat-label>BAT max mint</mat-label>
+										<input type="number" [value]="nut22()?.bat_max_mint" matInput [disabled]="true" />
+									</mat-form-field>
+								</div>
 							</orc-form-field-dynamic>
 						</form>
 						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">

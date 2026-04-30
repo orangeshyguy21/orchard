@@ -72,7 +72,8 @@ enum TertiaryNav {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy, AfterViewInit {
-	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20,nav21,nav22,nav29') nav_elements!: QueryList<ElementRef>;
+	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20,nav21,nav22,nav29')
+	nav_elements!: QueryList<ElementRef>;
 	@ViewChild('nut_container', {static: false}) nut_container!: ElementRef;
 
 	@HostListener('window:beforeunload')
