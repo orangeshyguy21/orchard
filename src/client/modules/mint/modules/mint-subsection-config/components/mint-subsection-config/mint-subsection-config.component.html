@@ -618,7 +618,10 @@
 					</div>
 				</orc-mint-subsection-config-nut-supported>
 				@if (mint_info?.nuts?.nut22) {
-					todo
+					<orc-mint-subsection-config-nut22
+						[nut22]="mint_info?.nuts?.nut22"
+						[device_desktop]="device_type() === 'desktop'"
+					></orc-mint-subsection-config-nut22>
 				}
 			</div>
 
@@ -646,7 +649,10 @@
 					</div>
 				</orc-mint-subsection-config-nut-supported>
 				@if (mint_info?.nuts?.nut29) {
-					todo
+					<orc-mint-subsection-config-nut29
+						[nut29]="mint_info?.nuts?.nut29"
+						[device_desktop]="device_type() === 'desktop'"
+					></orc-mint-subsection-config-nut29>
 				}
 			</div>
 		</div>

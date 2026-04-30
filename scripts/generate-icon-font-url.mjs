@@ -109,6 +109,7 @@ const ICONS = [
   'add_task',
   'open_with',
   'play_circle',
+  'merge',
 ];
 
 // Sort alphabetically and remove duplicates
