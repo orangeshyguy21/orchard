@@ -77,6 +77,25 @@ export const MINT_INFO_QUERY = `{
 			nut20{
 				supported
 			}
+			nut21{
+				openid_discovery
+				client_id
+				protected_endpoints{
+					method
+					path
+				}
+			}
+			nut22{
+				bat_max_mint
+				protected_endpoints{
+					method
+					path
+				}
+			}
+			nut29{
+				max_batch_size
+				methods
+			}
         }
   	}
 }`;

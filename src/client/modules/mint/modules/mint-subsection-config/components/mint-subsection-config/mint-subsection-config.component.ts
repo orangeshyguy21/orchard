@@ -21,7 +21,6 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Dependencies */
-import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -60,6 +59,9 @@ enum TertiaryNav {
 	Nut17 = 'nav17',
 	Nut19 = 'nav19',
 	Nut20 = 'nav20',
+	Nut21 = 'nav21',
+	Nut22 = 'nav22',
+	Nut29 = 'nav29',
 }
 
 @Component({
@@ -70,7 +72,7 @@ enum TertiaryNav {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy, AfterViewInit {
-	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20') nav_elements!: QueryList<ElementRef>;
+	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20,nav21,nav22,nav29') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('nut_container', {static: false}) nut_container!: ElementRef;
 
 	@HostListener('window:beforeunload')
@@ -171,6 +173,21 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			subtitle: 'Nut 20',
 			status: undefined,
 		},
+		[TertiaryNav.Nut21]: {
+			title: 'Clear authentication',
+			subtitle: 'Nut 21',
+			status: undefined,
+		},
+		[TertiaryNav.Nut22]: {
+			title: 'Blind authentication',
+			subtitle: 'Nut 22',
+			status: undefined,
+		},
+		[TertiaryNav.Nut29]: {
+			title: 'Batched minting',
+			subtitle: 'Nut 29',
+			status: undefined,
+		},
 	};
 
 	public get form_minting(): FormGroup {
@@ -189,7 +206,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private dirty_count$ = toObservable(this.dirty_count);
 
 	constructor(
-		private configService: ConfigService,
 		private settingAppService: SettingAppService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
@@ -941,17 +957,20 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private initTertiaryNavStatus(): void {
 		this.updateTertiaryNavStatus();
-		this.setNavItemStatus(TertiaryNav.Nut7, this.mint_info?.nuts.nut7.supported ? true : false);
-		this.setNavItemStatus(TertiaryNav.Nut8, this.mint_info?.nuts.nut8.supported ? true : false);
-		this.setNavItemStatus(TertiaryNav.Nut9, this.mint_info?.nuts.nut9.supported ? true : false);
-		this.setNavItemStatus(TertiaryNav.Nut10, this.mint_info?.nuts.nut10.supported ? true : false);
-		this.setNavItemStatus(TertiaryNav.Nut11, this.mint_info?.nuts.nut11.supported ? true : false);
-		this.setNavItemStatus(TertiaryNav.Nut12, this.mint_info?.nuts.nut12.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut7, this.mint_info?.nuts.nut7?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut8, this.mint_info?.nuts.nut8?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut9, this.mint_info?.nuts.nut9?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut10, this.mint_info?.nuts.nut10?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut11, this.mint_info?.nuts.nut11?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut12, this.mint_info?.nuts.nut12?.supported ? true : false);
 		this.setNavItemStatus(TertiaryNav.Nut14, this.mint_info?.nuts?.nut14?.supported ? true : false);
 		this.setNavItemStatus(TertiaryNav.Nut15, this.mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true);
 		this.setNavItemStatus(TertiaryNav.Nut17, this.mint_info?.nuts?.nut17?.supported ? true : false);
 		this.setNavItemStatus(TertiaryNav.Nut19, this.mint_info?.nuts?.nut19 ? true : false);
 		this.setNavItemStatus(TertiaryNav.Nut20, this.mint_info?.nuts?.nut20?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut21, this.mint_info?.nuts?.nut21 ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut22, this.mint_info?.nuts?.nut22 ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut29, this.mint_info?.nuts?.nut29 ? true : false);
 	}
 
 	private updateTertiaryNavStatus(): void {

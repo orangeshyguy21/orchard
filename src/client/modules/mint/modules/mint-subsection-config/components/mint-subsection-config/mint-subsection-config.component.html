@@ -562,6 +562,93 @@
 					</div>
 				</orc-mint-subsection-config-nut-supported>
 			</div>
+
+			<!-- NUT 21 -->
+			<div class="nav21" #nav21>
+				<div class="sticky-nut z-index-1">
+					<div class="title-l">Clear authentication</div>
+					<div class="font-size-xs orc-outline-color p-b-0-5">
+						Restricts mint usage to OIDC-authenticated users via a clear access token (CAT)
+					</div>
+					<div class="category-rule"></div>
+				</div>
+				<orc-mint-subsection-config-nut-supported
+					[nut_index]="'21'"
+					[nut_icon]="'visibility'"
+					[supported]="mint_info?.nuts?.nut21 ? true : false"
+					[device_desktop]="device_type() === 'desktop'"
+				>
+					<div class="flex flex-column flex-gap-0-5">
+						<span>
+							Gates selected endpoints behind an external OpenID Connect provider. Wallets present an access token (CAT)
+							from the OIDC service to access them.
+						</span>
+						<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+					</div>
+				</orc-mint-subsection-config-nut-supported>
+				@if (mint_info?.nuts?.nut21) {
+					<orc-mint-subsection-config-nut21
+						[nut21]="mint_info?.nuts?.nut21"
+						[device_desktop]="device_type() === 'desktop'"
+					></orc-mint-subsection-config-nut21>
+				}
+			</div>
+
+			<!-- NUT 22 -->
+			<div class="nav22" #nav22>
+				<div class="sticky-nut z-index-1">
+					<div class="title-l">Blind authentication</div>
+					<div class="font-size-xs orc-outline-color p-b-0-5">
+						Issues unlinkable Blind Auth Tokens (BATs) to gate access to mint endpoints
+					</div>
+					<div class="category-rule"></div>
+				</div>
+				<orc-mint-subsection-config-nut-supported
+					[nut_index]="'22'"
+					[nut_icon]="'visibility_off'"
+					[supported]="mint_info?.nuts?.nut22 ? true : false"
+					[device_desktop]="device_type() === 'desktop'"
+				>
+					<div class="flex flex-column flex-gap-0-5">
+						<span>
+							Issues single-use Blind Auth Tokens (BATs) that wallets present on protected endpoints. BATs carry no user
+							identifier so requests stay unlinkable within the set of authorized users.
+						</span>
+						<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+					</div>
+				</orc-mint-subsection-config-nut-supported>
+				@if (mint_info?.nuts?.nut22) {
+					todo
+				}
+			</div>
+
+			<!-- NUT 29 -->
+			<div class="nav29" #nav29>
+				<div class="sticky-nut z-index-1">
+					<div class="title-l">Batched minting</div>
+					<div class="font-size-xs orc-outline-color p-b-0-5">
+						Mint multiple quotes in a single atomic batch request
+					</div>
+					<div class="category-rule"></div>
+				</div>
+				<orc-mint-subsection-config-nut-supported
+					[nut_index]="'29'"
+					[nut_icon]="'merge'"
+					[supported]="mint_info?.nuts?.nut29 ? true : false"
+					[device_desktop]="device_type() === 'desktop'"
+				>
+					<div class="flex flex-column flex-gap-0-5">
+						<span>
+							Lets wallets mint signatures for multiple paid quotes in one request, cutting round-trips. The batch is
+							all-or-nothing — if any quote fails validation, the entire request is rejected.
+						</span>
+						<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+					</div>
+				</orc-mint-subsection-config-nut-supported>
+				@if (mint_info?.nuts?.nut29) {
+					todo
+				}
+			</div>
 		</div>
 		@if (device_type() === 'desktop') {
 			<orc-nav-tertiary
