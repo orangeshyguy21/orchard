@@ -30,8 +30,8 @@
 
 import {test, expect, type Locator, type Page} from '@playwright/test';
 
-import {getConfig} from '../helpers/config';
-import {ln} from '../helpers/backend';
+import {getConfig} from '@e2e/helpers/config';
+import {ln} from '@e2e/helpers/backend';
 
 /** Raw getinfo shape — we only read fields that LND and CLN both emit under
  *  the same name. Both backends expose these exact keys on regtest. */
@@ -63,7 +63,10 @@ async function openUriDialog(page: Page): Promise<Locator> {
 	const card = await openInfoCard(page);
 	await card.locator('mat-chip').first().click();
 	const dialog = page.locator('orc-network-connection');
-	await expect(dialog).toBeVisible();
+	// Wait for the component's data-bound content, not just the wrapper —
+	// Material mounts the wrapper before the inner template fills in, and
+	// under worker contention assertions can hit that gap.
+	await expect(dialog.locator('.mega-string')).toBeVisible();
 	return dialog;
 }
 
@@ -98,10 +101,17 @@ test.describe('lightning-general-info card', {tag: '@lightning'}, () => {
 		await expect(card.getByText('Mint backend', {exact: true})).toBeVisible();
 	});
 
-	test('renders the "online" state dot and label when the LN node is healthy', async ({page}) => {
+	test('renders a state dot + state label that matches the LN node sync flags', async ({page}, testInfo) => {
+		// The component's `state` computed returns `'syncing'` when either
+		// `synced_to_chain` or `synced_to_graph` is false, else `'online'`.
+		// On regtest, idle LND legitimately reports `synced_to_chain=false`
+		// (no continuous block flow), so we differential against the LN node's
+		// own sync state rather than asserting a fixed `'online'`.
+		const config = getConfig(testInfo.project.name);
 		const card = await openInfoCard(page);
 		await expect(card.locator('orc-graphic-status')).toBeVisible();
-		await expect(card.getByText('online', {exact: true})).toBeVisible();
+		const expected = ln.synced(config) ? 'online' : 'syncing';
+		await expect(card.getByText(expected, {exact: true})).toBeVisible();
 	});
 
 	test('displays the peer count reported by the LN node', async ({page}, testInfo) => {

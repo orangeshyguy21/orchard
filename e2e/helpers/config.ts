@@ -1,74 +1,62 @@
 /**
- * Tests read the active config via `testInfo.project.name` and pass it into
- * helpers. This lets a single shared spec run against every config without
- * per-spec plumbing.
+ * Per-stack configuration surface. The `CONFIGS` map below pins each stack's
+ * topology (LN backend, mint backend, DB flavour, container names, etc.); the
+ * accessor functions translate Playwright project names back into a
+ * `ConfigInfo` so a single shared spec runs against every config without
+ * per-spec plumbing. Type definitions live in `e2e/types/config.ts`.
  */
 
-export type ConfigName = 'lnd-nutshell-sqlite' | 'lnd-cdk-sqlite' | 'cln-cdk-postgres' | 'cln-nutshell-postgres' | 'fake-cdk-postgres';
+import fs from 'node:fs';
+import path from 'node:path';
 
-export type LnType = 'lnd' | 'cln' | 'fake';
-export type MintType = 'nutshell' | 'cdk';
-export type DbType = 'sqlite' | 'postgres';
-
-/** Named LN peer within a config's topology. `far` is always LND. */
-export type LnNode = 'orchard' | 'alice' | 'far';
+import type {ConfigInfo, ConfigName, LnNode, MintUnit} from '@e2e/types/config';
 
 /** Seed admin used by both e2e tiers. Must match across tiers so the second
- *  tier to run against a shared stack can log in with the same credentials. */
-/** Password must be ≥6 chars — enforced by the auth-init + signup forms. */
-export const TEST_ADMIN = {name: 'admin', password: 'testere2e'} as const;
+ *  tier to run against a shared stack can log in with the same credentials.
+ *  Password must be ≥6 chars — enforced by the auth-init + signup forms. */
+export const TEST_ADMIN = {name: 'admin', password: 'tester'} as const;
 
 const BASE = {
 	setupKey: 'orchard-e2e-admin-key',
 };
 
-interface BaseConfigInfo {
-	name: ConfigName;
-	mint: MintType;
-	db: DbType;
-	tapd: boolean;
-	/** Mint + LN backend both speak offers. */
-	bolt12: boolean;
-	/** Stack ships a `compose.mainchain.yml` overlay. Gated on `E2E_MAINCHAIN=1`
-	 *  — the `@mainchain` grep tag is added under the same env, so specs
-	 *  skip cleanly on plain runs. */
-	mainchain: boolean;
-	orchardUrl: string;
-	setupKey: string;
-}
-
-/** Discriminated on `ln`: fake-LN stacks have no LN containers at all, so
- *  accessing `lnOrchard` / `lnAlice` / `lnFar` on them is a compile error. */
-export type ConfigInfo =
-	| (BaseConfigInfo & {
-			ln: Exclude<LnType, 'fake'>;
-			containers: {
-				bitcoind: string;
-				/** Orchard's managed LN node. */
-				lnOrchard: string;
-				/** External peer connected directly to orchard (inbound liquidity). */
-				lnAlice: string;
-				/** Far-side peer forcing routing through orchard (outbound / forwarding). */
-				lnFar: string;
-			};
-	  })
-	| (BaseConfigInfo & {
-			ln: 'fake';
-			containers: {bitcoind: string};
-	  });
-
 /** The config-agnostic baseline stack. `@canary`-tagged tests run only here. */
 export const CANARY: ConfigName = 'lnd-nutshell-sqlite';
+
+/** Recover the bare config name from any Playwright project name in this
+ *  config — `setup-<config>:<port>`, `settings-<config>:<port>`, or the bare
+ *  `<config>:<port>` real project. Encodes the project-naming convention
+ *  defined in `playwright.config.ts`. */
+export function bareConfigName(projectName: string): string {
+	return projectName.replace(/^setup-/, '').replace(/^settings-/, '').replace(/:\d+$/, '');
+}
+
+/** Bare feature names enabled on this stack. Single source of truth consumed
+ *  by `tagsFor()` (mapped to `@`-prefixed Playwright tags) and the summary
+ *  reporter's Features row. Add new features here only. */
+export function featuresFor(config: ConfigInfo): string[] {
+	const features: string[] = [];
+	if (config.tapd) features.push('tapd');
+	if (config.bolt12) features.push('bolt12');
+	if (config.mainchain) features.push('mainchain');
+	if (config.appSettings?.ai_enabled === true) features.push('ai');
+	if (config.appSettings?.bitcoin_oracle === true) features.push('oracle');
+	return features;
+}
 
 /** Tags that match this stack's `grep`. Shared between `playwright.config.ts`
  *  and reporters so the rules live in one place. */
 export function tagsFor(config: ConfigInfo): string[] {
-	const tags = ['@all', `@${config.ln}`, `@${config.mint}`, `@${config.db}`];
-	tags.push(config.ln === 'fake' ? '@no-lightning' : '@lightning');
+	const tags = ['@all', '@mint', `@${config.mint}`, `@${config.db}`];
+	if (config.ln === false) {
+		tags.push('@no-lightning');
+	} else {
+		tags.push(`@${config.ln}`, '@lightning');
+	}
+	if (config.bitcoin) tags.push('@bitcoin');
+	else tags.push('@no-bitcoin');
 	if (config.name === CANARY) tags.push('@canary');
-	if (config.tapd) tags.push('@tapd');
-	if (config.bolt12) tags.push('@bolt12');
-	if (config.mainchain && process.env.E2E_MAINCHAIN === '1') tags.push('@mainchain');
+	for (const feature of featuresFor(config)) tags.push(`@${feature}`);
 	return tags;
 }
 
@@ -85,6 +73,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		ln: 'lnd',
 		mint: 'nutshell',
 		db: 'sqlite',
+		bitcoin: true,
 		tapd: false,
 		bolt12: false,
 		mainchain: false,
@@ -95,13 +84,16 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'lnd-nutshell-sqlite-lnd-orchard',
 			lnAlice: 'lnd-nutshell-sqlite-lnd-alice',
 			lnFar: 'lnd-nutshell-sqlite-lnd-bob',
+			mint: 'lnd-nutshell-sqlite-nutshell',
 		},
+		mintPort: 3338,
 	},
 	'lnd-cdk-sqlite': {
 		name: 'lnd-cdk-sqlite',
 		ln: 'lnd',
 		mint: 'cdk',
 		db: 'sqlite',
+		bitcoin: true,
 		tapd: true,
 		bolt12: false,
 		mainchain: false,
@@ -112,6 +104,15 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'lnd-cdk-sqlite-lnd-orchard',
 			lnAlice: 'lnd-cdk-sqlite-lnd-alice',
 			lnFar: 'lnd-cdk-sqlite-lnd-bob',
+			mint: 'lnd-cdk-sqlite-cdk-mintd',
+		},
+		mintPort: 3339,
+		deviceSettings: {
+			theme: 'light-mode',
+			locale: 'en-GB',
+			timezone: 'America/New_York',
+			currency_btc: 'code',
+			currency_fiat: 'code',
 		},
 	},
 	'cln-cdk-postgres': {
@@ -119,6 +120,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		ln: 'cln',
 		mint: 'cdk',
 		db: 'postgres',
+		bitcoin: true,
 		tapd: false,
 		bolt12: true,
 		mainchain: false,
@@ -129,6 +131,18 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'cln-cdk-postgres-cln-orchard',
 			lnAlice: 'cln-cdk-postgres-cln-alice',
 			lnFar: 'cln-cdk-postgres-lnd-carol',
+			mint: 'cln-cdk-postgres-cdk-mintd',
+		},
+		mintPort: 3339,
+		appSettings: {
+			ai_enabled: true,
+			ai_vendor: 'ollama',
+			ai_ollama_api: 'http://host.docker.internal:11434',
+		},
+		deviceSettings: {
+			theme: 'dark-mode',
+			currency_btc: 'glyph',
+			currency_fiat: 'glyph',
 		},
 	},
 	'cln-nutshell-postgres': {
@@ -136,6 +150,7 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 		ln: 'cln',
 		mint: 'nutshell',
 		db: 'postgres',
+		bitcoin: true,
 		tapd: false,
 		bolt12: false,
 		mainchain: true,
@@ -146,20 +161,39 @@ export const CONFIGS: Record<ConfigName, ConfigInfo> = {
 			lnOrchard: 'cln-nutshell-postgres-cln-orchard',
 			lnAlice: 'cln-nutshell-postgres-cln-alice',
 			lnFar: 'cln-nutshell-postgres-lnd-carol',
+			mint: 'cln-nutshell-postgres-nutshell',
+		},
+		mintPort: 3338,
+		appSettings: {
+			bitcoin_oracle: true,
+		},
+		deviceSettings: {
+			theme: 'light-mode',
+			locale: 'es-ES',
+			timezone: 'Asia/Tokyo',
+			currency_btc: 'code',
+			currency_fiat: 'glyph',
 		},
 	},
 	'fake-cdk-postgres': {
 		name: 'fake-cdk-postgres',
-		ln: 'fake',
+		ln: false,
 		mint: 'cdk',
 		db: 'postgres',
+		bitcoin: false,
 		tapd: false,
 		bolt12: false,
 		mainchain: false,
 		orchardUrl: 'http://localhost:3326',
 		...BASE,
-		containers: {
-			bitcoind: 'fake-cdk-postgres-bitcoind',
+		containers: {mint: 'fake-cdk-postgres-cdk-mintd'},
+		mintPort: 3341,
+		deviceSettings: {
+			theme: 'dark-mode',
+			locale: 'de-DE',
+			timezone: 'UTC',
+			currency_btc: 'glyph',
+			currency_fiat: 'code',
 		},
 	},
 };
@@ -176,12 +210,12 @@ export function getConfig(name: string): ConfigInfo {
 	return CONFIGS[bareName as ConfigName];
 }
 
-/** Docker container name for a named LN node. Throws on fake-LN stacks —
- *  callers should gate on `config.ln !== 'fake'` or rely on `@lnd`/`@cln`
+/** Docker container name for a named LN node. Throws on no-LN stacks —
+ *  callers should gate on `config.ln !== false` or rely on `@lnd`/`@cln`
  *  grep to skip. */
 export function containerForNode(config: ConfigInfo, node: LnNode): string {
-	if (config.ln === 'fake') {
-		throw new Error(`no LN nodes on fake-LN stack ${config.name} — requested ${node}`);
+	if (config.ln === false) {
+		throw new Error(`no LN nodes on no-LN stack ${config.name} — requested ${node}`);
 	}
 	switch (node) {
 		case 'orchard':
@@ -193,9 +227,24 @@ export function containerForNode(config: ConfigInfo, node: LnNode): string {
 	}
 }
 
+/** Docker container name for the stack's bitcoind. Throws on no-bitcoin
+ *  stacks — callers should rely on bitcoin-sensitive tag grep (e.g. `@canary`,
+ *  `@lightning`) to skip, since fake-cdk-postgres has no bitcoind. */
+export function containerBitcoind(config: ConfigInfo): string {
+	if (!config.bitcoin) {
+		throw new Error(`no bitcoind on ${config.name} — this stack runs without a bitcoin service`);
+	}
+	// Narrowing: bitcoin=false only coincides with ln=false today; TS can't
+	// prove that from the bitcoin flag alone, so assert the LN-bearing arm.
+	if (config.ln === false) {
+		throw new Error(`unreachable: no-LN stack ${config.name} has bitcoin=true`);
+	}
+	return config.containers.bitcoind;
+}
+
 /** True if the named node runs LND. `far` is always LND. */
 export function isLnd(config: ConfigInfo, node: LnNode): boolean {
-	if (config.ln === 'fake') return false;
+	if (config.ln === false) return false;
 	if (node === 'far') return true;
 	return config.ln === 'lnd';
 }
@@ -208,4 +257,32 @@ export function lndDirForNode(config: ConfigInfo, node: LnNode): string {
 		return '/home/litd/.lnd';
 	}
 	return '/home/lnd/.lnd';
+}
+
+/** Source-of-truth read for each stack's mint units. Parses the stack's
+ *  `mintd.toml` (cdk) or `compose.yml` (nutshell) so this stays correct
+ *  when operators change mint configs. `sat` is always the first unit —
+ *  both cdk and nutshell provision it by default; `usd` / `eur` are
+ *  opt-in via `supported_units` (cdk fake_wallet) or
+ *  `MINT_BACKEND_BOLT11_USD` / `_EUR` in the nutshell service env.
+ *  Run from the repo root (playwright's cwd). */
+export function mintUnitsFor(config: ConfigInfo): MintUnit[] {
+	const dir = path.resolve(process.cwd(), 'e2e', 'docker', 'configs', config.name);
+	const stripComments = (raw: string): string => raw.split('\n').filter((l) => !l.trim().startsWith('#')).join('\n');
+	const units: MintUnit[] = ['sat'];
+
+	if (config.mint === 'cdk') {
+		const toml = stripComments(fs.readFileSync(path.join(dir, 'mintd.toml'), 'utf8'));
+		// [fake_wallet] supported_units = ["sat", "usd"] — real-LN cdk stacks
+		// omit this block and serve only sat.
+		const listed = [...toml.matchAll(/supported_units\s*=\s*\[([^\]]+)\]/g)].flatMap((m) =>
+			[...m[1].matchAll(/"(sat|usd|eur)"/g)].map((mm) => mm[1] as MintUnit),
+		);
+		for (const u of listed) if (!units.includes(u)) units.push(u);
+	} else {
+		const compose = stripComments(fs.readFileSync(path.join(dir, 'compose.yml'), 'utf8'));
+		if (/MINT_BACKEND_BOLT11_USD\s*=/.test(compose)) units.push('usd');
+		if (/MINT_BACKEND_BOLT11_EUR\s*=/.test(compose)) units.push('eur');
+	}
+	return units;
 }

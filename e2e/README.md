@@ -13,13 +13,13 @@ exercises every axis exactly twice. The fifth is an LN-less multi-unit
 Orchard's mint integration tolerates an absent LN backend and handles
 multiple units.
 
-| Config | LN | Mint | DB | Tapd | Multi-unit |
-|---|---|---|---|---|---|
-| `lnd-nutshell-sqlite` | lnd | nutshell | sqlite | — | — |
-| `cln-nutshell-postgres` | cln | nutshell | postgres | — | ✓ (sat + usd + eur) |
-| `lnd-cdk-sqlite` | lnd | cdk | sqlite | ✓ | — |
-| `cln-cdk-postgres` | cln | cdk | postgres | — | — |
-| `fake-cdk-postgres` | — (fake) | cdk | postgres | — | ✓ (sat + usd) |
+| Config | Bitcoin | LN | Mint | DB | Tapd | Multi-unit |
+|---|---|---|---|---|---|---|
+| `lnd-nutshell-sqlite` | core | lnd | nutshell | sqlite | — | — |
+| `cln-nutshell-postgres` | core | cln | nutshell | postgres | — | ✓ (sat + usd + eur) |
+| `lnd-cdk-sqlite` | core | lnd | cdk | sqlite | ✓ | — |
+| `cln-cdk-postgres` | core | cln | cdk | postgres | — | — |
+| `fake-cdk-postgres` | — | — (fake) | cdk | postgres | — | ✓ (sat + usd) |
 
 ## Directory structure
 
@@ -83,9 +83,10 @@ have something to read.
 
 **fake config** (`fake-cdk-postgres`):
 
-No LN nodes. cdk-mintd runs `fake_wallet` with `supported_units = ["sat", "usd"]`,
-Orchard boots without `LIGHTNING_TYPE`. bitcoind + bitcoind-peer remain so
-Orchard's bitcoin cards still render.
+No LN nodes, no bitcoind. cdk-mintd runs `fake_wallet` with
+`supported_units = ["sat", "usd"]`; Orchard boots without `LIGHTNING_TYPE`
+and without `BITCOIN_TYPE`. Its job is to exercise Orchard's UI when both
+optional services are absent.
 
 ## Running
 
@@ -94,28 +95,24 @@ Orchard's bitcoin cards still render.
 npm run e2e:up lnd-nutshell-sqlite
 npm run e2e:up cln-cdk-sqlite
 npm run e2e:up fake-cdk-postgres
+npm run e2e:up cln-nutshell-postgres   # requires prior e2e:bootstrap-mainchain
 
-# the whole matrix
-npm run e2e:up most          # all five stacks, no mainchain overlay
-npm run e2e:up all           # all five stacks + mainchain overlay on
-                             # cln-nutshell-postgres (requires prior
-                             # `e2e:bootstrap-mainchain` — see below)
+# the whole matrix (every stack, mainchain overlay included)
+npm run e2e:up all
 
 # test runner
-npm run e2e:test most        # run suite; @mainchain specs skip
-npm run e2e:test all         # run suite; @mainchain specs included
-npm run e2e:test             # legacy: honors whatever env is set
+npm run e2e:test                                          # full suite
+npm run e2e:test -- --project=cln-nutshell-postgres:3325  # filter
 
-# watch logs (single stack only — 'most'/'all' would interleave)
+# watch logs (single stack only — 'all' would interleave)
 npm run e2e:logs cln-cdk-sqlite
 
 # inspect
 npm run e2e:ps cln-cdk-sqlite
-npm run e2e:ps most
+npm run e2e:ps all
 
 # tear down (removes all named volumes for that stack)
 npm run e2e:down cln-cdk-sqlite
-npm run e2e:down most        # plain matrix — preserves mainchain-data volume
 npm run e2e:down all         # wipe everything including mainchain-data
 ```
 
@@ -129,23 +126,23 @@ stack's grep set.
 | Tag | Meaning | Where it runs |
 |---|---|---|
 | `@canary` | config-agnostic feature | `lnd-nutshell-sqlite` only |
-| `@lightning` | Orchard has `LIGHTNING_TYPE` configured (app-state) | every stack with `config.ln !== 'fake'` |
+| `@lightning` | Orchard has `LIGHTNING_TYPE` configured (app-state) | every stack with `config.ln !== false` |
 | `@no-lightning` | Orchard boots without `LIGHTNING_TYPE` (app-state) | `fake-cdk-postgres` only |
-| `@lnd` / `@cln` / `@fake` | LN impl-name tags (stack identity) | stacks with matching `config.ln` |
+| `@no-bitcoin` | Orchard boots without `BITCOIN_TYPE` (app-state) | `fake-cdk-postgres` only |
+| `@lnd` / `@cln` | LN impl-name tags (stack identity) | stacks with matching `config.ln` |
 | `@cdk` / `@nutshell` | mint-impl-sensitive | stacks with matching mint |
 | `@sqlite` / `@postgres` | DB-sensitive | stacks with matching DB |
 | `@tapd` | requires Taproot Assets | `lnd-cdk-sqlite` only |
-| `@mainchain` | Orchard wired to a real mainnet bitcoind | `cln-nutshell-postgres` **only when** brought up with `E2E_MAINCHAIN=1` (see [Mainchain overlay](#mainchain-overlay)) |
+| `@mainchain` | Orchard wired to a real mainnet bitcoind | `cln-nutshell-postgres` (overlay always loaded — see [Mainchain overlay](#mainchain-overlay)) |
 | `@all` | genuine matrix coverage | all five stacks |
 
 **Prefer app-state tags (`@lightning` / `@no-lightning`) over impl-name
-tags (`@lnd` / `@cln` / `@fake`)** — they describe the Orchard configuration
-the spec cares about, not the docker backend. `@lightning` vs `@no-lightning`
+tags (`@lnd` / `@cln`)** — they describe the Orchard configuration the spec
+cares about, not the docker backend. `@lightning` vs `@no-lightning`
 captures "is there a lightning node wired in at all?", which is a real
 operator deployment decision and a valid app state to test on both sides.
 Reserve `@lnd` / `@cln` for specs that assert impl-specific behavior
-(e.g. LND's `uris[]` field, CLN-specific quirks); `@fake` is rarely the
-right tag — use `@no-lightning` instead.
+(e.g. LND's `uris[]` field, CLN-specific quirks).
 
 Apply tags at the `describe` level when every test in a file shares scope:
 
@@ -223,10 +220,12 @@ auth bootstrapping always happens.
 
 | Service      | Host port  | Purpose                    |
 |--------------|------------|----------------------------|
-| bitcoind RPC | 38443      | chain manipulation         |
 | postgres     | 5732       | shared DB                  |
 | cdk-mintd    | 3341/8087  | mint HTTP / management RPC |
 | orchard      | 3326       | Orchard GraphQL + UI       |
+
+No bitcoind — Orchard boots without `BITCOIN_TYPE` to exercise its
+no-bitcoin code path.
 
 All five configs have disjoint port ranges and can run concurrently. Pair-2 / cln
 configs sit in the 20k/28k/55xx range to avoid collisions with Polar Lightning
@@ -256,6 +255,8 @@ topology, then exits.
   activity container then runs [activity-fake.sh](docker/scripts/activity-fake.sh)
   which drives `cdk-cli --unit sat|usd` through mint/swap/melt. Melts
   pick a fixture so the fake backend sees an "external-looking" invoice.
+  `ACTIVITY_MEMPOOL_PER_RATE` is pinned to 0 because there's no bitcoind
+  to broadcast into.
 - **cln-nutshell-postgres** (multi-unit): runs the normal cln `setup` +
   `activity` (SAT via real LN) alongside an extra `bolt11-gen` +
   `activity-fake` pair. The second pair exercises nutshell's USD + EUR
@@ -268,12 +269,13 @@ Downstream services (mint, orchard) depend on setup via
 
 ## Mainchain overlay
 
-One stack (`cln-nutshell-postgres`) ships an opt-in overlay that adds a
+One stack (`cln-nutshell-postgres`) ships an overlay that adds a
 pruned, host-peered mainnet bitcoind and re-points **Orchard's**
 `BITCOIN_RPC_*` at it. The LN/mint backend stays on regtest (cln-orchard,
 cln-alice, lnd-carol, nutshell all keep talking to the stack's regtest
-bitcoind). The overlay only unlocks `@mainchain`-tagged specs —
-utxoracle, mempool, block-tip, chain-sync.
+bitcoind). The overlay is always loaded when bringing this stack up,
+and unlocks `@mainchain`-tagged specs — utxoracle, mempool, block-tip,
+chain-sync.
 
 **Host-specific config** lives in `e2e/.mainchain/.env` (gitignored —
 create it once, point at your node). Both the bootstrap script and the
@@ -305,14 +307,14 @@ base hash is in its hardcoded AssumeUTXO allowlist. `dumptxoutset latest`
 produces a snapshot that's always rejected; we use `rollback` mode
 instead — see [bootstrap-mainchain.sh](docker/scripts/bootstrap-mainchain.sh).
 
-**Bring the stack(s) up with the overlay:**
+**Bring the stack(s) up:**
 
 ```bash
-# full matrix + mainchain overlay on cln-nutshell-postgres
+# full matrix (mainchain overlay on cln-nutshell-postgres included)
 npm run e2e:up all
 
 # or just the mainchain stack on its own
-E2E_MAINCHAIN=1 npm run e2e:up cln-nutshell-postgres
+npm run e2e:up cln-nutshell-postgres
 ```
 
 The overlay adds `bitcoind-mainchain` (pruned, `-connect=host.docker.internal:8333`)
@@ -324,16 +326,12 @@ volume carries the loaded chainstate.
 **Run `@mainchain` specs:**
 
 ```bash
-# full suite, @mainchain specs included
-npm run e2e:test all
+# full suite
+npm run e2e:test
 
 # just the mainchain stack
-npm run e2e:test all -- --project=cln-nutshell-postgres:3325
+npm run e2e:test -- --project=cln-nutshell-postgres:3325
 ```
-
-`npm run e2e:test most` (or plain `e2e:test` with no env) leaves the
-tag out of project grep, so `@mainchain` specs skip cleanly for any
-contributor whose host doesn't run a mainnet node.
 
 **Host requirements:**
 
@@ -344,11 +342,10 @@ contributor whose host doesn't run a mainnet node.
 - No `rpcallowip` change needed — the container talks to your host over
   P2P, not RPC.
 
-**Teardown:** `npm run e2e:down all` wipes every stack including the
-mainchain volume. `npm run e2e:down most` (or `npm run e2e:down
-cln-nutshell-postgres` without env) preserves `mainchain-data` —
-compose only sees volumes it loaded, so an un-overlayed down leaves
-the snapshot chainstate intact for the next `e2e:up all`.
+**Teardown:** `npm run e2e:down cln-nutshell-postgres` (or `e2e:down all`)
+wipes every named volume for the stack, including `mainchain-data` — the
+overlay is always loaded so compose always sees and removes it. Plan to
+re-run `npm run e2e:bootstrap-mainchain` before the next bring-up.
 
 ## Regenerating credentials
 

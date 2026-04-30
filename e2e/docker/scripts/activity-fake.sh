@@ -73,7 +73,7 @@ wallet_unit() {
     docker exec -i "${CONFIG_NAME}-wallet" cdk-cli --unit "$unit" "$@"
 }
 
-# Fixture amounts — keep in sync with gen-bolt11s.py:AMOUNTS.
+# Fixture amounts — keep in sync with gen-bolt11s.js:AMOUNTS.
 FIXTURE_AMOUNTS="100 500 1000"
 
 # Load every (unit × amount) fixture once into shell vars (FIXTURE_<unit>_<amt>);

@@ -17,6 +17,7 @@ input_fee_ppk = 100
 [mint_info]
 name = "e2e-cdk-fake"
 description = "Orchard e2e fake-cdk-postgres"
+urls = ["https://cdk-multi-pro.cash"]
 
 [database]
 engine = "postgres"

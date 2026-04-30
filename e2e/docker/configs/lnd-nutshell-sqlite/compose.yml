@@ -201,7 +201,11 @@ services:
       - MINT_PRIVATE_KEY=${NUTSHELL_PRIVATE_KEY}
       - MINT_INFO_NAME=e2e-nutshell
       - MINT_INFO_DESCRIPTION=Orchard e2e lnd-nutshell-sqlite
+      - MINT_INFO_URLS=["https://nut-sat-lite.cash"]
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
+      # Disabled for e2e: Playwright fires ~25 `/v1/info` reads per spec run,
+      # tripping nutshell's per-IP limiter into `MintPublicApiError` (40001).
+      - MINT_RATE_LIMIT=false
     command: >
       poetry run mint
     healthcheck:
@@ -318,3 +322,34 @@ services:
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-lnd-topology.sh"]
     restart: "no"
+
+  # ──────────────────────────────────────────────────────────────
+  # SQLite reader sidecar — exposes `sqlite3` over `docker exec`
+  # for e2e helpers that need to read the orchard or mint sqlite
+  # databases. Reading from a container that shares the same data
+  # volume avoids the host-side `docker cp` race that produced
+  # torn pages and stale `-wal`/`-shm` mismatches when WAL-mode
+  # files were copied out mid-write.
+  #
+  # Volumes are RW because sqlite occasionally needs to update the
+  # SHM index even on read; the container only ever runs SELECT
+  # via `docker exec` from helpers/backend/_sql.ts.
+  # ──────────────────────────────────────────────────────────────
+  sqlite-reader:
+    image: alpine:${ALPINE_VERSION}
+    container_name: lnd-nutshell-sqlite-sqlite-reader
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      orchard:  { condition: service_healthy }
+      nutshell: { condition: service_healthy }
+    volumes:
+      - orchard-data:/orchard
+      - nutshell-data:/mint
+    command: sh -c "apk add --no-cache sqlite && exec tail -f /dev/null"
+    healthcheck:
+      test: ["CMD", "sqlite3", "--version"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s

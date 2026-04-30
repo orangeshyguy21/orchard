@@ -115,7 +115,7 @@ services:
     ports:
       - "5632:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=${PG_USER}
       - POSTGRES_PASSWORD=${PG_PASS}
@@ -249,6 +249,7 @@ services:
       - MINT_INPUT_FEE_PPK=100
       - MINT_INFO_NAME=e2e-nutshell
       - MINT_INFO_DESCRIPTION=Orchard e2e cln-nutshell-postgres (sat + usd + eur)
+      - MINT_INFO_URLS=["https://nut-multi-pro.cash"]
       - MINT_INFO_CONTACT=[["email","e2e@orchard.local"]]
       # Disabled for e2e: activity-cln-topology + activity-fake hammer nutshell
       # from the shared wallet container concurrently (sat on one, usd+eur on
@@ -381,8 +382,8 @@ services:
     networks: [net]
     volumes:
       - shared:/shared
-      - ../../scripts/gen-bolt11s.py:/gen-bolt11s.py:ro
-    entrypoint: ["python", "/gen-bolt11s.py", "/shared/fake-bolt11s.json"]
+      - ../../scripts/gen-bolt11s.js:/app/gen-bolt11s.js:ro
+    entrypoint: ["node", "/app/gen-bolt11s.js", "/shared/fake-bolt11s.json"]
     restart: "no"
 
   # USD+EUR activity via nutshell FakeWallet. Runs alongside `activity`
@@ -421,3 +422,25 @@ services:
       - ACTIVITY_SKIP=${ACTIVITY_SKIP:-0}
     entrypoint: ["/scripts/activity-fake.sh"]
     restart: "no"
+
+  # ──────────────────────────────────────────────────────────────
+  # SQLite reader sidecar — see lnd-nutshell-sqlite/compose.yml
+  # for the full rationale. nutshell lives in postgres on this
+  # stack so only orchard's own sqlite is exposed via /orchard.
+  # ──────────────────────────────────────────────────────────────
+  sqlite-reader:
+    image: alpine:${ALPINE_VERSION}
+    container_name: cln-nutshell-postgres-sqlite-reader
+    restart: on-failure
+    networks: [net]
+    depends_on:
+      orchard: { condition: service_healthy }
+    volumes:
+      - orchard-data:/orchard
+    command: sh -c "apk add --no-cache sqlite && exec tail -f /dev/null"
+    healthcheck:
+      test: ["CMD", "sqlite3", "--version"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s

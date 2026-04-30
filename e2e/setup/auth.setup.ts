@@ -10,17 +10,12 @@
  * test just logs in.
  */
 
-import {test as setup, expect, type Page, type TestInfo} from '@playwright/test';
-import {TEST_ADMIN, getConfig} from '../helpers/config';
-import {loginViaUi} from '../helpers/auth';
+import {test as setup, expect, type Page} from '@playwright/test';
+import {TEST_ADMIN} from '@e2e/helpers/config';
+import {loginViaUi} from '@e2e/helpers/ui/auth';
+import {projectConfig, projectStatePath} from '@e2e/helpers/ui/setup';
 
 const isSetupForm = (page: Page) => /\/auth\/setup/.test(page.url());
-
-/** Setup projects are named `setup-<config>:<port>`; strip both the prefix
- *  and the decorative port suffix to recover the bare config name. */
-const configNameFromProject = (testInfo: TestInfo) => testInfo.project.name.replace(/^setup-/, '').replace(/:\d+$/, '');
-const configFromProject = (testInfo: TestInfo) => getConfig(configNameFromProject(testInfo));
-const statePathForProject = (testInfo: TestInfo) => `e2e/.auth/${configNameFromProject(testInfo)}.json`;
 
 async function gotoAuth(page: Page): Promise<void> {
 	await page.goto('/');
@@ -45,7 +40,7 @@ setup.describe('setup form validation (fresh stacks only)', {tag: '@canary'}, ()
 	});
 
 	setup('setup UI disables Start when password is too short', async ({page}, testInfo) => {
-		const config = configFromProject(testInfo);
+		const config = projectConfig(testInfo, 'setup');
 		await page.getByLabel('Setup Key').fill(config.setupKey);
 		await page.getByLabel('Username').fill(TEST_ADMIN.name);
 		await page.getByLabel('Password', {exact: true}).fill('abc');
@@ -55,7 +50,7 @@ setup.describe('setup form validation (fresh stacks only)', {tag: '@canary'}, ()
 	});
 
 	setup('setup UI disables Start when passwords do not match', async ({page}, testInfo) => {
-		const config = configFromProject(testInfo);
+		const config = projectConfig(testInfo, 'setup');
 		await page.getByLabel('Setup Key').fill(config.setupKey);
 		await page.getByLabel('Username').fill(TEST_ADMIN.name);
 		await page.getByLabel('Password', {exact: true}).fill(TEST_ADMIN.password);
@@ -66,6 +61,6 @@ setup.describe('setup form validation (fresh stacks only)', {tag: '@canary'}, ()
 });
 
 setup('authenticate + persist state', {tag: '@all'}, async ({page}, testInfo) => {
-	await loginViaUi(page, configFromProject(testInfo));
-	await page.context().storageState({path: statePathForProject(testInfo)});
+	await loginViaUi(page, projectConfig(testInfo, 'setup'));
+	await page.context().storageState({path: projectStatePath(testInfo, 'setup')});
 });

@@ -11,6 +11,7 @@ input_fee_ppk = 100
 [mint_info]
 name = "e2e-cdk"
 description = "Orchard e2e lnd-cdk-sqlite"
+urls = ["https://cdk-sat-lite.cash"]
 
 [database]
 engine = "sqlite"

@@ -4,7 +4,8 @@
  */
 
 /* Application Dependencies */
-import {getConfig, type ConfigInfo} from '../../helpers/config';
+import {getConfig} from '../../helpers/config';
+import type {ConfigInfo} from '../../types/config';
 
 const DEFAULT_CONFIG = 'lnd-nutshell-sqlite';
 

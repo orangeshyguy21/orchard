@@ -13,6 +13,7 @@ mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon aban
 [mint_info]
 name = "e2e-cdk"
 description = "Orchard e2e cln-cdk-postgres"
+urls = ["https://cdk-sat-pro.cash"]
 
 [database]
 engine = "postgres"
