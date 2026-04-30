@@ -21,39 +21,52 @@ export type CashuMintInfo = {
 			methods: Record<string, CashuNut5Method>;
 			disabled: boolean;
 		};
-		7: {
+		7?: {
 			supported: boolean;
 		};
-		8: {
+		8?: {
 			supported: boolean;
 		};
-		9: {
+		9?: {
 			supported: boolean;
 		};
-		10: {
+		10?: {
 			supported: boolean;
 		};
-		11: {
+		11?: {
 			supported: boolean;
 		};
-		12: {
+		12?: {
 			supported: boolean;
 		};
-		14: {
+		14?: {
 			supported: boolean;
 		};
-		15: {
+		15?: {
 			methods: Record<string, CashuNut15Method>;
 		};
-		17: {
+		17?: {
 			supported: Record<string, CashuNutSupported>;
 		};
-		19: {
+		19?: {
 			cached_endpoints: Record<string, CashuCachedEndpoint>;
 			ttl: number;
 		};
-		20: {
+		20?: {
 			supported: boolean;
+		};
+		21?: {
+			openid_discovery: string;
+			client_id: string;
+			protected_endpoints: CashuProtectedEndpoint[];
+		};
+		22?: {
+			bat_max_mint: number;
+			protected_endpoints: CashuProtectedEndpoint[];
+		};
+		29?: {
+			max_batch_size?: number;
+			methods?: string[];
 		};
 	};
 };
@@ -91,6 +104,11 @@ export type CashuNutSupported = {
 };
 
 export type CashuCachedEndpoint = {
+	method: string;
+	path: string;
+};
+
+export type CashuProtectedEndpoint = {
 	method: string;
 	path: string;
 };
