@@ -404,7 +404,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		const pre_args = {
 			units: this.page_settings().units,
 			date_start: this.configService.config.constants.epoch_start,
-			date_end: this.page_settings().date_start - 1,
+			date_end: DateTime.fromSeconds(this.page_settings().date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger() - 1,
 			interval: AnalyticsInterval.Custom,
 			timezone,
 		};
@@ -455,7 +455,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				this.lightningService.loadLightningAnalyticsLocalBalance({
 					...args,
 					date_start: this.configService.config.constants.epoch_start,
-					date_end: this.page_settings().date_start - 1,
+					date_end: DateTime.fromSeconds(this.page_settings().date_start, {zone: 'UTC'}).startOf('hour').toUnixInteger() - 1,
 					interval: AnalyticsInterval.Custom,
 				}),
 				this.lightningService.loadLightningAnalyticsBackfillStatus(),
