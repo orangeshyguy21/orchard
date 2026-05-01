@@ -19,6 +19,7 @@ import {
 	CashuMintPromise,
 	CashuMintSwap,
 	CashuMintCount,
+	CashuMintOperationFee,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintMintQuotesArgs,
@@ -26,6 +27,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintSwapsArgs,
+	CashuMintFeesArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -517,6 +519,43 @@ export class CdkService {
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async listFees(client: CashuMintDatabase, args?: CashuMintFeesArgs): Promise<CashuMintOperationFee[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			date_start: 'co.completed_at',
+			date_end: 'co.completed_at',
+		};
+
+		const select_statement = `
+			SELECT
+				k.unit AS unit,
+				co.completed_at AS created_time,
+				co.fee_collected AS fee
+			FROM (SELECT * FROM completed_operations WHERE fee_collected > 0) co
+			LEFT JOIN blind_signature bs ON bs.operation_id = co.operation_id
+			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+
+		const group_by = 'co.operation_id, k.unit';
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'completed_operations',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+			time_is_epoch_seconds: true,
+		});
+		try {
+			const rows = await queryRows<CashuMintOperationFee>(client, sql, params);
+			return rows.map((row) => ({
+				...row,
+				created_time: convertDateToUnixTimestamp(row.created_time) ?? row.created_time,
+			}));
 		} catch (err) {
 			throw err;
 		}

@@ -20,7 +20,7 @@ import {
 	CashuMintPromise,
 	CashuMintSwap,
 	CashuMintCount,
-	CashuMintFee,
+	CashuMintOperationFee,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintMintQuotesArgs,
@@ -28,6 +28,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintSwapsArgs,
+	CashuMintFeesArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -550,10 +551,51 @@ export class NutshellService {
 		}
 	}
 
-	public async getFees(client: CashuMintDatabase, limit: number = 1): Promise<CashuMintFee[]> {
-		const sql = `SELECT * FROM balance_log ORDER BY time ASC LIMIT ?;`;
+	public async listFees(client: CashuMintDatabase, args?: CashuMintFeesArgs): Promise<CashuMintOperationFee[]> {
+		// `balance_log` is a cumulative-snapshot table populated by the nutshell watchdog
+		// (`unit, keyset_fees_paid, time`). LAG yields per-snapshot deltas so we can emit fee events
+		// matching cdk's per-op fee shape. The first row per unit lump-sums any pre-watchdog history
+		// at its own snapshot hour (LAG default 0).
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+		};
+
+		const select_statement = `
+			SELECT unit, created_time, fee FROM (
+				SELECT
+					unit,
+					time AS created_time,
+					keyset_fees_paid - LAG(keyset_fees_paid, 1, 0) OVER (PARTITION BY unit ORDER BY time) AS fee
+				FROM balance_log
+			) deltas
+			WHERE fee > 0`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'balance_log',
+			args,
+			field_mappings,
+			select_statement,
+		});
 		try {
-			return queryRows<CashuMintFee>(client, sql, [limit]);
+			const rows = await queryRows<CashuMintOperationFee>(client, sql, params);
+			return rows.map((row) => ({
+				...row,
+				created_time: convertDateToUnixTimestamp(row.created_time) ?? row.created_time,
+			}));
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getWatchdogLastSeen(client: CashuMintDatabase): Promise<number | null> {
+		const sql = 'SELECT MAX(time) AS last_seen FROM balance_log;';
+		try {
+			const row = await queryRow<{last_seen: number | string | Date | null}>(client, sql);
+			if (row?.last_seen === null || row?.last_seen === undefined) return null;
+			return convertDateToUnixTimestamp(row.last_seen);
 		} catch (err) {
 			throw err;
 		}
