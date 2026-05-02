@@ -25,11 +25,13 @@ multiple units.
 
 ```
 e2e/
+├── .env.example                     # copy to .env for global local overrides
 ├── docker/
 │   ├── setup.Dockerfile                # shared alpine+tools image (curl/jq/xxd/docker-cli)
 │   ├── bolt11-gen.Dockerfile           # python:3.12-slim + pip bolt11 (fixture generator)
 │   ├── scripts/
 │   │   ├── compose.sh                  # dispatcher: up/down/logs/ps
+│   │   ├── activity-cadence.sh         # long-running cadence simulator (host-controlled)
 │   │   ├── fund-lnd-topology.sh        # runs inside setup for lnd-* configs
 │   │   ├── fund-cln-topology.sh        # runs inside setup for cln-* configs
 │   │   ├── activity-fake.sh            # runs inside activity for fake-backed paths
@@ -90,6 +92,10 @@ optional services are absent.
 
 ## Running
 
+Global operator overrides live in `e2e/.env` (gitignored; create from
+`e2e/.env.example`). `compose.sh` and `bootstrap-mainchain.sh` auto-load it.
+Use it for cadence knobs, host CLI paths, and future cross-stack e2e settings.
+
 ```bash
 # single stack (blocks until healthy)
 npm run e2e:up lnd-nutshell-sqlite
@@ -111,10 +117,78 @@ npm run e2e:logs cln-cdk-sqlite
 npm run e2e:ps cln-cdk-sqlite
 npm run e2e:ps all
 
+# cadence simulator (start/stop on demand)
+npm run e2e:activity:start cln-cdk-postgres
+npm run e2e:activity:status cln-cdk-postgres
+npm run e2e:activity:logs cln-cdk-postgres
+npm run e2e:activity:stop cln-cdk-postgres
+
 # tear down (removes all named volumes for that stack)
 npm run e2e:down cln-cdk-sqlite
 npm run e2e:down all         # wipe everything including mainchain-data
 ```
+
+## Cadence activity simulator
+
+The cadence simulator is a host-side long-running loop that replays stack
+activity and injects unhappy/disruptive paths on a schedule. It is intended for
+"turn all stones" activity runs where you want sustained traffic and fault
+injection while Playwright specs run.
+
+### Control surface
+
+- `npm run e2e:activity:start <config>` starts one background runner per stack and writes state to `e2e/.runtime/`.
+- `npm run e2e:activity:stop <config>` stops the runner gracefully (idempotent; safe to call repeatedly).
+- `npm run e2e:activity:status <config>` reports running/stopped plus PID/log path.
+- `npm run e2e:activity:logs <config>` tails that stack's cadence log.
+- `all` is supported for `start|stop|status`:
+  - `npm run e2e:activity:start all`
+  - `npm run e2e:activity:stop all`
+  - `npm run e2e:activity:status all`
+
+### Behavior
+
+Each cadence cycle performs:
+
+1. **Happy path replay**: reruns stack-native `activity` containers (and
+   `activity-fake` on `cln-nutshell-postgres`) so LN + mint + bitcoin traffic
+   remains fresh.
+2. **Unhappy path injection**: deterministic injections for unpaid mint quotes,
+   failed melt quotes, and failed LN payments (where LN exists).
+3. **Disruptive fault injection (default on)**: pause/unpause mint + LN
+   containers, then require health recovery before continuing.
+
+If recovery fails inside timeout, the cadence runner aborts with actionable log
+output rather than silently hanging.
+
+### Tunables
+
+Set these in `e2e/.env` (or export before `e2e:activity:start`):
+
+- `ACTIVITY_INTERVAL_SECONDS` (default `90`) - base delay between cycles
+- `ACTIVITY_JITTER_SECONDS` (default `15`) - randomized plus/minus jitter
+- `ACTIVITY_DISRUPT_SECONDS` (default `4`) - duration for pause windows
+- `ACTIVITY_DISRUPT_EVERY` (default `1`) - run disruption every N cycles
+- `ACTIVITY_RECOVERY_TIMEOUT` (default `60`) - health wait ceiling per service
+- `ACTIVITY_SEED` (optional) - deterministic RNG seed for reproducible cycle timing
+
+### Stack scenario matrix
+
+- `lnd-nutshell-sqlite`, `lnd-cdk-sqlite`
+  - replay `activity`, inject failed LN pay from LND, unpaid mint + failed melt quote
+  - disrupt nutshell/cdk mint + `lnd-orchard`
+- `cln-cdk-postgres`
+  - replay `activity` (including bolt12 categories if enabled by stack env)
+  - inject failed LN pay from CLN, unpaid mint + failed melt quote
+  - disrupt cdk mint + `cln-orchard`
+- `cln-nutshell-postgres`
+  - replay both `activity` and `activity-fake` (sat via real LN + usd/eur fake paths)
+  - inject failed LN pay from CLN, unpaid mint + failed melt quote
+  - disrupt nutshell mint + `cln-orchard`
+- `fake-cdk-postgres`
+  - replay `activity` for no-LN fake mint paths
+  - inject unpaid mint + failed melt quote
+  - disrupt cdk mint only (no LN container)
 
 ## Writing specs — tag conventions
 
@@ -277,20 +351,19 @@ bitcoind). The overlay is always loaded when bringing this stack up,
 and unlocks `@mainchain`-tagged specs — utxoracle, mempool, block-tip,
 chain-sync.
 
-**Host-specific config** lives in `e2e/.mainchain/.env` (gitignored —
-create it once, point at your node). Both the bootstrap script and the
-compose overlay read it:
+Use `e2e/.env` for shared host/mainchain defaults (gitignored; create from
+`e2e/.env.example`).
 
 ```sh
-# e2e/.mainchain/.env
+# e2e/.env (global)
 BITCOIN_CLI=/usr/local/bin/bitcoin-cli
 # BITCOIN_CLI_ARGS='-rpcuser=you -rpcpassword=secret'  # if you use rpcauth
 # HOST_BITCOIN_P2P_PORT=8333                            # override if non-default
 ```
 
-The bootstrap script sources this with `.`, so `~` and `$HOME` expand
-normally. Compose consumes it via `--env-file` for
-`HOST_BITCOIN_P2P_PORT` substitution into the bitcoind command.
+Bootstrap sources this with `.`, so `~` and `$HOME` expand normally.
+Compose consumes it via `--env-file` for `HOST_BITCOIN_P2P_PORT`
+substitution into the bitcoind command.
 
 **One-time snapshot dump:**
 

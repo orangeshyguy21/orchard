@@ -162,9 +162,11 @@ run_unit eur "$ACTIVITY_MINTS_EUR" "$ACTIVITY_SWAPS_EUR" "$ACTIVITY_MELTS_EUR"
 # Ensures the most-recent mint_quotes row is SAT — LightningInfoService
 # inspects the last row to decide whether to render the "Mint backend"
 # sub-label. USD/EUR fake quotes above would otherwise bury the real-
-# backend SAT quote. We only need the DB row, not payment: background
-# `cdk-cli mint`, wait for "Please pay:", SIGTERM. Set ACTIVITY_CAP_SAT=0
-# to skip.
+# backend SAT quote. We only need the DB row, not payment: ask for a
+# quote with --wait-duration=0 and force-kill cdk-cli's lingering NUT-17
+# subscription via in-container `timeout -k`. A host-side `kill` of the
+# `docker exec` wrapper would orphan cdk-cli — signals don't cross the
+# docker exec PID-namespace boundary. Set ACTIVITY_CAP_SAT=0 to skip.
 if [ "${ACTIVITY_CAP_SAT:-1}" = "1" ]; then
     # Nutshell stores created_time at second precision (no sub-second). If
     # this cap's quote lands in the same second as the final USD/EUR mint,
@@ -173,17 +175,9 @@ if [ "${ACTIVITY_CAP_SAT:-1}" = "1" ]; then
     sleep 2
     amt=$(rand_amount)
     tmp=$(mktemp)
-    wallet_unit sat mint "$MINT_URL" "$amt" > "$tmp" 2>&1 &
-    pid=$!
-    tries=40
-    while [ "$tries" -gt 0 ]; do
-        if grep -q 'Please pay' "$tmp" 2>/dev/null; then break; fi
-        sleep 0.25
-        tries=$((tries - 1))
-    done
-    kill "$pid" 2>/dev/null || true
-    wait "$pid" 2>/dev/null || true
-    if [ "$tries" -gt 0 ]; then
+    docker exec -i "${CONFIG_NAME}-wallet" timeout -k 1 5 \
+        cdk-cli --unit sat mint "$MINT_URL" "$amt" --wait-duration=0 > "$tmp" 2>&1 || true
+    if grep -q 'Please pay' "$tmp"; then
         log "[cap] sat mint ${amt}"
     else
         log "[cap] sat mint ${amt} FAILED (no invoice printed)"
