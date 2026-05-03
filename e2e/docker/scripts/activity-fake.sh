@@ -122,7 +122,10 @@ run_unit() {
         i=0
         while [ "$i" -lt "$n_swaps" ]; do
             amt=$(rand_amount)
-            token=$(wallet_unit "$unit" send -a "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
+            # `--mint-url` is required: without it cdk-cli prompts "Enter mint
+            # number to send from" interactively when multiple (mint, unit)
+            # entries exist in the wallet, and the docker exec has no stdin.
+            token=$(wallet_unit "$unit" send --mint-url "$MINT_URL" -a "$amt" 2>&1 | grep -oE 'cashu[AB][A-Za-z0-9+/_=-]+' | head -1 || true)
             if [ -z "$token" ]; then
                 log "  [$unit] swap ${amt} FAILED (no token)"
             elif wallet_unit "$unit" receive "$token" >/dev/null 2>&1; then
