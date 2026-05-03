@@ -551,11 +551,11 @@ export class NutshellService {
 		}
 	}
 
+	/** Emits per-snapshot fee deltas from nutshell's watchdog `balance_log`
+	 *  (cumulative `keyset_fees_paid`), LAG-diffed to cdk's per-op shape. The
+	 *  outer `SELECT * FROM (...) fee_events` wraps the inner `WHERE fee > 0` so
+	 *  buildDynamicQuery's appended `WHERE date_start` doesn't collide. */
 	public async listFees(client: CashuMintDatabase, args?: CashuMintFeesArgs): Promise<CashuMintOperationFee[]> {
-		// `balance_log` is a cumulative-snapshot table populated by the nutshell watchdog
-		// (`unit, keyset_fees_paid, time`). LAG yields per-snapshot deltas so we can emit fee events
-		// matching cdk's per-op fee shape. The first row per unit lump-sums any pre-watchdog history
-		// at its own snapshot hour (LAG default 0).
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -563,14 +563,16 @@ export class NutshellService {
 		};
 
 		const select_statement = `
-			SELECT unit, created_time, fee FROM (
-				SELECT
-					unit,
-					time AS created_time,
-					keyset_fees_paid - LAG(keyset_fees_paid, 1, 0) OVER (PARTITION BY unit ORDER BY time) AS fee
-				FROM balance_log
-			) deltas
-			WHERE fee > 0`;
+			SELECT * FROM (
+				SELECT unit, created_time, fee FROM (
+					SELECT
+						unit,
+						time AS created_time,
+						keyset_fees_paid - LAG(keyset_fees_paid, 1, 0) OVER (PARTITION BY unit ORDER BY time) AS fee
+					FROM balance_log
+				) deltas
+				WHERE fee > 0
+			) fee_events`;
 
 		const {sql, params} = buildDynamicQuery({
 			db_type: client.type,

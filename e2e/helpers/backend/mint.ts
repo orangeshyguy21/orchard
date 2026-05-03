@@ -109,6 +109,60 @@ export const mint = {
 		});
 	},
 
+	/** Differential oracle for `orc-mint-general-keysets`'s Blind sigs +
+	 *  Proofs counts. Mirrors the analytics-archive math the server runs
+	 *  in `MintKeysetService.getMintKeysetCounts` (mintkeyset.service.ts:42)
+	 *  — but reads the mint daemon's DB directly, ceiling'd to the
+	 *  cache's coverage window so the comparison is meaningful even when
+	 *  backfill hasn't fully caught up.
+	 *
+	 *  Window. The card's totals come from
+	 *  `cashuMintAnalyticsService.getCachedAnalytics({metrics:
+	 *  [keyset_issued, keyset_redeemed]})` with no date filter — i.e. the
+	 *  sum across every hour-bucket the archive has stored. Backfill
+	 *  buckets each row by `startOfHour(created_time, UTC)` and skips any
+	 *  bucket `>= current_hour` (mintanalytics.service.ts:248-249), so
+	 *  the archive only ever holds completed hours. The latest archived
+	 *  hour from `mint_analytics_recent` is therefore the most recent
+	 *  hour bucket whose rows have been counted.
+	 *
+	 *  Caller passes `last_processed_at` (the same `latestMintCacheHour`
+	 *  derivation the activity card spec uses) and the oracle counts
+	 *  daemon-DB rows whose `created_time` falls strictly before the end
+	 *  of that bucket — `created_time < last_processed_at + 3600`. UI
+	 *  reading == oracle when backfill has run end-to-end through the
+	 *  ceiling hour.
+	 *
+	 *  cdk: row-level `proof.created_time` and `blind_signature.created_time`
+	 *  (epoch seconds INTEGER on both sqlite and postgres — direct
+	 *  comparison). nutshell: `proofs_used.created` and `promises.created`,
+	 *  INTEGER on sqlite but TIMESTAMP on postgres — the helper extracts
+	 *  the epoch from the timestamp the same way `activitySummaryOracle`
+	 *  does for `mint_quotes` / `melt_quotes`. */
+	keysetCountsOracle(
+		config: ConfigInfo,
+		options: {last_processed_at: number},
+	): {total_promises: number; total_proofs: number; window: {effective_end: number}} {
+		const effective_end = options.last_processed_at + 3600;
+		if (effective_end <= 0) return {total_promises: 0, total_proofs: 0, window: {effective_end}};
+
+		const isNutshellPostgres = config.mint === 'nutshell' && config.db === 'postgres';
+		const timeCol = (column: string): string => (isNutshellPostgres ? `EXTRACT(EPOCH FROM ${column})` : column);
+
+		const promises_sql =
+			config.mint === 'cdk'
+				? `SELECT COUNT(*) FROM blind_signature WHERE created_time < ${effective_end}`
+				: `SELECT COUNT(*) FROM promises WHERE ${timeCol('created')} < ${effective_end}`;
+		const proofs_sql =
+			config.mint === 'cdk'
+				? `SELECT COUNT(*) FROM proof WHERE created_time < ${effective_end}`
+				: `SELECT COUNT(*) FROM proofs_used WHERE ${timeCol('created')} < ${effective_end}`;
+
+		const total_promises = parseInt(mintDbQuery(config, promises_sql), 10);
+		const total_proofs = parseInt(mintDbQuery(config, proofs_sql), 10);
+		return {total_promises, total_proofs, window: {effective_end}};
+	},
+
 	/** Differential oracle for `orc-mint-general-activity`. Mirrors the
 	 *  server's `mint_activity_summary` math (mintactivity.service.ts), but
 	 *  reads the mint daemon's DB directly instead of the

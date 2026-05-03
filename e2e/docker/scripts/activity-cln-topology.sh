@@ -218,7 +218,7 @@ if [ "$ACTIVITY_MINTS" -gt 0 ]; then
 
         wallet_bounded 5 mint "$MINT_URL" "$amt" --wait-duration=0 > "$tmp" 2>&1 || true
         bolt11=$(grep -oE 'lnbcrt[0-9a-z]+' "$tmp" 2>/dev/null | head -1 || true)
-        quote_id=$(grep -oE 'id=[a-f0-9-]+' "$tmp" 2>/dev/null | head -1 | cut -d= -f2)
+        quote_id=$(grep -oE 'id=[A-Za-z0-9_-]+' "$tmp" 2>/dev/null | head -1 | cut -d= -f2)
 
         if [ -z "$bolt11" ] || [ -z "$quote_id" ]; then
             log "  mint ${amt} FAILED (no invoice/quote_id in cdk-cli output)"
@@ -294,7 +294,7 @@ if [ "$ACTIVITY_BOLT12_MINTS" -gt 0 ]; then
 
         wallet_bounded 5 mint "$MINT_URL" "$amt" --method bolt12 --wait-duration=0 > "$tmp" 2>&1 || true
         offer=$(grep -oE 'lno1[0-9a-z]+' "$tmp" 2>/dev/null | head -1 || true)
-        quote_id=$(grep -oE 'id=[a-f0-9-]+' "$tmp" 2>/dev/null | head -1 | cut -d= -f2)
+        quote_id=$(grep -oE 'id=[A-Za-z0-9_-]+' "$tmp" 2>/dev/null | head -1 | cut -d= -f2)
 
         if [ -z "$offer" ] || [ -z "$quote_id" ]; then
             log "  bolt12 mint ${amt} FAILED (no offer)"

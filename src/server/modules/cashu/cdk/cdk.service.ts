@@ -540,7 +540,8 @@ export class CdkService {
 			LEFT JOIN blind_signature bs ON bs.operation_id = co.operation_id
 			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
 
-		const group_by = 'co.operation_id, k.unit';
+		// All non-aggregated SELECT columns listed: Postgres can't infer PK functional dependency through the derived `co` subquery.
+		const group_by = 'co.operation_id, co.completed_at, co.fee_collected, k.unit';
 		const {sql, params} = buildDynamicQuery({
 			db_type: client.type,
 			table_name: 'completed_operations',
